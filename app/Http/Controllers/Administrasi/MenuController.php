@@ -13,7 +13,7 @@ class MenuController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth','aksesmenu']);
+        $this->middleware(['auth']);
     }
 
     function tampillistmenu(Request $request){
@@ -67,6 +67,7 @@ class MenuController extends Controller
 
     public function index(Request $request)
     {
+        $this->authorize('view',MenuModel::class);
         $judul = 'Data Menu';
         if ($request->ajax()) {
 
@@ -98,7 +99,7 @@ class MenuController extends Controller
      */
     public function create()
     {
-        //
+        $this->authorize('create',MenuModel::class);
     }
 
     /**
@@ -109,6 +110,7 @@ class MenuController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize(['create','update'],MenuModel::class);
         if ($request->get('active') == null){
             $active = "off";
         }else{
@@ -145,6 +147,7 @@ class MenuController extends Controller
      */
     public function edit($id)
     {
+        $this->authorize('update',MenuModel::class);
         $menu = MenuModel::find($id);
         return response()->json($menu);
     }
@@ -169,6 +172,7 @@ class MenuController extends Controller
      */
     public function destroy($id)
     {
+        $this->authorize('delete',MenuModel::class);
         //cek apakah ada kewenangan sudah dipakai
         $adadata = DB::table('submenu')->where('idmenu','=',$id)->count();
         if ($adadata == 0){

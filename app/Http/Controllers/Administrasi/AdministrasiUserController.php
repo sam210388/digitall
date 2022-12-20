@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Administrasi;
 
 use App\Http\Controllers\Controller;
 use App\Models\Administrasi\AdministrasiUserModel;
+use App\Policies\AdministrasiUserPolicy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -15,7 +16,7 @@ class AdministrasiUserController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth','aksesmenu']);
+        $this->middleware(['auth']);
 
     }
 
@@ -27,8 +28,9 @@ class AdministrasiUserController extends Controller
 
     public function index(Request $request)
     {
-        $judul = 'Data User';
+        $this->authorize('view', AdministrasiUserModel::class);
 
+        $judul = 'Kelola User';
         if ($request->ajax()) {
 
             $data = AdministrasiUserModel::latest()->get();
@@ -83,6 +85,7 @@ class AdministrasiUserController extends Controller
         return view('Administrasi.administrasiuser',[
             "judul"=>$judul
         ]);
+
     }
 
     /**
@@ -102,6 +105,8 @@ class AdministrasiUserController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize(['create','update'], AdministrasiUserModel::class);
+
         $saveBtn = $request->get('saveBtn');
         if ($saveBtn == "tambah"){
             $validated = $request->validate([
@@ -195,6 +200,7 @@ class AdministrasiUserController extends Controller
      */
     public function edit($id)
     {
+        $this->authorize('view', AdministrasiUserModel::class);
         $menu = AdministrasiUserModel::find($id);
         return response()->json($menu);
     }
@@ -219,6 +225,8 @@ class AdministrasiUserController extends Controller
      */
     public function destroy($id)
     {
+        $this->authorize('delete', AdministrasiUserModel::class);
+        
         $gambaruser = AdministrasiUserModel::find($id)->value('gambaruser');
         File::get(public_path('gambaruser/'.$gambaruser));
         AdministrasiUserModel::find($id)->delete();

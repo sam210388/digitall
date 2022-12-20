@@ -14,6 +14,12 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         // 'App\Models\Model' => 'App\Policies\ModelPolicy',
+        'App\Models\Administrasi\AdministrasiUserModel' => 'App\Policies\Administrasi\KewenanganMenuPolicy',
+        'App\Models\Administrasi\KewenanganMenuModel' => 'App\Policies\Administrasi\KewenanganMenuPolicy',
+        'App\Models\Administrasi\KewenanganModel' => 'App\Policies\Administrasi\KewenanganPolicy',
+        'App\Models\Administrasi\KewenanganUserModel' => 'App\Policies\Administrasi\KewenanganUserPolicy',
+        'App\Models\Administrasi\MenuModel' => 'App\Policies\Administrasi\MenuPolicy',
+        'App\Models\Administrasi\SubMenuModel' => 'App\Policies\Administrasi\SubMenuPolicy'
     ];
 
     /**

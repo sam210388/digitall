@@ -13,7 +13,7 @@ class KewenanganController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth','aksesmenu']);
+        $this->middleware(['auth']);
     }
     /**
      * Display a listing of the resource.
@@ -23,6 +23,7 @@ class KewenanganController extends Controller
 
     public function index(Request $request)
     {
+        $this->authorize('view',KewenanganModel::class);
         $judul = 'Data Kewenangan';
         if ($request->ajax()) {
 
@@ -65,7 +66,7 @@ class KewenanganController extends Controller
      */
     public function store(Request $request)
     {
-
+        $this->authorize(['create','update'],KewenanganModel::class);
         KewenanganModel::updateOrCreate(
             ['id' => $request->get('idkewenangan')],
             [
@@ -95,6 +96,7 @@ class KewenanganController extends Controller
      */
     public function edit($id)
     {
+        $this->authorize('update',KewenanganModel::class);
         $kewenangan = KewenanganModel::find($id);
         return response()->json($kewenangan);
     }
@@ -119,6 +121,7 @@ class KewenanganController extends Controller
      */
     public function destroy($id)
     {
+        $this->authorize('delete',KewenanganModel::class);
         //cek apakah ada kewenangan sudah dipakai
         $adadata = DB::table('role_users')->where('idrole','=',$id)->count();
         if ($adadata == 0){

@@ -15,11 +15,13 @@ class KewenanganUserController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth','aksesmenu']);
+        $this->middleware(['auth']);
     }
 
     public function index(Request $request)
     {
+        $this->authorize('view',KewenanganModel::class);
+
         $judul = 'Data Kewenangan User';
         $datauser = User::all();
         $datakewenangan = KewenanganModel::all();
@@ -77,6 +79,7 @@ class KewenanganUserController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize(['create','update'],KewenanganModel::class);
         KewenanganUserModel::updateOrCreate(
             [
                 'iduser' => $request->get('iduser'),
@@ -105,6 +108,8 @@ class KewenanganUserController extends Controller
      */
     public function edit($id)
     {
+        $this->authorize('update',KewenanganModel::class);
+
         $menu = KewenanganUserModel::find($id);
         return response()->json($menu);
     }
@@ -129,6 +134,8 @@ class KewenanganUserController extends Controller
      */
     public function destroy($id)
     {
+        $this->authorize('delete',KewenanganModel::class);
+
         KewenanganUserModel::find($id)->delete();
         return response()->json(['status'=>'berhasil']);
     }

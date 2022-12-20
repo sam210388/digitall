@@ -13,11 +13,12 @@ class SubMenuController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth','aksesmenu']);
+        $this->middleware(['auth']);
     }
 
     public function index(Request $request)
     {
+        $this->authorize('view',SubMenuModel::class);
         $judul = 'Data Sub Menu';
         $datamenu = MenuModel::all();
         if ($request->ajax()) {
@@ -67,6 +68,7 @@ class SubMenuController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize(['create','update'],SubMenuModel::class);
         if ($request->get('status') == null){
             $active = "off";
         }else{
@@ -104,6 +106,7 @@ class SubMenuController extends Controller
      */
     public function edit($id)
     {
+        $this->authorize('update',SubMenuModel::class);
         $menu = SubMenuModel::find($id);
         return response()->json($menu);
     }
@@ -128,6 +131,7 @@ class SubMenuController extends Controller
      */
     public function destroy($id)
     {
+        $this->authorize('delete',SubMenuModel::class);
         SubMenuModel::find($id)->delete();
         return response()->json(['status'=>'berhasil']);
     }

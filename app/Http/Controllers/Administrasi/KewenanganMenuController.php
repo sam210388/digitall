@@ -13,13 +13,17 @@ use Yajra\DataTables\DataTables;
 
 class KewenanganMenuController extends Controller
 {
+
     public function __construct()
     {
         $this->middleware(['auth']);
+
     }
 
     public function index(Request $request)
     {
+        $this->authorize('view',KewenanganMenuModel::class);
+
         $judul = 'Data Menu Kewenangan';
         $datamenu = MenuModel::all();
         $datakewenangan = KewenanganModel::all();
@@ -76,6 +80,8 @@ class KewenanganMenuController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize(['create','update'],KewenanganMenuModel::class);
+
         if ($request->get('status') == null){
             $active = "off";
         }else{
@@ -110,6 +116,8 @@ class KewenanganMenuController extends Controller
      */
     public function edit($id)
     {
+        $this->authorize('view',KewenanganMenuModel::class);
+
         $menu = KewenanganMenuModel::find($id);
         return response()->json($menu);
     }
@@ -135,6 +143,7 @@ class KewenanganMenuController extends Controller
     public function destroy(Request $request, $id)
     {
 
+        $this->authorize('delete',KewenanganMenuModel::class);
         KewenanganMenuModel::find($id)->delete();
         return response()->json(['status'=>'berhasil']);
     }

@@ -49,8 +49,8 @@ Route::resource('biro',BiroController::class);
 Route::post('/ambildatabiro',[BagianController::class,'dapatkandatabiro'])->name('ambildatabiro');
 Route::post('/ambildatabagian',[BagianController::class,'dapatkandatabagian'])->name('ambildatabagian');
 Route::get('/kirimtemuankeunit/{id}',[TemuanController::class,'kirimtemuankeunit'])->name('kirimtemuankeunit')->middleware(['auth']);
-Route::resource('bagian',BagianController::class)->middleware(['auth','aksesmenu']);
-Route::resource('temuan',TemuanController::class)->middleware(['auth','aksesmenu']);
+Route::resource('bagian',BagianController::class)->middleware(['auth']);
+Route::resource('temuan',TemuanController::class)->middleware('auth');
 
 
 
