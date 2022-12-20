@@ -19,7 +19,10 @@ class AuthServiceProvider extends ServiceProvider
         'App\Models\Administrasi\KewenanganModel' => 'App\Policies\Administrasi\KewenanganPolicy',
         'App\Models\Administrasi\KewenanganUserModel' => 'App\Policies\Administrasi\KewenanganUserPolicy',
         'App\Models\Administrasi\MenuModel' => 'App\Policies\Administrasi\MenuPolicy',
-        'App\Models\Administrasi\SubMenuModel' => 'App\Policies\Administrasi\SubMenuPolicy'
+        'App\Models\Administrasi\SubMenuModel' => 'App\Policies\Administrasi\SubMenuPolicy',
+        'App\Models\ReferensiUnit\DeputiModel' => 'App\Policies\ReferensiUnit\DeputiPolicy',
+        'App\Models\ReferensiUnit\BiroModel' => 'App\Policies\ReferensiUnit\BiroPolicy',
+        'App\Models\ReferensiUnit\BagianModel' => 'App\Policies\ReferensiUnit\BagianPolicy'
     ];
 
     /**

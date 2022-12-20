@@ -13,11 +13,12 @@ class BiroController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth','aksesmenu']);
+        $this->middleware(['auth']);
     }
 
     public function index(Request $request)
     {
+        $this->authorize('view',BiroModel::class);
         $judul = 'List Biro';
         $datadeputi = DeputiModel::all();
         if ($request->ajax()) {
@@ -67,6 +68,7 @@ class BiroController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize(['update','create'],BiroModel::class);
         if ($request->get('status') == null){
             $status = "off";
         }else{
@@ -102,6 +104,7 @@ class BiroController extends Controller
      */
     public function edit($id)
     {
+        $this->authorize('update',BiroModel::class);
         $menu = biroModel::find($id);
         return response()->json($menu);
     }
@@ -126,6 +129,7 @@ class BiroController extends Controller
      */
     public function destroy($id)
     {
+        $this->authorize('delete',BiroModel::class);
         $dipakai = DB::table('bagian')->where('idbiro','=',$id)->count();
         if ($dipakai == 0){
             BiroModel::find($id)->delete();

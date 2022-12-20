@@ -12,11 +12,13 @@ class DeputiController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth','aksesmenu']);
+        $this->middleware(['auth']);
     }
 
     public function index(Request $request)
     {
+        $this->authorize('view',DeputiModel::class);
+
         $judul = 'List Deputi';
         if ($request->ajax()) {
 
@@ -59,6 +61,8 @@ class DeputiController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize(['create','update'],DeputiModel::class);
+
         if ($request->get('status') == null){
             $status = "off";
         }else{
@@ -93,6 +97,7 @@ class DeputiController extends Controller
      */
     public function edit($id)
     {
+        $this->authorize('update',DeputiModel::class);
         $deputi = DeputiModel::find($id);
         return response()->json($deputi);
     }
@@ -117,6 +122,7 @@ class DeputiController extends Controller
      */
     public function destroy($id)
     {
+        $this->authorize('delete',DeputiModel::class);
         //cek apakah sudah dipakai buat biro
         $dipakai = DB::table('biro')->where('iddeputi','=',$id)->count();
         if ($dipakai > 0){

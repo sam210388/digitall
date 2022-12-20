@@ -29,6 +29,7 @@ class BagianController extends Controller
 
     public function index(Request $request)
     {
+        $this->authorize('view',BagianModel::class);
         $judul = 'List Bagian';
         $datadeputi = DeputiModel::all();
         $databiro = BiroModel::all();
@@ -85,6 +86,7 @@ class BagianController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('view',BagianModel::class);
         if ($request->get('status') == null){
             $status = "off";
         }else{
@@ -121,6 +123,7 @@ class BagianController extends Controller
      */
     public function edit($id)
     {
+        $this->authorize('view',BagianModel::class);
         $menu = BagianModel::find($id);
         return response()->json($menu);
     }
@@ -145,6 +148,7 @@ class BagianController extends Controller
      */
     public function destroy($id)
     {
+        $this->authorize('view',BagianModel::class);
         $dipakai = DB::table('temuan')->where('idbagian','=',$id)->count();
         if ($dipakai == 0){
             BagianModel::find($id)->delete();
