@@ -8,6 +8,7 @@ use App\Policies\AdministrasiUserPolicy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\File;
 
@@ -45,7 +46,7 @@ class AdministrasiUserController extends Controller
                             <div class="input-group mb-3">
                                 <div class="user-panel">
                                 <div class="image">
-                                <img src="'.asset('gambaruser/default.png').'" class="img-circle elevation-2" alt="User Image">
+                                <img src="'.url('storage/gambaruser/default.png').'" class="img-circle elevation-2" alt="User Image">
                                 </div>
                                 </div>
                             </div>
@@ -59,7 +60,7 @@ class AdministrasiUserController extends Controller
                             <div class="input-group mb-3">
                                 <div class="user-panel">
                                 <div class="image">
-                                <img src="'.asset('gambaruser')."/".$row->gambaruser.'" class="img-circle elevation-2" alt="User Image">
+                                <img src="'.asset('storage')."/".$row->gambaruser.'" class="img-circle elevation-2" alt="User Image">
                                 </div>
                                 </div>
                             </div>
@@ -88,24 +89,10 @@ class AdministrasiUserController extends Controller
 
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create(Request $request){
 
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function store(Request $request)
     {
-        $this->authorize(['create','update'], AdministrasiUserModel::class);
+        $this->authorize('create', AdministrasiUserModel::class);
 
         $saveBtn = $request->get('saveBtn');
         if ($saveBtn == "tambah"){
@@ -121,12 +108,10 @@ class AdministrasiUserController extends Controller
             $password = Hash::make($request->get('password'));
 
             if ($request->file('gambaruser')){
-                $file = $request->file('gambaruser');
-                $filename = $email.".".$file->getClientOriginalExtension();
-                $file->move(public_path('assets/gambaruser/'),$filename);
-                $gambaruser = $filename;
+                $gambaruser = $request->file('gambaruser')->store(
+                    'gambaruser','public');
             }
-
+            $this->authorize('create', AdministrasiUserModel::class);
             AdministrasiUserModel::create([
                 'name' => $name,
                 'email' => $email,
@@ -134,19 +119,26 @@ class AdministrasiUserController extends Controller
                 'gambaruser' => $gambaruser
             ]);
             return response()->json(['status'=>'berhasil']);
-        }else{
+        }
+
+    }
+
+    public function update(Request $request, $id){
+        $this->authorize('update',AdministrasiUserModel::class);
+        $saveBtn = $request->get('saveBtn');
+        if ($saveBtn == 'edit'){
             $name = $request->get('name');
             $email = $request->get('email');
             $password = $request->get('password');
-            $id = $request->get('id');
             $gambarlama = $request->get('gambarlama');
 
             if ($request->file('gambaruser') != ""){
-                File::delete(public_path('assets/gambaruser')."/".$gambarlama);
-                $file = $request->file('gambaruser');
-                $filename = $email.".".$file->getClientOriginalExtension();
-                $file->move(public_path('assets/gambaruser/'),$filename);
-                $gambaruser = $filename;
+                if (file_exists(storage_path('app/public/').$gambarlama)){
+                    Storage::delete('public/'.$gambarlama);
+                }
+                $gambaruser = $request->file('gambaruser')->store(
+                    'gambaruser','public'
+                );
             }else{
                 $gambaruser = $gambarlama;
             }
@@ -181,41 +173,13 @@ class AdministrasiUserController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
-        $this->authorize('view', AdministrasiUserModel::class);
+        $this->authorize('update', AdministrasiUserModel::class);
         $menu = AdministrasiUserModel::find($id);
         return response()->json($menu);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-
-    }
 
     /**
      * Remove the specified resource from storage.
@@ -226,10 +190,16 @@ class AdministrasiUserController extends Controller
     public function destroy($id)
     {
         $this->authorize('delete', AdministrasiUserModel::class);
-        
-        $gambaruser = AdministrasiUserModel::find($id)->value('gambaruser');
-        File::get(public_path('gambaruser/'.$gambaruser));
-        AdministrasiUserModel::find($id)->delete();
-        return response()->json(['status'=>'berhasil']);
+
+        $gambaruser = DB::table('users')->where('id','=',$id)->value('gambaruser');
+        if ($gambaruser){
+            $file = File::get(asset('gambaruser/'.$gambaruser));
+            $file = json_decode($file);
+            //unlink($file);
+        }
+        //AdministrasiUserModel::find($id)->delete();
+        return response()->json(['status'=>'berhasil',
+                                'lokasifile' => $file]);
+
     }
 }

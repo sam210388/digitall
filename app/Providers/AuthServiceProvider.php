@@ -22,7 +22,8 @@ class AuthServiceProvider extends ServiceProvider
         'App\Models\Administrasi\SubMenuModel' => 'App\Policies\Administrasi\SubMenuPolicy',
         'App\Models\ReferensiUnit\DeputiModel' => 'App\Policies\ReferensiUnit\DeputiPolicy',
         'App\Models\ReferensiUnit\BiroModel' => 'App\Policies\ReferensiUnit\BiroPolicy',
-        'App\Models\ReferensiUnit\BagianModel' => 'App\Policies\ReferensiUnit\BagianPolicy'
+        'App\Models\ReferensiUnit\BagianModel' => 'App\Policies\ReferensiUnit\BagianPolicy',
+        'App\Models\PIPK\TemuanModel' => 'App\Policies\PIPK\TemuanPolicy'
     ];
 
     /**

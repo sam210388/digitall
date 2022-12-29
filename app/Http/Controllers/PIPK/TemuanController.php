@@ -14,14 +14,26 @@ class TemuanController extends Controller
 {
     public function index(Request $request)
     {
+
+        $this->authorize('view',TemuanModel::class);
+
         $judul = 'List temuan';
         $datadeputi = DeputiModel::all();
         $datatahunanggaran = DB::table('tahunanggaran')->get();
 
-
         if ($request->ajax()) {
-            $data = TemuanModel::latest()->get();
+            $iduser = auth()->id();
+            $kewenangan = DB::table('role_users')->where('iduser','=',$iduser)->pluck('idrole')->toArray();
 
+            if (in_array(1,$kewenangan) || in_array(3,$kewenangan)){
+                $data = TemuanModel::latest()->get();
+            }else if ($kewenangan == 7){
+                $idbagian = DB::table('user_bagian')->where('iduser','=',$iduser)->value('idbagian');
+                $data = DB::table('temuan')->where('idbagian','=',$idbagian)->get();
+            }else if ($kewenangan == 6){
+                $idbiro = DB::table('user_biro')->where('iduser','=',$iduser)->value('idbiro');
+                $data = DB::table('temuan')->where('idbiro','=',$idbiro)->get();
+            }
 
             return Datatables::of($data)
                 ->addIndexColumn()
@@ -94,8 +106,6 @@ class TemuanController extends Controller
     public function store(Request $request)
     {
         $userid = auth()->id();
-        $lastinsertid = DB::getPdo()->lastInsertId();
-        $nextid = $lastinsertid+1;
         $saveBtn = $request->get('saveBtn');
         if ($saveBtn == "tambah"){
             $status = 1;
@@ -105,10 +115,7 @@ class TemuanController extends Controller
 
 
         if ($request->file('bukti') != ""){
-            $file = $request->file('bukti');
-            $filename = $nextid.".".$file->getClientOriginalExtension();
-            $file->move(public_path('assets/bukti/'),$filename);
-            $bukti = $filename;
+            $bukti = $request->file('bukti')->store('bukti','public');
         }else{
             $bukti = $request->get('buktiawal');
         }

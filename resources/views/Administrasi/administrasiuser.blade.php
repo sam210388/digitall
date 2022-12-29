@@ -201,7 +201,7 @@
             --------------------------------------------*/
             $('#tambahuser').click(function () {
                 $('#saveBtn').val("tambah");
-                document.getElementById('gambarusernow').src ="public/assets/gambaruser/default.png";
+                document.getElementById('gambarusernow').src ="{{asset('storage/gambaruser/default.png')}}";
                 $('#id').val('');
                 $('#formuser').trigger("reset");
                 $('#modelHeading').html("Tambah User");
@@ -223,7 +223,7 @@
                     $('#gambarlama').val(data.gambaruser);
                     $('#name').val(data.name);
                     $('#email').val(data.email);
-                    document.getElementById('gambarusernow').src ="public/assets/gambaruser/"+data.gambaruser;
+                    document.getElementById('gambarusernow').src ="{{asset('storage')}}"+"/"+data.gambaruser;
                 })
             });
 
@@ -242,12 +242,15 @@
                 var id = document.getElementById('id').value;
                 fd.append('gambaruser',gambaruser[0])
                 fd.append('saveBtn',saveBtn)
+                if(saveBtn == "edit"){
+                    fd.append('_method','PUT')
+                }
                 for (var pair of fd.entries()) {
                     console.log(pair[0]+ ', ' + pair[1]);
                 }
                 $.ajax({
                     data: fd,
-                    url: "{{route('kelolauser.store')}}",
+                    url: saveBtn === "tambah" ? "{{route('kelolauser.store')}}":"{{route('kelolauser.update','')}}"+'/'+id,
                     type: "POST",
                     dataType: 'json',
                     enctype: 'multipart/form-data',
@@ -283,7 +286,10 @@
                             icon: 'error'
                         })
                         $('#saveBtn').html('Simpan Data');
-                    }
+                    },
+
+
+
                 });
             });
 
@@ -298,12 +304,12 @@
                 if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
                     $.ajax({
                         type: "DELETE",
-                        url: "{{ route('kelolauser.store') }}"+'/'+iduser,
+                        url: "{{ route('kelolauser.destroy','') }}"+"/"+iduser,
                         success: function (data) {
                             if (data.status == "berhasil"){
                                 Swal.fire({
                                     title: 'Sukses',
-                                    text: 'Data Berhasil Dihapus',
+                                    text: 'Data Berhasil Dihapus '+ data.lokasifile,
                                     icon: 'success'
                                 })
                             }else{
@@ -315,9 +321,6 @@
                             }
                             table.draw();
                         },
-                        error: function (data) {
-                            console.log('Error:', data);
-                        }
                     });
                 };
             });
