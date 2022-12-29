@@ -61,7 +61,7 @@
                                             <div class="form-group">
                                                 <label for="Menu" class="col-sm-6 control-label">Menu</label>
                                                 <select class="form-control idmenu" name="idmenu" id="idmenu" style="width: 100%;">
-                                                    <option>Pilih Menu</option>
+                                                    <option value="">Pilih Menu</option>
                                                     @foreach($datamenu as $data)
                                                         <option value="{{ $data->id }}">{{ $data->uraianmenu }}</option>
                                                     @endforeach
@@ -70,7 +70,7 @@
                                             <div class="form-group">
                                                 <label for="Menu" class="col-sm-6 control-label">Kewenangan</label>
                                                 <select class="form-control idkewenangan" name="idkewenangan" id="idkewenangan" style="width: 100%;">
-                                                    <option>Pilih Kewenangan</option>
+                                                    <option value="">Pilih Kewenangan</option>
                                                     @foreach($datakewenangan as $data)
                                                         <option value="{{ $data->id }}">{{ $data->kewenangan }}</option>
                                                     @endforeach
@@ -132,8 +132,8 @@
                 ajax:"{{route('kewenanganmenu.index')}}",
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                    {data: 'idmenu', name: 'idmenu'},
                     {data: 'idkewenangan', name: 'idkewenangan'},
+                    {data: 'idmenu', name: 'idmenu'},
                     {
                         data: 'action',
                         name: 'action',
@@ -158,7 +158,7 @@
             --------------------------------------------
             --------------------------------------------*/
             $('#tambahkewenanganmenu').click(function () {
-                $('#saveBtn').val("tambahskewenanganmenu");
+                $('#saveBtn').val("tambah");
                 $('#id').val('');
                 $('#formkewenanganmenu').trigger("reset");
                 $('#modelHeading').html("Tambah Kewenangan Menu");
@@ -173,8 +173,8 @@
             $('body').on('click', '.editkewenanganmenu', function () {
                 var id = $(this).data('id');
                 $.get("{{ route('kewenanganmenu.index') }}" +'/' + id +'/edit', function (data) {
-                    $('#modelHeading').html("Edit Sub Menu");
-                    $('#saveBtn').val("editsubmenu");
+                    $('#modelHeading').html("Edit Kewenangan Menu");
+                    $('#saveBtn').val("edit");
                     $('#ajaxModel').modal('show');
                     $('#id').val(data.id);
                     $('#idmenu').val(data.idmenu).trigger('change');
@@ -190,12 +190,25 @@
             $('#saveBtn').click(function (e) {
                 e.preventDefault();
                 $(this).html('Sending..');
+                let form = document.getElementById('formkewenanganmenu');
+                let fd = new FormData(form);
+                let saveBtn = document.getElementById('saveBtn').value;
+                var id = document.getElementById('id').value;
+                fd.append('saveBtn',saveBtn)
+                if(saveBtn == "edit"){
+                    fd.append('_method','PUT')
+                }
+                for (var pair of fd.entries()) {
+                    console.log(pair[0]+ ', ' + pair[1]);
+                }
 
                 $.ajax({
-                    data: $('#formkewenanganmenu').serialize(),
-                    url: "{{ route('kewenanganmenu.store') }}",
+                    data: fd,
+                    url: saveBtn === "tambah" ? "{{route('kewenanganmenu.store')}}":"{{route('kewenanganmenu.update','')}}"+'/'+id,
                     type: "POST",
                     dataType: 'json',
+                    contentType: false,
+                    processData: false,
                     success: function (data) {
                         if (data.status == "berhasil"){
                             Swal.fire({
@@ -215,10 +228,18 @@
                         $('#saveBtn').html('Simpan Data');
                         table.draw();
                     },
-                    error: function (data) {
-                        console.log('Error:', data);
+                    error: function (xhr) {
+                        var errorsArr = [];
+                        $.each(xhr.responseJSON.errors, function(key,value) {
+                            errorsArr.push(value);
+                        });
+                        Swal.fire({
+                            title: 'Error!',
+                            text: errorsArr,
+                            icon: 'error'
+                        })
                         $('#saveBtn').html('Simpan Data');
-                    }
+                    },
                 });
             });
 
@@ -233,7 +254,7 @@
                 if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
                     $.ajax({
                         type: "DELETE",
-                        url: "{{ route('kewenanganmenu.store') }}"+'/'+id,
+                        url: "{{ route('kewenanganmenu.destroy','') }}"+'/'+id,
                         success: function (data) {
                             if (data.status == "berhasil"){
                                 Swal.fire({
@@ -250,9 +271,18 @@
                             }
                             table.draw();
                         },
-                        error: function (data) {
-                            console.log('Error:', data);
-                        }
+                        error: function (xhr) {
+                            var errorsArr = [];
+                            $.each(xhr.responseJSON.errors, function(key,value) {
+                                errorsArr.push(value);
+                            });
+                            Swal.fire({
+                                title: 'Error!',
+                                text: errorsArr,
+                                icon: 'error'
+                            })
+                            $('#saveBtn').html('Simpan Data');
+                        },
                     });
                 };
             });

@@ -66,14 +66,16 @@ class KewenanganController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize(['create','update'],KewenanganModel::class);
-        KewenanganModel::updateOrCreate(
-            ['id' => $request->get('idkewenangan')],
+        $this->authorize('create',KewenanganModel::class);
+        $validated = $request->validate([
+            'kewenangan' => 'required|max:100',
+            'deskripsi' => 'required|max:200',
+        ]);
+        KewenanganModel::create(
             [
                 'kewenangan' => $request->get('kewenangan'),
                 'deskripsi' => $request->get('deskripsi')
             ]);
-
         return response()->json(['status'=>'berhasil']);
     }
 
@@ -110,7 +112,17 @@ class KewenanganController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->authorize('update',KewenanganModel::class);
+        $validated = $request->validate([
+            'kewenangan' => 'required|max:100',
+            'deskripsi' => 'required|max:200',
+        ]);
+        KewenanganModel::where('id',$id)->update(
+            [
+                'kewenangan' => $request->get('kewenangan'),
+                'deskripsi' => $request->get('deskripsi')
+            ]);
+        return response()->json(['status'=>'berhasil']);
     }
 
     /**

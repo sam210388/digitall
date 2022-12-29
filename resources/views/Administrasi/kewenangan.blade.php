@@ -57,7 +57,7 @@
                                     </div>
                                     <div class="modal-body">
                                         <form id="formKewenangan" name="formKewenangan" class="form-horizontal">
-                                            <input type="hidden" name="idkewenangan" id="idkewenangan">
+                                            <input type="hidden" name="id" id="id">
                                             <div class="form-group">
                                                 <label for="kewenangan" class="col-sm-6 control-label">Kewenangan</label>
                                                 <div class="col-sm-12">
@@ -138,8 +138,8 @@
             --------------------------------------------
             --------------------------------------------*/
             $('#tambahkewenangan').click(function () {
-                $('#saveBtn').val("tambahkewenangan");
-                $('#idkewenangan').val('');
+                $('#saveBtn').val("tambah");
+                $('#id').val('');
                 $('#formKewenangan').trigger("reset");
                 $('#modelHeading').html("Tambah Kewenangan");
                 $('#ajaxModel').modal('show');
@@ -154,9 +154,9 @@
                 var idkewenangan = $(this).data('id');
                 $.get("{{ route('kewenangan.index') }}" +'/' + idkewenangan +'/edit', function (data) {
                     $('#modelHeading').html("Edit Kewenangan");
-                    $('#saveBtn').val("editkewenangan");
+                    $('#saveBtn').val("edit");
                     $('#ajaxModel').modal('show');
-                    $('#idkewenangan').val(data.id);
+                    $('#id').val(data.id);
                     $('#kewenangan').val(data.kewenangan);
                     $('#deskripsi').val(data.deskripsi);
                 })
@@ -170,12 +170,25 @@
             $('#saveBtn').click(function (e) {
                 e.preventDefault();
                 $(this).html('Sending..');
+                let form = document.getElementById('formKewenangan');
+                let fd = new FormData(form);
+                let saveBtn = document.getElementById('saveBtn').value;
+                var id = document.getElementById('id').value;
+                fd.append('saveBtn',saveBtn)
+                if(saveBtn == "edit"){
+                    fd.append('_method','PUT')
+                }
+                for (var pair of fd.entries()) {
+                    console.log(pair[0]+ ', ' + pair[1]);
+                }
 
                 $.ajax({
-                    data: $('#formKewenangan').serialize(),
-                    url: "{{ route('kewenangan.store') }}",
+                    data: fd,
+                    url: saveBtn === "tambah" ? "{{route('kewenangan.store')}}":"{{route('kewenangan.update','')}}"+'/'+id,
                     type: "POST",
                     dataType: 'json',
+                    contentType: false,
+                    processData: false,
                     success: function (data) {
                         if (data.status == "berhasil"){
                             Swal.fire({
@@ -195,10 +208,18 @@
                         $('#saveBtn').html('Simpan Data');
                         table.draw();
                     },
-                    error: function (data) {
-                        console.log('Error:', data);
+                    error: function (xhr) {
+                        var errorsArr = [];
+                        $.each(xhr.responseJSON.errors, function(key,value) {
+                            errorsArr.push(value);
+                        });
+                        Swal.fire({
+                            title: 'Error!',
+                            text: errorsArr,
+                            icon: 'error'
+                        })
                         $('#saveBtn').html('Simpan Data');
-                    }
+                    },
                 });
             });
 
@@ -213,7 +234,7 @@
                 if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
                     $.ajax({
                         type: "DELETE",
-                        url: "{{ route('kewenangan.store') }}"+'/'+idkewenangan,
+                        url: "{{ route('kewenangan.destroy','')}}"+'/'+idkewenangan,
                         success: function (data) {
                             if (data.status == "berhasil"){
                                 Swal.fire({
@@ -230,9 +251,18 @@
                             }
                             table.draw();
                         },
-                        error: function (data) {
-                            console.log('Error:', data);
-                        }
+                        error: function (xhr) {
+                            var errorsArr = [];
+                            $.each(xhr.responseJSON.errors, function(key,value) {
+                                errorsArr.push(value);
+                            });
+                            Swal.fire({
+                                title: 'Error!',
+                                text: errorsArr,
+                                icon: 'error'
+                            })
+                            $('#saveBtn').html('Simpan Data');
+                        },
                     });
                 };
             });

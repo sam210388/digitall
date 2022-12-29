@@ -156,7 +156,7 @@
             --------------------------------------------
             --------------------------------------------*/
             $('#tambahmenu').click(function () {
-                $('#saveBtn').val("tambahmenu");
+                $('#saveBtn').val("tambah");
                 $('#idmenu').val('');
                 $('#formmenu').trigger("reset");
                 $('#modelHeading').html("Tambah Menu");
@@ -172,7 +172,7 @@
                 var idmenu = $(this).data('id');
                 $.get("{{ route('menu.index') }}" +'/' + idmenu +'/edit', function (data) {
                     $('#modelHeading').html("Edit Menu");
-                    $('#saveBtn').val("editmenu");
+                    $('#saveBtn').val("edit");
                     $('#ajaxModel').modal('show');
                     $('#idmenu').val(data.id);
                     $('#uraianmenu').val(data.uraianmenu);
@@ -194,12 +194,25 @@
             $('#saveBtn').click(function (e) {
                 e.preventDefault();
                 $(this).html('Sending..');
+                let form = document.getElementById('formmenu');
+                let fd = new FormData(form);
+                let saveBtn = document.getElementById('saveBtn').value;
+                var id = document.getElementById('idmenu').value;
+                fd.append('saveBtn',saveBtn)
+                if(saveBtn == "edit"){
+                    fd.append('_method','PUT')
+                }
+                for (var pair of fd.entries()) {
+                    console.log(pair[0]+ ', ' + pair[1]);
+                }
 
                 $.ajax({
-                    data: $('#formmenu').serialize(),
-                    url: "{{ route('menu.store') }}",
+                    data: fd,
+                    url: saveBtn === "tambah" ? "{{route('menu.store')}}":"{{route('menu.update','')}}"+'/'+id,
                     type: "POST",
                     dataType: 'json',
+                    contentType: false,
+                    processData: false,
                     success: function (data) {
                         if (data.status == "berhasil"){
                             Swal.fire({
@@ -219,10 +232,18 @@
                         $('#saveBtn').html('Simpan Data');
                         table.draw();
                     },
-                    error: function (data) {
-                        console.log('Error:', data);
+                    error: function (xhr) {
+                        var errorsArr = [];
+                        $.each(xhr.responseJSON.errors, function(key,value) {
+                            errorsArr.push(value);
+                        });
+                        Swal.fire({
+                            title: 'Error!',
+                            text: errorsArr,
+                            icon: 'error'
+                        })
                         $('#saveBtn').html('Simpan Data');
-                    }
+                    },
                 });
             });
 
@@ -237,7 +258,7 @@
                 if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
                     $.ajax({
                         type: "DELETE",
-                        url: "{{ route('menu.store') }}"+'/'+idmenu,
+                        url: "{{ route('menu.destroy','') }}"+'/'+idmenu,
                         success: function (data) {
                             if (data.status == "berhasil"){
                                 Swal.fire({
@@ -254,9 +275,18 @@
                             }
                             table.draw();
                         },
-                        error: function (data) {
-                            console.log('Error:', data);
-                        }
+                        error: function (xhr) {
+                            var errorsArr = [];
+                            $.each(xhr.responseJSON.errors, function(key,value) {
+                                errorsArr.push(value);
+                            });
+                            Swal.fire({
+                                title: 'Error!',
+                                text: errorsArr,
+                                icon: 'error'
+                            })
+                            $('#saveBtn').html('Simpan Data');
+                        },
                     });
                 };
             });

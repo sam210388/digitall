@@ -175,7 +175,7 @@
             --------------------------------------------
             --------------------------------------------*/
             $('#tambahsubmenu').click(function () {
-                $('#saveBtn').val("tambahsubmenu");
+                $('#saveBtn').val("tambah");
                 $('#idsubmenu').val('');
                 $('#formsubmenu').trigger("reset");
                 $('#modelHeading').html("Tambah Sub Menu");
@@ -191,7 +191,7 @@
                 var idsubmenu = $(this).data('id');
                 $.get("{{ route('submenu.index') }}" +'/' + idsubmenu +'/edit', function (data) {
                     $('#modelHeading').html("Edit Sub Menu");
-                    $('#saveBtn').val("editsubmenu");
+                    $('#saveBtn').val("edit");
                     $('#ajaxModel').modal('show');
                     $('#idsubmenu').val(data.id);
                     $('#idmenu').val(data.idmenu).trigger('change');
@@ -215,12 +215,25 @@
             $('#saveBtn').click(function (e) {
                 e.preventDefault();
                 $(this).html('Sending..');
+                let form = document.getElementById('formsubmenu');
+                let fd = new FormData(form);
+                let saveBtn = document.getElementById('saveBtn').value;
+                var id = document.getElementById('idsubmenu').value;
+                fd.append('saveBtn',saveBtn)
+                if(saveBtn == "edit"){
+                    fd.append('_method','PUT')
+                }
+                for (var pair of fd.entries()) {
+                    console.log(pair[0]+ ', ' + pair[1]);
+                }
 
                 $.ajax({
-                    data: $('#formsubmenu').serialize(),
-                    url: "{{ route('submenu.store') }}",
+                    data: fd,
+                    url: saveBtn === "tambah" ? "{{route('submenu.store')}}":"{{route('submenu.update','')}}"+'/'+id,
                     type: "POST",
                     dataType: 'json',
+                    contentType: false,
+                    processData: false,
                     success: function (data) {
                         if (data.status == "berhasil"){
                             Swal.fire({
@@ -240,10 +253,18 @@
                         $('#saveBtn').html('Simpan Data');
                         table.draw();
                     },
-                    error: function (data) {
-                        console.log('Error:', data);
+                    error: function (xhr) {
+                        var errorsArr = [];
+                        $.each(xhr.responseJSON.errors, function(key,value) {
+                            errorsArr.push(value);
+                        });
+                        Swal.fire({
+                            title: 'Error!',
+                            text: errorsArr,
+                            icon: 'error'
+                        })
                         $('#saveBtn').html('Simpan Data');
-                    }
+                    },
                 });
             });
 
@@ -258,7 +279,7 @@
                 if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
                     $.ajax({
                         type: "DELETE",
-                        url: "{{ route('submenu.store') }}"+'/'+idsubmenu,
+                        url: "{{ route('submenu.destroy','') }}"+'/'+idsubmenu,
                         success: function (data) {
                             if (data.status == "berhasil"){
                                 Swal.fire({
@@ -275,9 +296,18 @@
                             }
                             table.draw();
                         },
-                        error: function (data) {
-                            console.log('Error:', data);
-                        }
+                        error: function (xhr) {
+                            var errorsArr = [];
+                            $.each(xhr.responseJSON.errors, function(key,value) {
+                                errorsArr.push(value);
+                            });
+                            Swal.fire({
+                                title: 'Error!',
+                                text: errorsArr,
+                                icon: 'error'
+                            })
+                            $('#saveBtn').html('Simpan Data');
+                        },
                     });
                 };
             });

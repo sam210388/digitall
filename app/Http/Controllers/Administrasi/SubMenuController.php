@@ -68,14 +68,19 @@ class SubMenuController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize(['create','update'],SubMenuModel::class);
+        $this->authorize('create',SubMenuModel::class);
         if ($request->get('status') == null){
             $active = "off";
         }else{
             $active = "on";
         }
-        SubMenuModel::updateOrCreate(
-            ['id' => $request->get('idsubmenu')],
+        $validated = $request->validate([
+            'idmenu' => 'required',
+            'uraiansubmenu' => 'required|max:200',
+            'url_submenu' => 'required|max:200',
+            'icon_submenu' => 'required|max:200'
+        ]);
+        SubMenuModel::create(
             [
                 'idmenu' => $request->get('idmenu'),
                 'uraiansubmenu' => $request->get('uraiansubmenu'),
@@ -120,7 +125,28 @@ class SubMenuController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->authorize('update',SubMenuModel::class);
+        if ($request->get('status') == null){
+            $active = "off";
+        }else{
+            $active = "on";
+        }
+        $validated = $request->validate([
+            'idmenu' => 'required',
+            'uraiansubmenu' => 'required|max:200',
+            'url_submenu' => 'required|max:200',
+            'icon_submenu' => 'required|max:200'
+        ]);
+        SubMenuModel::where('id',$id)->update(
+            [
+                'idmenu' => $request->get('idmenu'),
+                'uraiansubmenu' => $request->get('uraiansubmenu'),
+                'url_submenu' => $request->get('url_submenu'),
+                'icon_submenu' => $request->get('icon_submenu'),
+                'status' => $active
+            ]);
+
+        return response()->json(['status'=>'berhasil']);
     }
 
     /**

@@ -18,7 +18,7 @@ class SubMenuPolicy
      * @param  \App\Models\SubmenuModel  $submenuModel
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, SubmenuModel $submenuModel)
+    public function view(User $user)
     {
         return DB::table('role_users')
                 ->where('iduser','=',$user->id)
@@ -47,7 +47,7 @@ class SubMenuPolicy
      * @param  \App\Models\SubmenuModel  $submenuModel
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, SubmenuModel $submenuModel)
+    public function update(User $user)
     {
         return DB::table('role_users')
                 ->where('iduser','=',$user->id)
@@ -62,7 +62,7 @@ class SubMenuPolicy
      * @param  \App\Models\SubmenuModel  $submenuModel
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, SubmenuModel $submenuModel)
+    public function delete(User $user)
     {
         return DB::table('role_users')
                 ->where('iduser','=',$user->id)

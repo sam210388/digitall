@@ -61,7 +61,7 @@
                                             <div class="form-group">
                                                 <label for="Menu" class="col-sm-6 control-label">User</label>
                                                 <select class="form-control iduser" name="iduser" id="iduser" style="width: 100%;">
-                                                    <option>Pilih User</option>
+                                                    <option value="">Pilih User</option>
                                                     @foreach($datauser as $data)
                                                         <option value="{{ $data->id }}">{{ $data->name }}</option>
                                                     @endforeach
@@ -70,7 +70,7 @@
                                             <div class="form-group">
                                                 <label for="Menu" class="col-sm-6 control-label">Kewenangan</label>
                                                 <select class="form-control idrole" name="idrole" id="idrole" style="width: 100%;">
-                                                    <option>Pilih Kewenangan</option>
+                                                    <option value="">Pilih Kewenangan</option>
                                                     @foreach($datakewenangan as $data)
                                                         <option value="{{ $data->id }}">{{ $data->kewenangan }}</option>
                                                     @endforeach
@@ -190,12 +190,25 @@
             $('#saveBtn').click(function (e) {
                 e.preventDefault();
                 $(this).html('Sending..');
+                let form = document.getElementById('formkewenanganuser');
+                let fd = new FormData(form);
+                let saveBtn = document.getElementById('saveBtn').value;
+                var id = document.getElementById('id').value;
+                fd.append('saveBtn',saveBtn)
+                if(saveBtn == "edit"){
+                    fd.append('_method','PUT')
+                }
+                for (var pair of fd.entries()) {
+                    console.log(pair[0]+ ', ' + pair[1]);
+                }
 
                 $.ajax({
-                    data: $('#formkewenanganuser').serialize(),
-                    url: "{{ route('kewenanganuser.store') }}",
+                    data: fd,
+                    url: saveBtn === "tambah" ? "{{route('kewenanganuser.store')}}":"{{route('kewenanganuser.update','')}}"+'/'+id,
                     type: "POST",
                     dataType: 'json',
+                    contentType: false,
+                    processData: false,
                     success: function (data) {
                         if (data.status == "berhasil"){
                             Swal.fire({
@@ -215,10 +228,18 @@
                         $('#saveBtn').html('Simpan Data');
                         table.draw();
                     },
-                    error: function (data) {
-                        console.log('Error:', data);
+                    error: function (xhr) {
+                        var errorsArr = [];
+                        $.each(xhr.responseJSON.errors, function(key,value) {
+                            errorsArr.push(value);
+                        });
+                        Swal.fire({
+                            title: 'Error!',
+                            text: errorsArr,
+                            icon: 'error'
+                        })
                         $('#saveBtn').html('Simpan Data');
-                    }
+                    },
                 });
             });
 
@@ -233,7 +254,7 @@
                 if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
                     $.ajax({
                         type: "DELETE",
-                        url: "{{ route('kewenanganuser.store') }}"+'/'+id,
+                        url: "{{ route('kewenanganuser.destroy','') }}"+'/'+id,
                         success: function (data) {
                             if (data.status == "berhasil"){
                                 Swal.fire({
@@ -250,9 +271,18 @@
                             }
                             table.draw();
                         },
-                        error: function (data) {
-                            console.log('Error:', data);
-                        }
+                        error: function (xhr) {
+                            var errorsArr = [];
+                            $.each(xhr.responseJSON.errors, function(key,value) {
+                                errorsArr.push(value);
+                            });
+                            Swal.fire({
+                                title: 'Error!',
+                                text: errorsArr,
+                                icon: 'error'
+                            })
+                            $('#saveBtn').html('Simpan Data');
+                        },
                     });
                 };
             });

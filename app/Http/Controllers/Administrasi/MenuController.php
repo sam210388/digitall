@@ -70,36 +70,20 @@ class MenuController extends Controller
         $this->authorize('view',MenuModel::class);
         $judul = 'Data Menu';
         if ($request->ajax()) {
-
             $data = MenuModel::latest()->get();
-
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
-
                     $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editmenu">Edit</a>';
-
                     $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deletemenu">Delete</a>';
-
                     return $btn;
                 })
                 ->rawColumns(['action'])
                 ->make(true);
         }
-
         return view('Administrasi.menu',[
             "judul"=>$judul
         ]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        $this->authorize('create',MenuModel::class);
     }
 
     /**
@@ -110,14 +94,18 @@ class MenuController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize(['create','update'],MenuModel::class);
+        $this->authorize('create',MenuModel::class);
         if ($request->get('active') == null){
             $active = "off";
         }else{
             $active = "on";
         }
-        MenuModel::updateOrCreate(
-            ['id' => $request->get('idmenu')],
+        $validated = $request->validate([
+            'uraianmenu' => 'required|max:100',
+            'url_menu' => 'required|max:200',
+            'icon_menu' => 'required|max:200'
+        ]);
+        MenuModel::create(
             [
                 'uraianmenu' => $request->get('uraianmenu'),
                 'url_menu' => $request->get('url_menu'),
@@ -161,7 +149,25 @@ class MenuController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->authorize('update',MenuModel::class);
+        if ($request->get('active') == null){
+            $active = "off";
+        }else{
+            $active = "on";
+        }
+        $validated = $request->validate([
+            'uraianmenu' => 'required|max:100',
+            'url_menu' => 'required|max:200',
+            'icon_menu' => 'required|max:200'
+        ]);
+        MenuModel::where('id',$id)->update(
+            [
+                'uraianmenu' => $request->get('uraianmenu'),
+                'url_menu' => $request->get('url_menu'),
+                'icon_menu' => $request->get('icon_menu'),
+                'active' => $active
+            ]);
+        return response()->json(['status'=>'berhasil']);
     }
 
     /**
@@ -173,7 +179,7 @@ class MenuController extends Controller
     public function destroy($id)
     {
         $this->authorize('delete',MenuModel::class);
-        //cek apakah ada kewenangan sudah dipakai
+        //cek apakah ada menu sudah dipakai
         $adadata = DB::table('submenu')->where('idmenu','=',$id)->count();
         if ($adadata == 0){
             MenuModel::find($id)->delete();
