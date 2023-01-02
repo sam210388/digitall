@@ -173,7 +173,7 @@
             --------------------------------------------
             --------------------------------------------*/
             $('#tambahbagian').click(function () {
-                $('#saveBtn').val("tambahbagian");
+                $('#saveBtn').val("tambah");
                 $('#idbagian').val('');
                 $('#formbagian').trigger("reset");
                 $('#modelHeading').html("Tambah bagian");
@@ -189,7 +189,7 @@
                 var idbagian = $(this).data('id');
                 $.get("{{ route('bagian.index') }}" +'/' + idbagian +'/edit', function (data) {
                     $('#modelHeading').html("Edit Bagian");
-                    $('#saveBtn').val("editbagian");
+                    $('#saveBtn').val("edit");
                     $('#ajaxModel').modal('show');
                     $('#idbagian').val(data.id);
                     $('#iddeputi').val(data.iddeputi).trigger('change');
@@ -212,13 +212,26 @@
             $('#saveBtn').click(function (e) {
                 e.preventDefault();
                 $(this).html('Sending..');
+                let form = document.getElementById('formbagian');
+                let fd = new FormData(form);
+                let saveBtn = document.getElementById('saveBtn').value;
+                var id = document.getElementById('idbagian').value;
+                fd.append('saveBtn',saveBtn)
+                if(saveBtn == "edit"){
+                    fd.append('_method','PUT')
+                }
+                for (var pair of fd.entries()) {
+                    console.log(pair[0]+ ', ' + pair[1]);
+                }
 
                 $.ajax({
 
-                    data: $('#formbagian').serialize(),
-                    url: "{{ route('bagian.store') }}",
+                    data: fd,
+                    url: saveBtn === "tambah" ? "{{route('bagian.store')}}":"{{route('bagian.update','')}}"+'/'+id,
                     type: "POST",
                     dataType: 'json',
+                    contentType: false,
+                    processData: false,
                     success: function (data) {
                         if (data.status == "berhasil"){
                             Swal.fire({
@@ -240,10 +253,18 @@
                         $('#saveBtn').html('Simpan Data');
                         table.draw();
                     },
-                    error: function (data) {
-                        console.log('Error:', data);
+                    error: function (xhr) {
+                        var errorsArr = [];
+                        $.each(xhr.responseJSON.errors, function(key,value) {
+                            errorsArr.push(value);
+                        });
+                        Swal.fire({
+                            title: 'Error!',
+                            text: errorsArr,
+                            icon: 'error'
+                        })
                         $('#saveBtn').html('Simpan Data');
-                    }
+                    },
                 });
             });
 
@@ -258,7 +279,7 @@
                 if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
                     $.ajax({
                         type: "DELETE",
-                        url: "{{ route('bagian.store') }}"+'/'+idbagian,
+                        url: "{{ route('bagian.destroy','') }}"+'/'+idbagian,
                         success: function (data) {
                             if (data.status == "berhasil"){
                                 Swal.fire({
@@ -275,9 +296,18 @@
                             }
                             table.draw();
                         },
-                        error: function (data) {
-                            console.log('Error:', data);
-                        }
+                        error: function (xhr) {
+                            var errorsArr = [];
+                            $.each(xhr.responseJSON.errors, function(key,value) {
+                                errorsArr.push(value);
+                            });
+                            Swal.fire({
+                                title: 'Error!',
+                                text: errorsArr,
+                                icon: 'error'
+                            })
+                            $('#saveBtn').html('Simpan Data');
+                        },
                     });
                 };
             });

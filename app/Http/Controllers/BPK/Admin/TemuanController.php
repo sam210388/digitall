@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\PIPK;
+namespace App\Http\Controllers\BPK\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use Yajra\DataTables\DataTables;
 use App\Models\ReferensiUnit\DeputiModel;
-use App\Models\PIPK\TemuanModel;
+use App\Models\BPK\Admin\TemuanModel;
 
 class TemuanController extends Controller
 {
@@ -22,33 +21,28 @@ class TemuanController extends Controller
         $datatahunanggaran = DB::table('tahunanggaran')->get();
 
         if ($request->ajax()) {
-            $iduser = auth()->id();
-            $kewenangan = DB::table('role_users')->where('iduser','=',$iduser)->pluck('idrole')->toArray();
-
-            if (in_array(1,$kewenangan) || in_array(3,$kewenangan)){
-                $data = TemuanModel::latest()->get();
-            }else if ($kewenangan == 7){
-                $idbagian = DB::table('user_bagian')->where('iduser','=',$iduser)->value('idbagian');
-                $data = DB::table('temuan')->where('idbagian','=',$idbagian)->get();
-            }else if ($kewenangan == 6){
-                $idbiro = DB::table('user_biro')->where('iduser','=',$iduser)->value('idbiro');
-                $data = DB::table('temuan')->where('idbiro','=',$idbiro)->get();
-            }
+            $data = TemuanModel::all();
 
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
-                    $userid = auth()->id();
-                    $userrole = DB::table('role_users')->where('iduser','=',$userid)->value('idrole');
-
-                    $btn = '<div class="btn-group" role="group">
+                    if ($row->status == 1){
+                        $btn = '<div class="btn-group" role="group">
                             <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm edittemuan">Edit</a>';
-                    $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deletetemuan">Delete</a>';
+                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deletetemuan">Delete</a>';
+                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Kirim" class="btn btn-success btn-sm kirimkeunit">Kirim</a>';
 
-                    if ($row->status == 1 && $userrole == 3){
-                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Kirim" class="btn btn-primary btn-sm kirimkeunit">Kirim Ke Unit</a></div>';
-                    };
-
+                    }else if ($row->status == 4){
+                        $btn = '<div class="btn-group" role="group">
+                        <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Kirim" class="btn btn-success btn-sm kirimkebpk">Kirim BPK</a>';
+                    }else if ($row->status == 5){
+                        $btn = '<div class="btn-group" role="group">
+                        <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Kirim" class="btn btn-success btn-sm selesai">Selesai</a>';
+                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Kirim" class="btn btn-success btn-sm tidakselesai">Tidak Ditindaklanjuti</a>';
+                    }else{
+                        $btn = '<div class="btn-group" role="group">
+                        <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Kirim" class="btn btn-success btn-sm ingatkanunit">Ingatkan Unit</a>';
+                    }
                     return $btn;
                 })
                 ->addColumn('iddeputi',function ($row){
@@ -80,7 +74,7 @@ class TemuanController extends Controller
                 ->make(true);
         }
 
-        return view('PIPK.temuan',[
+        return view('BPK.Admin.temuan',[
             "judul"=>$judul,
             "datadeputi" => $datadeputi,
             "datatahunanggaran" => $datatahunanggaran
@@ -105,6 +99,8 @@ class TemuanController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create',TemuanModel::class);
+
         $userid = auth()->id();
         $saveBtn = $request->get('saveBtn');
         if ($saveBtn == "tambah"){
@@ -120,10 +116,22 @@ class TemuanController extends Controller
             $bukti = $request->get('buktiawal');
         }
 
+        $validated = $request->validate([
+            'tahunanggaran' => 'required',
+            'iddeputi' => 'required',
+            'idbiro' => 'required',
+            'idbagian' => 'required',
+            'kondisi' => 'required',
+            'kriteria' => 'required',
+            'sebab' => 'required',
+            'akibat' => 'required',
+            'nilai' => 'required',
+            'rekomendasi' => 'required',
+            'bukti' => 'required',
 
+        ]);
 
-        temuanModel::updateOrCreate(
-            ['id' => $request->get('idtemuan')],
+        TemuanModel::create(
             [
                 'tahunanggaran' => $request->get('tahunanggaran'),
                 'iddeputi' => $request->get('iddeputi'),
@@ -162,7 +170,8 @@ class TemuanController extends Controller
      */
     public function edit($id)
     {
-        $menu = temuanModel::find($id);
+        $this->authorize('update',TemuanModel::class);
+        $menu = TemuanModel::find($id);
         return response()->json($menu);
     }
 
@@ -175,7 +184,55 @@ class TemuanController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->authorize('update',TemuanModel::class);
+
+        $userid = auth()->id();
+        $saveBtn = $request->get('saveBtn');
+        if ($saveBtn == "tambah"){
+            $status = 1;
+        }else{
+            $status = $request->get('statusawal');
+        }
+
+
+        if ($request->file('bukti') != ""){
+            $bukti = $request->file('bukti')->store('bukti','public');
+        }else{
+            $bukti = $request->get('buktiawal');
+        }
+
+        $validated = $request->validate([
+            'tahunanggaran' => 'required',
+            'iddeputi' => 'required',
+            'idbiro' => 'required',
+            'idbagian' => 'required',
+            'kondisi' => 'required',
+            'kriteria' => 'required',
+            'sebab' => 'required',
+            'akibat' => 'required',
+            'nilai' => 'required',
+            'rekomendasi' => 'required',
+
+        ]);
+
+        TemuanModel::where('id',$id)->update(
+            [
+                'tahunanggaran' => $request->get('tahunanggaran'),
+                'iddeputi' => $request->get('iddeputi'),
+                'idbiro' => $request->get('idbiro'),
+                'idbagian' => $request->get('idbagian'),
+                'kondisi' => $request->get('kondisi'),
+                'kriteria' => $request->get('kriteria'),
+                'sebab' => $request->get('sebab'),
+                'akibat' => $request->get('akibat'),
+                'nilai' => $request->get('nilai'),
+                'rekomendasi' => $request->get('rekomendasi'),
+                'bukti' => $bukti,
+                'status' => $status,
+                'created_by' => $userid
+            ]);
+
+        return response()->json(['status'=>'berhasil']);
     }
 
     /**
@@ -187,6 +244,7 @@ class TemuanController extends Controller
     public function destroy($id)
     {
 
+        $this->authorize('delete',TemuanModel::class);
         $status = DB::table('temuan')->where('id','=',$id)->value('status');
         if ($status == 1){
             temuanModel::find($id)->delete();
@@ -201,6 +259,17 @@ class TemuanController extends Controller
         $temuan = TemuanModel::find($id);
         if ($temuan){
             DB::table('temuan')->where('id','=',$id)->update(['status' => 2]);
+            return response()->json(['status'=>'berhasil']);
+        }else{
+            return response()->json(['status'=>'gagal']);
+        }
+
+    }
+
+    public function kirimtemuankebpk($id){
+        $temuan = TemuanModel::find($id);
+        if ($temuan){
+            DB::table('temuan')->where('id','=',$id)->update(['status' => 5]);
             return response()->json(['status'=>'berhasil']);
         }else{
             return response()->json(['status'=>'gagal']);

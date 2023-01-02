@@ -18,7 +18,7 @@ class BagianPolicy
      * @return \Illuminate\Auth\Access\Response|bool
      */
 
-    public function view(User $user, BagianModel $bagianModel)
+    public function view(User $user)
     {
         return DB::table('role_users')
                 ->where('iduser','=',$user->id)
@@ -47,7 +47,7 @@ class BagianPolicy
      * @param  \App\Models\BagianModel  $bagianModel
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, BagianModel $bagianModel)
+    public function update(User $user)
     {
         return DB::table('role_users')
                 ->where('iduser','=',$user->id)
@@ -62,7 +62,7 @@ class BagianPolicy
      * @param  \App\Models\BagianModel  $bagianModel
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, BagianModel $bagianModel)
+    public function delete(User $user)
     {
         return DB::table('role_users')
                 ->where('iduser','=',$user->id)

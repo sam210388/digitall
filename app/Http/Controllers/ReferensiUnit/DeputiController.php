@@ -21,17 +21,12 @@ class DeputiController extends Controller
 
         $judul = 'List Deputi';
         if ($request->ajax()) {
-
             $data = DeputiModel::all();
-
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
-
                     $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editdeputi">Edit</a>';
-
                     $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deletedeputi">Delete</a>';
-
                     return $btn;
                 })
                 ->rawColumns(['action'])
@@ -44,16 +39,6 @@ class DeputiController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -61,15 +46,19 @@ class DeputiController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize(['create','update'],DeputiModel::class);
+        $this->authorize('create',DeputiModel::class);
 
         if ($request->get('status') == null){
             $status = "off";
         }else{
             $status = "on";
         }
-        DeputiModel::updateOrCreate(
-            ['id' => $request->get('iddeputi')],
+
+        $validated = $request->validate([
+            'uraiandeputi' => 'required'
+        ]);
+
+        DeputiModel::create(
             [
                 'uraiandeputi' => $request->get('uraiandeputi'),
                 'status' => $status
@@ -111,7 +100,24 @@ class DeputiController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->authorize('update',DeputiModel::class);
+        if ($request->get('status') == null){
+            $status = "off";
+        }else{
+            $status = "on";
+        }
+
+        $validated = $request->validate([
+            'uraiandeputi' => 'required'
+        ]);
+
+        DeputiModel::where('id',$id)->update(
+            [
+                'uraiandeputi' => $request->get('uraiandeputi'),
+                'status' => $status
+            ]);
+
+        return response()->json(['status'=>'berhasil']);
     }
 
     /**

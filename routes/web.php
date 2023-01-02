@@ -11,7 +11,10 @@ use App\Http\Controllers\Administrasi\AdministrasiUserController;
 use App\Http\Controllers\ReferensiUnit\DeputiController;
 use App\Http\Controllers\ReferensiUnit\BiroController;
 use App\Http\Controllers\ReferensiUnit\BagianController;
-use App\Http\Controllers\PIPK\TemuanController;
+Use App\Http\Controllers\Administrasi\UserBiroBagianController;
+use App\Http\Controllers\BPK\Admin\TemuanController;
+use App\Http\Controllers\BPK\Bagian\TemuanBagianController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -48,9 +51,13 @@ Route::resource('deputi',DeputiController::class);
 Route::resource('biro',BiroController::class);
 Route::post('/ambildatabiro',[BagianController::class,'dapatkandatabiro'])->name('ambildatabiro');
 Route::post('/ambildatabagian',[BagianController::class,'dapatkandatabagian'])->name('ambildatabagian');
-Route::get('/kirimtemuankeunit/{id}',[TemuanController::class,'kirimtemuankeunit'])->name('kirimtemuankeunit')->middleware(['auth']);
+Route::get('/kirimtemuankeunit/{id}',[TemuanController::class,'kirimtemuankeunit'])->name('kirimtemuankeunit')->middleware(['auth','cekadminpipk']);
+Route::get('/kirimtemuankebpk/{id}',[TemuanController::class,'kirimtemuankebpk'])->name('kirimtemuankebpk')->middleware(['auth','cekadminpipk']);
 Route::resource('bagian',BagianController::class)->middleware(['auth']);
+Route::resource('updateunitkerja',UserBiroBagianController::class);
 Route::resource('temuan',TemuanController::class)->middleware('auth');
+Route::resource('temuanbpkbagian',TemuanBagianController::class)->middleware('cekoperatorbagian');
+Route::get('/tindaklanjutbagian/{id}',[TemuanBagianController::class,'tindaklanjut'])->name('tindaklanjutbagian')->middleware('cekoperatorbagian','cekpemiliktemuan');
 
 
 

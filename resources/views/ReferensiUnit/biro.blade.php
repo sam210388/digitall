@@ -63,7 +63,7 @@
                                             <div class="form-group">
                                                 <label for="Menu" class="col-sm-6 control-label">Deputi</label>
                                                 <select class="form-control iddeputi" name="iddeputi" id="iddeputi" style="width: 100%;">
-                                                    <option>Pilih Deputi</option>
+                                                    <option value="">Pilih Deputi</option>
                                                     @foreach($datadeputi as $data)
                                                         <option value="{{ $data->id }}">{{ $data->uraiandeputi }}</option>
                                                     @endforeach
@@ -157,7 +157,7 @@
             --------------------------------------------
             --------------------------------------------*/
             $('#tambahbiro').click(function () {
-                $('#saveBtn').val("tambahbiro");
+                $('#saveBtn').val("tambah");
                 $('#idbiro').val('');
                 $('#formbiro').trigger("reset");
                 $('#modelHeading').html("Tambah Biro");
@@ -172,8 +172,8 @@
             $('body').on('click', '.editbiro', function () {
                 var idbiro = $(this).data('id');
                 $.get("{{ route('biro.index') }}" +'/' + idbiro +'/edit', function (data) {
-                    $('#modelHeading').html("Edit Sub Menu");
-                    $('#saveBtn').val("editbiro");
+                    $('#modelHeading').html("Edit Biro");
+                    $('#saveBtn').val("edit");
                     $('#ajaxModel').modal('show');
                     $('#idbiro').val(data.id);
                     $('#iddeputi').val(data.iddeputi).trigger('change');
@@ -195,12 +195,25 @@
             $('#saveBtn').click(function (e) {
                 e.preventDefault();
                 $(this).html('Sending..');
+                let form = document.getElementById('formbiro');
+                let fd = new FormData(form);
+                let saveBtn = document.getElementById('saveBtn').value;
+                var id = document.getElementById('idbiro').value;
+                fd.append('saveBtn',saveBtn)
+                if(saveBtn == "edit"){
+                    fd.append('_method','PUT')
+                }
+                for (var pair of fd.entries()) {
+                    console.log(pair[0]+ ', ' + pair[1]);
+                }
 
                 $.ajax({
-                    data: $('#formbiro').serialize(),
-                    url: "{{ route('biro.store') }}",
+                    data: fd,
+                    url: saveBtn === "tambah" ? "{{route('biro.store')}}":"{{route('biro.update','')}}"+'/'+id,
                     type: "POST",
                     dataType: 'json',
+                    contentType: false,
+                    processData: false,
                     success: function (data) {
                         if (data.status == "berhasil"){
                             Swal.fire({
@@ -220,10 +233,18 @@
                         $('#saveBtn').html('Simpan Data');
                         table.draw();
                     },
-                    error: function (data) {
-                        console.log('Error:', data);
+                    error: function (xhr) {
+                        var errorsArr = [];
+                        $.each(xhr.responseJSON.errors, function(key,value) {
+                            errorsArr.push(value);
+                        });
+                        Swal.fire({
+                            title: 'Error!',
+                            text: errorsArr,
+                            icon: 'error'
+                        })
                         $('#saveBtn').html('Simpan Data');
-                    }
+                    },
                 });
             });
 
@@ -238,7 +259,7 @@
                 if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
                     $.ajax({
                         type: "DELETE",
-                        url: "{{ route('biro.store') }}"+'/'+idbiro,
+                        url: "{{ route('biro.destroy','') }}"+'/'+idbiro,
                         success: function (data) {
                             if (data.status == "berhasil"){
                                 Swal.fire({
@@ -255,9 +276,18 @@
                             }
                             table.draw();
                         },
-                        error: function (data) {
-                            console.log('Error:', data);
-                        }
+                        error: function (xhr) {
+                            var errorsArr = [];
+                            $.each(xhr.responseJSON.errors, function(key,value) {
+                                errorsArr.push(value);
+                            });
+                            Swal.fire({
+                                title: 'Error!',
+                                text: errorsArr,
+                                icon: 'error'
+                            })
+                            $('#saveBtn').html('Simpan Data');
+                        },
                     });
                 };
             });

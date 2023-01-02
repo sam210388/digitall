@@ -22,17 +22,12 @@ class BiroController extends Controller
         $judul = 'List Biro';
         $datadeputi = DeputiModel::all();
         if ($request->ajax()) {
-
             $data = BiroModel::latest()->get();
-
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
-
                     $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editbiro">Edit</a>';
-
                     $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deletebiro">Delete</a>';
-
                     return $btn;
                 })
                 ->addColumn('iddeputi',function ($row){
@@ -51,16 +46,6 @@ class BiroController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -68,14 +53,19 @@ class BiroController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize(['update','create'],BiroModel::class);
+        $this->authorize('create',BiroModel::class);
         if ($request->get('status') == null){
             $status = "off";
         }else{
             $status = "on";
         }
-        BiroModel::updateOrCreate(
-            ['id' => $request->get('idbiro')],
+
+        $validated = $request->validate([
+            'iddeputi' => 'required',
+            'uraianbiro' => 'required'
+        ]);
+
+        BiroModel::Create(
             [
                 'iddeputi' => $request->get('iddeputi'),
                 'uraianbiro' => $request->get('uraianbiro'),
@@ -118,7 +108,26 @@ class BiroController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->authorize('update',BiroModel::class);
+        if ($request->get('status') == null){
+            $status = "off";
+        }else{
+            $status = "on";
+        }
+
+        $validated = $request->validate([
+            'iddeputi' => 'required',
+            'uraianbiro' => 'required'
+        ]);
+
+        BiroModel::where('id',$id)->update(
+            [
+                'iddeputi' => $request->get('iddeputi'),
+                'uraianbiro' => $request->get('uraianbiro'),
+                'status' => $status
+            ]);
+
+        return response()->json(['status'=>'berhasil']);
     }
 
     /**

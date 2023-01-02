@@ -311,7 +311,7 @@
                     $('#rekomendasi').val(data.rekomendasi);
                     $('#statusawal').val(data.status);
                     $('#created_by_awal').val(data.created_by);
-                    document.getElementById('aktuallinkbukti').href = "public/assets/bukti/"+data.bukti
+                    document.getElementById('aktuallinkbukti').href = "{{asset('storage')}}"+"/"+data.bukti
                     $('#linkbukti').show();
 
 
@@ -388,7 +388,7 @@
                 if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
                     $.ajax({
                         type: "DELETE",
-                        url: "{{ route('temuan.store') }}"+'/'+idtemuan,
+                        url: "{{ route('temuan.destroy','') }}"+'/'+idtemuan,
                         success: function (data) {
                             if (data.status == "berhasil"){
                                 Swal.fire({
@@ -418,6 +418,35 @@
                 if(confirm("Apakah Anda Yakin AKan Mengirim Data Ini Ke Unit Kerja?")){
                     $.ajax({
                         url: "{{ url('/kirimtemuankeunit') }}"+'/'+idtemuan,
+                        success: function (data) {
+                            if (data.status == "berhasil"){
+                                Swal.fire({
+                                    title: 'Sukses',
+                                    text: 'Data Berhasil Dikirim Ke Unit Kerja',
+                                    icon: 'success'
+                                })
+                            }else{
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Pengiriman Data Gagal',
+                                    icon: 'error'
+                                })
+                            }
+                            table.draw();
+                        },
+                        error: function (data) {
+                            console.log('Error:', data);
+                        }
+                    });
+                };
+            });
+
+            $('body').on('click', '.kirimkebpk', function () {
+
+                var idtemuan = $(this).data("id");
+                if(confirm("Apakah Anda Yakin AKan Mengirim Data Ini Ke BPK?")){
+                    $.ajax({
+                        url: "{{ url('/kirimtemuankebpk') }}"+'/'+idtemuan,
                         success: function (data) {
                             if (data.status == "berhasil"){
                                 Swal.fire({

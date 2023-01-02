@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Policies\PIPK;
+namespace App\Policies\BPK\Admin;
 
-use App\Models\TemuanModel;
+use App\Models\BPK\Admin\TemuanModel;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\DB;
@@ -35,9 +35,13 @@ class TemuanPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user)
+    public function store(User $user)
     {
-        //
+        return DB::table('role_users')
+                ->where('iduser','=',$user->iduser)
+                ->where('idrole','=',1)
+                ->orWhere('idrole','=',3)
+                ->count() > 0;
     }
 
     /**
@@ -49,7 +53,11 @@ class TemuanPolicy
      */
     public function update(User $user, TemuanModel $temuanModel)
     {
-        //
+        return DB::table('role_users')
+                ->where('iduser','=',$user->iduser)
+                ->where('idrole','=',1)
+                ->orWhere('idrole','=',3)
+                ->count() > 0;
     }
 
     /**
@@ -59,32 +67,22 @@ class TemuanPolicy
      * @param  \App\Models\TemuanModel  $temuanModel
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, TemuanModel $temuanModel)
+    public function delete(User $user)
     {
-        //
+        return DB::table('role_users')
+                ->where('iduser','=',$user->iduser)
+                ->where('idrole','=',1)
+                ->orWhere('idrole','=',3)
+                ->count() > 0;
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\TemuanModel  $temuanModel
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function restore(User $user, TemuanModel $temuanModel)
-    {
-        //
+    public function kirimtemuankeunit(User $user){
+        return DB::table('role_users')
+                ->where('iduser','=',$user->iduser)
+                ->where('idrole','=',1)
+                ->orWhere('idrole','=',3)
+                ->count() > 0;
     }
 
-    /**
-     * Determine whether the user can permanently delete the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\TemuanModel  $temuanModel
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function forceDelete(User $user, TemuanModel $temuanModel)
-    {
-        //
-    }
+
 }

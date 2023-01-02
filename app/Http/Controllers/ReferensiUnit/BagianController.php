@@ -34,9 +34,7 @@ class BagianController extends Controller
         $datadeputi = DeputiModel::all();
         $databiro = BiroModel::all();
         if ($request->ajax()) {
-
             $data = BagianModel::latest()->get();
-
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
@@ -86,14 +84,20 @@ class BagianController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('view',BagianModel::class);
+        $this->authorize('create',BagianModel::class);
         if ($request->get('status') == null){
             $status = "off";
         }else{
             $status = "on";
         }
-        BagianModel::updateOrCreate(
-            ['id' => $request->get('idbagian')],
+        $validated = $request->validate([
+            'iddeputi' => 'required',
+            'idbiro' => 'required',
+            'uraianbagian' => 'required',
+
+        ]);
+
+        BagianModel::create(
             [
                 'iddeputi' => $request->get('iddeputi'),
                 'idbiro' => $request->get('idbiro'),
@@ -137,7 +141,28 @@ class BagianController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->authorize('update',BagianModel::class);
+        if ($request->get('status') == null){
+            $status = "off";
+        }else{
+            $status = "on";
+        }
+        $validated = $request->validate([
+            'iddeputi' => 'required',
+            'idbiro' => 'required',
+            'uraianbagian' => 'required',
+
+        ]);
+
+        BagianModel::where('id',$id)->update(
+            [
+                'iddeputi' => $request->get('iddeputi'),
+                'idbiro' => $request->get('idbiro'),
+                'uraianbagian' => $request->get('uraianbagian'),
+                'status' => $status
+            ]);
+
+        return response()->json(['status'=>'berhasil']);
     }
 
     /**
@@ -148,7 +173,7 @@ class BagianController extends Controller
      */
     public function destroy($id)
     {
-        $this->authorize('view',BagianModel::class);
+        $this->authorize('delete',BagianModel::class);
         $dipakai = DB::table('temuan')->where('idbagian','=',$id)->count();
         if ($dipakai == 0){
             BagianModel::find($id)->delete();
