@@ -25,7 +25,6 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="tambahtemuan"> Tambah Data</a>
                         <h3 class="card-title">{{$judul}}</h3>
                     </div>
                     <div class="card-body">
@@ -128,7 +127,7 @@
             $('body').on('click', '.tindaklanjut', function () {
                 var idtemuan = $(this).data("id");
                 if(confirm("Apakah Anda Yakin AKan Menambahkan Data Tindaklanjut Pada Temuan Ini?")){
-                    window.location.href = "{{route('tindaklanjutbagian','')}}"+"/"+idtemuan;
+                    window.location="{{URL::to('tindaklanjutbagian')}}"+"/"+idtemuan;
                 }
             });
         });

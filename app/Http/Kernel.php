@@ -66,5 +66,6 @@ class Kernel extends HttpKernel
         'aksesmenu' => \App\Http\Middleware\AksesMenu::class,
         'cekadminpipk' => \App\Http\Middleware\CekAdminOrAdminBPK::class,
         'cekoperatorbagian' => \App\Http\Middleware\CekOperatorBagian::class,
+        'cekpemiliktemuan' => \App\Http\Middleware\CekPemilikTemuan::class,
     ];
 }

@@ -14,6 +14,7 @@ use App\Http\Controllers\ReferensiUnit\BagianController;
 Use App\Http\Controllers\Administrasi\UserBiroBagianController;
 use App\Http\Controllers\BPK\Admin\TemuanController;
 use App\Http\Controllers\BPK\Bagian\TemuanBagianController;
+use App\Http\Controllers\BPK\Bagian\TindakLanjutBagianController;
 
 
 /*
@@ -57,7 +58,9 @@ Route::resource('bagian',BagianController::class)->middleware(['auth']);
 Route::resource('updateunitkerja',UserBiroBagianController::class);
 Route::resource('temuan',TemuanController::class)->middleware('auth');
 Route::resource('temuanbpkbagian',TemuanBagianController::class)->middleware('cekoperatorbagian');
-Route::get('/tindaklanjutbagian/{id}',[TemuanBagianController::class,'tindaklanjut'])->name('tindaklanjutbagian')->middleware('cekoperatorbagian','cekpemiliktemuan');
+Route::get('tindaklanjutbagian/{id}',[TindakLanjutBagianController::class,'tampiltindaklanjut'])->name('tindaklanjutbagian');
+Route::resource('datatindaklanjutbagian', TindakLanjutBagianController::class);
+
 
 
 

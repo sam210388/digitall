@@ -60,4 +60,5 @@ class TemuanBagianController extends Controller
         ]);
     }
 
+
 }
