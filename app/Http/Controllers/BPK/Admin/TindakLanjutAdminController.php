@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\BPK\Bagian;
+namespace App\Http\Controllers\BPK\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\BPK\Bagian\TemuanBagianModel;
@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\DataTables;
 use App\Models\BPK\Bagian\TindakLanjutBagianModel;
 
-class TindakLanjutBagianController extends Controller
+class TindakLanjutAdminController extends Controller
 {
     public function __construct()
     {

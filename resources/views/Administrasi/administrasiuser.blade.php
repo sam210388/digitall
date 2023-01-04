@@ -146,7 +146,7 @@
         </div>
     </div>
     <!-- /.content -->
-    <script src="{{asset('AdminLTE/plugins/bs-custom-file-input/bs-custom-file-input.min.js')}}"></script>
+    <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/bs-custom-file-input/bs-custom-file-input.min.js')}}"></script>
     <script type="text/javascript">
         $(function () {
             bsCustomFileInput.init();
@@ -201,7 +201,7 @@
             --------------------------------------------*/
             $('#tambahuser').click(function () {
                 $('#saveBtn').val("tambah");
-                document.getElementById('gambarusernow').src ="{{asset('storage/gambaruser/default.png')}}";
+                document.getElementById('gambarusernow').src ="{{env('APP_URL')."/".asset('storage/gambaruser/default.png')}}";
                 $('#id').val('');
                 $('#formuser').trigger("reset");
                 $('#modelHeading').html("Tambah User");
@@ -223,7 +223,7 @@
                     $('#gambarlama').val(data.gambaruser);
                     $('#name').val(data.name);
                     $('#email').val(data.email);
-                    document.getElementById('gambarusernow').src ="{{asset('storage')}}"+"/"+data.gambaruser;
+                    document.getElementById('gambarusernow').src ="{{env('APP_URL')."/".asset('storage')}}"+"/"+data.gambaruser;
                 })
             });
 

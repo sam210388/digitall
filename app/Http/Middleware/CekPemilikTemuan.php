@@ -18,17 +18,46 @@ class CekPemilikTemuan
      */
     public function handle(Request $request, Closure $next)
     {
-        $idbagian = Auth::user()->idbagian;
-        $idtemuan = $request->route('id');
-        $bagian = DB::table('temuan')
-            ->where('id','=',$idtemuan)
-            ->value('idbagian');
+        if ($request->get('idtemuan')){
+            $idbagian = Auth::user()->idbagian;
+            $idtemuan = $request->get('idtemuan');
+            $bagian = DB::table('temuan')
+                ->where('id','=',$idtemuan)
+                ->value('idbagian');
 
-        if ($idbagian == $bagian){
-            return $next($request);
-        }else{
-            abort(403,'Temuan Ini Bukan Milik Bagian Anda');
+            if ($idbagian == $bagian){
+                return $next($request);
+            }else{
+                abort(403,'Temuan Ini Bukan Milik Bagian Anda');
+            }
+        }else if ($request->route('kelolatindaklanjut')){
+            $idtindaklanjut = $request->route('kelolatindaklanjut');
+            $idtemuan = DB::table('tindaklanjutbpk')->where('id','=',$idtindaklanjut)->value('idtemuan');
+            $idbagian = Auth::user()->idbagian;
+            $bagian = DB::table('temuan')
+                ->where('id','=',$idtemuan)
+                ->value('idbagian');
+
+            if ($idbagian == $bagian){
+                return $next($request);
+            }else{
+                abort(403,'Temuan Ini Bukan Milik Bagian Anda');
+            }
+        }else if ($request->get('idtindaklanjut')){
+            $idtindaklanjut = $request->get('idtindaklanjut');
+            $idtemuan = DB::table('tindaklanjutbpk')->where('id','=',$idtindaklanjut)->value('idtemuan');
+            $idbagian = Auth::user()->idbagian;
+            $bagian = DB::table('temuan')
+                ->where('id','=',$idtemuan)
+                ->value('idbagian');
+
+            if ($idbagian == $bagian){
+                return $next($request);
+            }else{
+                abort(403,'Temuan Ini Bukan Milik Bagian Anda');
+            }
         }
+
 
     }
 }

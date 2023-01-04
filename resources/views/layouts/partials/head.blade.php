@@ -16,7 +16,6 @@
   <link rel="stylesheet" href="{{env('APP_URL')."/".asset('/AdminLTE/plugins/icheck-bootstrap/icheck-bootstrap.min.css')}}">
   <!-- Theme style -->
   <link rel="stylesheet" href="{{env('APP_URL')."/".asset('/AdminLTE/dist/css/adminlte.min.css')}}">
-
   <link rel="stylesheet" href="{{env('APP_URL')."/".asset('AdminLTE/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css')}}">
   <link rel="stylesheet" href="{{env('APP_URL')."/".asset('AdminLTE/plugins/datatables-responsive/css/responsive.bootstrap4.min.css')}}">
   <link rel="stylesheet" href="{{env('APP_URL')."/".asset('AdminLTE/plugins/datatables-buttons/css/buttons.bootstrap4.min.css')}}">
@@ -36,6 +35,14 @@
   <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/sweetalert2/sweetalert2.min.js')}}"></script>
   <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/bootstrap-switch/js/bootstrap-switch.min.js')}}"></script>
   <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/select2/js/select2.full.min.js')}}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet" type="text/css" />
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.standalone.min.css" rel="stylesheet" type="text/css" />
+
+
+
 
 
 

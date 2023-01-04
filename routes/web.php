@@ -59,7 +59,9 @@ Route::resource('updateunitkerja',UserBiroBagianController::class);
 Route::resource('temuan',TemuanController::class)->middleware('auth');
 Route::resource('temuanbpkbagian',TemuanBagianController::class)->middleware('cekoperatorbagian');
 Route::get('tindaklanjutbagian/{id}',[TindakLanjutBagianController::class,'tampiltindaklanjut'])->name('tindaklanjutbagian');
-Route::resource('datatindaklanjutbagian', TindakLanjutBagianController::class);
+Route::post('getdatatindaklanjut', [TindakLanjutBagianController::class,'getdatatindaklanjut'])->name('getdatatindaklanjut');
+Route::resource('kelolatindaklanjut',TindakLanjutBagianController::class)->middleware(['cekoperatorbagian','cekpemiliktemuan']);
+Route::get('/ajukankeirtama/{idtindaklanjut}',[TindakLanjutBagianController::class,'ajukankeirtama'])->name('ajukankeirtama');
 
 
 

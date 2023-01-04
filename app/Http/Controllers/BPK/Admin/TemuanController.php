@@ -32,16 +32,11 @@ class TemuanController extends Controller
                         $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deletetemuan">Delete</a>';
                         $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Kirim" class="btn btn-success btn-sm kirimkeunit">Kirim</a>';
 
-                    }else if ($row->status == 4){
-                        $btn = '<div class="btn-group" role="group">
-                        <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Kirim" class="btn btn-success btn-sm kirimkebpk">Kirim BPK</a>';
-                    }else if ($row->status == 5){
-                        $btn = '<div class="btn-group" role="group">
-                        <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Kirim" class="btn btn-success btn-sm selesai">Selesai</a>';
-                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Kirim" class="btn btn-success btn-sm tidakselesai">Tidak Ditindaklanjuti</a>';
-                    }else{
+                    }else if($row->status == 2){
                         $btn = '<div class="btn-group" role="group">
                         <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Kirim" class="btn btn-success btn-sm ingatkanunit">Ingatkan Unit</a>';
+                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="selesai" class="btn btn-success btn-sm selesai">Selesai</a>';
+                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="tddl" class="btn btn-success btn-sm tddl">Tidak DDL</a>';
                     }
                     return $btn;
                 })
@@ -252,24 +247,12 @@ class TemuanController extends Controller
         }else{
             return response()->json(['status'=>'gagal']);
         }
-
     }
 
     public function kirimtemuankeunit($id){
         $temuan = TemuanModel::find($id);
         if ($temuan){
             DB::table('temuan')->where('id','=',$id)->update(['status' => 2]);
-            return response()->json(['status'=>'berhasil']);
-        }else{
-            return response()->json(['status'=>'gagal']);
-        }
-
-    }
-
-    public function kirimtemuankebpk($id){
-        $temuan = TemuanModel::find($id);
-        if ($temuan){
-            DB::table('temuan')->where('id','=',$id)->update(['status' => 5]);
             return response()->json(['status'=>'berhasil']);
         }else{
             return response()->json(['status'=>'gagal']);

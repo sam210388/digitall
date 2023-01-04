@@ -192,14 +192,12 @@ class AdministrasiUserController extends Controller
         $this->authorize('delete', AdministrasiUserModel::class);
 
         $gambaruser = DB::table('users')->where('id','=',$id)->value('gambaruser');
-        if ($gambaruser){
-            $file = File::get(asset('gambaruser/'.$gambaruser));
-            $file = json_decode($file);
-            //unlink($file);
+
+        if (file_exists(storage_path('app/public/').$gambaruser)){
+            Storage::delete('public/'.$gambaruser);
         }
-        //AdministrasiUserModel::find($id)->delete();
-        return response()->json(['status'=>'berhasil',
-                                'lokasifile' => $file]);
+        AdministrasiUserModel::find($id)->delete();
+        return response()->json(['status'=>'berhasil']);
 
     }
 }
