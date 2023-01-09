@@ -413,7 +413,6 @@
             });
 
             $('body').on('click', '.kirimkeunit', function () {
-
                 var idtemuan = $(this).data("id");
                 if(confirm("Apakah Anda Yakin AKan Mengirim Data Ini Ke Unit Kerja?")){
                     $.ajax({
@@ -441,6 +440,67 @@
                 }
             });
 
+            $('body').on('click', '.selesai', function () {
+                var idtemuan = $(this).data("id");
+                if(confirm("Apakah Anda Yakin AKan Merubah Status Temuan Menjadi Selesai?")){
+                    $.ajax({
+                        url: "{{ url('/statustemuanselesai') }}"+'/'+idtemuan,
+                        success: function (data) {
+                            if (data.status == "berhasil"){
+                                Swal.fire({
+                                    title: 'Sukses',
+                                    text: 'Data Berhasil Dirubah Status Menjadi Selesai',
+                                    icon: 'success'
+                                })
+                            }else{
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Perubahan Status Data Gagal, Data Tidak Ditemukan',
+                                    icon: 'error'
+                                })
+                            }
+                            table.draw();
+                        },
+                        error: function (data) {
+                            console.log('Error:', data);
+                        }
+                    });
+                }
+            });
+
+            $('body').on('click', '.tddl', function () {
+                var idtemuan = $(this).data("id");
+                if(confirm("Apakah Anda Yakin AKan Merubah Status Temuan Menjadi Tidak Dapat Ditindaklanjuti?")){
+                    $.ajax({
+                        url: "{{ url('/statustemuantddl') }}"+'/'+idtemuan,
+                        success: function (data) {
+                            if (data.status == "berhasil"){
+                                Swal.fire({
+                                    title: 'Sukses',
+                                    text: 'Data Berhasil Dirubah Status Menjadi TDDL',
+                                    icon: 'success'
+                                })
+                            }else{
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Perubahan Status Data Gagal, Data Tidak Ditemukan',
+                                    icon: 'error'
+                                })
+                            }
+                            table.draw();
+                        },
+                        error: function (data) {
+                            console.log('Error:', data);
+                        }
+                    });
+                }
+            });
+
+        });
+
+        $('body').on('click', '.lihattindaklanjut', function () {
+            var idtemuan = $(this).data("id");
+            window.location="{{URL::to('lihattindaklanjutbagian')}}"+"/"+idtemuan;
         });
 
         $('#iddeputi').on('change', function () {

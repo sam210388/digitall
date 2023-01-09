@@ -27,7 +27,6 @@
                     <div class="card-header">
                         <h3 class="card-title">{{$judul}}</h3>
                         <div class="btn-group float-sm-right" role="group">
-                        <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="tambahdata"> Tambah Data</a>
                         <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="kembali"> Kembali</a>
                         </div>
                     </div>
@@ -83,72 +82,26 @@
                                         <h4 class="modal-title" id="modelHeading"></h4>
                                     </div>
                                     <div class="modal-body">
-                                        <form id="formtindaklanjut" name="formtindaklanjut" class="form-horizontal" enctype="multipart/form-data">
-                                            <input type="hidden" name="id" id="id">
+                                        <form id="formpenjelasan" name="formpenjelasan" class="form-horizontal" enctype="multipart/form-data">
+                                            <input type="hidden" name="idtindaklanjut" id="idtindaklanjut">
                                             <input type="hidden" name="idtemuan" id="idtemuan" value="{{$idtemuan}}">
-                                            <input type="hidden" name="filelama" id="filelama">
                                             <div class="form-group">
-                                                <label for="TanggalDokumen" class="col-sm-6 control-label">Tanggal Dokumen</label>
+                                                <label for="penjelasan" class="col-sm-6 control-label">Penjelasan</label>
                                                 <div class="col-sm-12">
                                                     <div class="input-group mb-3">
-                                                        <input type="text" class="form-control tanggaldokumen" id="tanggaldokumen" name="tanggaldokumen">
-                                                        <div class="input-group-append">
-                                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                                        </div>
+                                                        <textarea class="form-control" id="penjelasan" name="penjelasan" placeholder="Penjelasan" value="" required=""></textarea>
                                                     </div>
                                                 </div>
                                             </div>
-
-                                            <div class="form-group">
-                                                <label for="NomorDokumen" class="col-sm-6 control-label">Nomor Dokumen</label>
+                                            <div class="form-group fieldtanggapan">
+                                                <label for="tanggapan" class="col-sm-6 control-label">Tanggapan</label>
                                                 <div class="col-sm-12">
                                                     <div class="input-group mb-3">
-                                                        <input type="text" class="form-control" id="nomordokumen" name="nomordokumen" placeholder="Nomor DOkumen/NTPN" value="" maxlength="100" required="">
+                                                        <textarea class="form-control" id="tanggapan" name="tanggapan" placeholder="Tanggapan" value="" readonly></textarea>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="nilaibukti" class="col-sm-6 control-label">Nilai Bukti</label>
-                                                <div class="col-sm-12">
-                                                    <div class="input-group mb-3">
-                                                        <input type="text" class="form-control" id="nilaibukti" name="nilaibukti" placeholder="Nilai Bukti" value="" maxlength="100" required="">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="keterangan" class="col-sm-6 control-label">Keterangan</label>
-                                                <div class="col-sm-12">
-                                                    <div class="input-group mb-3">
-                                                        <textarea class="form-control" id="keterangan" name="keterangan" placeholder="Keterangan" value="" required=""></textarea>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="objektemuan" class="col-sm-6 control-label">Objek Temuan</label>
-                                                <div class="col-sm-12">
-                                                    <div class="input-group mb-3">
-                                                        <textarea class="form-control" id="objektemuan" name="objektemuan" placeholder="Objek Temuan" value="" required=""></textarea>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="input-group">
-                                                <label for="file" class="col-sm-6 control-label">File</label>
-                                                <div class="col-sm-12">
-                                                    <div class="input-group mb-3">
-                                                        <div class="custom-file">
-                                                            <input type="file" class="custom-file-input" id="file" name="file">
-                                                            <label class="custom-file-label" for="exampleInputFile">Choose file</label>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group" id="linkbukti" aria-hidden="true">
-                                                <div class="col-sm-12">
-                                                    <a href="#" id="aktuallinkbukti">Lihat Bukti</a>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-sm-offset-2 col-sm-10">
+                                            <div class="col-sm-offset-2 col-sm-10 btnsubmit">
                                                 <button type="submit" class="btn btn-primary" id="saveBtn" name="saveBtn" value="create">Simpan Data
                                                 </button>
                                             </div>
@@ -189,7 +142,7 @@
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','pdf','csv','print'],
                 "ajax": {
-                    "url": "{{route('getdatatindaklanjut')}}",
+                    "url": "{{route('getdatatindaklanjutbagian')}}",
                     "type": "POST",
                     "data": function (d){
                         d._token = "{{ csrf_token() }}";
@@ -228,41 +181,35 @@
             });
         });
 
-        $('#tambahdata').click(function () {
-            $('#saveBtn').val("tambah");
-            $('#id').val('');
-            $('#formtindaklanjut').trigger("reset");
-            $('#modelHeading').html("Tambah Data");
-            $('#ajaxModel').modal('show');
-        });
 
         $('#kembali').click(function () {
             window.location="{{URL::to('temuanbpkbagian')}}"
         });
 
-        /*------------------------------------------
-            --------------------------------------------
-            Click to Edit Button
-            --------------------------------------------
-            --------------------------------------------*/
-        $('body').on('click', '.editdata', function () {
-            var id = $(this).data('id');
+
+        $('body').on('click', '.ditolak', function () {
+            document.getElementById('idtindaklanjut').value = $(this).data("id")
+            $('#saveBtn').val("tambah");
+            $('#formpenjelasan').trigger("reset");
+            $('#modelHeading').html("Penjelasan Penolakan");
+            $('#ajaxModel').modal('show');
+            $('.fieldtanggapan').hide();
+
+
+        });
+
+        $('body').on('click', '.tanggapan', function () {
+            var idtindaklanjut = $(this).data('id');
             $.ajax({
                 type: "GET",
-                url: "{{ route('kelolatindaklanjut.index') }}" +'/' + id +'/edit',
+                url: "{{ route('lihattanggapan','') }}" +'/' + idtindaklanjut,
                 success: function (data) {
-                    $('#modelHeading').html("Edit Data");
+                    $('#modelHeading').html("Tanggapan Unit");
                     $('#saveBtn').val("edit");
                     $('#ajaxModel').modal('show');
-                    $('#id').val(data.id);
-                    $('#idtemuan').val(data.idtemuan);
-                    $('#filelama').val(data.file);
-                    $('#tanggaldokumen').val(data.tanggaldokumen);
-                    $('#nomordokumen').val(data.nomordokumen);
-                    $('#nilaibukti').val(data.nilaibukti);
-                    $('#keterangan').val(data.keterangan);
-                    $('#objektemuan').val(data.objektemuan);
-                    document.getElementById('aktuallinkbukti').href = "{{env('APP_URL')."/".asset('storage')}}"+"/"+data.file
+                    $('#tanggapan').val(data.tanggapan);
+                    $('#penjelasan').val(data.penjelasan);
+                    $('#saveBtn').hide();
                 },
                 error: function (xhr) {
                     var errorsArr = [];
@@ -274,11 +221,9 @@
                         text: errorsArr,
                         icon: 'error'
                     })
-                    $('#saveBtn').html('Simpan Data');
                 },
             });
         });
-
         /*------------------------------------------
         --------------------------------------------
         Save Data
@@ -287,22 +232,16 @@
         $('#saveBtn').click(function (e) {
             e.preventDefault();
             $(this).html('Sending..');
-            let form = document.getElementById('formtindaklanjut');
+            let form = document.getElementById('formpenjelasan');
             let fd = new FormData(form);
-            let file = $('#file')[0].files;
             let saveBtn = document.getElementById('saveBtn').value;
-            var id = document.getElementById('id').value;
-            fd.append('file',file[0])
             fd.append('saveBtn',saveBtn)
-            if(saveBtn == "edit"){
-                fd.append('_method','PUT')
-            }
             for (var pair of fd.entries()) {
                 console.log(pair[0]+ ', ' + pair[1]);
             }
             $.ajax({
                 data: fd,
-                url: saveBtn === "tambah" ? "{{route('kelolatindaklanjut.store')}}":"{{route('kelolatindaklanjut.update','')}}"+'/'+id,
+                url: "{{url('simpanpenjelasan')}}",
                 type: "POST",
                 dataType: 'json',
                 enctype: 'multipart/form-data',
@@ -312,7 +251,7 @@
                     if (data.status == "berhasil"){
                         Swal.fire({
                             title: 'Sukses',
-                            text: 'Simpan Data Berhasil',
+                            text: 'Penjelasan Berhasil Disimpan, Data Dikembalikan Ke Unit Kerja',
                             icon: 'success'
                         })
                     }else{
@@ -343,60 +282,18 @@
             });
         });
 
-        /*------------------------------------------
-        --------------------------------------------
-        Delete Product Code
-        --------------------------------------------
-        --------------------------------------------*/
-        $('body').on('click', '.deletedata', function () {
-            var idtemuan = $(this).data("id");
-            if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
-                $.ajax({
-                    type: "DELETE",
-                    url: "{{ route('kelolatindaklanjut.destroy','') }}"+"/"+idtemuan,
-                    success: function (data) {
-                        if (data.status == "berhasil"){
-                            Swal.fire({
-                                title: 'Sukses',
-                                text: 'Data Berhasil Dihapus ',
-                                icon: 'success'
-                            })
-                        }else{
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'Hapus Data Gagal',
-                                icon: 'error'
-                            })
-                        }
-                        $('#tabeltindaklanjut').DataTable().ajax.reload();
-                    },
-                    error: function (xhr) {
-                        var errorsArr = [];
-                        $.each(xhr.responseJSON.errors, function(key,value) {
-                            errorsArr.push(value);
-                        });
-                        Swal.fire({
-                            title: 'Error!',
-                            text: errorsArr,
-                            icon: 'error'
-                        })
-                        $('#saveBtn').html('Simpan Data');
-                    },
-                });
-            }
-        });
 
-        $('body').on('click', '.ajukankeirtama', function () {
+        $('body').on('click', '.ajukankebpk', function () {
             var idtindaklanjut = $(this).data("id");
-            if(confirm("Apakah Anda Yakin AKan Kirim Data Ini Ke Irtama?")){
+            if(confirm("Apakah Anda Yakin AKan Kirim Data Ini Ke BPK?")){
                 $.ajax({
                     type: "GET",
-                    url: "{{ url('ajukankeirtama') }}"+"/"+idtindaklanjut,
+                    url: "{{ url('ajukankebpk') }}"+"/"+idtindaklanjut,
                     success: function (data) {
                         if (data.status == "berhasil"){
                             Swal.fire({
                                 title: 'Sukses',
-                                text: 'Data Berhasil Dikirim Ke Irtama',
+                                text: 'Data Berhasil Dikirim Ke BPK',
                                 icon: 'success'
                             })
                         }else{
@@ -426,10 +323,80 @@
 
 
 
+        $('body').on('click', '.selesai', function () {
+            var idtindaklanjut = $(this).data("id");
+            if(confirm("Apakah Anda Yakin AKan Merubah Status Data ini Menjadi Selesai?")){
+                $.ajax({
+                    type: "GET",
+                    url: "{{ url('tindaklanjutselesai') }}"+"/"+idtindaklanjut,
+                    success: function (data) {
+                        if (data.status == "berhasil"){
+                            Swal.fire({
+                                title: 'Sukses',
+                                text: 'Data Berhasil Diubah Status Menjadi Selesai',
+                                icon: 'success'
+                            })
+                        }else{
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Kirim Data Gagal, Data Tidak Ditemukan',
+                                icon: 'error'
+                            })
+                        }
+                        $('#tabeltindaklanjut').DataTable().ajax.reload();
+                    },
+                    error: function (xhr) {
+                        var errorsArr = [];
+                        $.each(xhr.responseJSON.errors, function(key,value) {
+                            errorsArr.push(value);
+                        });
+                        Swal.fire({
+                            title: 'Error!',
+                            text: errorsArr,
+                            icon: 'error'
+                        })
+                        $('#saveBtn').html('Simpan Data');
+                    },
+                });
+            }
+        });
 
-        $( "#tanggaldokumen" ).datepicker({
-            format: "yyyy-mm-dd",
-            autoclose: true
+        $('body').on('click', '.tddl', function () {
+            var idtindaklanjut = $(this).data("id");
+            if(confirm("Apakah Anda Yakin AKan Merubah Status Data ini Menjadi TDDL?")){
+                $.ajax({
+                    type: "GET",
+                    url: "{{ url('tindaklanjuttddl') }}"+"/"+idtindaklanjut,
+                    success: function (data) {
+                        if (data.status == "berhasil"){
+                            Swal.fire({
+                                title: 'Sukses',
+                                text: 'Data Berhasil Diubah Status Menjadi TDDL',
+                                icon: 'success'
+                            })
+                        }else{
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Kirim Data Gagal, Data Tidak Ditemukan',
+                                icon: 'error'
+                            })
+                        }
+                        $('#tabeltindaklanjut').DataTable().ajax.reload();
+                    },
+                    error: function (xhr) {
+                        var errorsArr = [];
+                        $.each(xhr.responseJSON.errors, function(key,value) {
+                            errorsArr.push(value);
+                        });
+                        Swal.fire({
+                            title: 'Error!',
+                            text: errorsArr,
+                            icon: 'error'
+                        })
+                        $('#saveBtn').html('Simpan Data');
+                    },
+                });
+            }
         });
     </script>
 

@@ -38,9 +38,14 @@ class TindakLanjutBagianController extends Controller
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
-                    if ($row->status == 1){
-                        $btn = '<div class="btn-group" role="group">
-                            <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Ajukan" class="edit btn btn-success btn-sm ajukankeirtama">Ajukan Ke Irtama</a>';
+                    if ($row->status == 2){
+                        $btn = '<div class="btn-group" role="group">';
+                        if ($row->penjelasan != null){
+                            $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Ajukan" class="edit btn btn-success btn-sm ajukankeirtama">Ajukan Ke Irtama
+                            <span class="badge badge-danger navbar-badge">Penjelasan</span></a>';
+                        }else{
+                            $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Ajukan" class="edit btn btn-success btn-sm ajukankeirtama">Ajukan Ke Irtama</a>';
+                        }
                         $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editdata">Edit</a>';
                         $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="edit btn btn-danger btn-sm deletedata">Delete</a>';
                     }else{
@@ -186,12 +191,36 @@ class TindakLanjutBagianController extends Controller
     public function ajukankeirtama($id){
         $data = DB::table('tindaklanjutbpk')->where('id','=',$id)->count();
         if ($data>0){
+            $penjelasan = DB::table('tindaklanjutbpk')->where('id','=',$id)->value('penjelasan');
+            $tanggapan = DB::table('tindaklanjutbpk')->where('id','=',$id)->value('tanggapan');
+            if ($penjelasan != null and $tanggapan == null){
+                return response()->json(['status'=>'belumditanggapi']);
+            }else {
+                $dataupdate = array(
+                    'status' => 4,
+                    'updated_by' => Auth::user()->id,
+                    'updated_at' => now()
+                );
+                DB::table('tindaklanjutbpk')->where('id','=',$id)->update($dataupdate);
+                return response()->json(['status'=>'berhasil']);
+            }
+        }else{
+            return response()->json(['status'=>'gagal']);
+        }
+    }
+
+    public function simpantanggapan(Request $request){
+        $penjelasan = $request->get('penjelasan');
+        $idtindaklanjut = $request->get('idtindaklanjut');
+        $data = DB::table('tindaklanjutbpk')->where('id','=',$idtindaklanjut)->count();
+        if ($data>0){
             $dataupdate = array(
-                'status' => 4,
+                'tanggapan' => $penjelasan,
                 'updated_by' => Auth::user()->id,
-                'updated_at' => now()
+                'updated_at' => now(),
+                'status' => 4
             );
-            DB::table('tindaklanjutbpk')->where('id','=',$id)->update($dataupdate);
+            DB::table('tindaklanjutbpk')->where('id','=',$idtindaklanjut)->update($dataupdate);
             return response()->json(['status'=>'berhasil']);
         }else{
             return response()->json(['status'=>'gagal']);

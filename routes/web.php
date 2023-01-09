@@ -15,6 +15,7 @@ Use App\Http\Controllers\Administrasi\UserBiroBagianController;
 use App\Http\Controllers\BPK\Admin\TemuanController;
 use App\Http\Controllers\BPK\Bagian\TemuanBagianController;
 use App\Http\Controllers\BPK\Bagian\TindakLanjutBagianController;
+use App\Http\Controllers\BPK\Admin\TindakLanjutAdminController;
 
 
 /*
@@ -52,16 +53,27 @@ Route::resource('deputi',DeputiController::class);
 Route::resource('biro',BiroController::class);
 Route::post('/ambildatabiro',[BagianController::class,'dapatkandatabiro'])->name('ambildatabiro');
 Route::post('/ambildatabagian',[BagianController::class,'dapatkandatabagian'])->name('ambildatabagian');
-Route::get('/kirimtemuankeunit/{id}',[TemuanController::class,'kirimtemuankeunit'])->name('kirimtemuankeunit')->middleware(['auth','cekadminpipk']);
-Route::get('/kirimtemuankebpk/{id}',[TemuanController::class,'kirimtemuankebpk'])->name('kirimtemuankebpk')->middleware(['auth','cekadminpipk']);
+Route::get('/kirimtemuankeunit/{id}',[TemuanController::class,'kirimtemuankeunit'])->name('kirimtemuankeunit')->middleware(['auth','cekadminbpk']);
+Route::get('/kirimtemuankebpk/{id}',[TemuanController::class,'kirimtemuankebpk'])->name('kirimtemuankebpk')->middleware(['auth','cekadminbpk']);
 Route::resource('bagian',BagianController::class)->middleware(['auth']);
 Route::resource('updateunitkerja',UserBiroBagianController::class);
 Route::resource('temuan',TemuanController::class)->middleware('auth');
 Route::resource('temuanbpkbagian',TemuanBagianController::class)->middleware('cekoperatorbagian');
-Route::get('tindaklanjutbagian/{id}',[TindakLanjutBagianController::class,'tampiltindaklanjut'])->name('tindaklanjutbagian');
+Route::get('tindaklanjutbagian/{idtemuan}',[TindakLanjutBagianController::class,'tampiltindaklanjut'])->name('tindaklanjutbagian')->middleware(['cekpemiliktemuan']);
 Route::post('getdatatindaklanjut', [TindakLanjutBagianController::class,'getdatatindaklanjut'])->name('getdatatindaklanjut');
 Route::resource('kelolatindaklanjut',TindakLanjutBagianController::class)->middleware(['cekoperatorbagian','cekpemiliktemuan']);
-Route::get('/ajukankeirtama/{idtindaklanjut}',[TindakLanjutBagianController::class,'ajukankeirtama'])->name('ajukankeirtama');
+Route::get('/ajukankeirtama/{idtindaklanjut}',[TindakLanjutBagianController::class,'ajukankeirtama'])->name('ajukankeirtama')->middleware(['cekpemiliktemuan']);
+Route::get('/statustemuanselesai/{id}',[TemuanController::class,'statustemuanselesai'])->name('statustemuanselesai')->middleware(['auth','cekadminbpk']);
+Route::get('/statustemuantddl/{id}',[TemuanController::class,'statustemuantddl'])->name('statustemuantddl')->middleware(['auth','cekadminbpk']);
+Route::get('lihattindaklanjutbagian/{idtemuan}',[TindakLanjutAdminController::class,'tampiltindaklanjut'])->name('lihattindaklanjutbagian')->middleware(['cekadminbpk']);
+Route::get('/ajukankebpk/{idtindaklanjut}',[TindakLanjutAdminController::class,'ajukankebpk'])->name('ajukankebpk')->middleware(['cekadminbpk']);
+Route::get('/tindaklanjutselesai/{idtindaklanjut}',[TindakLanjutAdminController::class,'tindaklanjutselesai'])->name('tindaklanjutselesai')->middleware(['cekadminbpk']);
+Route::post('getdatatindaklanjutbagian', [TindakLanjutAdminController::class,'getdatatindaklanjutbagian'])->name('getdatatindaklanjutbagian');
+Route::post('simpanpenjelasan', [TindakLanjutAdminController::class,'simpanpenjelasan'])->name('simpanpenjelasan')->middleware('cekadminbpk');
+Route::get('/tindaklanjuttddl/{idtindaklanjut}',[TindakLanjutAdminController::class,'tindaklanjuttddl'])->name('tindaklanjuttddl')->middleware(['cekadminbpk']);
+Route::post('simpantanggapan', [TindakLanjutBagianController::class,'simpantanggapan'])->name('simpanpenjelasan')->middleware('cekpemiliktemuan');
+Route::get('/lihattanggapan/{idtindaklanjut}',[TindakLanjutAdminController::class,'lihattanggapan'])->name('lihattanggapan')->middleware(['cekadminbpk']);
+
 
 
 

@@ -43,9 +43,38 @@ class CekPemilikTemuan
             }else{
                 abort(403,'Temuan Ini Bukan Milik Bagian Anda');
             }
+        }else if ($request->route('idtemuan')){
+            $idtemuan = $request->route('idtemuan');
+            $idbagian = Auth::user()->idbagian;
+            $bagian = DB::table('temuan')
+                ->where('id','=',$idtemuan)
+                ->value('idbagian');
+
+            if ($idbagian == $bagian){
+                return $next($request);
+            }else{
+                abort(403,'Temuan Ini Bukan Milik Bagian Anda');
+            }
+        }else if ($request->route('idtindaklanjut')){
+            $idtindaklanjut = $request->route('idtindaklanjut');
+            $idtemuan =  DB::table('tindaklanjutbpk')
+                ->where('id','=',$idtindaklanjut)
+                ->value('idtemuan');
+            $idbagian = Auth::user()->idbagian;
+            $bagian = DB::table('temuan')
+                ->where('id','=',$idtemuan)
+                ->value('idbagian');
+
+            if ($idbagian == $bagian){
+                return $next($request);
+            }else{
+                abort(403,'Temuan Ini Bukan Milik Bagian Anda');
+            }
         }else if ($request->get('idtindaklanjut')){
             $idtindaklanjut = $request->get('idtindaklanjut');
-            $idtemuan = DB::table('tindaklanjutbpk')->where('id','=',$idtindaklanjut)->value('idtemuan');
+            $idtemuan =  DB::table('tindaklanjutbpk')
+                ->where('id','=',$idtindaklanjut)
+                ->value('idtemuan');
             $idbagian = Auth::user()->idbagian;
             $bagian = DB::table('temuan')
                 ->where('id','=',$idtemuan)

@@ -157,6 +157,33 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="modal fade" id="ajaxModelPenjelasan" aria-hidden="true" data-focus="false">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title" id="modelHeadingPenjelasan"></h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="formpenjelasan" name="formpenjelasan" class="form-horizontal" enctype="multipart/form-data">
+                                            <input type="hidden" name="idtindaklanjut" id="idtindaklanjut">
+                                            <input type="hidden" name="idtemuan" id="idtemuan" value="{{$idtemuan}}">
+                                            <div class="form-group">
+                                                <label for="penjelasan" class="col-sm-6 control-label">Penjelasan</label>
+                                                <div class="col-sm-12">
+                                                    <div class="input-group mb-3">
+                                                        <textarea class="form-control" id="penjelasan" name="penjelasan" placeholder="Penjelasan" value="" required=""></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-offset-2 col-sm-10">
+                                                <button type="submit" class="btn btn-primary" id="saveBtnPenjelasan" name="saveBtnPenjelasan" value="create">Simpan Data
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -399,7 +426,14 @@
                                 text: 'Data Berhasil Dikirim Ke Irtama',
                                 icon: 'success'
                             })
-                        }else{
+                        }else if(data.status == "belumditanggapi"){
+                            document.getElementById('idtindaklanjut').value = idtindaklanjut
+                            $('#saveBtnPenjelasan').val("tambah");
+                            $('#formpenjelasan').trigger("reset");
+                            $('#modelHeadingPenjelasan').html("Penjelasan Penolakan");
+                            $('#ajaxModelPenjelasan').modal('show');
+
+                        } else{
                             Swal.fire({
                                 title: 'Error!',
                                 text: 'Kirim Data Gagal, Data Tidak Ditemukan',
@@ -430,6 +464,59 @@
         $( "#tanggaldokumen" ).datepicker({
             format: "yyyy-mm-dd",
             autoclose: true
+        });
+
+        $('#saveBtnPenjelasan').click(function (e) {
+            e.preventDefault();
+            $(this).html('Sending..');
+            let form = document.getElementById('formpenjelasan');
+            let fd = new FormData(form);
+            let saveBtn = document.getElementById('saveBtnPenjelasan').value;
+            fd.append('saveBtnPenjelasan',saveBtn)
+            for (var pair of fd.entries()) {
+                console.log(pair[0]+ ', ' + pair[1]);
+            }
+            $.ajax({
+                data: fd,
+                url: "{{url('simpantanggapan')}}",
+                type: "POST",
+                dataType: 'json',
+                enctype: 'multipart/form-data',
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    if (data.status == "berhasil"){
+                        Swal.fire({
+                            title: 'Sukses',
+                            text: 'Tanggapan Berhasil Disimpan, Data Sudah Dikirim Ke Irtama',
+                            icon: 'success'
+                        })
+                    }else{
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Simpan Data Gagal',
+                            icon: 'error'
+                        })
+                    }
+                    $('#formpenjelasan').trigger("reset");
+                    $('#ajaxModelPenjelasan').modal('hide');
+                    $('#saveBtnPenjelasan').html('Simpan Data');
+                    $('#tabeltindaklanjut').DataTable().ajax.reload();
+
+                },
+                error: function (xhr) {
+                    var errorsArr = [];
+                    $.each(xhr.responseJSON.errors, function(key,value) {
+                        errorsArr.push(value);
+                    });
+                    Swal.fire({
+                        title: 'Error!',
+                        text: errorsArr,
+                        icon: 'error'
+                    })
+                    $('#saveBtn').html('Simpan Data');
+                },
+            });
         });
     </script>
 

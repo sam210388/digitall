@@ -4,6 +4,7 @@ namespace App\Http\Controllers\BPK\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 use App\Models\ReferensiUnit\DeputiModel;
@@ -26,6 +27,11 @@ class TemuanController extends Controller
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
+                    $idtemuan = $row->id;
+                    $jumlahtindaklanjutproses = DB::table('tindaklanjutbpk')
+                        ->where('idtemuan','=',$idtemuan)
+                        ->where('status','=',4)
+                        ->count();
                     if ($row->status == 1){
                         $btn = '<div class="btn-group" role="group">
                             <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm edittemuan">Edit</a>';
@@ -34,9 +40,13 @@ class TemuanController extends Controller
 
                     }else if($row->status == 2){
                         $btn = '<div class="btn-group" role="group">
-                        <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Kirim" class="btn btn-success btn-sm ingatkanunit">Ingatkan Unit</a>';
+                        <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Kirim" class="btn btn-primary btn-sm ingatkanunit">Ingatkan Unit</a>';
+                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="lihattindaklanjut" class="btn btn-info btn-sm lihattindaklanjut">
+                                Lihat TL   <span class="badge badge-danger navbar-badge">'.$jumlahtindaklanjutproses.'</span></a>';
                         $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="selesai" class="btn btn-success btn-sm selesai">Selesai</a>';
-                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="tddl" class="btn btn-success btn-sm tddl">Tidak DDL</a>';
+                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="tddl" class="btn btn-danger btn-sm tddl">TDDL</a>';
+                    }else{
+                        $btn ="";
                     }
                     return $btn;
                 })
@@ -253,6 +263,36 @@ class TemuanController extends Controller
         $temuan = TemuanModel::find($id);
         if ($temuan){
             DB::table('temuan')->where('id','=',$id)->update(['status' => 2]);
+            return response()->json(['status'=>'berhasil']);
+        }else{
+            return response()->json(['status'=>'gagal']);
+        }
+
+    }
+
+    public function statustemuanselesai($id){
+        $temuan = TemuanModel::find($id);
+        if ($temuan){
+            DB::table('temuan')->where('id','=',$id)->update([
+                'status' => 6,
+                'updated_by' => Auth::user()->id,
+                'updated_at' => now()
+            ]);
+            return response()->json(['status'=>'berhasil']);
+        }else{
+            return response()->json(['status'=>'gagal']);
+        }
+
+    }
+
+    public function statustemuantddl($id){
+        $temuan = TemuanModel::find($id);
+        if ($temuan){
+            DB::table('temuan')->where('id','=',$id)->update([
+                'status' => 7,
+                'updated_by' => Auth::user()->id,
+                'updated_at' => now()
+            ]);
             return response()->json(['status'=>'berhasil']);
         }else{
             return response()->json(['status'=>'gagal']);
