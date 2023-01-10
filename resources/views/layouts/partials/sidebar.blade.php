@@ -10,9 +10,15 @@
     <div class="sidebar">
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-            <div class="image">
-                <img src="{{ Auth::user()->gambaruser ? env('APP_URL')."/".asset('storage/'.Auth::user()->gambaruser):env('APP_URL')."/".asset('gambaruser/default.png')}}" class="img-circle elevation-2" alt="User Image">
-            </div>
+            @if(Auth::user())
+                <div class="image">
+                    <img src="{{ env('APP_URL')."/".asset('storage/'.Auth::user()->gambaruser)}}" class="img-circle elevation-2" alt="User Image">
+                </div>
+            @else
+                <div class="image">
+                    <img src="{{ env('APP_URL')."/".asset('gambaruser/default.png')}}" class="img-circle elevation-2" alt="User Image">
+                </div>
+            @endif
             <div class="info">
                 <a href="#" class="d-block">{{ Auth::user()->name?? ""}}</a>
             </div>

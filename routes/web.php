@@ -29,16 +29,18 @@ use App\Http\Controllers\BPK\Admin\TindakLanjutAdminController;
 |
 */
 
+Auth::routes();
+
 Route::get('/', function () {
     return view('auth.login');
 });
 
-Route::match(["GET", "POST"], "/register", function(){
+Route::match(["GET", "POST"], "register", function(){
     return redirect("/login");
 })->name("register");
 
 
-Auth::routes();
+
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::resource('kewenangan',KewenanganController::class);
