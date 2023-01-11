@@ -10,7 +10,7 @@ use Yajra\DataTables\DataTables;
 use App\Models\ReferensiUnit\DeputiModel;
 use App\Models\BPK\Admin\RekomendasiModel;
 
-class TemuanController extends Controller
+class RekomendasiController extends Controller
 {
     public function index(Request $request)
     {
