@@ -13,7 +13,7 @@ use App\Http\Controllers\ReferensiUnit\BiroController;
 use App\Http\Controllers\ReferensiUnit\BagianController;
 Use App\Http\Controllers\Administrasi\UserBiroBagianController;
 use App\Http\Controllers\BPK\Admin\TemuanController;
-use App\Http\Controllers\BPK\Bagian\TemuanBagianController;
+use App\Http\Controllers\BPK\Bagian\RekomendasiBagianController;
 use App\Http\Controllers\BPK\Bagian\TindakLanjutBagianController;
 use App\Http\Controllers\BPK\Admin\TindakLanjutAdminController;
 
@@ -60,7 +60,7 @@ Route::get('/kirimtemuankebpk/{id}',[TemuanController::class,'kirimtemuankebpk']
 Route::resource('bagian',BagianController::class)->middleware(['auth']);
 Route::resource('updateunitkerja',UserBiroBagianController::class);
 Route::resource('temuan',TemuanController::class)->middleware('auth');
-Route::resource('temuanbpkbagian',TemuanBagianController::class)->middleware('cekoperatorbagian');
+Route::resource('temuanbpkbagian',RekomendasiBagianController::class)->middleware('cekoperatorbagian');
 Route::get('tindaklanjutbagian/{idtemuan}',[TindakLanjutBagianController::class,'tampiltindaklanjut'])->name('tindaklanjutbagian')->middleware(['cekpemiliktemuan']);
 Route::post('getdatatindaklanjut', [TindakLanjutBagianController::class,'getdatatindaklanjut'])->name('getdatatindaklanjut');
 Route::resource('kelolatindaklanjut',TindakLanjutBagianController::class)->middleware(['cekoperatorbagian','cekpemiliktemuan']);

@@ -8,21 +8,21 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 use App\Models\ReferensiUnit\DeputiModel;
-use App\Models\BPK\Admin\TemuanModel;
+use App\Models\BPK\Admin\RekomendasiModel;
 
 class TemuanController extends Controller
 {
     public function index(Request $request)
     {
 
-        $this->authorize('view',TemuanModel::class);
+        $this->authorize('view',RekomendasiModel::class);
 
         $judul = 'List temuan';
         $datadeputi = DeputiModel::all();
         $datatahunanggaran = DB::table('tahunanggaran')->get();
 
         if ($request->ajax()) {
-            $data = TemuanModel::all();
+            $data = RekomendasiModel::all();
 
             return Datatables::of($data)
                 ->addIndexColumn()
@@ -104,7 +104,7 @@ class TemuanController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('create',TemuanModel::class);
+        $this->authorize('create',RekomendasiModel::class);
 
         $userid = auth()->id();
         $saveBtn = $request->get('saveBtn');
@@ -136,7 +136,7 @@ class TemuanController extends Controller
 
         ]);
 
-        TemuanModel::create(
+        RekomendasiModel::create(
             [
                 'tahunanggaran' => $request->get('tahunanggaran'),
                 'iddeputi' => $request->get('iddeputi'),
@@ -175,8 +175,8 @@ class TemuanController extends Controller
      */
     public function edit($id)
     {
-        $this->authorize('update',TemuanModel::class);
-        $menu = TemuanModel::find($id);
+        $this->authorize('update',RekomendasiModel::class);
+        $menu = RekomendasiModel::find($id);
         return response()->json($menu);
     }
 
@@ -189,7 +189,7 @@ class TemuanController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->authorize('update',TemuanModel::class);
+        $this->authorize('update',RekomendasiModel::class);
 
         $userid = auth()->id();
         $saveBtn = $request->get('saveBtn');
@@ -220,7 +220,7 @@ class TemuanController extends Controller
 
         ]);
 
-        TemuanModel::where('id',$id)->update(
+        RekomendasiModel::where('id',$id)->update(
             [
                 'tahunanggaran' => $request->get('tahunanggaran'),
                 'iddeputi' => $request->get('iddeputi'),
@@ -249,10 +249,10 @@ class TemuanController extends Controller
     public function destroy($id)
     {
 
-        $this->authorize('delete',TemuanModel::class);
-        $status = DB::table('temuan')->where('id','=',$id)->value('status');
+        $this->authorize('delete',RekomendasiModel::class);
+        $status = DB::table('rekomendasi')->where('id','=',$id)->value('status');
         if ($status == 1){
-            temuanModel::find($id)->delete();
+            RekomendasiModel::find($id)->delete();
             return response()->json(['status'=>'berhasil']);
         }else{
             return response()->json(['status'=>'gagal']);
@@ -260,9 +260,9 @@ class TemuanController extends Controller
     }
 
     public function kirimtemuankeunit($id){
-        $temuan = TemuanModel::find($id);
+        $temuan = RekomendasiModel::find($id);
         if ($temuan){
-            DB::table('temuan')->where('id','=',$id)->update(['status' => 2]);
+            DB::table('rekomendasi')->where('id','=',$id)->update(['status' => 2]);
             return response()->json(['status'=>'berhasil']);
         }else{
             return response()->json(['status'=>'gagal']);
@@ -271,9 +271,9 @@ class TemuanController extends Controller
     }
 
     public function statustemuanselesai($id){
-        $temuan = TemuanModel::find($id);
+        $temuan = RekomendasiModel::find($id);
         if ($temuan){
-            DB::table('temuan')->where('id','=',$id)->update([
+            DB::table('rekomendasi')->where('id','=',$id)->update([
                 'status' => 6,
                 'updated_by' => Auth::user()->id,
                 'updated_at' => now()
@@ -286,9 +286,9 @@ class TemuanController extends Controller
     }
 
     public function statustemuantddl($id){
-        $temuan = TemuanModel::find($id);
+        $temuan = RekomendasiModel::find($id);
         if ($temuan){
-            DB::table('temuan')->where('id','=',$id)->update([
+            DB::table('rekomendasi')->where('id','=',$id)->update([
                 'status' => 7,
                 'updated_by' => Auth::user()->id,
                 'updated_at' => now()

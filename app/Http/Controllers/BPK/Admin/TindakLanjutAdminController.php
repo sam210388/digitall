@@ -18,8 +18,8 @@ class TindakLanjutAdminController extends Controller
     }
     public function tampiltindaklanjut($idtemuan){
         $judul = 'Data Tindak Lanjut';
-        $rekomendasi = DB::table('temuan')->where('id','=',$idtemuan)->value('rekomendasi');
-        $nilai = DB::table('temuan')->where('id','=',$idtemuan)->value('nilai');
+        $rekomendasi = DB::table('rekomendasi')->where('id','=',$idtemuan)->value('rekomendasi');
+        $nilai = DB::table('rekomendasi')->where('id','=',$idtemuan)->value('nilai');
         return view('BPK.Admin.tindaklanjutadmin',[
             "judul"=>$judul,
             "rekomendasi" => $rekomendasi,

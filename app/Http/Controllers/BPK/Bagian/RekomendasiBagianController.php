@@ -7,9 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
-use App\Models\BPK\Bagian\TemuanBagianModel;
+use App\Models\BPK\Bagian\RekomendasiBagianModel;
 
-class TemuanBagianController extends Controller
+class RekomendasiBagianController extends Controller
 {
     public function __construct()
     {
@@ -23,7 +23,7 @@ class TemuanBagianController extends Controller
         $judul = 'List temuan';
 
         if ($request->ajax()) {
-            $data = TemuanBagianModel::where(
+            $data = RekomendasiBagianModel::where(
                 [
                     ['idbagian','=',$idbagian],
                     ['status','<>',1]

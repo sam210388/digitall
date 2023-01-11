@@ -2,12 +2,12 @@
 
 namespace App\Policies\BPK\Admin;
 
-use App\Models\BPK\Admin\TemuanModel;
+use App\Models\BPK\Admin\RekomendasiModel;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\DB;
 
-class TemuanPolicy
+class RekomendasiPolicy
 {
     use HandlesAuthorization;
 
@@ -51,7 +51,7 @@ class TemuanPolicy
      * @param  \App\Models\TemuanModel  $temuanModel
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, TemuanModel $temuanModel)
+    public function update(User $user, RekomendasiModel $temuanModel)
     {
         return DB::table('role_users')
                 ->where('iduser','=',$user->iduser)

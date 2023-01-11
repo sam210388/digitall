@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\BPK\Bagian;
 
 use App\Http\Controllers\Controller;
-use App\Models\BPK\Bagian\TemuanBagianModel;
+use App\Models\BPK\Bagian\RekomendasiBagianModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
