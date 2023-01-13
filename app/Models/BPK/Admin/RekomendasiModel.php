@@ -11,7 +11,7 @@ class RekomendasiModel extends Model
 
     protected $table = 'rekomendasi';
 
-    protected $fillable = ['tahunanggaran','iddeputi','idbiro','idbagian','kondisi','kriteria','sebab','akibat','nilai',
+    protected $fillable = ['idtemuan','iddeputi','idbiro','idbagian','nilai',
         'rekomendasi','bukti','status','created_by'];
 
 }

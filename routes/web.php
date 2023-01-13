@@ -16,6 +16,7 @@ use App\Http\Controllers\BPK\Admin\RekomendasiController;
 use App\Http\Controllers\BPK\Bagian\RekomendasiBagianController;
 use App\Http\Controllers\BPK\Bagian\TindakLanjutBagianController;
 use App\Http\Controllers\BPK\Admin\TindakLanjutAdminController;
+use App\Http\Controllers\BPK\Admin\TemuanController;
 
 
 /*
@@ -41,7 +42,7 @@ Route::match(["GET", "POST"], "register", function(){
 
 
 
-
+//ADMINISTRASI APLIKASI
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::resource('kewenangan',KewenanganController::class);
 Route::any('/tampillistmenu',[MenuController::class,'tampillistmenu'])->name('tampillistmenu');
@@ -51,33 +52,40 @@ Route::resource('kewenanganmenu',KewenanganMenuController::class);
 Route::resource('kewenanganuser',KewenanganUserController::class);
 Route::any('/editpassword/{id}',[AdministrasiUserController::class,'editpassword']);
 Route::resource('kelolauser',AdministrasiUserController::class);
+
+//REFERENSI UNIT KERJA
 Route::resource('deputi',DeputiController::class);
 Route::resource('biro',BiroController::class);
 Route::post('/ambildatabiro',[BagianController::class,'dapatkandatabiro'])->name('ambildatabiro');
 Route::post('/ambildatabagian',[BagianController::class,'dapatkandatabagian'])->name('ambildatabagian');
-Route::get('/kirimtemuankeunit/{id}',[RekomendasiController::class,'kirimtemuankeunit'])->name('kirimtemuankeunit')->middleware(['auth','cekadminbpk']);
-Route::get('/kirimtemuankebpk/{id}',[RekomendasiController::class,'kirimtemuankebpk'])->name('kirimtemuankebpk')->middleware(['auth','cekadminbpk']);
 Route::resource('bagian',BagianController::class)->middleware(['auth']);
 Route::resource('updateunitkerja',UserBiroBagianController::class);
-Route::resource('temuan',RekomendasiController::class)->middleware('auth');
-Route::resource('temuanbpkbagian',RekomendasiBagianController::class)->middleware('cekoperatorbagian');
-Route::get('tindaklanjutbagian/{idtemuan}',[TindakLanjutBagianController::class,'tampiltindaklanjut'])->name('tindaklanjutbagian')->middleware(['cekpemiliktemuan']);
-Route::post('getdatatindaklanjut', [TindakLanjutBagianController::class,'getdatatindaklanjut'])->name('getdatatindaklanjut');
-Route::resource('kelolatindaklanjut',TindakLanjutBagianController::class)->middleware(['cekoperatorbagian','cekpemiliktemuan']);
-Route::get('/ajukankeirtama/{idtindaklanjut}',[TindakLanjutBagianController::class,'ajukankeirtama'])->name('ajukankeirtama')->middleware(['cekpemiliktemuan']);
-Route::get('/statustemuanselesai/{id}',[RekomendasiController::class,'statustemuanselesai'])->name('statustemuanselesai')->middleware(['auth','cekadminbpk']);
-Route::get('/statustemuantddl/{id}',[RekomendasiController::class,'statustemuantddl'])->name('statustemuantddl')->middleware(['auth','cekadminbpk']);
-Route::get('lihattindaklanjutbagian/{idtemuan}',[TindakLanjutAdminController::class,'tampiltindaklanjut'])->name('lihattindaklanjutbagian')->middleware(['cekadminbpk']);
+
+//ADMIN BPK
+Route::resource('temuan',TemuanController::class)->middleware(['auth','cekadminbpk']);
+Route::get('tampilrekomendasi/{idtemuan}',[RekomendasiController::class,'tampilrekomendasi'])->name('tampilrekomendasi')->middleware(['auth','cekadminbpk']);
+Route::post('getdatarekomendasi}',[RekomendasiController::class,'getDataRekomendasi'])->name('getdatarekomendasi')->middleware(['auth','cekadminbpk']);
+Route::get('/kirimrekomendasikeunit/{id}',[RekomendasiController::class,'kirimrekomendasikeunit'])->name('kirimrekomendasikeunit')->middleware(['auth','cekadminbpk']);
+Route::resource('rekomendasi',RekomendasiController::class)->middleware(['auth','cekadminbpk']);
+Route::get('/statusrekomendasiselesai/{id}',[RekomendasiController::class,'statusrekomendasiselesai'])->name('statusrekomendasiselesai')->middleware(['auth','cekadminbpk']);
+Route::get('/statusrekomendasitddl/{id}',[RekomendasiController::class,'statustemuantddl'])->name('statustemuantddl')->middleware(['auth','cekadminbpk']);
+Route::get('lihattindaklanjutbagian/{idrekomendasi}',[TindakLanjutAdminController::class,'tampiltindaklanjut'])->name('lihattindaklanjutbagian')->middleware(['cekadminbpk']);
 Route::get('/ajukankebpk/{idtindaklanjut}',[TindakLanjutAdminController::class,'ajukankebpk'])->name('ajukankebpk')->middleware(['cekadminbpk']);
 Route::get('/tindaklanjutselesai/{idtindaklanjut}',[TindakLanjutAdminController::class,'tindaklanjutselesai'])->name('tindaklanjutselesai')->middleware(['cekadminbpk']);
 Route::post('getdatatindaklanjutbagian', [TindakLanjutAdminController::class,'getdatatindaklanjutbagian'])->name('getdatatindaklanjutbagian');
 Route::post('simpanpenjelasan', [TindakLanjutAdminController::class,'simpanpenjelasan'])->name('simpanpenjelasan')->middleware('cekadminbpk');
 Route::get('/tindaklanjuttddl/{idtindaklanjut}',[TindakLanjutAdminController::class,'tindaklanjuttddl'])->name('tindaklanjuttddl')->middleware(['cekadminbpk']);
-Route::post('simpantanggapan', [TindakLanjutBagianController::class,'simpantanggapan'])->name('simpanpenjelasan')->middleware('cekpemiliktemuan');
 Route::get('/lihattanggapan/{idtindaklanjut}',[TindakLanjutAdminController::class,'lihattanggapan'])->name('lihattanggapan')->middleware(['cekadminbpk']);
 
-
-
+//BAGIAN
+//BPK
+Route::resource('rekomendasibpkbagian',RekomendasiBagianController::class)->middleware('cekoperatorbagian');
+Route::get('tindaklanjutbagian/{idrekomendasi}',[TindakLanjutBagianController::class,'tampiltindaklanjut'])->name('tindaklanjutbagian')->middleware(['cekpemilikrekomendasi']);
+Route::post('getdatatindaklanjut', [TindakLanjutBagianController::class,'getdatatindaklanjut'])->name('getdatatindaklanjut')->middleware(['cekpemilikrekomendasi']);
+Route::resource('kelolatindaklanjut',TindakLanjutBagianController::class)->middleware(['cekoperatorbagian','cekpemilikrekomendasi']);
+Route::get('/ajukankeirtama/{idtindaklanjut}',[TindakLanjutBagianController::class,'ajukankeirtama'])->name('ajukankeirtama')->middleware(['cekpemilikrekomendasi']);
+Route::post('simpantanggapan', [TindakLanjutBagianController::class,'simpantanggapan'])->name('simpanpenjelasan')->middleware('cekpemilikrekomendasi');
+Route::get('getdetiltemuan/{idrekomendasi}',[RekomendasiBagianController::class,'getdetiltemuan'])->name('getdetiltemuan')->middleware(['cekpemilikrekomendasi']);
 
 
 

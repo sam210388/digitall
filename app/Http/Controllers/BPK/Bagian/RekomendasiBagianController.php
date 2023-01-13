@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\BPK\Bagian;
 
 use App\Http\Controllers\Controller;
+use App\Models\BPK\Admin\TemuanModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -41,6 +42,13 @@ class RekomendasiBagianController extends Controller
                     }
                     return $btn;
                 })
+                ->addColumn('temuan', function($row){
+                    $temuan = DB::table('temuan')->where('id','=',$row->idtemuan)->value('temuan');
+                    $btn = '<div class="btn-group" role="group">
+                            <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Detil Temuan" class="edit btn btn-primary btn-sm detiltemuan">'.$temuan.'</a>';
+
+                    return $btn;
+                })
                 ->addColumn('status',function ($row){
                     $idstatus = $row->status;
                     $uraianstatus = DB::table('statustemuan')->where('id','=',$idstatus)->value('uraianstatus');
@@ -51,13 +59,24 @@ class RekomendasiBagianController extends Controller
                     $namauser = DB::table('users')->where('id','=',$iduser)->value('name');
                     return $namauser;
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['action','temuan'])
                 ->make(true);
         }
 
-        return view('BPK.Bagian.temuanbagian',[
+        return view('BPK.Bagian.rekomendasibagian',[
             "judul"=>$judul
         ]);
+    }
+
+    public function getdetiltemuan($id)
+    {
+        $idtemuan = DB::table('rekomendasi')->where('id','=',$id)->value('idtemuan');
+        $datatemuan = TemuanModel::find($idtemuan);
+        if ($datatemuan){
+            return response()->json($datatemuan);
+        }else{
+            return response()->json(['status'=>'gagal']);
+        }
     }
 
 

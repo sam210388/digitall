@@ -16,23 +16,40 @@ class TindakLanjutAdminController extends Controller
         $this->middleware(['auth']);
 
     }
-    public function tampiltindaklanjut($idtemuan){
+    public function tampiltindaklanjut($idrekomendasi){
         $judul = 'Data Tindak Lanjut';
-        $rekomendasi = DB::table('rekomendasi')->where('id','=',$idtemuan)->value('rekomendasi');
-        $nilai = DB::table('rekomendasi')->where('id','=',$idtemuan)->value('nilai');
+        $datarekomendasi = DB::table('rekomendasi')->where('id','=',$idrekomendasi)->get();
+        foreach ($datarekomendasi as $dr){
+            $idtemuan = $dr->idtemuan;
+            $rekomendasi = $dr->rekomendasi;
+            $nilairekomendasi = $dr->nilai;
+        }
+        $datatemuan = DB::table('temuan')->where('id','=',$idtemuan)->get();
+        foreach ($datatemuan as $dt){
+            $temuan = $dt->temuan;
+            $sebab = $dt->sebab;
+            $akibat = $dt->akibat;
+            $kondisi = $dt->kondisi;
+        }
+
         return view('BPK.Admin.tindaklanjutadmin',[
             "judul"=>$judul,
-            "rekomendasi" => $rekomendasi,
-            "nilai" => $nilai,
-            "idtemuan" => $idtemuan
+            "temuan" => $temuan,
+            "sebab" => $sebab,
+            "akibat" => $akibat,
+            "kondisi" => $kondisi,
+            "nilai" => $nilairekomendasi,
+            "idrekomendasi" => $idrekomendasi,
+            "idtemuan" => $idtemuan,
+            "rekomendasi" => $rekomendasi
         ]);
     }
 
     public function getdatatindaklanjutbagian(Request $request)
     {
         if ($request->ajax()) {
-            $idtemuan = $request->get('idtemuan');
-            $data = TindakLanjutAdminModel::where('idtemuan',$idtemuan)->get();
+            $idrekomendasi = $request->get('idrekomendasi');
+            $data = TindakLanjutAdminModel::where('idrekomendasi',$idrekomendasi)->get();
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){

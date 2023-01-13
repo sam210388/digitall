@@ -18,27 +18,30 @@ class TindakLanjutBagianController extends Controller
         $this->middleware(['auth']);
 
     }
-    public function tampiltindaklanjut($idtemuan){
+    public function tampiltindaklanjut($idrekomendasi){
         $judul = 'Data Tindak Lanjut';
-        $rekomendasi = DB::table('temuan')->where('id','=',$idtemuan)->value('rekomendasi');
-        $nilai = DB::table('temuan')->where('id','=',$idtemuan)->value('nilai');
+        $rekomendasi = DB::table('rekomendasi')->where('id','=',$idrekomendasi)->get();
+        foreach ($rekomendasi as $r){
+            $uraianrekomendasi = $r->rekomendasi;
+            $nilai = $r->nilai;
+        }
         return view('BPK.Bagian.tindaklanjutbagian',[
             "judul"=>$judul,
-            "rekomendasi" => $rekomendasi,
+            "rekomendasi" => $uraianrekomendasi,
             "nilai" => $nilai,
-            "idtemuan" => $idtemuan
+            "idrekomendasi" => $idrekomendasi
         ]);
     }
 
     public function getdatatindaklanjut(Request $request)
     {
         if ($request->ajax()) {
-            $idtemuan = $request->get('idtemuan');
-            $data = TindakLanjutBagianModel::where('idtemuan',$idtemuan)->get();
+            $idrekomendasi = $request->get('idrekomendasi');
+            $data = TindakLanjutBagianModel::where('idrekomendasi',$idrekomendasi)->get();
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
-                    if ($row->status == 2){
+                    if ($row->status == 1){
                         $btn = '<div class="btn-group" role="group">';
                         if ($row->penjelasan != null){
                             $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Ajukan" class="edit btn btn-success btn-sm ajukankeirtama">Ajukan Ke Irtama
@@ -69,6 +72,11 @@ class TindakLanjutBagianController extends Controller
                     $tanggalcatat = date_format($tanggalcatat,'Y-m-d');
                     return $tanggalcatat;
                 })
+                ->addColumn('file',function ($row){
+                    $bukti = $row->file;
+                    $linkbukti = '<a href="'.env('APP_URL')."/".asset('storage')."/".$row->file.'" >Download</a>';
+                    return $linkbukti;
+                })
                 ->addColumn('updated_by',function ($row){
                     $iduser = $row->created_by;
                     $namauser = DB::table('users')->where('id','=',$iduser)->value('name');
@@ -80,7 +88,7 @@ class TindakLanjutBagianController extends Controller
                     $tanggalupdate = date_format($tanggalupdate,'Y-m-d');
                     return $tanggalupdate;
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['action','file'])
                 ->make(true);
         }
     }
@@ -102,7 +110,7 @@ class TindakLanjutBagianController extends Controller
         $nilaibukti = $request->get('nilaibukti');
         $keterangan = $request->get('keterangan');
         $objektemuan = $request->get('objektemuan');
-        $idtemuan = $request->get('idtemuan');
+        $idrekomendasi = $request->get('idrekomendasi');
         $created_by = Auth::id();
 
 
@@ -112,7 +120,7 @@ class TindakLanjutBagianController extends Controller
         }
 
         TindakLanjutBagianModel::create([
-            'idtemuan' => $idtemuan,
+            'idrekomendasi' => $idrekomendasi,
             'tanggaldokumen' => $tanggaldokumen,
             'nomordokumen' => $nomordokumen,
             'nilaibukti' => $nilaibukti,
@@ -135,7 +143,6 @@ class TindakLanjutBagianController extends Controller
 
     public function update(Request $request, $id){
         $validated = $request->validate([
-            'tanggaldokumen' => 'required|date|before_or_equal:now',
             'nomordokumen' => 'required',
             'nilaibukti' => 'required|numeric',
             'keterangan' => 'required',
@@ -147,7 +154,7 @@ class TindakLanjutBagianController extends Controller
         $nilaibukti = $request->get('nilaibukti');
         $keterangan = $request->get('keterangan');
         $objektemuan = $request->get('objektemuan');
-        $idtemuan = $request->get('idtemuan');
+        $idrekomendasi = $request->get('idrekomendasi');
         $filelama = $request->get('filelama');
         $updated_by = Auth::id();
 
@@ -163,7 +170,7 @@ class TindakLanjutBagianController extends Controller
         }
 
         TindakLanjutBagianModel::where('id',$id)->update([
-            'idtemuan' => $idtemuan,
+            'idrekomendasi' => $idrekomendasi,
             'tanggaldokumen' => $tanggaldokumen,
             'nomordokumen' => $nomordokumen,
             'nilaibukti' => $nilaibukti,

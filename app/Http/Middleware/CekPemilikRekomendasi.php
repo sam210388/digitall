@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class CekPemilikTemuan
+class CekPemilikRekomendasi
 {
     /**
      * Handle an incoming request.
@@ -18,72 +18,72 @@ class CekPemilikTemuan
      */
     public function handle(Request $request, Closure $next)
     {
-        if ($request->get('idtemuan')){
+        if ($request->get('idrekomendasi')){
             $idbagian = Auth::user()->idbagian;
-            $idtemuan = $request->get('idtemuan');
-            $bagian = DB::table('temuan')
-                ->where('id','=',$idtemuan)
+            $idrekomendasi = $request->get('idrekomendasi');
+            $bagian = DB::table('rekomendasi')
+                ->where('id','=',$idrekomendasi)
                 ->value('idbagian');
 
             if ($idbagian == $bagian){
                 return $next($request);
             }else{
-                abort(403,'Temuan Ini Bukan Milik Bagian Anda');
+                abort(403,'Rekomendasi Ini Bukan Milik Bagian Anda');
             }
         }else if ($request->route('kelolatindaklanjut')){
             $idtindaklanjut = $request->route('kelolatindaklanjut');
-            $idtemuan = DB::table('tindaklanjutbpk')->where('id','=',$idtindaklanjut)->value('idtemuan');
+            $idrekomendasi = DB::table('tindaklanjutbpk')->where('id','=',$idtindaklanjut)->value('idrekomendasi');
             $idbagian = Auth::user()->idbagian;
-            $bagian = DB::table('temuan')
-                ->where('id','=',$idtemuan)
+            $bagian = DB::table('rekomendasi')
+                ->where('id','=',$idrekomendasi)
                 ->value('idbagian');
 
             if ($idbagian == $bagian){
                 return $next($request);
             }else{
-                abort(403,'Temuan Ini Bukan Milik Bagian Anda');
+                abort(403,'Rekomendasi Ini Bukan Milik Bagian Anda');
             }
-        }else if ($request->route('idtemuan')){
-            $idtemuan = $request->route('idtemuan');
+        }else if ($request->route('idrekomendasi')){
+            $idrekomendasi = $request->route('idrekomendasi');
             $idbagian = Auth::user()->idbagian;
-            $bagian = DB::table('temuan')
-                ->where('id','=',$idtemuan)
+            $bagian = DB::table('rekomendasi')
+                ->where('id','=',$idrekomendasi)
                 ->value('idbagian');
 
             if ($idbagian == $bagian){
                 return $next($request);
             }else{
-                abort(403,'Temuan Ini Bukan Milik Bagian Anda');
+                abort(403,'Rekomendasi Ini Bukan Milik Bagian Anda');
             }
         }else if ($request->route('idtindaklanjut')){
             $idtindaklanjut = $request->route('idtindaklanjut');
-            $idtemuan =  DB::table('tindaklanjutbpk')
+            $idrekomendasi =  DB::table('tindaklanjutbpk')
                 ->where('id','=',$idtindaklanjut)
-                ->value('idtemuan');
+                ->value('idrekomendasi');
             $idbagian = Auth::user()->idbagian;
-            $bagian = DB::table('temuan')
-                ->where('id','=',$idtemuan)
+            $bagian = DB::table('rekomendasi')
+                ->where('id','=',$idrekomendasi)
                 ->value('idbagian');
 
             if ($idbagian == $bagian){
                 return $next($request);
             }else{
-                abort(403,'Temuan Ini Bukan Milik Bagian Anda');
+                abort(403,'Rekomendasi Ini Bukan Milik Bagian Anda');
             }
         }else if ($request->get('idtindaklanjut')){
             $idtindaklanjut = $request->get('idtindaklanjut');
-            $idtemuan =  DB::table('tindaklanjutbpk')
+            $idrekomendasi =  DB::table('tindaklanjutbpk')
                 ->where('id','=',$idtindaklanjut)
-                ->value('idtemuan');
+                ->value('idrekomendasi');
             $idbagian = Auth::user()->idbagian;
-            $bagian = DB::table('temuan')
-                ->where('id','=',$idtemuan)
+            $bagian = DB::table('rekomendasi')
+                ->where('id','=',$idrekomendasi)
                 ->value('idbagian');
 
             if ($idbagian == $bagian){
                 return $next($request);
             }else{
-                abort(403,'Temuan Ini Bukan Milik Bagian Anda');
+                abort(403,'Rekomendasi Ini Bukan Milik Bagian Anda');
             }
         }
 

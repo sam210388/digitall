@@ -10,7 +10,7 @@
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item"><a href="{{route('home')}}">Home</a></li>
                             <li class="breadcrumb-item active">{{$judul}}</li>
                         </ol>
                     </div><!-- /.col -->
@@ -31,10 +31,13 @@
                         </div>
                     </div>
                     <div class="card-header">
-                        <p>Nilai Temuan: {{isset($nilai)}}</p>
+                        <p>Temuan: {{$temuan}}</p>
                     </div>
                     <div class="card-header">
                         <p>Rekomendasi: {{$rekomendasi}}</p>
+                    </div>
+                    <div class="card-header">
+                        <p>Nilai Rekomendasi: {{isset($nilai)}}</p>
                     </div>
                     <div class="card-body">
                         <table id="tabeltindaklanjut" class="table table-bordered table-striped tabeltindaklanjut">
@@ -84,6 +87,7 @@
                                     <div class="modal-body">
                                         <form id="formpenjelasan" name="formpenjelasan" class="form-horizontal" enctype="multipart/form-data">
                                             <input type="hidden" name="idtindaklanjut" id="idtindaklanjut">
+                                            <input type="hidden" name="idrekomendasi" id="idrekomendasi" value="{{$idrekomendasi}}">
                                             <input type="hidden" name="idtemuan" id="idtemuan" value="{{$idtemuan}}">
                                             <div class="form-group">
                                                 <label for="penjelasan" class="col-sm-6 control-label">Penjelasan</label>
@@ -132,7 +136,7 @@
                     {"width":"5%"},
                 );
             });
-            var idtemuan = document.getElementById('idtemuan').value;
+            var idrekomendasi = document.getElementById('idrekomendasi').value;
             var table = $('.tabeltindaklanjut').DataTable({
                 fixedColumn:true,
                 scrollX:"100%",
@@ -146,7 +150,7 @@
                     "type": "POST",
                     "data": function (d){
                         d._token = "{{ csrf_token() }}";
-                        d.idtemuan = idtemuan;
+                        d.idrekomendasi = idrekomendasi;
                     }
                 },
                 columns: [
@@ -183,7 +187,8 @@
 
 
         $('#kembali').click(function () {
-            window.location="{{URL::to('temuanbpkbagian')}}"
+            $idtemuan = document.getElementById('idtemuan').value;
+            window.location="{{URL::to('tampilrekomendasi'.'/'.$idtemuan)}}"
         });
 
 
@@ -211,16 +216,27 @@
                     $('#penjelasan').val(data.penjelasan);
                     $('#saveBtn').hide();
                 },
-                error: function (xhr) {
-                    var errorsArr = [];
-                    $.each(xhr.responseJSON.errors, function(key,value) {
-                        errorsArr.push(value);
-                    });
-                    Swal.fire({
-                        title: 'Error!',
-                        text: errorsArr,
-                        icon: 'error'
-                    })
+                error: function (xhr, textStatus, errorThrown) {
+                    if(xhr.responseJSON.errors){
+                        var errorsArr = [];
+                        $.each(xhr.responseJSON.errors, function(key,value) {
+                            errorsArr.push(value);
+                        });
+                        Swal.fire({
+                            title: 'Error!',
+                            text: errorsArr,
+                            icon: 'error'
+                        })
+                    }else{
+                        var jsonValue = jQuery.parseJSON(xhr.responseText);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: jsonValue.message,
+                            icon: 'error'
+                        })
+                    }
+
+                    $('#saveBtn').html('Simpan Data');
                 },
             });
         });
@@ -267,16 +283,26 @@
                     $('#tabeltindaklanjut').DataTable().ajax.reload();
 
                 },
-                error: function (xhr) {
-                    var errorsArr = [];
-                    $.each(xhr.responseJSON.errors, function(key,value) {
-                        errorsArr.push(value);
-                    });
-                    Swal.fire({
-                        title: 'Error!',
-                        text: errorsArr,
-                        icon: 'error'
-                    })
+                error: function (xhr, textStatus, errorThrown) {
+                    if(xhr.responseJSON.errors){
+                        var errorsArr = [];
+                        $.each(xhr.responseJSON.errors, function(key,value) {
+                            errorsArr.push(value);
+                        });
+                        Swal.fire({
+                            title: 'Error!',
+                            text: errorsArr,
+                            icon: 'error'
+                        })
+                    }else{
+                        var jsonValue = jQuery.parseJSON(xhr.responseText);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: jsonValue.message,
+                            icon: 'error'
+                        })
+                    }
+
                     $('#saveBtn').html('Simpan Data');
                 },
             });
@@ -305,16 +331,26 @@
                         }
                         $('#tabeltindaklanjut').DataTable().ajax.reload();
                     },
-                    error: function (xhr) {
-                        var errorsArr = [];
-                        $.each(xhr.responseJSON.errors, function(key,value) {
-                            errorsArr.push(value);
-                        });
-                        Swal.fire({
-                            title: 'Error!',
-                            text: errorsArr,
-                            icon: 'error'
-                        })
+                    error: function (xhr, textStatus, errorThrown) {
+                        if(xhr.responseJSON.errors){
+                            var errorsArr = [];
+                            $.each(xhr.responseJSON.errors, function(key,value) {
+                                errorsArr.push(value);
+                            });
+                            Swal.fire({
+                                title: 'Error!',
+                                text: errorsArr,
+                                icon: 'error'
+                            })
+                        }else{
+                            var jsonValue = jQuery.parseJSON(xhr.responseText);
+                            Swal.fire({
+                                title: 'Error!',
+                                text: jsonValue.message,
+                                icon: 'error'
+                            })
+                        }
+
                         $('#saveBtn').html('Simpan Data');
                     },
                 });
@@ -345,16 +381,26 @@
                         }
                         $('#tabeltindaklanjut').DataTable().ajax.reload();
                     },
-                    error: function (xhr) {
-                        var errorsArr = [];
-                        $.each(xhr.responseJSON.errors, function(key,value) {
-                            errorsArr.push(value);
-                        });
-                        Swal.fire({
-                            title: 'Error!',
-                            text: errorsArr,
-                            icon: 'error'
-                        })
+                    error: function (xhr, textStatus, errorThrown) {
+                        if(xhr.responseJSON.errors){
+                            var errorsArr = [];
+                            $.each(xhr.responseJSON.errors, function(key,value) {
+                                errorsArr.push(value);
+                            });
+                            Swal.fire({
+                                title: 'Error!',
+                                text: errorsArr,
+                                icon: 'error'
+                            })
+                        }else{
+                            var jsonValue = jQuery.parseJSON(xhr.responseText);
+                            Swal.fire({
+                                title: 'Error!',
+                                text: jsonValue.message,
+                                icon: 'error'
+                            })
+                        }
+
                         $('#saveBtn').html('Simpan Data');
                     },
                 });
@@ -383,16 +429,26 @@
                         }
                         $('#tabeltindaklanjut').DataTable().ajax.reload();
                     },
-                    error: function (xhr) {
-                        var errorsArr = [];
-                        $.each(xhr.responseJSON.errors, function(key,value) {
-                            errorsArr.push(value);
-                        });
-                        Swal.fire({
-                            title: 'Error!',
-                            text: errorsArr,
-                            icon: 'error'
-                        })
+                    error: function (xhr, textStatus, errorThrown) {
+                        if(xhr.responseJSON.errors){
+                            var errorsArr = [];
+                            $.each(xhr.responseJSON.errors, function(key,value) {
+                                errorsArr.push(value);
+                            });
+                            Swal.fire({
+                                title: 'Error!',
+                                text: errorsArr,
+                                icon: 'error'
+                            })
+                        }else{
+                            var jsonValue = jQuery.parseJSON(xhr.responseText);
+                            Swal.fire({
+                                title: 'Error!',
+                                text: jsonValue.message,
+                                icon: 'error'
+                            })
+                        }
+
                         $('#saveBtn').html('Simpan Data');
                     },
                 });

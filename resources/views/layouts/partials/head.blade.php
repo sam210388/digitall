@@ -3,7 +3,13 @@
    <!-- CSRF Token -->
    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-   <title>{{ $judul?? "DigitAll" }}</title>
+   <title>
+       @isset($judul)
+           {{$judul}}
+       @else
+           Welcome To DigitAll
+       @endisset
+   </title>
   <link rel="icon" type="image/x-icon" href="{{env('APP_URL')."/".asset('/logo/logodigitall.png')}}">
 
   <!-- jQuery -->

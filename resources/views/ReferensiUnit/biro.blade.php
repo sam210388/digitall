@@ -233,16 +233,26 @@
                         $('#saveBtn').html('Simpan Data');
                         table.draw();
                     },
-                    error: function (xhr) {
-                        var errorsArr = [];
-                        $.each(xhr.responseJSON.errors, function(key,value) {
-                            errorsArr.push(value);
-                        });
-                        Swal.fire({
-                            title: 'Error!',
-                            text: errorsArr,
-                            icon: 'error'
-                        })
+                    error: function (xhr, textStatus, errorThrown) {
+                        if(xhr.responseJSON.errors){
+                            var errorsArr = [];
+                            $.each(xhr.responseJSON.errors, function(key,value) {
+                                errorsArr.push(value);
+                            });
+                            Swal.fire({
+                                title: 'Error!',
+                                text: errorsArr,
+                                icon: 'error'
+                            })
+                        }else{
+                            var jsonValue = jQuery.parseJSON(xhr.responseText);
+                            Swal.fire({
+                                title: 'Error!',
+                                text: jsonValue.message,
+                                icon: 'error'
+                            })
+                        }
+
                         $('#saveBtn').html('Simpan Data');
                     },
                 });
@@ -276,16 +286,26 @@
                             }
                             table.draw();
                         },
-                        error: function (xhr) {
-                            var errorsArr = [];
-                            $.each(xhr.responseJSON.errors, function(key,value) {
-                                errorsArr.push(value);
-                            });
-                            Swal.fire({
-                                title: 'Error!',
-                                text: errorsArr,
-                                icon: 'error'
-                            })
+                        error: function (xhr, textStatus, errorThrown) {
+                            if(xhr.responseJSON.errors){
+                                var errorsArr = [];
+                                $.each(xhr.responseJSON.errors, function(key,value) {
+                                    errorsArr.push(value);
+                                });
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: errorsArr,
+                                    icon: 'error'
+                                })
+                            }else{
+                                var jsonValue = jQuery.parseJSON(xhr.responseText);
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: jsonValue.message,
+                                    icon: 'error'
+                                })
+                            }
+
                             $('#saveBtn').html('Simpan Data');
                         },
                     });

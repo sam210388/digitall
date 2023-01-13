@@ -32,10 +32,10 @@
                         </div>
                     </div>
                     <div class="card-header">
-                        <p>Nilai Temuan: {{isset($nilai)}}</p>
+                        <p>Rekomendasi: {{$rekomendasi}}</p>
                     </div>
                     <div class="card-header">
-                        <p>Rekomendasi: {{$rekomendasi}}</p>
+                        <p>Nilai Rekomendasi: {{isset($nilai)}}</p>
                     </div>
                     <div class="card-body">
                         <table id="tabeltindaklanjut" class="table table-bordered table-striped tabeltindaklanjut">
@@ -85,7 +85,7 @@
                                     <div class="modal-body">
                                         <form id="formtindaklanjut" name="formtindaklanjut" class="form-horizontal" enctype="multipart/form-data">
                                             <input type="hidden" name="id" id="id">
-                                            <input type="hidden" name="idtemuan" id="idtemuan" value="{{$idtemuan}}">
+                                            <input type="hidden" name="idrekomendasi" id="idrekomendasi" value="{{$idrekomendasi}}">
                                             <input type="hidden" name="filelama" id="filelama">
                                             <div class="form-group">
                                                 <label for="TanggalDokumen" class="col-sm-6 control-label">Tanggal Dokumen</label>
@@ -166,7 +166,7 @@
                                     <div class="modal-body">
                                         <form id="formpenjelasan" name="formpenjelasan" class="form-horizontal" enctype="multipart/form-data">
                                             <input type="hidden" name="idtindaklanjut" id="idtindaklanjut">
-                                            <input type="hidden" name="idtemuan" id="idtemuan" value="{{$idtemuan}}">
+                                            <input type="hidden" name="idrekomendasi" id="idrekomendasi" value="{{$idrekomendasi}}">
                                             <div class="form-group">
                                                 <label for="penjelasan" class="col-sm-6 control-label">Penjelasan</label>
                                                 <div class="col-sm-12">
@@ -206,7 +206,7 @@
                     {"width":"5%"},
                 );
             });
-            var idtemuan = document.getElementById('idtemuan').value;
+            var idrekomendasi = document.getElementById('idrekomendasi').value;
             var table = $('.tabeltindaklanjut').DataTable({
                 fixedColumn:true,
                 scrollX:"100%",
@@ -220,7 +220,7 @@
                     "type": "POST",
                     "data": function (d){
                         d._token = "{{ csrf_token() }}";
-                        d.idtemuan = idtemuan;
+                        d.idrekomendasi = idrekomendasi;
                     }
                 },
                 columns: [
@@ -291,16 +291,26 @@
                     $('#objektemuan').val(data.objektemuan);
                     document.getElementById('aktuallinkbukti').href = "{{env('APP_URL')."/".asset('storage')}}"+"/"+data.file
                 },
-                error: function (xhr) {
-                    var errorsArr = [];
-                    $.each(xhr.responseJSON.errors, function(key,value) {
-                        errorsArr.push(value);
-                    });
-                    Swal.fire({
-                        title: 'Error!',
-                        text: errorsArr,
-                        icon: 'error'
-                    })
+                error: function (xhr, textStatus, errorThrown) {
+                    if(xhr.responseJSON.errors){
+                        var errorsArr = [];
+                        $.each(xhr.responseJSON.errors, function(key,value) {
+                            errorsArr.push(value);
+                        });
+                        Swal.fire({
+                            title: 'Error!',
+                            text: errorsArr,
+                            icon: 'error'
+                        })
+                    }else{
+                        var jsonValue = jQuery.parseJSON(xhr.responseText);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: jsonValue.message,
+                            icon: 'error'
+                        })
+                    }
+
                     $('#saveBtn').html('Simpan Data');
                 },
             });
@@ -355,16 +365,26 @@
                     $('#tabeltindaklanjut').DataTable().ajax.reload();
 
                 },
-                error: function (xhr) {
-                    var errorsArr = [];
-                    $.each(xhr.responseJSON.errors, function(key,value) {
-                        errorsArr.push(value);
-                    });
-                    Swal.fire({
-                        title: 'Error!',
-                        text: errorsArr,
-                        icon: 'error'
-                    })
+                error: function (xhr, textStatus, errorThrown) {
+                    if(xhr.responseJSON.errors){
+                        var errorsArr = [];
+                        $.each(xhr.responseJSON.errors, function(key,value) {
+                            errorsArr.push(value);
+                        });
+                        Swal.fire({
+                            title: 'Error!',
+                            text: errorsArr,
+                            icon: 'error'
+                        })
+                    }else{
+                        var jsonValue = jQuery.parseJSON(xhr.responseText);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: jsonValue.message,
+                            icon: 'error'
+                        })
+                    }
+
                     $('#saveBtn').html('Simpan Data');
                 },
             });
@@ -397,16 +417,26 @@
                         }
                         $('#tabeltindaklanjut').DataTable().ajax.reload();
                     },
-                    error: function (xhr) {
-                        var errorsArr = [];
-                        $.each(xhr.responseJSON.errors, function(key,value) {
-                            errorsArr.push(value);
-                        });
-                        Swal.fire({
-                            title: 'Error!',
-                            text: errorsArr,
-                            icon: 'error'
-                        })
+                    error: function (xhr, textStatus, errorThrown) {
+                        if(xhr.responseJSON.errors){
+                            var errorsArr = [];
+                            $.each(xhr.responseJSON.errors, function(key,value) {
+                                errorsArr.push(value);
+                            });
+                            Swal.fire({
+                                title: 'Error!',
+                                text: errorsArr,
+                                icon: 'error'
+                            })
+                        }else{
+                            var jsonValue = jQuery.parseJSON(xhr.responseText);
+                            Swal.fire({
+                                title: 'Error!',
+                                text: jsonValue.message,
+                                icon: 'error'
+                            })
+                        }
+
                         $('#saveBtn').html('Simpan Data');
                     },
                 });
@@ -442,16 +472,26 @@
                         }
                         $('#tabeltindaklanjut').DataTable().ajax.reload();
                     },
-                    error: function (xhr) {
-                        var errorsArr = [];
-                        $.each(xhr.responseJSON.errors, function(key,value) {
-                            errorsArr.push(value);
-                        });
-                        Swal.fire({
-                            title: 'Error!',
-                            text: errorsArr,
-                            icon: 'error'
-                        })
+                    error: function (xhr, textStatus, errorThrown) {
+                        if(xhr.responseJSON.errors){
+                            var errorsArr = [];
+                            $.each(xhr.responseJSON.errors, function(key,value) {
+                                errorsArr.push(value);
+                            });
+                            Swal.fire({
+                                title: 'Error!',
+                                text: errorsArr,
+                                icon: 'error'
+                            })
+                        }else{
+                            var jsonValue = jQuery.parseJSON(xhr.responseText);
+                            Swal.fire({
+                                title: 'Error!',
+                                text: jsonValue.message,
+                                icon: 'error'
+                            })
+                        }
+
                         $('#saveBtn').html('Simpan Data');
                     },
                 });
@@ -504,16 +544,26 @@
                     $('#tabeltindaklanjut').DataTable().ajax.reload();
 
                 },
-                error: function (xhr) {
-                    var errorsArr = [];
-                    $.each(xhr.responseJSON.errors, function(key,value) {
-                        errorsArr.push(value);
-                    });
-                    Swal.fire({
-                        title: 'Error!',
-                        text: errorsArr,
-                        icon: 'error'
-                    })
+                error: function (xhr, textStatus, errorThrown) {
+                    if(xhr.responseJSON.errors){
+                        var errorsArr = [];
+                        $.each(xhr.responseJSON.errors, function(key,value) {
+                            errorsArr.push(value);
+                        });
+                        Swal.fire({
+                            title: 'Error!',
+                            text: errorsArr,
+                            icon: 'error'
+                        })
+                    }else{
+                        var jsonValue = jQuery.parseJSON(xhr.responseText);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: jsonValue.message,
+                            icon: 'error'
+                        })
+                    }
+
                     $('#saveBtn').html('Simpan Data');
                 },
             });
