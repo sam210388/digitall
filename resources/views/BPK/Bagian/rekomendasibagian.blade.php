@@ -10,7 +10,7 @@
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item"><a href="{{route('home')}}">Home</a></li>
                             <li class="breadcrumb-item active">{{$judul}}</li>
                         </ol>
                     </div><!-- /.col -->
@@ -131,13 +131,13 @@
             --------------------------------------------
             --------------------------------------------*/
             // Setup - add a text input to each footer cell
-            $('#tabeltemuan tfoot th').each( function (i) {
-                var title = $('#tabeltemuan thead th').eq( $(this).index() ).text();
+            $('#tabelrekomendasi tfoot th').each( function (i) {
+                var title = $('#tabelrekomendasi thead th').eq( $(this).index() ).text();
                 $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
                     {"width":"5%"},
                 );
             });
-            var table = $('.tabeltemuan').DataTable({
+            var table = $('.tabelrekomendasi').DataTable({
                 fixedColumn:true,
                 scrollX:"100%",
                 autoWidth:true,
