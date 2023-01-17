@@ -5,43 +5,46 @@ namespace App\Http\Controllers\ReferensiAnggaran;
 use App\Libraries\BearerKey;
 use App\Http\Controllers\Controller;
 use App\Libraries\TarikDataMonsakti;
-use App\Models\ReferensiAnggaran\ProgramModel;
+use App\Models\ReferensiAnggaran\OutputModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 
-class ProgramController extends Controller
+class OutputController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
     }
-    function program(){
-        $judul = "List Program";
-        return view('ReferensiAnggaran.program',[
+    function output(){
+        $judul = "List Output";
+        return view('ReferensiAnggaran.output',[
             "judul"=>$judul
         ]);
     }
 
-    public function getListProgram(Request $request){
+    public function getListOutput(Request $request){
         if ($request->ajax()) {
-            $data = ProgramModel::all();
+            $data = OutputModel::all();
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->make(true);
         }
     }
 
-    function importprogram(){
+    function importoutput(){
         $tahunanggaran = session('tahunanggaran');
         $kodemodul = 'ADM';
         $tipedata = 'refUraian';
-        $variable = ['program'];
+        $variable = ['output'];
 
         $response = new TarikDataMonsakti();
         $response = $response->prosedurlengkap($tahunanggaran, $kodemodul, $tipedata, $variable);
-
+        $datainsert = [];
+        $dataisian = [];
         if ($response != "Gagal" or $response != "Expired"){
             $hasilasli = json_decode($response);
+            //echo json_encode($hasilasli);
             foreach ($hasilasli as $item => $value) {
                 if ($item == "TOKEN") {
                     foreach ($value as $data) {
@@ -56,33 +59,31 @@ class ProgramController extends Controller
                     foreach ($value as $data) {
                         $THANG = $data->THANG;
                         $KODE = $data->KODE;
+                        $KODEKEGIATAN = substr($KODE,0,4);
+                        $KODEOUTPUT = substr($KODE,5,3);
                         $DESKRIPSI = $data->DESKRIPSI;
-
-                        $where = array(
+                        $SATUAN = $data->SATUAN;
+                        $databaru = array(
                             'tahunanggaran' => $THANG,
-                            'kode' => $KODE
+                            'kode' => $KODE,
+                            'kodekegiatan' => $KODEKEGIATAN,
+                            'kodeoutput' => $KODEOUTPUT,
+                            'deskripsi' => $DESKRIPSI,
+                            'satuan' => $SATUAN
                         );
-
-                        $jumlah = ProgramModel::where($where)->get()->count();
-                        if ($jumlah == 0) {
-                            $data = array(
-                                'tahunanggaran' => $THANG,
-                                'kode' => $KODE,
-                                'uraianprogram' => $DESKRIPSI
-                            );
-                            ProgramModel::insert($data);
-                        }
+                        OutputModel::updateOrCreate(['kode' => $KODE,'tahunanggaran' => $tahunanggaran],$databaru);
                     }
                 }
             }
-            return redirect()->to('program')->with('status','Import Program Berhasil');
+            //DB::table('output')->upsert($datainsert,['tahunanggaran','kode']);
+            return redirect()->to('output')->with('status',"Import Output Berhasil");
         }else if ($response == "Expired"){
 
                 $tokenbaru = new BearerKey();
                 $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
-                return redirect()->to('program')->with(['status' => 'Token Expired']);
+                return redirect()->to('output')->with(['status' => 'Token Expired']);
         }else{
-            return redirect()->to('program')->with(['status' => 'Gagal, Data Terlalu Besar']);
+            return redirect()->to('output')->with(['status' => 'Gagal, Data Terlalu Besar']);
         }
     }
 }

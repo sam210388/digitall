@@ -25,6 +25,7 @@ class HomeController extends Controller
      */
     public function index()
     {
+        $tahunanggaran = session('tahunanggaran');
         $iduser = Auth::id();
         $role = DB::table('role_users')->where('iduser','=',$iduser)->pluck('idrole')->toArray();
 

@@ -30,18 +30,23 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="importprogram"> Import Program</a>
+                        <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="importrefstatus"> Import refstatus</a>
                         <h3 class="card-title">{{$judul}}</h3>
 
                     </div>
                     <div class="card-body">
-                        <table id="tabelprogram" class="table table-bordered table-striped tabelprogram">
+                        <table id="tabelrefstatus" class="table table-bordered table-striped tabelrefstatus">
                             <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Tahun Anggaran</th>
-                                <th>Kode</th>
-                                <th>Uraian</th>
+                                <th>ID Ref</th>
+                                <th>Kode Satker</th>
+                                <th>Kode History</th>
+                                <th>Jenis Revisi</th>
+                                <th>Revisi Ke</th>
+                                <th>Tanggal Revisi</th>
+                                <th>Pagu Belanja</th>
+                                <th>Action</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -49,9 +54,14 @@
                             <tfoot>
                             <tr>
                                 <th>No</th>
-                                <th>Tahun Anggaran</th>
-                                <th>Kode</th>
-                                <th>Uraian</th>
+                                <th>ID Ref</th>
+                                <th>Kode Satker</th>
+                                <th>Kode History</th>
+                                <th>Jenis Revisi</th>
+                                <th>Revisi Ke</th>
+                                <th>Tanggal Revisi</th>
+                                <th>Pagu Belanja</th>
+                                <th>Action</th>
                             </tr>
                             </tfoot>
                         </table>
@@ -70,26 +80,36 @@
             --------------------------------------------
             --------------------------------------------*/
             // Setup - add a text input to each footer cell
-            $('#tabelprogram tfoot th').each( function (i) {
-                var title = $('#tabelprogram thead th').eq( $(this).index() ).text();
+            $('#tabelrefstatus tfoot th').each( function (i) {
+                var title = $('#tabelrefstatus thead th').eq( $(this).index() ).text();
                 $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
                     {"width":"5%"},
                 );
             });
-            var table = $('.tabelprogram').DataTable({
+            var table = $('.tabelrefstatus').DataTable({
                 fixedColumn:true,
                 scrollX:"100%",
                 autoWidth:true,
                 processing: true,
                 serverSide: false,
                 dom: 'Bfrtip',
-                buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('getlistprogram')}}",
+                buttons: ['copy','excelHtml5','pdf','csv','print'],
+                ajax:"{{route('getlistrefstatus')}}",
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                    {data: 'tahunanggaran', name: 'tahunanggaran'},
-                    {data: 'kode', name: 'kode'},
-                    {data: 'uraianprogram', name: 'uraianprogram'},
+                    {data: 'idrefstatus', name: 'idrefstatus'},
+                    {data: 'kdsatker', name: 'kdsatker'},
+                    {data: 'kd_sts_history', name: 'kd_sts_history'},
+                    {data: 'jenis_revisi', name: 'jenis_revisi'},
+                    {data: 'revisi_ke', name: 'revisi_ke'},
+                    {data: 'tanggal_revisi', name: 'tanggal_revisi'},
+                    {data: 'pagu_belanja', name: 'pagu_belanja'},
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: true,
+                        searchable: true
+                    },
                 ],
             });
             table.buttons().container()
@@ -107,13 +127,11 @@
             Create Product Code
             --------------------------------------------
             --------------------------------------------*/
-            $('#importprogram').click(function (e) {
-                if( confirm("Apakah Anda Yakin Mau Import Program?")){
+            $('#importrefstatus').click(function (e) {
+                if( confirm("Apakah Anda Yakin Mau Import refstatus?")){
                     e.preventDefault();
                     $(this).html('Importing..');
-
-                    var idtemuan = $(this).data("id");
-                    window.location="{{URL::to('importprogram')}}";
+                    window.location="{{URL::to('importrefstatus')}}";
                 }
             });
 

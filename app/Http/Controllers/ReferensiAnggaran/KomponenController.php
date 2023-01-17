@@ -5,43 +5,44 @@ namespace App\Http\Controllers\ReferensiAnggaran;
 use App\Libraries\BearerKey;
 use App\Http\Controllers\Controller;
 use App\Libraries\TarikDataMonsakti;
-use App\Models\ReferensiAnggaran\ProgramModel;
+use App\Models\ReferensiAnggaran\KomponenModel;
+use App\Models\ReferensiAnggaran\SubOutputModel;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 
-class ProgramController extends Controller
+class KomponenController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
     }
-    function program(){
-        $judul = "List Program";
-        return view('ReferensiAnggaran.program',[
+    function komponen(){
+        $judul = "List Komponen";
+        return view('ReferensiAnggaran.komponen',[
             "judul"=>$judul
         ]);
     }
 
-    public function getListProgram(Request $request){
+    public function getListKomponen(Request $request){
         if ($request->ajax()) {
-            $data = ProgramModel::all();
+            $data = KomponenModel::all();
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->make(true);
         }
     }
 
-    function importprogram(){
+    function importkomponen(){
         $tahunanggaran = session('tahunanggaran');
         $kodemodul = 'ADM';
         $tipedata = 'refUraian';
-        $variable = ['program'];
+        $variable = ['komponen'];
 
         $response = new TarikDataMonsakti();
         $response = $response->prosedurlengkap($tahunanggaran, $kodemodul, $tipedata, $variable);
-
         if ($response != "Gagal" or $response != "Expired"){
             $hasilasli = json_decode($response);
+            //echo json_encode($hasilasli);
             foreach ($hasilasli as $item => $value) {
                 if ($item == "TOKEN") {
                     foreach ($value as $data) {
@@ -56,33 +57,33 @@ class ProgramController extends Controller
                     foreach ($value as $data) {
                         $THANG = $data->THANG;
                         $KODE = $data->KODE;
+                        $KODEKEGIATAN = substr($KODE,0,4);
+                        $KODEOUTPUT = substr($KODE,5,3);
+                        $KODESUBOUTPUT = substr($KODE,9,3);
+                        $KODEKOMPONEN = substr($KODE,13,3);
                         $DESKRIPSI = $data->DESKRIPSI;
-
-                        $where = array(
+                        $databaru = array(
                             'tahunanggaran' => $THANG,
-                            'kode' => $KODE
-                        );
+                            'kode' => $KODE,
+                            'kodekegiatan' => $KODEKEGIATAN,
+                            'kodeoutput' => $KODEOUTPUT,
+                            'kodesuboutput' => $KODESUBOUTPUT,
+                            'kodekomponen' => $KODEKOMPONEN,
+                            'deskripsi' => $DESKRIPSI
 
-                        $jumlah = ProgramModel::where($where)->get()->count();
-                        if ($jumlah == 0) {
-                            $data = array(
-                                'tahunanggaran' => $THANG,
-                                'kode' => $KODE,
-                                'uraianprogram' => $DESKRIPSI
-                            );
-                            ProgramModel::insert($data);
-                        }
+                        );
+                        KomponenModel::updateOrCreate(['kode' => $KODE,'tahunanggaran' => $tahunanggaran],$databaru);
                     }
                 }
             }
-            return redirect()->to('program')->with('status','Import Program Berhasil');
+            return redirect()->to('komponen')->with('status',"Import Komponen Berhasil");
         }else if ($response == "Expired"){
 
                 $tokenbaru = new BearerKey();
                 $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
-                return redirect()->to('program')->with(['status' => 'Token Expired']);
+                return redirect()->to('komponen')->with(['status' => 'Token Expired']);
         }else{
-            return redirect()->to('program')->with(['status' => 'Gagal, Data Terlalu Besar']);
+            return redirect()->to('komponen')->with(['status' => 'Gagal, Data Terlalu Besar']);
         }
     }
 }

@@ -37,6 +37,8 @@
   <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/pdfmake/pdfmake.min.js')}}"></script>
   <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/pdfmake/vfs_fonts.js')}}"></script>
   <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/datatables-buttons/js/buttons.html5.min.js')}}"></script>
+  <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/datatables-buttons/js/jszip.min.js')}}"></script>
+  <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/datatables-buttons/js/buttons.flash.min.js')}}"></script>
   <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/datatables-buttons/js/buttons.print.min.js')}}"></script>
   <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/sweetalert2/sweetalert2.min.js')}}"></script>
   <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/bootstrap-switch/js/bootstrap-switch.min.js')}}"></script>

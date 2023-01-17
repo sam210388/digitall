@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Administrasi\KewenanganController;
 use App\Http\Controllers\HomeController;
@@ -17,6 +18,11 @@ use App\Http\Controllers\BPK\Bagian\RekomendasiBagianController;
 use App\Http\Controllers\BPK\Bagian\TindakLanjutBagianController;
 use App\Http\Controllers\BPK\Admin\TindakLanjutAdminController;
 use App\Http\Controllers\BPK\Admin\TemuanController;
+use App\Http\Controllers\ReferensiAnggaran\ProgramController;
+use App\Http\Controllers\ReferensiAnggaran\KegiatanController;
+use App\Http\Controllers\ReferensiAnggaran\OutputController;
+use App\Http\Controllers\ReferensiAnggaran\SubOutputController;
+use App\Http\Controllers\ReferensiAnggaran\KomponenController;
 
 
 /*
@@ -33,7 +39,7 @@ use App\Http\Controllers\BPK\Admin\TemuanController;
 Auth::routes();
 
 Route::get('/', function () {
-    return view('auth.login');
+    return redirect("/login");
 });
 
 Route::match(["GET", "POST"], "register", function(){
@@ -87,5 +93,30 @@ Route::get('/ajukankeirtama/{idtindaklanjut}',[TindakLanjutBagianController::cla
 Route::post('simpantanggapan', [TindakLanjutBagianController::class,'simpantanggapan'])->name('simpanpenjelasan')->middleware('cekpemilikrekomendasi');
 Route::get('getdetiltemuan/{idrekomendasi}',[RekomendasiBagianController::class,'getdetiltemuan'])->name('getdetiltemuan')->middleware(['cekpemilikrekomendasi']);
 
+//referensi anggaran
+//program
+Route::get('program',[ProgramController::class,'program'])->name('program')->middleware('cekadminanggaran');
+Route::get('getlistprogram',[ProgramController::class,'getListProgram'])->name('getlistprogram')->middleware('cekadminanggaran');
+Route::get('importprogram',[ProgramController::class,'importprogram'])->name('importprogram')->middleware('cekadminanggaran');
+
+//Kegiatan
+Route::get('kegiatan',[KegiatanController::class,'kegiatan'])->name('kegiatan')->middleware('cekadminanggaran');
+Route::get('getlistkegiatan',[KegiatanController::class,'getListKegiatan'])->name('getlistkegiatan')->middleware('cekadminanggaran');
+Route::get('importkegiatan',[KegiatanController::class,'importkegiatan'])->name('importkegiatan')->middleware('cekadminanggaran');
+
+//output
+Route::get('output',[OutputController::class,'output'])->name('output')->middleware('cekadminanggaran');
+Route::get('getlistoutput',[OutputController::class,'getListOutput'])->name('getlistoutput')->middleware('cekadminanggaran');
+Route::get('importoutput',[OutputController::class,'importoutput'])->name('importoutput')->middleware('cekadminanggaran');
+
+//suboutput
+Route::get('suboutput',[SubOutputController::class,'suboutput'])->name('suboutput')->middleware('cekadminanggaran');
+Route::get('getlistsuboutput',[SubOutputController::class,'getListSubOutput'])->name('getlistsuboutput')->middleware('cekadminanggaran');
+Route::get('importsuboutput',[SubOutputController::class,'importsuboutput'])->name('importsuboutput')->middleware('cekadminanggaran');
+
+//komponen
+Route::get('komponen',[KomponenController::class,'komponen'])->name('komponen')->middleware('cekadminanggaran');
+Route::get('getlistkomponen',[KomponenController::class,'getListKomponen'])->name('getlistkomponen')->middleware('cekadminanggaran');
+Route::get('importkomponen',[KomponenController::class,'importkomponen'])->name('importkomponen')->middleware('cekadminanggaran');
 
 

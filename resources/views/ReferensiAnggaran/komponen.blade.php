@@ -30,18 +30,18 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="importprogram"> Import Program</a>
+                        <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="importkomponen"> Import komponen</a>
                         <h3 class="card-title">{{$judul}}</h3>
 
                     </div>
                     <div class="card-body">
-                        <table id="tabelprogram" class="table table-bordered table-striped tabelprogram">
+                        <table id="tabelkomponen" class="table table-bordered table-striped tabelkomponen">
                             <thead>
                             <tr>
                                 <th>No</th>
                                 <th>Tahun Anggaran</th>
                                 <th>Kode</th>
-                                <th>Uraian</th>
+                                <th>Deskripsi</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -51,7 +51,7 @@
                                 <th>No</th>
                                 <th>Tahun Anggaran</th>
                                 <th>Kode</th>
-                                <th>Uraian</th>
+                                <th>Deskripsi</th>
                             </tr>
                             </tfoot>
                         </table>
@@ -70,26 +70,26 @@
             --------------------------------------------
             --------------------------------------------*/
             // Setup - add a text input to each footer cell
-            $('#tabelprogram tfoot th').each( function (i) {
-                var title = $('#tabelprogram thead th').eq( $(this).index() ).text();
+            $('#tabelkomponen tfoot th').each( function (i) {
+                var title = $('#tabelkomponen thead th').eq( $(this).index() ).text();
                 $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
                     {"width":"5%"},
                 );
             });
-            var table = $('.tabelprogram').DataTable({
+            var table = $('.tabelkomponen').DataTable({
                 fixedColumn:true,
                 scrollX:"100%",
                 autoWidth:true,
                 processing: true,
                 serverSide: false,
                 dom: 'Bfrtip',
-                buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('getlistprogram')}}",
+                buttons: ['copy','excelHtml5','pdf','csv','print'],
+                ajax:"{{route('getlistkomponen')}}",
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'tahunanggaran', name: 'tahunanggaran'},
                     {data: 'kode', name: 'kode'},
-                    {data: 'uraianprogram', name: 'uraianprogram'},
+                    {data: 'deskripsi', name: 'deskripsi'},
                 ],
             });
             table.buttons().container()
@@ -107,13 +107,11 @@
             Create Product Code
             --------------------------------------------
             --------------------------------------------*/
-            $('#importprogram').click(function (e) {
-                if( confirm("Apakah Anda Yakin Mau Import Program?")){
+            $('#importkomponen').click(function (e) {
+                if( confirm("Apakah Anda Yakin Mau Import komponen?")){
                     e.preventDefault();
                     $(this).html('Importing..');
-
-                    var idtemuan = $(this).data("id");
-                    window.location="{{URL::to('importprogram')}}";
+                    window.location="{{URL::to('importkomponen')}}";
                 }
             });
 

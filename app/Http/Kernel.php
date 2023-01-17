@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\CekAdminOrAdminAnggaran;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -67,5 +68,6 @@ class Kernel extends HttpKernel
         'cekadminbpk' => \App\Http\Middleware\CekAdminOrAdminBPK::class,
         'cekoperatorbagian' => \App\Http\Middleware\CekOperatorBagian::class,
         'cekpemilikrekomendasi' => \App\Http\Middleware\CekPemilikRekomendasi::class,
+        'cekadminanggaran' => \App\Http\Middleware\CekAdminOrAdminAnggaran::class,
     ];
 }

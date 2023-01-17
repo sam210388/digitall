@@ -264,7 +264,7 @@
         });
 
         $('#kembali').click(function () {
-            window.location="{{URL::to('temuanbpkbagian')}}"
+            window.location="{{URL::to('rekomendasibpkbagian')}}"
         });
 
         /*------------------------------------------

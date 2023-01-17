@@ -12,6 +12,11 @@
                                 {{session('status')}}
                             </div>
                         @endif
+                            @if(session('datainsert'))
+                                <div class="alert alert-success">
+                                    {{session('datainsert')}}
+                                </div>
+                            @endif
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -30,18 +35,18 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="importprogram"> Import Program</a>
+                        <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="importoutput"> Import output</a>
                         <h3 class="card-title">{{$judul}}</h3>
 
                     </div>
                     <div class="card-body">
-                        <table id="tabelprogram" class="table table-bordered table-striped tabelprogram">
+                        <table id="tabeloutput" class="table table-bordered table-striped tabeloutput">
                             <thead>
                             <tr>
                                 <th>No</th>
                                 <th>Tahun Anggaran</th>
                                 <th>Kode</th>
-                                <th>Uraian</th>
+                                <th>Deskripsi</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -51,7 +56,7 @@
                                 <th>No</th>
                                 <th>Tahun Anggaran</th>
                                 <th>Kode</th>
-                                <th>Uraian</th>
+                                <th>Deskripsi</th>
                             </tr>
                             </tfoot>
                         </table>
@@ -70,26 +75,26 @@
             --------------------------------------------
             --------------------------------------------*/
             // Setup - add a text input to each footer cell
-            $('#tabelprogram tfoot th').each( function (i) {
-                var title = $('#tabelprogram thead th').eq( $(this).index() ).text();
+            $('#tabeloutput tfoot th').each( function (i) {
+                var title = $('#tabeloutput thead th').eq( $(this).index() ).text();
                 $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
                     {"width":"5%"},
                 );
             });
-            var table = $('.tabelprogram').DataTable({
+            var table = $('.tabeloutput').DataTable({
                 fixedColumn:true,
                 scrollX:"100%",
                 autoWidth:true,
                 processing: true,
                 serverSide: false,
                 dom: 'Bfrtip',
-                buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('getlistprogram')}}",
+                buttons: ['copy','excelHtml5','pdf','csv','print'],
+                ajax:"{{route('getlistoutput')}}",
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'tahunanggaran', name: 'tahunanggaran'},
                     {data: 'kode', name: 'kode'},
-                    {data: 'uraianprogram', name: 'uraianprogram'},
+                    {data: 'deskripsi', name: 'deskripsi'},
                 ],
             });
             table.buttons().container()
@@ -107,13 +112,11 @@
             Create Product Code
             --------------------------------------------
             --------------------------------------------*/
-            $('#importprogram').click(function (e) {
-                if( confirm("Apakah Anda Yakin Mau Import Program?")){
+            $('#importoutput').click(function (e) {
+                if( confirm("Apakah Anda Yakin Mau Import output?")){
                     e.preventDefault();
                     $(this).html('Importing..');
-
-                    var idtemuan = $(this).data("id");
-                    window.location="{{URL::to('importprogram')}}";
+                    window.location="{{URL::to('importoutput')}}";
                 }
             });
 
