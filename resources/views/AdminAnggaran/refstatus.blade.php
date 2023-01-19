@@ -44,7 +44,7 @@
                                 <th>Kode History</th>
                                 <th>Jenis Revisi</th>
                                 <th>Revisi Ke</th>
-                                <th>Tanggal Revisi</th>
+                                <th>Tanggal DIPA</th>
                                 <th>Pagu Belanja</th>
                                 <th>Action</th>
                             </tr>
@@ -59,7 +59,7 @@
                                 <th>Kode History</th>
                                 <th>Jenis Revisi</th>
                                 <th>Revisi Ke</th>
-                                <th>Tanggal Revisi</th>
+                                <th>Tanggal DIPA</th>
                                 <th>Pagu Belanja</th>
                                 <th>Action</th>
                             </tr>
@@ -102,7 +102,7 @@
                     {data: 'kd_sts_history', name: 'kd_sts_history'},
                     {data: 'jenis_revisi', name: 'jenis_revisi'},
                     {data: 'revisi_ke', name: 'revisi_ke'},
-                    {data: 'tanggal_revisi', name: 'tanggal_revisi'},
+                    {data: 'tgl_dipa', name: 'tgl_dipa'},
                     {data: 'pagu_belanja', name: 'pagu_belanja'},
                     {
                         data: 'action',
@@ -133,6 +133,33 @@
                     $(this).html('Importing..');
                     window.location="{{URL::to('importrefstatus')}}";
                 }
+            });
+
+            $('body').on('click', '.importanggaran', function () {
+                var id = $(this).data('id');
+                var kdsatker = id.substr(0,6);
+                var kd_sts_history = id.substr(7,3)
+                $.ajax({
+                    data: {kdsatker: kdsatker, kd_sts_history: kd_sts_history},
+                    url: "{{route('checkdataang')}}",
+                    type: "POST",
+                    dataType: 'json',
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        if(data == "Ada"){
+                            if( confirm("Apakah Anda Yakin Mau Import Ulang Data Anggaran ini?")){
+                                $(this).html('Importing..');
+                                window.location="{{URL::to('importanggaran')}}"+"/"+kdsatker+"/"+kd_sts_history;
+                            }
+                        }else{
+                            $(this).html('Importing..');
+                            window.location="{{URL::to('importanggaran')}}"+"/"+kdsatker+"/"+kd_sts_history;
+                        }
+                    },
+                });
+
+
             });
 
 

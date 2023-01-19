@@ -24,7 +24,7 @@
             <div class="container">
                 <div class="card">
                     <div class="card-header">
-                        <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="tambahuser"> Tambah Data</a>
+                        <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="importuser"> Tambah Data</a>
                         <h3 class="card-title">{{$judul}}</h3>
                     </div>
                     <div class="card-body">
@@ -170,7 +170,7 @@
                 serverSide: true,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('kelolauser.index')}}",
+                ajax:"{{route('getlistuserportal')}}",
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'name', name: 'name'},
@@ -193,20 +193,6 @@
                     .search( this.value )
                     .draw();
             } );
-
-            /*------------------------------------------
-            --------------------------------------------
-            Click to Button
-            --------------------------------------------
-            --------------------------------------------*/
-            $('#tambahuser').click(function () {
-                $('#saveBtn').val("tambah");
-                document.getElementById('gambarusernow').src ="{{env('APP_URL')."/".asset('storage/gambaruser/default.png')}}";
-                $('#id').val('');
-                $('#formuser').trigger("reset");
-                $('#modelHeading').html("Tambah User");
-                $('#ajaxModel').modal('show');
-            });
 
             /*------------------------------------------
             --------------------------------------------
@@ -356,7 +342,7 @@
                 }
             });
 
-            $('#importpegawai').click(function (e) {
+            $('#importuser').click(function (e) {
                 if( confirm("Apakah Anda Yakin Mau Import Pegawai dari SIAP?")){
                     e.preventDefault();
                     $(this).html('Importing..');

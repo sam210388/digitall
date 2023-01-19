@@ -4,16 +4,19 @@ namespace App\Libraries;
 
 class TarikDataMonsakti
 {
-    function tarikdata($token, $kodemodul, $tipedata, Array $variable)
+    function tarikdata($token, $kodemodul, $tipedata, Array $variable = null)
     {
-        $jumlahvariable = count($variable);
         $variabelopsional = '';
-        for ($i = 0; $i<=$jumlahvariable-1; $i++ ){
-            $variable = $variable[$i];
-            $variabelopsional = $variabelopsional . '/' . $variable;
+        if ($variable !=null){
+            $jumlahvariable = count($variable);
+            for ($i = 0; $i<=$jumlahvariable-1; $i++ ){
+                $variableisian = $variable[$i];
+                $variabelopsional = $variabelopsional . '/' . $variableisian;
+            }
+            $url = 'https://monsakti.kemenkeu.go.id/sitp-monsakti-omspan/webservice/API/' . $kodemodul . '/' . $tipedata . '/KL002' . $variabelopsional;
+        }else{
+            $url = 'https://monsakti.kemenkeu.go.id/sitp-monsakti-omspan/webservice/API/' . $kodemodul . '/' . $tipedata . '/KL002';
         }
-
-        $url = 'https://monsakti.kemenkeu.go.id/sitp-monsakti-omspan/webservice/API/' . $kodemodul . '/' . $tipedata . '/KL002' . $variabelopsional;
 
         $curl = curl_init();
         curl_setopt_array($curl, array(
@@ -50,7 +53,7 @@ class TarikDataMonsakti
         }
     }
 
-    function prosedurlengkap($tahunanggaran, $kodemodul, $tipedata, $variable){
+    function prosedurlengkap($tahunanggaran, $kodemodul, $tipedata, $variable = null){
         //ambil berarer key
         $token = new BearerKey();
         $token = $token->dapatkanbearerkey($tahunanggaran, $kodemodul);

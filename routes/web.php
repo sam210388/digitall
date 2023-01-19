@@ -23,6 +23,9 @@ use App\Http\Controllers\ReferensiAnggaran\KegiatanController;
 use App\Http\Controllers\ReferensiAnggaran\OutputController;
 use App\Http\Controllers\ReferensiAnggaran\SubOutputController;
 use App\Http\Controllers\ReferensiAnggaran\KomponenController;
+use App\Http\Controllers\AdminAnggaran\RefstatusController;
+use App\Http\Controllers\AdminAnggaran\DataAngController;
+use App\Http\Controllers\Administrasi\SiapAPIController;
 
 
 /*
@@ -58,6 +61,9 @@ Route::resource('kewenanganmenu',KewenanganMenuController::class);
 Route::resource('kewenanganuser',KewenanganUserController::class);
 Route::any('/editpassword/{id}',[AdministrasiUserController::class,'editpassword']);
 Route::resource('kelolauser',AdministrasiUserController::class);
+//IMPORT USER DARI SIAP
+Route::post('importsiap',[SiapAPIController::class,'importsiap'])->name('importsiap')->middleware('cekadmin');
+Route::get('userportal',[SiapAPIController::class,'userportal'])->name('userportal')->middleware('cekadmin');
 
 //REFERENSI UNIT KERJA
 Route::resource('deputi',DeputiController::class);
@@ -118,5 +124,15 @@ Route::get('importsuboutput',[SubOutputController::class,'importsuboutput'])->na
 Route::get('komponen',[KomponenController::class,'komponen'])->name('komponen')->middleware('cekadminanggaran');
 Route::get('getlistkomponen',[KomponenController::class,'getListKomponen'])->name('getlistkomponen')->middleware('cekadminanggaran');
 Route::get('importkomponen',[KomponenController::class,'importkomponen'])->name('importkomponen')->middleware('cekadminanggaran');
+
+
+//admin anggaran
+//refstatus
+Route::get('refstatus',[RefstatusController::class,'refstatus'])->name('refstatus')->middleware('cekadminanggaran');
+Route::get('getlistrefstatus',[RefstatusController::class,'getListRefstatus'])->name('getlistrefstatus')->middleware('cekadminanggaran');
+Route::get('importrefstatus',[RefstatusController::class,'importrefstatus'])->name('importrefstatus')->middleware('cekadminanggaran');
+Route::get('importanggaran/{kdsatker}/{kdstshistory}',[DataAngController::class,'importdataang'])->name('importanggaran')->middleware('cekadminanggaran');
+Route::post('checkdataang',[DataAngController::class,'checkdata'])->name('checkdataang')->middleware('cekadminanggaran');
+
 
 

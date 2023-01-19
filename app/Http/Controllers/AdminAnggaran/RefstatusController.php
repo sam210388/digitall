@@ -5,6 +5,7 @@ namespace App\Http\Controllers\AdminAnggaran;
 use App\Libraries\BearerKey;
 use App\Http\Controllers\Controller;
 use App\Libraries\TarikDataMonsakti;
+use App\Models\AdminAnggaran\RefStatusModel;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 
@@ -15,29 +16,50 @@ class RefstatusController extends Controller
         $this->middleware('auth');
     }
     function refstatus(){
-        $judul = "List Kegiatan";
-        return view('ReferensiAnggaran.kegiatan',[
+        $judul = "List RefStatus";
+        return view('AdminAnggaran.refstatus',[
             "judul"=>$judul
         ]);
     }
 
     public function getListRefstatus(Request $request){
+        $tahunanggaran = session('tahunanggaran');
         if ($request->ajax()) {
-            $data = KegiatanModel::all();
+            $data = RefStatusModel::where([
+                ['tahunanggaran','=',$tahunanggaran],
+                ['kd_sts_history','LIKE','B%']
+            ])->orwhere([
+                ['kd_sts_history','LIKE','C%'],
+                ['tahunanggaran','=',$tahunanggaran],
+                ['flag_update_coa','=',1]
+            ])->get();
             return Datatables::of($data)
                 ->addIndexColumn()
+                ->addColumn('action', function($row){
+                    if ($row->statusimport == 1){
+                        $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->kdsatker."/".$row->kd_sts_history.'" data-original-title="importanggaran" class="edit btn btn-primary btn-sm importanggaran">Import</a>';
+                    }else{
+                        $btn = '<div class="btn-group" role="group">
+                            <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->kdsatker."/".$row->kd_sts_history.'" data-original-title="importanggaran" class="btn btn-primary btn-sm importanggaran">Import</a>';
+                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->kdsatker."/".$row->kd_sts_history.'" data-original-title="exportanggaran" class="btn btn-success btn-sm exportanggaran">Export</a>';
+                    }
+
+
+                    return $btn;
+                })
+                ->rawColumns(['action'])
                 ->make(true);
         }
     }
 
     function importrefstatus(){
         $tahunanggaran = session('tahunanggaran');
-        $kodemodul = 'ADM';
-        $tipedata = 'refUraian';
-        $variable = ['refstatus'];
+        $kodemodul = 'ANG';
+        $tipedata = 'refSts';
 
         $response = new TarikDataMonsakti();
-        $response = $response->prosedurlengkap($tahunanggaran, $kodemodul, $tipedata, $variable);
+        $response = $response->prosedurlengkap($tahunanggaran, $kodemodul, $tipedata);
+        //echo json_encode($response);
 
         if ($response != "Gagal" or $response != "Expired"){
             $hasilasli = json_decode($response);
@@ -54,36 +76,60 @@ class RefstatusController extends Controller
             }
             foreach ($hasilasli as $item => $value) {
                 if ($item != "TOKEN") {
-                    foreach ($value as $data) {
-                        $THANG = $data->THANG;
-                        $KODE = $data->KODE;
-                        $DESKRIPSI = $data->DESKRIPSI;
+                    foreach ($value as $DATA) {
+                        $ID = $DATA->ID;
+                        $KODE_KEMENTERIAN = $DATA->KODE_KEMENTERIAN;
+                        $KDSATKER = $DATA->KDSATKER;
+                        $KODE_STS_HISTORY = $DATA->KODE_STS_HISTORY;
+                        $JENIS_REVISI = $DATA->JENIS_REVISI;
+                        $REVISIKE = $DATA->REVISI_KE;
+                        $PAGU_BELANJA = $DATA->PAGU_BELANJA;
+                        $NO_DIPA = $DATA->NO_DIPA;
+                        $TGL_DIPA = $DATA->TGL_DIPA;
+                        $TGL_DIPA = new \DateTime($TGL_DIPA);
+                        $TGL_DIPA = $TGL_DIPA->format('Y-m-d');
+                        $TGL_REVISI = new \DateTime($DATA->TGL_REVISI);
+                        $TGL_REVISI = $TGL_REVISI->format('Y-m-d');
+                        $APPROVE = $DATA->APPROVE;
+                        $APPROVE_SPAN = $DATA->APPROVE_SPAN;
+                        $VALIDATED = $DATA->VALIDATED;
+                        $FLAG_UPDATE_COA = $DATA->FLAG_UPDATE_COA;
+                        $OWNER = $DATA->OWNER;
+                        $DIGITAL_STAMP = $DATA->DIGITAL_STAMP;
 
-                        $where = array(
-                            'tahunanggaran' => $THANG,
-                            'kode' => $KODE
+                        $data = array(
+                            'idrefstatus' => $ID,
+                            'tahunanggaran' => session('tahunanggaran'),
+                            'kode_kementerian' => $KODE_KEMENTERIAN,
+                            'kdsatker' => $KDSATKER,
+                            'kd_sts_history' => $KODE_STS_HISTORY,
+                            'jenis_revisi' => $JENIS_REVISI,
+                            'revisi_ke' => $REVISIKE,
+                            'pagu_belanja' => $PAGU_BELANJA,
+                            'no_dipa' => $NO_DIPA,
+                            'tgl_dipa' => $TGL_DIPA,
+                            'tgl_revisi' => $TGL_REVISI,
+                            'approve' => $APPROVE,
+                            'approve_span' => $APPROVE_SPAN,
+                            'validated' => $VALIDATED,
+                            'flag_update_coa' => $FLAG_UPDATE_COA,
+                            'owner' => $OWNER,
+                            'digital_stamp' => $DIGITAL_STAMP,
+                            'statusimport' => 1
                         );
-
-                        $jumlah = KegiatanModel::where($where)->get()->count();
-                        if ($jumlah == 0) {
-                            $data = array(
-                                'tahunanggaran' => $THANG,
-                                'kode' => $KODE,
-                                'deskripsi' => $DESKRIPSI
-                            );
-                            KegiatanModel::insert($data);
-                        }
+                        RefStatusModel::updateOrCreate(['idrefstatus' => $ID],$data);
                     }
                 }
             }
-            return redirect()->to('kegiatan')->with('status','Import Kegiatan Berhasil');
+            return redirect()->to('refstatus')->with('status','Import Refstatus Berhasil');
         }else if ($response == "Expired"){
 
                 $tokenbaru = new BearerKey();
                 $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
-                return redirect()->to('kegiatan')->with(['status' => 'Token Expired']);
+                return redirect()->to('refstatus')->with(['status' => 'Token Expired']);
         }else{
-            return redirect()->to('kegiatan')->with(['status' => 'Gagal, Data Terlalu Besar']);
+            return redirect()->to('refstatus')->with(['status' => 'Gagal, Data Terlalu Besar']);
         }
     }
+
 }

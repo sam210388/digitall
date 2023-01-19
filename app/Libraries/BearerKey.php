@@ -82,7 +82,7 @@ class BearerKey
         }else{
             DB::table('tokenapihistory')
                 ->insert([
-                    'tahunanggarn' => $tahunanggaran,
+                    'tahunanggaran' => $tahunanggaran,
                     'modul' => $kodemodul,
                     'token' => $tokenbaru
                 ]);
