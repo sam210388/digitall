@@ -25,7 +25,6 @@ use App\Http\Controllers\ReferensiAnggaran\SubOutputController;
 use App\Http\Controllers\ReferensiAnggaran\KomponenController;
 use App\Http\Controllers\AdminAnggaran\RefstatusController;
 use App\Http\Controllers\AdminAnggaran\DataAngController;
-use App\Http\Controllers\Administrasi\SiapAPIController;
 
 
 /*
@@ -62,8 +61,8 @@ Route::resource('kewenanganuser',KewenanganUserController::class);
 Route::any('/editpassword/{id}',[AdministrasiUserController::class,'editpassword']);
 Route::resource('kelolauser',AdministrasiUserController::class);
 //IMPORT USER DARI SIAP
-Route::post('importsiap',[SiapAPIController::class,'importsiap'])->name('importsiap')->middleware('cekadmin');
-Route::get('userportal',[SiapAPIController::class,'userportal'])->name('userportal')->middleware('cekadmin');
+Route::get('importsiap',[AdministrasiUserController::class,'importsiap'])->name('importsiap')->middleware('cekadmin');
+
 
 //REFERENSI UNIT KERJA
 Route::resource('deputi',DeputiController::class);
@@ -72,6 +71,7 @@ Route::post('/ambildatabiro',[BagianController::class,'dapatkandatabiro'])->name
 Route::post('/ambildatabagian',[BagianController::class,'dapatkandatabagian'])->name('ambildatabagian');
 Route::resource('bagian',BagianController::class)->middleware(['auth']);
 Route::resource('updateunitkerja',UserBiroBagianController::class);
+Route::get('importunit',[BagianController::class,'importunit'])->middleware('cekadmin');
 
 //ADMIN BPK
 Route::resource('temuan',TemuanController::class)->middleware(['auth','cekadminbpk']);

@@ -7,6 +7,13 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
+                        <div class="col-sm-6">
+                            @if(session('status'))
+                                <div class="alert alert-success">
+                                    {{session('status')}}
+                                </div>
+                            @endif
+                        </div>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -24,7 +31,10 @@
             <div class="container">
                 <div class="card">
                     <div class="card-header">
-                        <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="tambahuser"> Tambah Data</a>
+                        <div class="btn-group float-sm-right" role="group">
+                            <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="tambahuser"> Tambah</a>
+                            <a class="btn btn-primary float-sm-right" href="javascript:void(0)" id="importuser"> Import</a>
+                        </div>
                         <h3 class="card-title">{{$judul}}</h3>
                     </div>
                     <div class="card-body">
@@ -356,7 +366,7 @@
                 }
             });
 
-            $('#importpegawai').click(function (e) {
+            $('#importuser').click(function (e) {
                 if( confirm("Apakah Anda Yakin Mau Import Pegawai dari SIAP?")){
                     e.preventDefault();
                     $(this).html('Importing..');

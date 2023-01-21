@@ -198,4 +198,57 @@ class AdministrasiUserController extends Controller
         return response()->json(['status'=>'berhasil']);
 
     }
+
+    //import user dari siap
+    function importsiap(){
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://siap.dpr.go.id/api-rest/angestellter',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => 'geheimagent=s4mb3n3k3YP4ttY',
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/x-www-form-urlencoded',
+                'Cookie: PHPSESSID=ru0ive16k7a7lpo57kljts8dh5'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        curl_close($curl);
+
+        $hasil = json_decode($response);
+        //hapus dlu tabel nya
+        DB::table('apisiapuser')->truncate();
+
+        foreach ($hasil as $item){
+           $id = $item->id;
+           $nama = $item->nama;
+           $nip = $item->nip;
+           $nama_satker = $item->nama_satker;
+           $id_satker = $item->id_satker;
+           $email = $item->email;
+           $id_subsatker = $item->id_subsatker;
+
+           $data = array(
+               'id' => $id,
+               'nama' => $nama,
+               'nip' => $nip,
+               'nama_satker' => $nama_satker,
+               'id_satker' => $id_satker,
+               'email' => $email,
+               'id_subsatker' => $id_subsatker
+           );
+
+           DB::table('apisiapuser')->insert($data);
+        }
+
+        return redirect()->to('kelolauser')->with('status','Import Datauser Dari SIAP Berhasil');
+
+    }
 }

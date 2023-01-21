@@ -12,6 +12,135 @@ use App\Models\ReferensiUnit\BagianModel;
 
 class BagianController extends Controller
 {
+
+    function importunit(){
+
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://siap.dpr.go.id/api-rest/arbeitseinheit',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => 'geheimagent=s4mb3n3k3YP4ttY',
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/x-www-form-urlencoded',
+                'Cookie: PHPSESSID=t7fanhl58pqh4hnhfdipidh8f1'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        //echo json_encode($response);
+        $hasil = json_decode($response);
+
+        //hapus dlu tabel nya
+        DB::table('apisiapunit')->truncate();
+
+        foreach ($hasil as $item){
+            $generated_path = $item->generated_path;
+            $id = $item->id;
+            $id_satker_baru = $item->id_satker_baru;
+            $id_unor = $item->id_unor;
+            $nama_satker = $item->nama_satker;
+            $id_parent = $item->id_parent;
+            $alamat = $item->alamat;
+            $eselon = $item->eselon;
+            $id_eselon1 = $item->id_eselon1;
+
+            $data = array(
+                'generated_path' => $generated_path,
+                'id' => $id,
+                'id_satker_baru' => $id_satker_baru,
+                'id_unor' => $id_unor,
+                'nama_satker' => $nama_satker,
+                'id_parent' => $id_parent,
+                'alamat' => $alamat,
+                'eselon' => $eselon,
+                'id_eselon1' => $id_eselon1
+            );
+            DB::table('apisiapunit')->updateOrInsert(['id' => $id],$data);
+        }
+        $this->rekapunitkerja();
+        return redirect()->to('bagian')->with('status',"Import API Berhasil");
+    }
+
+    function rekapunitkerja(){
+        //DEPUTI
+        //HAPUS DLU TABEL DEPUTI
+        DB::table('deputi')->truncate();
+
+        //dapatkan data deputi
+        $datadeputi = DB::table('apisiapunit')->where('eselon','=',1)->get();
+        foreach ($datadeputi as $deputi){
+            $id = $deputi->id;
+            $uraiandeputi = $deputi->nama_satker;
+            $status = "on";
+
+            $data = array(
+                'id' => $id,
+                'uraiandeputi' => $uraiandeputi,
+                'status' => "on"
+            );
+
+            DB::table('deputi')->insert($data);
+        }
+
+        //BIRO
+        //HAPUS DLU TABEL BIRO
+        DB::table('biro')->truncate();
+
+        //dapatkan data biro
+        $databiro = DB::table('apisiapunit')->where('eselon','=',2)->get();
+
+        foreach ($databiro as $biro){
+            $id = $biro->id;
+            $iddeputi = $biro->id_parent;
+            $uraianbiro = $biro->nama_satker;
+            $status = "on";
+
+            $data = array(
+                'id' => $id,
+                'iddeputi' => $iddeputi,
+                'uraianbiro' => $uraianbiro,
+                'status' => "on"
+            );
+
+            DB::table('biro')->insert($data);
+        }
+
+        //BAGIAN
+        //HAPUS DLU TABEL BAGIAN
+        DB::table('bagian')->truncate();
+
+        //dapatkan data bagian
+        $databagian = DB::table('apisiapunit')->where('eselon','=',3)->get();
+        foreach ($databagian as $bagian){
+            $id = $bagian->id;
+            $idbiro = $bagian->id_parent;
+            $iddeputi = DB::table('biro')->where('id','=',$idbiro)->value('iddeputi');
+            if ($iddeputi == null){
+                $iddeputi = $idbiro;
+            }
+            $uraianbagian = $bagian->nama_satker;
+            $status = "on";
+
+            $data = array(
+                'id' => $id,
+                'iddeputi' => $iddeputi,
+                'idbiro' => $idbiro,
+                'uraianbagian' => $uraianbagian,
+                'status' => "on"
+            );
+            DB::table('bagian')->insert($data);
+        }
+
+    }
+
     public function dapatkandatabiro(Request $request){
         $data['biro'] = DB::table('biro')
             ->where('iddeputi','=',$request->iddeputi)
