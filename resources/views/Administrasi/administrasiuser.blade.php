@@ -33,7 +33,6 @@
                     <div class="card-header">
                         <div class="btn-group float-sm-right" role="group">
                             <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="tambahuser"> Tambah</a>
-                            <a class="btn btn-primary float-sm-right" href="javascript:void(0)" id="importuser"> Import</a>
                         </div>
                         <h3 class="card-title">{{$judul}}</h3>
                     </div>
@@ -44,6 +43,9 @@
                                 <th>No</th>
                                 <th>Nama</th>
                                 <th>Email</th>
+                                <th>Deputi</th>
+                                <th>Biro</th>
+                                <th>Bagian</th>
                                 <th>Gambar</th>
                                 <th>Action</th>
                             </tr>
@@ -55,6 +57,9 @@
                                 <th>No</th>
                                 <th>Nama</th>
                                 <th>Email</th>
+                                <th>Deputi</th>
+                                <th>Biro</th>
+                                <th>Bagian</th>
                                 <th>Gambar</th>
                                 <th>Action</th>
                             </tr>
@@ -70,6 +75,29 @@
                                         <form id="formuser" name="formuser" class="form-horizontal" enctype="multipart/form-data">
                                             <input type="hidden" name="id" id="id">
                                             <input type="hidden" name="gambarlama" id="gambarlama">
+                                            <div class="form-group">
+                                                <div class="col-sm-12">
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="pnsppnpn" id="pns" value="pns">
+                                                        <label class="form-check-label" for="inlineRadio1">PNS</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="pnsppnpn" id="ppnpn" value="ppnpn">
+                                                        <label class="form-check-label" for="inlineRadio2">PPNPN</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="username" class="col-sm-6 control-label">Username</label>
+                                                <div class="col-sm-12">
+                                                    <select class="form-control username" name="username" id="username" style="width: 100%;">
+                                                        <option value="">Pilih Pegawai</option>
+                                                        @foreach($datapegawai as $data)
+                                                            <option value="{{ $data->email }}">{{ $data->nama." ".$data->nama_satker }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
                                             <div class="form-group">
                                                 <label for="Name" class="col-sm-6 control-label">Nama</label>
                                                 <div class="col-sm-12">
@@ -159,6 +187,13 @@
     <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/bs-custom-file-input/bs-custom-file-input.min.js')}}"></script>
     <script type="text/javascript">
         $(function () {
+            $('.username').select2({
+                width: '100%',
+                theme: 'bootstrap4',
+                dropdownParent: $('#ajaxModel')
+
+            })
+
             bsCustomFileInput.init();
             /*------------------------------------------
             --------------------------------------------
@@ -185,6 +220,9 @@
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'name', name: 'name'},
                     {data: 'email', name: 'email'},
+                    {data: 'deputi', name: 'deputi'},
+                    {data: 'biro', name: 'biro'},
+                    {data: 'bagian', name: 'bagian'},
                     {data: 'gambaruser', name: 'gambaruser'},
                     {
                         data: 'action',
@@ -214,6 +252,9 @@
                 document.getElementById('gambarusernow').src ="{{env('APP_URL')."/".asset('storage/gambaruser/default.png')}}";
                 $('#id').val('');
                 $('#formuser').trigger("reset");
+                $('#pns').prop('disabled', false);
+                $('#ppnpn').prop('disabled', false);
+                $('#username').prop('disabled', false);
                 $('#modelHeading').html("Tambah User");
                 $('#ajaxModel').modal('show');
             });
@@ -230,9 +271,21 @@
                     $('#saveBtn').val("edit");
                     $('#ajaxModel').modal('show');
                     $('#id').val(data.id);
+                    $('#username').val(data.username).trigger('change');
                     $('#gambarlama').val(data.gambaruser);
                     $('#name').val(data.name);
                     $('#email').val(data.email);
+                    if (data.pnsppnpn == "pns"){
+                        $('#pns').prop('checked',true).change();
+                        $('#username').prop('disabled', 'disabled');
+                        $('#ppnpn').prop('disabled', 'disabled');
+                        $('#name').prop('disabled', 'disabled');
+                        $('#email').prop('disabled', 'disabled');
+                    }else{
+                        $('#ppnpn').prop('checked',true).change();
+                        $('#pns').prop('disabled', 'disabled');
+                        $('#username').prop('disabled', 'disabled');
+                    }
                     document.getElementById('gambarusernow').src ="{{env('APP_URL')."/".asset('storage')}}"+"/"+data.gambaruser;
                 })
             });
@@ -328,7 +381,7 @@
                             if (data.status == "berhasil"){
                                 Swal.fire({
                                     title: 'Sukses',
-                                    text: 'Data Berhasil Dihapus '+ data.lokasifile,
+                                    text: 'Data Berhasil Dihapus ',
                                     icon: 'success'
                                 })
                             }else{
@@ -366,14 +419,34 @@
                 }
             });
 
-            $('#importuser').click(function (e) {
-                if( confirm("Apakah Anda Yakin Mau Import Pegawai dari SIAP?")){
-                    e.preventDefault();
-                    $(this).html('Importing..');
-                    window.location="{{URL::to('importsiap')}}";
-                }
+            $('#username').on('change', function () {
+                var email = this.value;
+
+                $.ajax({
+                    url: "{{url('ambildatapegawai')}}",
+                    type: "POST",
+                    data: {
+                        email: email,
+                        _token: '{{csrf_token()}}'
+                    },
+                    dataType: 'json',
+                    success: function (result) {
+                        document.getElementById('name').value = result[0].nama;
+                        document.getElementById('email').value = result[0].email+"@dpr.go.id";
+
+                    }
+
+                });
             });
 
+            $('input[type=radio][name=pnsppnpn]').change(function() {
+                if (this.value === 'pns') {
+                    $('#username').prop('disabled', false);
+                }
+                else if (this.value === 'ppnpn') {
+                    $('#username').prop('disabled', 'disabled');
+                }
+            });
         });
 
 

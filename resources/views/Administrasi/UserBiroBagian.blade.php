@@ -294,6 +294,7 @@
             });
         });
 
+
         $('#idbiro').on('change', function () {
             var idbiro = this.value;
 

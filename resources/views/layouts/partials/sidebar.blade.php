@@ -16,7 +16,7 @@
                 </div>
             @else
                 <div class="image">
-                    <img src="{{ env('APP_URL')."/".asset('gambaruser/default.png')}}" class="img-circle elevation-2" alt="User Image">
+                    <img src="{{ env('APP_URL')."/".asset('storage/'.'gambaruser/default.png')}}" class="img-circle elevation-2" alt="User Image">
                 </div>
             @endif
             <div class="info">

@@ -25,6 +25,7 @@ use App\Http\Controllers\ReferensiAnggaran\SubOutputController;
 use App\Http\Controllers\ReferensiAnggaran\KomponenController;
 use App\Http\Controllers\AdminAnggaran\RefstatusController;
 use App\Http\Controllers\AdminAnggaran\DataAngController;
+use App\Http\Controllers\Administrasi\PegawaiController;
 
 
 /*
@@ -61,7 +62,11 @@ Route::resource('kewenanganuser',KewenanganUserController::class);
 Route::any('/editpassword/{id}',[AdministrasiUserController::class,'editpassword']);
 Route::resource('kelolauser',AdministrasiUserController::class);
 //IMPORT USER DARI SIAP
-Route::get('importsiap',[AdministrasiUserController::class,'importsiap'])->name('importsiap')->middleware('cekadmin');
+Route::get('importsiap',[PegawaiController::class,'importsiap'])->name('importsiap')->middleware('cekadmin');
+Route::get('getlistpegawai',[PegawaiController::class,'getlistpegawai'])->name('getlistpegawai')->middleware('cekadmin');
+Route::get('pegawai',[PegawaiController::class,'pegawai'])->name('pegawai')->middleware('cekadmin');
+Route::post('ambildatapegawai',[PegawaiController::class,'ambildatapegawai'])->name('ambildatapegawai')->middleware('cekadmin');
+
 
 
 //REFERENSI UNIT KERJA

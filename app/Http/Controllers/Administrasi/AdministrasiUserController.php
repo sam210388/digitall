@@ -31,9 +31,7 @@ class AdministrasiUserController extends Controller
 
         $judul = 'Kelola User';
         if ($request->ajax()) {
-
             $data = AdministrasiUserModel::latest()->get();
-
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('gambaruser',function ($row){
@@ -44,7 +42,7 @@ class AdministrasiUserController extends Controller
                             <div class="input-group mb-3">
                                 <div class="user-panel">
                                 <div class="image">
-                                <img src="'.url('storage/gambaruser/default.png').'" class="img-circle elevation-2" alt="User Image">
+                                <img src="'.asset('storage')."/gambaruser/default.png".'" class="img-circle elevation-2" alt="User Image">
                                 </div>
                                 </div>
                             </div>
@@ -69,20 +67,49 @@ class AdministrasiUserController extends Controller
                     return $gambar;
 
                 })
+                ->addColumn('deputi',function($row){
+                    $iddeputi = $row->iddeputi;
+                    if ($iddeputi != 0){
+                        $uraiandeputi = DB::table('deputi')->where('id','=',$iddeputi)->value('uraiandeputi');
+                    }else{
+                        $uraiandeputi = 0;
+                    }
+                    return $uraiandeputi;
+
+                })
+                ->addColumn('biro',function($row){
+                    $idbiro = $row->idbiro;
+                    if ($idbiro != 0){
+                        $uraianbiro = DB::table('biro')->where('id','=',$idbiro)->value('uraianbiro');
+                    }else{
+                        $uraianbiro = 0;
+                    }
+                    return $uraianbiro;
+
+                })
+                ->addColumn('bagian',function($row){
+                    $idbagian = $row->idbagian;
+                    if ($idbagian != 0){
+                        $uraianbagian = DB::table('bagian')->where('id','=',$idbagian)->value('uraianbagian');
+                    }else{
+                        $uraianbagian = 0;
+                    }
+                    return $uraianbagian;
+
+                })
                 ->addColumn('action', function($row){
-
                     $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm edituser">Edit</a>';
-
                     $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deleteuser">Delete</a>';
-
                     return $btn;
                 })
                 ->rawColumns(['action','gambaruser'])
                 ->make(true);
         }
 
+        $datapegawai = DB::table('pegawai')->get();
         return view('Administrasi.administrasiuser',[
-            "judul"=>$judul
+            "judul"=>$judul,
+            "datapegawai" => $datapegawai
         ]);
 
     }
@@ -91,7 +118,6 @@ class AdministrasiUserController extends Controller
     public function store(Request $request)
     {
         $this->authorize('create', AdministrasiUserModel::class);
-
         $saveBtn = $request->get('saveBtn');
         if ($saveBtn == "tambah"){
             $validated = $request->validate([
@@ -101,9 +127,39 @@ class AdministrasiUserController extends Controller
                 'gambaruser' => 'required|image|mimes:jpg,png,jpeg'
             ]);
 
+            $username = $request->get('username');
+            if ($username != ""){
+                $id_satker = DB::table('pegawai')->where('email','=',$username)->value('id_satker');
+
+                //check id_satker ke bagian
+                $idsatkercekbagian = DB::table('bagian')->where('id','=',$id_satker)->count();
+                if ($idsatkercekbagian != 0){
+                    $idbagian = $id_satker;
+                    $idbiro = DB::table('bagian')->where('id','=',$idbagian)->value('idbiro');
+                    $iddeputi = DB::table('bagian')->where('id','=',$idbagian)->value('iddeputi');
+                }else if ($idsatkercekbagian == 0){
+                    //check ke biro
+                    $idsatkercekbiro = DB::table('biro')->where('id','=',$id_satker)->count();
+                    if ($idsatkercekbiro != 0){
+                        $idbiro = $id_satker;
+                        $iddeputi = DB::table('biro')->where('id','=',$idbiro)->value('iddeputi');
+                        $idbagian = 0;
+                    }
+                }else{
+                    $iddeputi = $id_satker;
+                    $idbiro = 0;
+                    $idbagian = 0;
+                }
+            }else{
+                $iddeputi = 0;
+                $idbiro = 0;
+                $idbagian =0;
+            }
+
             $name = $request->get('name');
             $email = $request->get('email');
             $password = Hash::make($request->get('password'));
+            $pnsppnpn = $request->get('pnsppnpn');
 
             if ($request->file('gambaruser')){
                 $gambaruser = $request->file('gambaruser')->store(
@@ -113,8 +169,13 @@ class AdministrasiUserController extends Controller
             AdministrasiUserModel::create([
                 'name' => $name,
                 'email' => $email,
+                'username' => $username,
                 'password' => $password,
-                'gambaruser' => $gambaruser
+                'gambaruser' => $gambaruser,
+                'pnsppnpn' => $pnsppnpn,
+                'iddeputi' => $iddeputi,
+                'idbiro' => $idbiro,
+                'idbagian' => $idbagian
             ]);
             return response()->json(['status'=>'berhasil']);
         }
@@ -129,6 +190,7 @@ class AdministrasiUserController extends Controller
             $email = $request->get('email');
             $password = $request->get('password');
             $gambarlama = $request->get('gambarlama');
+
 
             if ($request->file('gambaruser') != ""){
                 if (file_exists(storage_path('app/public/').$gambarlama)){
@@ -179,6 +241,8 @@ class AdministrasiUserController extends Controller
     }
 
 
+
+
     /**
      * Remove the specified resource from storage.
      *
@@ -196,59 +260,6 @@ class AdministrasiUserController extends Controller
         }
         AdministrasiUserModel::find($id)->delete();
         return response()->json(['status'=>'berhasil']);
-
-    }
-
-    //import user dari siap
-    function importsiap(){
-        $curl = curl_init();
-
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://siap.dpr.go.id/api-rest/angestellter',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => 'geheimagent=s4mb3n3k3YP4ttY',
-            CURLOPT_HTTPHEADER => array(
-                'Content-Type: application/x-www-form-urlencoded',
-                'Cookie: PHPSESSID=ru0ive16k7a7lpo57kljts8dh5'
-            ),
-        ));
-
-        $response = curl_exec($curl);
-        curl_close($curl);
-
-        $hasil = json_decode($response);
-        //hapus dlu tabel nya
-        DB::table('apisiapuser')->truncate();
-
-        foreach ($hasil as $item){
-           $id = $item->id;
-           $nama = $item->nama;
-           $nip = $item->nip;
-           $nama_satker = $item->nama_satker;
-           $id_satker = $item->id_satker;
-           $email = $item->email;
-           $id_subsatker = $item->id_subsatker;
-
-           $data = array(
-               'id' => $id,
-               'nama' => $nama,
-               'nip' => $nip,
-               'nama_satker' => $nama_satker,
-               'id_satker' => $id_satker,
-               'email' => $email,
-               'id_subsatker' => $id_subsatker
-           );
-
-           DB::table('apisiapuser')->insert($data);
-        }
-
-        return redirect()->to('kelolauser')->with('status','Import Datauser Dari SIAP Berhasil');
 
     }
 }

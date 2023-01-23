@@ -11,7 +11,8 @@ class AdministrasiUserModel extends Model
 
     protected $table = 'users';
 
-    protected $fillable = ['name','email','password','gambaruser'];
+    protected $fillable = ['id','pnsppnpn','name','email','password','gambaruser','username','iddeputi',
+        'idbiro','idbagian'];
 
 
 }
