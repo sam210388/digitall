@@ -111,12 +111,12 @@ class TemuanController extends Controller
 
         $validated = $request->validate([
             'tahunanggaran' => 'required',
+            'temuan' => 'required',
             'kondisi' => 'required',
             'kriteria' => 'required',
             'sebab' => 'required',
             'akibat' => 'required',
             'nilai' => 'required',
-            'rekomendasi' => 'required',
             'bukti' => 'required',
 
         ]);
@@ -124,12 +124,12 @@ class TemuanController extends Controller
         TemuanModel::create(
             [
                 'tahunanggaran' => $request->get('tahunanggaran'),
+                'temuan' => $request->get('temuan'),
                 'kondisi' => $request->get('kondisi'),
                 'kriteria' => $request->get('kriteria'),
                 'sebab' => $request->get('sebab'),
                 'akibat' => $request->get('akibat'),
                 'nilai' => $request->get('nilai'),
-                'rekomendasi' => $request->get('rekomendasi'),
                 'bukti' => $bukti,
                 'status' => $status,
                 'created_by' => $userid
@@ -197,24 +197,24 @@ class TemuanController extends Controller
 
         $validated = $request->validate([
             'tahunanggaran' => 'required',
+            'temuan' => 'required',
             'kondisi' => 'required',
             'kriteria' => 'required',
             'sebab' => 'required',
             'akibat' => 'required',
             'nilai' => 'required',
-            'rekomendasi' => 'required',
 
         ]);
 
         TemuanModel::where('id',$id)->update(
             [
                 'tahunanggaran' => $request->get('tahunanggaran'),
+                'temuan' => $request->get('temuan'),
                 'kondisi' => $request->get('kondisi'),
                 'kriteria' => $request->get('kriteria'),
                 'sebab' => $request->get('sebab'),
                 'akibat' => $request->get('akibat'),
                 'nilai' => $request->get('nilai'),
-                'rekomendasi' => $request->get('rekomendasi'),
                 'bukti' => $bukti,
                 'status' => $status,
                 'created_by' => $userid

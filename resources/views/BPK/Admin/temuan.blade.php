@@ -184,10 +184,10 @@
                     {"width":"5%"},
                 );
             });
-            var table = $('.tabeltemuan').DataTable({
+            var table = $('.tabeltemuan').removeAttr('width').DataTable({
                 fixedColumn:true,
                 scrollX:"100%",
-                autoWidth:true,
+                autoWidth:false,
                 processing: true,
                 serverSide: true,
                 dom: 'Bfrtip',
@@ -206,13 +206,15 @@
                     {data: 'status', name: 'status'},
                     {data: 'penyelesaian', name: 'penyelesaian'},
                     {data: 'created_by', name: 'created_by'},
-
                     {
                         data: 'action',
                         name: 'action',
                         orderable: true,
                         searchable: true
                     },
+                ],
+                column: [
+                    { "width": "3%", "targets": [0,1] },
                 ],
             });
             table.buttons().container()
@@ -287,12 +289,15 @@
 
                 fd.append('bukti',bukti[0])
                 fd.append('saveBtn',saveBtn)
+                if(saveBtn == "edit"){
+                    fd.append('_method','PUT')
+                }
                 for (var pair of fd.entries()) {
                     console.log(pair[0]+ ', ' + pair[1]);
                 }
                 $.ajax({
                     data: fd,
-                    url: "{{ route('temuan.store') }}",
+                    url: saveBtn === "tambah" ? "{{route('temuan.store')}}":"{{route('temuan.update','')}}"+'/'+id,
                     type: "POST",
                     enctype: 'multipart/form-data',
                     contentType: false,

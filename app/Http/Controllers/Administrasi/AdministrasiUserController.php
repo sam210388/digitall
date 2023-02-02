@@ -124,7 +124,7 @@ class AdministrasiUserController extends Controller
                 'name' => 'required|max:100',
                 'email' => 'required|unique:users|email',
                 'password' => 'confirmed|required|min:6',
-                'gambaruser' => 'required|image|mimes:jpg,png,jpeg'
+                //'gambaruser' => 'required|image|mimes:jpg,png,jpeg'
             ]);
 
             $username = $request->get('username');
@@ -164,6 +164,8 @@ class AdministrasiUserController extends Controller
             if ($request->file('gambaruser')){
                 $gambaruser = $request->file('gambaruser')->store(
                     'gambaruser','public');
+            }else{
+                $gambaruser = "gambaruser/default.png";
             }
             $this->authorize('create', AdministrasiUserModel::class);
             AdministrasiUserModel::create([

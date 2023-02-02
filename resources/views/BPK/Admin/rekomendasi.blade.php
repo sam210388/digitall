@@ -307,14 +307,18 @@
                 let fd = new FormData(form);
                 let bukti = $('#bukti')[0].files;
                 let saveBtn = document.getElementById('saveBtn').value;
+                var id = document.getElementById('idrekomendasi').value;
                 fd.append('bukti',bukti[0])
                 fd.append('saveBtn',saveBtn)
+                if(saveBtn == "edit"){
+                    fd.append('_method','PUT')
+                }
                 for (var pair of fd.entries()) {
                     console.log(pair[0]+ ', ' + pair[1]);
                 }
                 $.ajax({
                     data: fd,
-                    url: "{{ route('rekomendasi.store') }}",
+                    url: saveBtn === "tambah" ? "{{route('rekomendasi.store')}}":"{{route('rekomendasi.update','')}}"+'/'+id,
                     type: "POST",
                     enctype: 'multipart/form-data',
                     contentType: false,
