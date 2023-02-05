@@ -35,10 +35,6 @@
                                 <th>No</th>
                                 <th>Tahun</th>
                                 <th>Temuan</th>
-                                <th>Kondisi</th>
-                                <th>Kriteria</th>
-                                <th>Sebab</th>
-                                <th>Akibat</th>
                                 <th>Nilai</th>
                                 <th>Bukti</th>
                                 <th>Status</th>
@@ -54,10 +50,6 @@
                                 <th>Tahun</th>
                                 <th>Tahun</th>
                                 <th>Temuan</th>
-                                <th>Kondisi</th>
-                                <th>Kriteria</th>
-                                <th>Sebab</th>
-                                <th>Akibat</th>
                                 <th>Nilai</th>
                                 <th>Bukti</th>
                                 <th>Status</th>
@@ -151,6 +143,43 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="modal fade" id="DetailTemuanModal" aria-hidden="true" data-focus="false">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title" id="modelHeading"></h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="formdetail" name="formdetail" class="form-horizontal" enctype="multipart/form-data">
+                                            <div class="form-group">
+                                                <label for="kondisidetail" class="col-sm-6 control-label">Kondisi</label>
+                                                <div class="col-sm-12">
+                                                    <textarea type="text" class="form-control" id="kondisidetail" name="kondisidetail" placeholder="Kondisi" value="" required style="width: 100%;"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="kriteriadetail" class="col-sm-6 control-label">Kriteria</label>
+                                                <div class="col-sm-12">
+                                                    <textarea type="text" class="form-control" id="kriteriadetail" name="kriteriadetail" placeholder="Kriteria" value="" required></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="sebabdetail" class="col-sm-6 control-label">Sebab</label>
+                                                <div class="col-sm-12">
+                                                    <textarea type="text" class="form-control" id="sebabdetail" name="sebabdetail" placeholder="Sebab" value="" required></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="akibatdetail" class="col-sm-6 control-label">Akibat</label>
+                                                <div class="col-sm-12">
+                                                    <textarea type="text" class="form-control" id="akibatdetail" name="akibatdetail" placeholder="Akibat" value="" required></textarea>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -196,10 +225,6 @@
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'tahunanggaran', name: 'tahunanggaran'},
                     {data: 'temuan', name: 'temuan'},
-                    {data: 'kondisi', name: 'kondisi'},
-                    {data: 'kriteria', name: 'kriteria'},
-                    {data: 'sebab', name: 'sebab'},
-                    {data: 'akibat', name: 'akibat'},
                     {data: 'nilai', name: 'nilai'},
                     {data: 'bukti', name: 'bukti'},
                     {data: 'status', name: 'status'},
@@ -211,11 +236,6 @@
                         orderable: true,
                         searchable: true
                     },
-                ],
-                column: [
-                    { "width": "3%", "targets": [0] },
-                    { "width": "7%", "targets": [1] },
-                    { "width": "15%", "targets": [2] },
                 ],
             });
             table.buttons().container()
@@ -267,10 +287,18 @@
                     $('#created_by_awal').val(data.created_by);
                     document.getElementById('aktuallinkbukti').href = "{{env('APP_URL')."/".asset('storage')}}"+"/"+data.bukti
                     $('#linkbukti').show();
+                })
+            });
 
-
-
-
+            $('body').on('click', '.detailtemuan', function () {
+                var idtemuan = $(this).data('id');
+                $.get("{{ route('getdetailtemuan','') }}" +'/' + idtemuan, function (data) {
+                    $('#modelHeading').html("Detil Temuan");
+                    $('#DetailTemuanModal').modal('show');
+                    $('#kondisidetail').val(data.kondisi);
+                    $('#kriteriadetail').val(data.kriteria);
+                    $('#sebabdetail').val(data.sebab);
+                    $('#akibatdetail').val(data.akibat);
                 })
             });
 

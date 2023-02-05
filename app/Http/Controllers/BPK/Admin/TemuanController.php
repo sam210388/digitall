@@ -12,6 +12,17 @@ use Yajra\DataTables\DataTables;
 
 class TemuanController extends Controller
 {
+
+    public function getdetailtemuan($idtemuan)
+    {
+        $datatemuan = TemuanModel::find($idtemuan);
+        if ($datatemuan){
+            return response()->json($datatemuan);
+        }else{
+            return response()->json(['status'=>'gagal']);
+        }
+    }
+
     public function index(Request $request)
     {
         $judul = 'List Temuan';
@@ -42,6 +53,11 @@ class TemuanController extends Controller
                     }else{
                         $btn ="";
                     }
+                    return $btn;
+                })
+                ->addColumn('temuan',function ($row){
+                    $btn = '<div class="btn-group" role="group">
+                            <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="detailtemuan" class="detailtemuan">'.$row->temuan.'</a>';
                     return $btn;
                 })
                 ->addColumn('bukti',function ($row){
@@ -77,7 +93,7 @@ class TemuanController extends Controller
                     $namauser = DB::table('users')->where('id','=',$iduser)->value('name');
                     return $namauser;
                 })
-                ->rawColumns(['action','bukti'])
+                ->rawColumns(['action','bukti','temuan'])
                 ->make(true);
         }
 
