@@ -33,7 +33,7 @@
                             <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Tahun Anggaran</th>
+                                <th>Tahun</th>
                                 <th>Temuan</th>
                                 <th>Kondisi</th>
                                 <th>Kriteria</th>
@@ -51,8 +51,8 @@
                             </tbody>
                             <tfoot>
                             <tr>
-                                <th>No</th>
-                                <th>Tahun Anggaran</th>
+                                <th>Tahun</th>
+                                <th>Tahun</th>
                                 <th>Temuan</th>
                                 <th>Kondisi</th>
                                 <th>Kriteria</th>
@@ -180,14 +180,13 @@
             // Setup - add a text input to each footer cell
             $('#tabeltemuan tfoot th').each( function (i) {
                 var title = $('#tabeltemuan thead th').eq( $(this).index() ).text();
-                $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
-                    {"width":"5%"},
-                );
+                $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' )
             });
-            var table = $('.tabeltemuan').removeAttr('width').DataTable({
+            var table = $('.tabeltemuan').DataTable({
                 fixedColumn:true,
-                scrollX:"100%",
+                scrollX:true,
                 autoWidth:false,
+                scrollCollapse: true,
                 processing: true,
                 serverSide: true,
                 dom: 'Bfrtip',
@@ -214,7 +213,9 @@
                     },
                 ],
                 column: [
-                    { "width": "3%", "targets": [0,1] },
+                    { "width": "3%", "targets": [0] },
+                    { "width": "7%", "targets": [1] },
+                    { "width": "15%", "targets": [2] },
                 ],
             });
             table.buttons().container()
