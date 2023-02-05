@@ -7,6 +7,7 @@ use App\Models\BPK\Admin\TindakLanjutAdminModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\DataTables;
 
 class TindakLanjutAdminController extends Controller
@@ -65,6 +66,12 @@ class TindakLanjutAdminController extends Controller
                             <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="selesai" class="btn btn-primary btn-sm selesai">Selesai</a>';
                         $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="tddl" class="btn btn-danger btn-sm tddl">TDDL</a>';
                         $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="ditolak" class="btn btn-danger btn-sm ditolak">Tolak</a>';
+                    }else if ($row->status == 1){
+                        $btn = '<div class="btn-group" role="group">
+                            <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="selesai" class="btn btn-primary btn-sm selesai">Selesai</a>';
+                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="tddl" class="btn btn-danger btn-sm tddl">TDDL</a>';
+                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="delete" class="btn btn-danger btn-sm deletetinjuthistory">Delete</a>';
+                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="edit" class="btn btn-primary btn-sm edittinjuthistory">Edit</a>';
                     }else{
                         $btn="";
                     }
@@ -97,7 +104,11 @@ class TindakLanjutAdminController extends Controller
                     $tanggalupdate = date_format($tanggalupdate,'Y-m-d');
                     return $tanggalupdate;
                 })
-                ->rawColumns(['action'])
+                ->addColumn('file',function ($row){
+                    $linkbukti = '<a href="'.env('APP_URL')."/".asset('storage')."/".$row->file.'" >Download</a>';
+                    return $linkbukti;
+                })
+                ->rawColumns(['action','file'])
                 ->make(true);
         }
     }
@@ -171,5 +182,107 @@ class TindakLanjutAdminController extends Controller
     {
         $tindaklanjut = TindakLanjutAdminModel::find($id);
         return response()->json($tindaklanjut);
+    }
+
+    public function simpantinjuthistory(Request $request){
+        $validated = $request->validate([
+            'tanggaldokumen' => 'required|date|before_or_equal:now',
+            'nomordokumen' => 'required',
+            'nilaibukti' => 'required|numeric',
+            'file' => 'required|mimes:pdf,xls,xlsx',
+            'keterangan' => 'required',
+            'objektemuan' => 'required'
+        ]);
+
+        $tanggaldokumen = date_create($request->get('tanggaldokumen'));
+        $tanggaldokumen = date_format($tanggaldokumen,'Y-m-d');
+        $nomordokumen = $request->get('nomordokumen');
+        $nilaibukti = $request->get('nilaibukti');
+        $keterangan = $request->get('keterangan');
+        $objektemuan = $request->get('objektemuan');
+        $idrekomendasi = $request->get('idrekomendasi');
+        $created_by = Auth::id();
+
+
+        if ($request->file('file')){
+            $file = $request->file('file')->store(
+                'buktitindaklanjut','public');
+        }
+
+        TindakLanjutAdminModel::create([
+            'idrekomendasi' => $idrekomendasi,
+            'tanggaldokumen' => $tanggaldokumen,
+            'nomordokumen' => $nomordokumen,
+            'nilaibukti' => $nilaibukti,
+            'keterangan' => $keterangan,
+            'file' => $file,
+            'objektemuan' => $objektemuan,
+            'status' => 1,
+            'created_by' => $created_by
+
+        ]);
+        return response()->json(['status'=>'berhasil']);
+    }
+
+    public function edittinjuthistory($id)
+    {
+        $data = TindakLanjutAdminModel::find($id);
+        return response()->json($data);
+    }
+
+    public function updatetinjuthistory(Request $request, $id){
+        $validated = $request->validate([
+            'tanggaldokumen' => 'required|date|before_or_equal:now',
+            'nomordokumen' => 'required',
+            'nilaibukti' => 'required|numeric',
+            'keterangan' => 'required',
+            'objektemuan' => 'required'
+        ]);
+
+        $tanggaldokumen = date_create($request->get('tanggaldokumen'));
+        $tanggaldokumen = date_format($tanggaldokumen,'Y-m-d');
+        $nomordokumen = $request->get('nomordokumen');
+        $nilaibukti = $request->get('nilaibukti');
+        $keterangan = $request->get('keterangan');
+        $objektemuan = $request->get('objektemuan');
+        $idrekomendasi = $request->get('idrekomendasi');
+        $filelama = $request->get('filelama');
+        $updated_by = Auth::id();
+
+
+        if ($request->file('file')){
+            if (file_exists(storage_path('app/public/').$filelama)){
+                Storage::delete('public/'.$filelama);
+            }
+            $file = $request->file('file')->store(
+                'buktitindaklanjut','public');
+        }else{
+            $file = $filelama;
+        }
+
+        TindakLanjutAdminModel::where('id',$id)->update([
+            'idrekomendasi' => $idrekomendasi,
+            'tanggaldokumen' => $tanggaldokumen,
+            'nomordokumen' => $nomordokumen,
+            'nilaibukti' => $nilaibukti,
+            'keterangan' => $keterangan,
+            'file' => $file,
+            'objektemuan' => $objektemuan,
+            'status' => 1,
+            'updated_by' => $updated_by
+
+        ]);
+        return response()->json(['status'=>'berhasil']);
+
+    }
+
+    public function destroytinjuthistory($id)
+    {
+        $file = DB::table('tindaklanjutbpk')->where('id','=',$id)->value('file');
+        if (file_exists(storage_path('app/public/').$file)){
+            Storage::delete('public/'.$file);
+        }
+        TindakLanjutAdminModel::find($id)->delete();
+        return response()->json(['status'=>'berhasil']);
     }
 }

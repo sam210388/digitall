@@ -27,7 +27,8 @@
                     <div class="card-header">
                         <h3 class="card-title">{{$judul}}</h3>
                         <div class="btn-group float-sm-right" role="group">
-                        <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="kembali"> Kembali</a>
+                            <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="kembali"> Kembali</a>
+                            <a class="btn btn-primary float-sm-right" href="javascript:void(0)" id="tambahtinjut"> Tambah Tinjut</a>
                         </div>
                     </div>
                     <div class="card-header">
@@ -107,6 +108,87 @@
                                             </div>
                                             <div class="col-sm-offset-2 col-sm-10 btnsubmit">
                                                 <button type="submit" class="btn btn-primary" id="saveBtn" name="saveBtn" value="create">Simpan Data
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="ajaxModelTinjut" aria-hidden="true" data-focus="false">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title" id="modelHeading"></h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="formtindaklanjut" name="formtindaklanjut" class="form-horizontal" enctype="multipart/form-data">
+                                            <input type="hidden" name="id" id="id">
+                                            <input type="hidden" name="idrekomendasi" id="idrekomendasi" value="{{$idrekomendasi}}">
+                                            <input type="hidden" name="filelama" id="filelama">
+                                            <div class="form-group">
+                                                <label for="TanggalDokumen" class="col-sm-6 control-label">Tanggal Dokumen</label>
+                                                <div class="col-sm-12">
+                                                    <div class="input-group mb-3">
+                                                        <input type="text" class="form-control tanggaldokumen" id="tanggaldokumen" name="tanggaldokumen">
+                                                        <div class="input-group-append">
+                                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="NomorDokumen" class="col-sm-6 control-label">Nomor Dokumen</label>
+                                                <div class="col-sm-12">
+                                                    <div class="input-group mb-3">
+                                                        <input type="text" class="form-control" id="nomordokumen" name="nomordokumen" placeholder="Nomor DOkumen/NTPN" value="" maxlength="100" required="">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="nilaibukti" class="col-sm-6 control-label">Nilai Bukti</label>
+                                                <div class="col-sm-12">
+                                                    <div class="input-group mb-3">
+                                                        <input type="text" class="form-control" id="nilaibukti" name="nilaibukti" placeholder="Nilai Bukti" value="" maxlength="100" required="">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="keterangan" class="col-sm-6 control-label">Keterangan</label>
+                                                <div class="col-sm-12">
+                                                    <div class="input-group mb-3">
+                                                        <textarea class="form-control" id="keterangan" name="keterangan" placeholder="Keterangan" value="" required=""></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="objektemuan" class="col-sm-6 control-label">Objek Temuan</label>
+                                                <div class="col-sm-12">
+                                                    <div class="input-group mb-3">
+                                                        <textarea class="form-control" id="objektemuan" name="objektemuan" placeholder="Objek Temuan" value="" required=""></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="input-group">
+                                                <label for="file" class="col-sm-6 control-label">File</label>
+                                                <div class="col-sm-12">
+                                                    <div class="input-group mb-3">
+                                                        <div class="custom-file">
+                                                            <input type="file" class="custom-file-input" id="file" name="file">
+                                                            <label class="custom-file-label" for="exampleInputFile">Choose file</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group" id="linkbukti" aria-hidden="true">
+                                                <div class="col-sm-12">
+                                                    <a href="#" id="aktuallinkbukti">Lihat Bukti</a>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-offset-2 col-sm-10">
+                                                <button type="submit" class="btn btn-primary" id="saveBtnTinjut" name="saveBtnTinjut" value="create">Simpan Data
                                                 </button>
                                             </div>
                                         </form>
@@ -240,6 +322,7 @@
                 },
             });
         });
+
         /*------------------------------------------
         --------------------------------------------
         Save Data
@@ -307,7 +390,6 @@
                 },
             });
         });
-
 
         $('body').on('click', '.ajukankebpk', function () {
             var idtindaklanjut = $(this).data("id");
@@ -450,6 +532,184 @@
                         }
 
                         $('#saveBtn').html('Simpan Data');
+                    },
+                });
+            }
+        });
+
+        //input tinjut history
+        $('#tambahtinjut').click(function () {
+            $('#saveBtnTinjut').val("tambahtinjut");
+            $('#id').val('');
+            $('#formtindaklanjut').trigger("reset");
+            $('#modelHeading').html("Tambah Data");
+            $('#ajaxModelTinjut').modal('show');
+        });
+
+        $( "#tanggaldokumen" ).datepicker({
+            format: "yyyy-mm-dd",
+            autoclose: true
+        });
+
+        ///save btn tinjut
+        $('#saveBtnTinjut').click(function (e) {
+            e.preventDefault();
+            $(this).html('Sending..');
+            let form = document.getElementById('formtindaklanjut');
+            let fd = new FormData(form);
+            let file = $('#file')[0].files;
+            let saveBtn = document.getElementById('saveBtnTinjut').value;
+            var id = document.getElementById('id').value;
+            fd.append('file',file[0])
+            fd.append('saveBtnTinjut',saveBtn)
+            if(saveBtn == "edittinjut"){
+                fd.append('_method','PUT')
+            }
+            for (var pair of fd.entries()) {
+                console.log(pair[0]+ ', ' + pair[1]);
+            }
+            $.ajax({
+                data: fd,
+                url: saveBtn === "tambahtinjut" ? "{{route('simpantinjuthistory')}}":"{{route('updatetinjuthistory','')}}"+'/'+id,
+                type: "POST",
+                dataType: 'json',
+                enctype: 'multipart/form-data',
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    if (data.status == "berhasil"){
+                        Swal.fire({
+                            title: 'Sukses',
+                            text: 'Simpan Data Berhasil',
+                            icon: 'success'
+                        })
+                    }else{
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Simpan Data Gagal',
+                            icon: 'error'
+                        })
+                    }
+                    $('#formtindaklanjut').trigger("reset");
+                    $('#ajaxModelTinjut').modal('hide');
+                    $('#saveBtnTinjut').html('Simpan Data');
+                    $('#tabeltindaklanjut').DataTable().ajax.reload();
+
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    if(xhr.responseJSON.errors){
+                        var errorsArr = [];
+                        $.each(xhr.responseJSON.errors, function(key,value) {
+                            errorsArr.push(value);
+                        });
+                        Swal.fire({
+                            title: 'Error!',
+                            text: errorsArr,
+                            icon: 'error'
+                        })
+                    }else{
+                        var jsonValue = jQuery.parseJSON(xhr.responseText);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: jsonValue.message,
+                            icon: 'error'
+                        })
+                    }
+
+                    $('#saveBtnTinjut').html('Simpan Data');
+                },
+            });
+        });
+
+        //edit tinjut history
+        $('body').on('click', '.edittinjuthistory', function () {
+            var id = $(this).data('id');
+            $.ajax({
+                type: "GET",
+                url: "{{ route('edittinjuthistory','') }}" +'/' + id,
+                success: function (data) {
+                    $('#modelHeading').html("Edit Data");
+                    $('#saveBtnTinjut').val("edittinjut");
+                    $('#ajaxModelTinjut').modal('show');
+                    $('#id').val(data.id);
+                    $('#idrekomendasi').val(data.idtemuan);
+                    $('#filelama').val(data.file);
+                    $('#tanggaldokumen').val(data.tanggaldokumen);
+                    $('#nomordokumen').val(data.nomordokumen);
+                    $('#nilaibukti').val(data.nilaibukti);
+                    $('#keterangan').val(data.keterangan);
+                    $('#objektemuan').val(data.objektemuan);
+                    document.getElementById('aktuallinkbukti').href = "{{env('APP_URL')."/".asset('storage')}}"+"/"+data.file
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    if(xhr.responseJSON.errors){
+                        var errorsArr = [];
+                        $.each(xhr.responseJSON.errors, function(key,value) {
+                            errorsArr.push(value);
+                        });
+                        Swal.fire({
+                            title: 'Error!',
+                            text: errorsArr,
+                            icon: 'error'
+                        })
+                    }else{
+                        var jsonValue = jQuery.parseJSON(xhr.responseText);
+                        Swal.fire({
+                            title: 'Error!',
+                            text: jsonValue.message,
+                            icon: 'error'
+                        })
+                    }
+
+                    $('#saveBtnTinjut').html('Simpan Data');
+                },
+            });
+        });
+
+        //delete tinjut history
+        $('body').on('click', '.deletetinjuthistory', function () {
+            var id = $(this).data("id");
+            if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
+                $.ajax({
+                    type: "DELETE",
+                    url: "{{ route('destroytinjuthistory','') }}"+"/"+id,
+                    success: function (data) {
+                        if (data.status == "berhasil"){
+                            Swal.fire({
+                                title: 'Sukses',
+                                text: 'Data Berhasil Dihapus ',
+                                icon: 'success'
+                            })
+                        }else{
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Hapus Data Gagal',
+                                icon: 'error'
+                            })
+                        }
+                        $('#tabeltindaklanjut').DataTable().ajax.reload();
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        if(xhr.responseJSON.errors){
+                            var errorsArr = [];
+                            $.each(xhr.responseJSON.errors, function(key,value) {
+                                errorsArr.push(value);
+                            });
+                            Swal.fire({
+                                title: 'Error!',
+                                text: errorsArr,
+                                icon: 'error'
+                            })
+                        }else{
+                            var jsonValue = jQuery.parseJSON(xhr.responseText);
+                            Swal.fire({
+                                title: 'Error!',
+                                text: jsonValue.message,
+                                icon: 'error'
+                            })
+                        }
+
+                        $('#saveBtnTinjut').html('Simpan Data');
                     },
                 });
             }

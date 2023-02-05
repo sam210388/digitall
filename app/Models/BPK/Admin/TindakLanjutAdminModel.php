@@ -11,6 +11,6 @@ class TindakLanjutAdminModel extends Model
 
     protected $table = 'tindaklanjutbpk';
 
-    protected $fillable = ['idtemuan','tanggaldokumen','nomordokumen','nilaibukti','keterangan'
-    ,'file','objektemuan','status','created_by','updated_by'];
+    protected $fillable = ['idrekomendasi','tanggaldokumen','nomordokumen','nilaibukti','keterangan'
+    ,'file','objektemuan','status','created_by','updated_by','penjelasan','tanggapan'];
 }

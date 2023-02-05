@@ -282,7 +282,7 @@
                     $('#saveBtn').val("edit");
                     $('#ajaxModel').modal('show');
                     $('#id').val(data.id);
-                    $('#idtemuan').val(data.idtemuan);
+                    $('#idrekomendasi').val(data.idrekomendasi);
                     $('#filelama').val(data.file);
                     $('#tanggaldokumen').val(data.tanggaldokumen);
                     $('#nomordokumen').val(data.nomordokumen);
