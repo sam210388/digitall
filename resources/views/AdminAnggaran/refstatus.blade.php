@@ -135,6 +135,8 @@
                 }
             });
 
+
+
             $('body').on('click', '.importanggaran', function () {
                 var id = $(this).data('id');
                 var kdsatker = id.substr(0,6);
@@ -155,6 +157,31 @@
                         }else{
                             $(this).html('Importing..');
                             window.location="{{URL::to('importanggaran')}}"+"/"+kdsatker+"/"+kd_sts_history;
+                        }
+                    },
+                });
+
+
+            });
+
+            $('body').on('click', '.rekapanggaran', function () {
+                var idrefstatus = $(this).data('id');
+                $.ajax({
+                    data: {idrefstatus: idrefstatus},
+                    url: "{{route('checkrekapanggaran')}}",
+                    type: "POST",
+                    dataType: 'json',
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        if(data == "Ada"){
+                            if( confirm("Apakah Anda Yakin Mau Rekap Ulang Data Anggaran ini?")){
+                                $(this).html('Processing..');
+                                window.location="{{URL::to('rekapanggaran')}}"+"/"+idrefstatus;
+                            }
+                        }else{
+                            $(this).html('Processing..');
+                            window.location="{{URL::to('rekapanggaran')}}"+"/"+idrefstatus;
                         }
                     },
                 });

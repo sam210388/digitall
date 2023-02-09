@@ -239,7 +239,20 @@ class DataAngController extends Controller
         }
     }
 
-    public function rekapanggaran($idrefstatus){
+    function checkrekapanggaran(Request $request){
+        $idrefstatus = $request->get('idrefstatus');
+        $jumlahdata = DB::table('summarydipa')->where($idrefstatus,'=',$idrefstatus)
+            ->count();
+
+        if ($jumlahdata > 0){
+            return response()->json("Ada");
+        }else{
+            return response()->json("Tidak Ada");
+        }
+    }
+
+    public function rekapanggaran(Request $request){
+        $idrefstatus = $request->get('idrefstatus');
         $this->rekapanggarannoredirect($idrefstatus);
         $this->summarydipa($idrefstatus);
         return redirect()->to('anggaran/anggaranbagian')->with('rekapberhasil','Rekap Anggaran Bagian Berhasil');
