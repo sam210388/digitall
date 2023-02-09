@@ -64,7 +64,7 @@ class HomeController extends Controller
                             <div class="info-box-content">
                                 <span class="info-box-text">Temuan</span>
                                 <span class="info-box-number">
-                                 Jumlah Temuan: '.$jumlahrekomendasi.'
+                                 Jumlah Temuan: '.$jumlahtemuan.'
                                 </span>
                                 <span class="info-box-number">
                                  '.$prosentasetemuanselesai.' Selesai

@@ -251,8 +251,7 @@ class DataAngController extends Controller
         }
     }
 
-    public function rekapanggaran(Request $request){
-        $idrefstatus = $request->get('idrefstatus');
+    public function rekapanggaran($idrefstatus){
         $this->rekapanggarannoredirect($idrefstatus);
         $this->summarydipa($idrefstatus);
         return redirect()->to('refstatus')->with('rekapberhasil','Rekap Anggaran Bagian Berhasil');
