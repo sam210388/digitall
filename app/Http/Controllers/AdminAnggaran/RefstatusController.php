@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Libraries\TarikDataMonsakti;
 use App\Models\AdminAnggaran\RefStatusModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 
 class RefstatusController extends Controller
@@ -41,7 +42,8 @@ class RefstatusController extends Controller
                     }else{
                         $btn = '<div class="btn-group" role="group">
                             <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->kdsatker."/".$row->kd_sts_history.'" data-original-title="importanggaran" class="btn btn-primary btn-sm importanggaran">Import</a>';
-                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->kdsatker."/".$row->kd_sts_history.'" data-original-title="exportanggaran" class="btn btn-success btn-sm exportanggaran">Export</a>';
+                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->idrefstatus.'" data-original-title="rekapanggaran" class="btn btn-success btn-sm rekapanggaran">Rekap</a>';
+                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->idrefstatus.'" data-original-title="exportanggaran" class="btn btn-success btn-sm exportanggaran">Export</a>';
                     }
 
 
@@ -97,6 +99,13 @@ class RefstatusController extends Controller
                         $OWNER = $DATA->OWNER;
                         $DIGITAL_STAMP = $DATA->DIGITAL_STAMP;
 
+                        $statusimport = DB::table('data_ang')->where('idrefstatus','=',$ID)->count();
+                        if ($statusimport >0){
+                            $statusimport = 1;
+                        }else{
+                            $statusimport = 2;
+                        }
+
                         $data = array(
                             'idrefstatus' => $ID,
                             'tahunanggaran' => session('tahunanggaran'),
@@ -115,7 +124,7 @@ class RefstatusController extends Controller
                             'flag_update_coa' => $FLAG_UPDATE_COA,
                             'owner' => $OWNER,
                             'digital_stamp' => $DIGITAL_STAMP,
-                            'statusimport' => 1
+                            'statusimport' => $statusimport
                         );
                         RefStatusModel::updateOrCreate(['idrefstatus' => $ID],$data);
                     }
@@ -123,7 +132,6 @@ class RefstatusController extends Controller
             }
             return redirect()->to('refstatus')->with('status','Import Refstatus Berhasil');
         }else if ($response == "Expired"){
-
                 $tokenbaru = new BearerKey();
                 $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
                 return redirect()->to('refstatus')->with(['status' => 'Token Expired']);
@@ -131,5 +139,4 @@ class RefstatusController extends Controller
             return redirect()->to('refstatus')->with(['status' => 'Gagal, Data Terlalu Besar']);
         }
     }
-
 }

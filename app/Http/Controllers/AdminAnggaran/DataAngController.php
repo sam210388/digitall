@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Libraries\TarikDataMonsakti;
 use App\Models\AdminAnggaran\AnggaranBagianModel;
 use App\Models\AdminAnggaran\DataAngModel;
+use App\Models\AdminAnggaran\SummaryDipaModel;
 use App\Models\ReferensiUnit\BagianModel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -246,122 +247,75 @@ class DataAngController extends Controller
 
     public function summarydipa($idrefstatus){
         $tahunanggaran = session('tahunanggaran');
-        $adadata = DB::table('sumarydipa')->where('idrefstatus','=',$idrefstatus)->count();
-        if ($adadata > 0) {
-            DB::table('sumarydipa')->where('idrefstatus','=',$idrefstatus)->delete();
-            $datapagu = DB::table('data_ang')
-                ->where('idrefstatus','=',$idrefstatus)
-                ->where('header1','=',0)
-                ->where('header2','=',0)
-                ->select(DB::raw('pengenal, kdsatker, sum(total) as anggaran, sum(poknilai1) as pok1, sum(poknilai2) as pok2, sum(poknilai3) as pok3,
+        $datapagu = DB::table('data_ang')
+            ->where('idrefstatus','=',$idrefstatus)
+            ->where('header1','=',0)
+            ->where('header2','=',0)
+            ->select(DB::raw('pengenal, kdsatker, sum(total) as anggaran, sum(poknilai1) as pok1, sum(poknilai2) as pok2, sum(poknilai3) as pok3,
                                                              sum(poknilai4) as pok4, sum(poknilai5) as pok5, sum(poknilai6) as pok6,
                                                              sum(poknilai7) as pok7, sum(poknilai8) as pok8, sum(poknilai9) as pok9,
                                                              sum(poknilai10) as pok10, sum(poknilai11) as pok11, sum(poknilai12) as pok12, sum(nilaiblokir) as nilaiblokir'))
-                ->groupBy(DB::raw('pengenal'))
-                ->get();
-            foreach ($datapagu as $item){
-                $kdsatker = $item->kdsatker;
-                $pengenal = $item->pengenal;
-                $idbagian = DB::table('anggaranbagian')->where('pengenal',$pengenal)->value('idbagian');
-                $jenisbelanja = substr($pengenal,22,2);
-                $idbiro = BagianModel::where('id',$idbagian)->value('idbiro');
-                $iddeputi = BagianModel::where('id',$idbagian)->value('iddeputi');
-                $anggaran = $item->anggaran;
-                $pok1 = $item->pok1;
-                $pok2 = $item->pok2;
-                $pok3 = $item->pok3;
-                $pok4 = $item->pok4;
-                $pok5 = $item->pok5;
-                $pok6 = $item->pok6;
-                $pok7 = $item->pok7;
-                $pok8 = $item->pok8;
-                $pok9 = $item->pok9;
-                $pok10 = $item->pok10;
-                $pok11 = $item->pok11;
-                $pok12 = $item->pok12;
-                $nilaiblokir = $item->nilaiblokir;
+            ->groupBy(DB::raw('pengenal'))
+            ->get();
+        foreach ($datapagu as $item){
+            $kdsatker = $item->kdsatker;
+            $pengenal = $item->pengenal;
+            $idbagian = DB::table('anggaranbagian')
+                ->where('pengenal','=',$pengenal)
+                ->where('tahunanggaran','=',$tahunanggaran)
+                ->value('idbagian');
+            $jenisbelanja = substr($pengenal,22,2);
+            $idbiro = BagianModel::where('id',$idbagian)->value('idbiro');
+            $iddeputi = BagianModel::where('id',$idbagian)->value('iddeputi');
+            $anggaran = $item->anggaran;
+            $pok1 = $item->pok1;
+            $pok2 = $item->pok2;
+            $pok3 = $item->pok3;
+            $pok4 = $item->pok4;
+            $pok5 = $item->pok5;
+            $pok6 = $item->pok6;
+            $pok7 = $item->pok7;
+            $pok8 = $item->pok8;
+            $pok9 = $item->pok9;
+            $pok10 = $item->pok10;
+            $pok11 = $item->pok11;
+            $pok12 = $item->pok12;
+            $nilaiblokir = $item->nilaiblokir;
 
-                $data = array(
+            $data = array(
+                'tahunanggaran' => $tahunanggaran,
+                'kdsatker' => $kdsatker,
+                'idrefstatus' => $idrefstatus,
+                'pengenal' => $pengenal,
+                'jenisbelanja' => $jenisbelanja,
+                'idbagian' => $idbagian,
+                'idbiro' => $idbiro,
+                'iddeputi' => $iddeputi,
+                'anggaran' => $anggaran,
+                'pok1' => $pok1,
+                'pok2' => $pok2,
+                'pok3' => $pok3,
+                'pok4' => $pok4,
+                'pok5' => $pok5,
+                'pok6' => $pok6,
+                'pok7' => $pok7,
+                'pok8' => $pok8,
+                'pok9' => $pok9,
+                'pok10' => $pok10,
+                'pok11' => $pok11,
+                'pok12' => $pok12,
+                'nilaiblokir' => $nilaiblokir,
+            );
+
+            SummaryDipaModel::updateOrCreate(
+                [
                     'tahunanggaran' => $tahunanggaran,
                     'kdsatker' => $kdsatker,
                     'idrefstatus' => $idrefstatus,
-                    'pengenal' => $pengenal,
-                    'jenisbelanja' => $jenisbelanja,
-                    'idbagian' => $idbagian,
-                    'idbiro' => $idbiro,
-                    'iddeputi' => $iddeputi,
-                    'anggaran' => $anggaran,
-                    'pok1' => $pok1,
-                    'pok2' => $pok2,
-                    'pok3' => $pok3,
-                    'pok4' => $pok4,
-                    'pok5' => $pok5,
-                    'pok6' => $pok6,
-                    'pok7' => $pok7,
-                    'pok8' => $pok8,
-                    'pok9' => $pok9,
-                    'pok10' => $pok10,
-                    'pok11' => $pok11,
-                    'pok12' => $pok12,
-                    'nilaiblokir' => $nilaiblokir,
-                );
-                DB::table('sumarydipa')->insert($data);
-            }
-
-        }else{
-            $datapagu = DB::table('data_ang')
-                ->where('idrefstatus','=',$idrefstatus)
-                ->where('header1','=',0)
-                ->where('header2','=',0)
-                ->select(DB::raw('pengenal, kdsatker, sum(total) as anggaran, sum(poknilai1) as pok1, sum(poknilai2) as pok2, sum(poknilai3) as pok3,
-                                                             sum(poknilai4) as pok4, sum(poknilai5) as pok5, sum(poknilai6) as pok6,
-                                                             sum(poknilai7) as pok7, sum(poknilai8) as pok8, sum(poknilai9) as pok9,
-                                                             sum(poknilai10) as pok10, sum(poknilai11) as pok11, sum(poknilai12) as pok12, sum(nilaiblokir) as nilaiblokir'))
-                ->groupBy(DB::raw('pengenal'))
-                ->get();
-
-            foreach ($datapagu as $item){
-                $kdsatker = $item->kdsatker;
-                $pengenal = $item->pengenal;
-                $anggaran = $item->anggaran;
-                $jenisbelanja = substr($pengenal,22,2);
-                $pok1 = $item->pok1;
-                $pok2 = $item->pok2;
-                $pok3 = $item->pok3;
-                $pok4 = $item->pok4;
-                $pok5 = $item->pok5;
-                $pok6 = $item->pok6;
-                $pok7 = $item->pok7;
-                $pok8 = $item->pok8;
-                $pok9 = $item->pok9;
-                $pok10 = $item->pok10;
-                $pok11 = $item->pok11;
-                $pok12 = $item->pok12;
-                $nilaiblokir = $item->nilaiblokir;
-
-                $data = array(
-                    'tahunanggaran' => $tahunanggaran,
-                    'kdsatker' => $kdsatker,
-                    'idrefstatus' => $idrefstatus,
-                    'pengenal' => $pengenal,
-                    'jenisbelanja' => $jenisbelanja,
-                    'anggaran' => $anggaran,
-                    'pok1' => $pok1,
-                    'pok2' => $pok2,
-                    'pok3' => $pok3,
-                    'pok4' => $pok4,
-                    'pok5' => $pok5,
-                    'pok6' => $pok6,
-                    'pok7' => $pok7,
-                    'pok8' => $pok8,
-                    'pok9' => $pok9,
-                    'pok10' => $pok10,
-                    'pok11' => $pok11,
-                    'pok12' => $pok12,
-                    'nilaiblokir' => $nilaiblokir,
-                );
-                DB::table('sumarydipa')->insert($data);
-            }
+                    'pengenal' => $pengenal
+                    ],
+                $data
+            );
         }
     }
 
