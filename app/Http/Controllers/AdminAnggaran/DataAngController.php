@@ -268,7 +268,7 @@ class DataAngController extends Controller
                                                              sum(poknilai4) as pok4, sum(poknilai5) as pok5, sum(poknilai6) as pok6,
                                                              sum(poknilai7) as pok7, sum(poknilai8) as pok8, sum(poknilai9) as pok9,
                                                              sum(poknilai10) as pok10, sum(poknilai11) as pok11, sum(poknilai12) as pok12, sum(nilaiblokir) as nilaiblokir'))
-            ->groupBy(DB::raw('pengenal'))
+            ->groupBy(DB::raw(['pengenal','kdsatker']))
             ->get();
         foreach ($datapagu as $item){
             $kdsatker = $item->kdsatker;
