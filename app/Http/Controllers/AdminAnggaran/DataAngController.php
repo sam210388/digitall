@@ -209,9 +209,14 @@ class DataAngController extends Controller
             $kodeoutput = $item->kodeoutput;
             $kodesubout = $item->kodesuboutput;
             $kodekomponen = $item->kodekomponen;
-            $kodesubkomponen = $item->kodesubkomponen;
-            $kodeakun = $item->kodeakun;
-            $pengenal = $kodeprogram.'.'.$kodekegiatan.'.'.$kodeoutput.'.'.$kodesubout.'.'.$kodekomponen.'.'.$kodesubkomponen.'.'.$kodeakun;
+
+            if ($kdsatker == '001012'){
+                $kodesubkomponen = $item->kodesubkomponen;
+                $pengenal = $kodeprogram.'.'.$kodekegiatan.'.'.$kodeoutput.'.'.$kodesubout.'.'.$kodekomponen.'.'.$kodesubkomponen;
+            }else{
+                $kodesubkomponen = null;
+                $pengenal = $kodeprogram.'.'.$kodekegiatan.'.'.$kodeoutput.'.'.$kodesubout.'.'.$kodekomponen;
+            }
 
             $where = array(
                 'tahunanggaran' => $tahunanggaran,
@@ -229,9 +234,7 @@ class DataAngController extends Controller
                     'kodesuboutput' => $kodesubout,
                     'kodekomponen' => $kodekomponen,
                     'kodesubkomponen' => $kodesubkomponen,
-                    'kodeakun' => $kodeakun,
                     'pengenal' => $pengenal,
-                    'idrefstatus' => $idrefstatus,
                     'idbagian' => null
                 );
                 AnggaranBagianModel::insert($data);
@@ -272,8 +275,13 @@ class DataAngController extends Controller
         foreach ($datapagu as $item){
             $kdsatker = $item->kdsatker;
             $pengenal = $item->pengenal;
+            if ($kdsatker == '001012'){
+                $pengenalkomponen = substr($pengenal,0,21);
+            }else{
+                $pengenalkomponen = substr($pengenal,0,19);
+            }
             $idbagian = DB::table('anggaranbagian')
-                ->where('pengenal','=',$pengenal)
+                ->where('pengenal','=',$pengenalkomponen)
                 ->where('tahunanggaran','=',$tahunanggaran)
                 ->value('idbagian');
             $jenisbelanja = substr($pengenal,22,2);

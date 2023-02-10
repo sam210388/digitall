@@ -99,13 +99,6 @@ class RefstatusController extends Controller
                         $OWNER = $DATA->OWNER;
                         $DIGITAL_STAMP = $DATA->DIGITAL_STAMP;
 
-                        $statusimport = DB::table('data_ang')->where('idrefstatus','=',$ID)->count();
-                        if ($statusimport >0){
-                            $statusimport = 1;
-                        }else{
-                            $statusimport = 2;
-                        }
-
                         $data = array(
                             'idrefstatus' => $ID,
                             'tahunanggaran' => session('tahunanggaran'),
@@ -124,9 +117,10 @@ class RefstatusController extends Controller
                             'flag_update_coa' => $FLAG_UPDATE_COA,
                             'owner' => $OWNER,
                             'digital_stamp' => $DIGITAL_STAMP,
-                            'statusimport' => $statusimport
+                            'statusimport' => 1
                         );
                         RefStatusModel::updateOrCreate(['idrefstatus' => $ID],$data);
+                        $this->updatestatusimport($ID);
                     }
                 }
             }
@@ -137,6 +131,15 @@ class RefstatusController extends Controller
                 return redirect()->to('refstatus')->with(['status' => 'Token Expired']);
         }else{
             return redirect()->to('refstatus')->with(['status' => 'Gagal, Data Terlalu Besar']);
+        }
+    }
+
+    function updatestatusimport($idrefstatus){
+        $checkdata = DB::table('data_ang')->where('idrefstatus','=',$idrefstatus)->count();
+        if ($checkdata >0){
+            DB::table('ref_status')->where('idrefstatus','=',$idrefstatus)->update([
+                'statusimport' => 2
+            ]);
         }
     }
 }
