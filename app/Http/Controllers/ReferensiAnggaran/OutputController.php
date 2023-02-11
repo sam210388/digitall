@@ -16,6 +16,14 @@ class OutputController extends Controller
     {
         $this->middleware('auth');
     }
+
+    public function dapatkandataoutput(Request $request){
+        $data['output'] = DB::table('output')
+            ->where('kodekegiatan','=',$request->kodekegiatan)
+            ->get(['kodeoutput','deskripsi']);
+
+        return response()->json($data);
+    }
     function output(){
         $judul = "List Output";
         return view('ReferensiAnggaran.output',[

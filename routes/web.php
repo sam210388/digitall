@@ -152,6 +152,7 @@ Route::post('checkrekapanggaran',[DataAngController::class,'checkrekapanggaran']
 
 //kro
 Route::resource('kro',KroController::class)->middleware('cekadmincaput');
-
+Route::post('ambildataoutput',[OutputController::class,'dapatkandataoutput'])->name('ambildataoutput')->middleware('auth');
+Route::get('importkro',[KroController::class,'importkro'])->name('importkro')->middleware('cekadmincaput');
 
 

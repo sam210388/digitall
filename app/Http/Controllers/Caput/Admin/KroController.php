@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Caput\Admin;
 
+use App\Http\Controllers\AdminAnggaran\DataAngController;
+use App\Http\Controllers\AdminAnggaran\RefstatusController;
 use App\Http\Controllers\Controller;
 use App\Models\Caput\Admin\KroModel;
 use Illuminate\Http\Request;
@@ -14,6 +16,79 @@ class KroController extends Controller
     public function __construct()
     {
         $this->middleware(['auth']);
+    }
+
+    function importkro(){
+        $tahunanggaran = session('tahunanggaran');
+        $datasatker = ['001012','001030'];
+        $statusimport = "";
+
+        foreach ($datasatker as $satker){
+            //dapatkan data IDREFSTATUS terakhir
+            $idrefstatus = DB::table('ref_status')
+                ->where([
+                    ['tahunanggaran','=',$tahunanggaran],
+                    ['kd_sts_history','LIKE','B%'],
+                    ['kdsatker','=',$satker]
+                ])->orwhere([
+                    ['kd_sts_history','LIKE','C%'],
+                    ['kdsatker','=',$satker],
+                    ['tahunanggaran','=',$tahunanggaran],
+                    ['flag_update_coa','=',1]])
+                ->max('idrefstatus');
+
+            //dapatkan info kd_sts_history
+            //$kd_sts_history = DB::table('ref_status')->where('idrefstatus','=',$idrefstatus)->value('kd_sts_history');
+
+            //dapatkan data anggaran
+            $dataanggaran = DB::table('data_ang')
+                ->where('idrefstatus','=',$idrefstatus)
+                ->get();
+            //echo $dataanggaran;
+
+            if (count($dataanggaran) === 0) {
+                $statusimport = $statusimport.$satker." Data Ang Terakhir Belum Diimport ";
+                //$importdata = new DataAngController();
+                //$importdata = $importdata->importdataang($satker, $kd_sts_history);
+            }else{
+                foreach ($dataanggaran as $item){
+                    $tahunanggaran = $item->tahunanggaran;
+                    $kodesatker = $item->kdsatker;
+                    $kodekegiatan = $item->kodekegiatan;
+                    $kodeoutput = $item->kodeoutput;
+                    $deskripsioutput = DB::table('output')
+                        ->where('tahunanggaran','=',$tahunanggaran)
+                        ->where('kodekegiatan','=',$kodekegiatan)
+                        ->where('kodeoutput','=',$kodeoutput)
+                        ->value('deskripsi');
+                    $satuan = DB::table('output')
+                        ->where('tahunanggaran','=',$tahunanggaran)
+                        ->where('kodekegiatan','=',$kodekegiatan)
+                        ->where('kodeoutput','=',$kodeoutput)
+                        ->value('satuan');
+                    $volumeoutput = $item->volumeoutput;
+
+                    $data = array(
+                        'tahunanggaran' => $tahunanggaran,
+                        'kodesatker' => $kodesatker,
+                        'kodekegiatan' => $kodekegiatan,
+                        'kodeoutput' => $kodeoutput,
+                        'uraiankro' => $deskripsioutput,
+                        'target' => $volumeoutput,
+                        'satuan' => $satuan,
+                        'indeks' => $tahunanggaran.$kodesatker.$kodekegiatan.$kodeoutput,
+                        'jenisindikator' => 2,
+                        'status' => "Dalam Proses"
+                    );
+
+                    KroModel::updateOrCreate([
+                        'indeks' => $tahunanggaran.$kodesatker.$kodekegiatan.$kodeoutput
+                    ],$data);
+                }
+                $statusimport = $statusimport.$satker." KRO Berhasil Diimport ";
+            }
+        }
+        return redirect()->to('kro')->with('status',$statusimport);
     }
 
     public function index(Request $request)
@@ -56,25 +131,33 @@ class KroController extends Controller
 
         $validated = $request->validate([
             'tahunanggaran' => 'required',
-            'temuan' => 'required',
-            'kondisi' => 'required',
-            'kriteria' => 'required',
-            'sebab' => 'required',
-            'akibat' => 'required',
-            'nilai' => 'required',
-            'bukti' => 'required',
+            'kodesatker' => 'required',
+            'kegiatan' => 'required',
+            'output' => 'required',
+            'uraiankro' => 'required',
+            'target' => 'required',
+            'satuan' => 'required',
+            'jenisindikator' => 'required',
 
         ]);
 
+        $tahunanggaran = $request->get('tahunanggaran');
+        $kodesatker = $request->get('kodesatker');
+        $kodekegiatan = $request->get('kegiatan');
+        $kodeoutput = $request->get('output');
+
         KroModel::create(
             [
-                'tahunanggaran' => $request->get('tahunanggaran'),
-                'temuan' => $request->get('temuan'),
-                'kondisi' => $request->get('kondisi'),
-                'kriteria' => $request->get('kriteria'),
-                'sebab' => $request->get('sebab'),
-                'akibat' => $request->get('akibat'),
-                'nilai' => $request->get('nilai'),
+                'tahunanggaran' => $tahunanggaran,
+                'kodesatker' => $kodesatker,
+                'kodekegiatan' => $kodekegiatan,
+                'kodeoutput' => $kodeoutput,
+                'uraiankro' => $request->get('uraiankro'),
+                'target' => $request->get('target'),
+                'satuan' => $request->get('satuan'),
+                'indeks' => $tahunanggaran.$kodesatker.$kodekegiatan.$kodeoutput,
+                'jenisindikator' => $request->get('jenisindikator'),
+                'status' => "Dalam Proses"
             ]);
 
         return response()->json(['status'=>'berhasil']);
@@ -99,13 +182,8 @@ class KroController extends Controller
      */
     public function edit($id)
     {
-        $status = DB::table('temuan')->where('id','=',$id)->value('status');
-        if ($status == 1){
-            $menu = KroModel::find($id);
-            return response()->json($menu);
-        }else{
-            return response()->json(['status'=>'gagal']);
-        }
+        $menu = KroModel::find($id);
+        return response()->json($menu);
     }
 
     /**
@@ -119,26 +197,41 @@ class KroController extends Controller
     {
         $validated = $request->validate([
             'tahunanggaran' => 'required',
-            'temuan' => 'required',
-            'kondisi' => 'required',
-            'kriteria' => 'required',
-            'sebab' => 'required',
-            'akibat' => 'required',
-            'nilai' => 'required',
+            'kodesatker' => 'required',
+            'kegiatan' => 'required',
+            'output' => 'required',
+            'uraiankro' => 'required',
+            'target' => 'required',
+            'satuan' => 'required',
+            'jenisindikator' => 'required',
 
         ]);
 
-        KroModel::where('id',$id)->update(
-            [
-                'tahunanggaran' => $request->get('tahunanggaran'),
-                'temuan' => $request->get('temuan'),
-                'kondisi' => $request->get('kondisi'),
-                'kriteria' => $request->get('kriteria'),
-                'sebab' => $request->get('sebab'),
-                'akibat' => $request->get('akibat'),
-                'nilai' => $request->get('nilai')
-            ]);
+        $tahunanggaran = $request->get('tahunanggaran');
+        $kodesatker = $request->get('kodesatker');
+        $kodekegiatan = $request->get('kegiatan');
+        $kodeoutput = $request->get('output');
+        $statusawal = $request->get('statusawal');
 
+        if ($statusawal == ""){
+            $status = "Dalam Proses";
+        }else{
+            $status = $statusawal;
+        }
+
+        KroModel::where('id','=',$id)->update(
+            [
+                'tahunanggaran' => $tahunanggaran,
+                'kodesatker' => $kodesatker,
+                'kodekegiatan' => $kodekegiatan,
+                'kodeoutput' => $kodeoutput,
+                'uraiankro' => $request->get('uraiankro'),
+                'target' => $request->get('target'),
+                'satuan' => $request->get('satuan'),
+                'indeks' => $tahunanggaran.$kodesatker.$kodekegiatan.$kodeoutput,
+                'jenisindikator' => $request->get('jenisindikator'),
+                'status' => $status
+            ]);
         return response()->json(['status'=>'berhasil']);
     }
 

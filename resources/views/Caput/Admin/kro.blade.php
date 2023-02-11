@@ -7,6 +7,16 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
+                        @if(session('status'))
+                            <div class="alert alert-success">
+                                {{session('status')}}
+                            </div>
+                        @endif
+                            @if(session('importgagal'))
+                                <div class="alert alert-danger">
+                                    {{session('importgagal')}}
+                                </div>
+                            @endif
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -28,7 +38,7 @@
                         <h3 class="card-title">{{$judul}}</h3>
                         <div class="btn-group float-sm-right" role="group">
                             <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="tambahkro"> Tambah Data</a>
-                            <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="import"> Import</a>
+                            <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="importkro"> Import</a>
                         </div>
                     </div>
                     <div class="card-body">
@@ -77,12 +87,16 @@
                                             <input type="hidden" name="id" id="id">
                                             <input type="hidden" name="kegiatanawal" id="kegiatanawal">
                                             <input type="hidden" name="outputawal" id="outputawal">
+                                            <input type="hidden" name="statusawal" id="statusawal">
                                             <div class="form-group">
                                                 <label for="tahunanggaran" class="col-sm-6 control-label">Tahun Anggaran</label>
                                                 <div class="col-sm-12">
                                                     <select class="form-control tahunanggaran" name="tahunanggaran" id="tahunanggaran" style="width: 100%;">
                                                         <option value="">Pilih Tahun Anggaran</option>
                                                         @foreach($datatahunanggaran as $data)
+                                                            @if($data->kode == date('Y'))
+                                                                <option value="{{ $data->kode }}" selected>{{ $data->tahunanggaran }}</option>
+                                                            @endif
                                                             <option value="{{ $data->kode }}">{{ $data->tahunanggaran }}</option>
                                                         @endforeach
                                                     </select>
@@ -216,16 +230,13 @@
                 serverSide: true,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                "ajax": {
-                    "url": "{{route('kro.index')}}",
-                    "type": "POST"
-                },
+                ajax:"{{route('kro.index')}}",
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'tahunanggaran', name: 'tahunanggaran'},
                     {data: 'kodesatker', name: 'kodesatker'},
-                    {data: 'kegiatan', name: 'kegiatan'},
-                    {data: 'output', name: 'output'},
+                    {data: 'kodekegiatan', name: 'kegiatan'},
+                    {data: 'kodeoutput', name: 'output'},
                     {data: 'uraiankro', name: 'uraiankro'},
                     {data: 'target', name: 'target'},
                     {data: 'satuan', name: 'satuan'},
@@ -258,9 +269,15 @@
                 $('#saveBtn').val("tambah");
                 $('#formkro').trigger("reset");
                 $('#modelHeading').html("Tambah kro");
-                document.getElementById('aktuallinkbukti').href = "#"
-                $('#linkbukti').hide();
                 $('#ajaxModel').modal('show');
+            });
+
+            $('#importkro').click(function (e) {
+                if( confirm("Apakah Anda Yakin Mau Import KRO dari Data Anggaran Terbaru ?")){
+                    e.preventDefault();
+                    $(this).html('Importing..');
+                    window.location="{{URL::to('importkro')}}";
+                }
             });
 
 
@@ -278,14 +295,16 @@
                     $('#id').val(data.id);
                     $('#tahunanggaran').val(data.tahunanggaran).trigger('change');
                     $('#kodesatker').val(data.kodesatker).trigger('change');
-                    $('#kegiatan').val(data.kegiatan).trigger('change');
-                    $('#output').val(data.output).trigger('change');
+                    $('#kegiatan').val(data.kodekegiatan).trigger('change');
                     $('#kegiatanawal').val(data.kodekegiatan);
-                    $('#outputawal').val(data.kodeoutout);
+                    $('#outputawal').val(data.kodeoutput);
+                    $('#statusawal').val(data.status);
                     $('#target').val(data.target);
+                    $('#satuan').val(data.satuan);
                     $('#uraiankro').val(data.uraiankro);
                     $('#jenisindikator').val(data.jenisindikator).trigger('change');
                     $('#status').val(data.status);
+
                 })
             });
 
@@ -299,12 +318,10 @@
                 $(this).html('Sending..');
                 let form = document.getElementById('formkro');
                 let fd = new FormData(form);
-                let bukti = $('#bukti')[0].files;
                 let saveBtn = document.getElementById('saveBtn').value;
-                var id = document.getElementById('idkro').value;
-                fd.append('bukti',bukti[0])
+                var id = document.getElementById('id').value;
                 fd.append('saveBtn',saveBtn)
-                if(saveBtn == "edit"){
+                if(saveBtn === "edit"){
                     fd.append('_method','PUT')
                 }
                 for (var pair of fd.entries()) {
@@ -332,8 +349,14 @@
                                 icon: 'error'
                             })
                         }
-                        $('#iddeputi').val('').trigger('change');
-                        $('#idbiroawal').val('');
+                        $('#tahunanggaran').val('').trigger('change');
+                        $('#kodesatker').val('').trigger('change');
+                        $('#kegiatan').val('').trigger('change');
+                        $('#output').val('').trigger('change');
+                        $('#jenisindikator').val('').trigger('change');
+                        $('#kegiatanawal').val('');
+                        $('#outputawal').val('');
+                        $('#statusawal').val('');
                         $('#formkro').trigger("reset");
                         $('#ajaxModel').modal('hide');
                         $('#saveBtn').html('Simpan Data');
@@ -412,12 +435,11 @@
 
         $('#kegiatan').on('change', function () {
             var  kegiatan = this.value;
-
             $.ajax({
                 url: "{{url('ambildataoutput')}}",
                 type: "POST",
                 data: {
-                    kegiatan: kegiatan,
+                    kodekegiatan: kegiatan,
                     _token: '{{csrf_token()}}'
                 },
                 dataType: 'json',
@@ -425,10 +447,10 @@
                     var output = document.getElementById('outputawal').value;
                     $('#output').html('<option value="">Pilih Output</option>');
                     $.each(result.output, function (key, value) {
-                            if (kodeoutput == value.kode) {
-                            $('select[name="idbiro"]').append('<option value="'+value.id+'" selected>'+value.uraianbiro+'</option>').trigger('change')
+                            if (output === value.kodeoutput) {
+                            $('select[name="output"]').append('<option value="'+value.kodeoutput+'" selected>'+value.kodeoutput+" | "+value.deskripsi+'</option>').trigger('change')
                         }else{
-                            $("#idbiro").append('<option value="' + value.id + '">' + value.uraianbiro + '</option>');
+                            $("#output").append('<option value="' + value.kodeoutput + '">' +value.kodeoutput+" | "+value.deskripsi+ '</option>');
                         }
 
                     });
