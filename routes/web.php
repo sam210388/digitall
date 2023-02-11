@@ -26,6 +26,7 @@ use App\Http\Controllers\ReferensiAnggaran\KomponenController;
 use App\Http\Controllers\AdminAnggaran\RefstatusController;
 use App\Http\Controllers\AdminAnggaran\DataAngController;
 use App\Http\Controllers\Administrasi\PegawaiController;
+use App\Http\Controllers\Caput\Admin\KroController;
 
 
 /*
@@ -148,6 +149,9 @@ Route::get('importanggaran/{kdsatker}/{kdstshistory}',[DataAngController::class,
 Route::post('checkdataang',[DataAngController::class,'checkdata'])->name('checkdataang')->middleware('cekadminanggaran');
 Route::get('rekapanggaran/{idrefstatus}',[DataAngController::class,'rekapanggaran'])->name('rekapanggaran')->middleware('cekadminanggaran');
 Route::post('checkrekapanggaran',[DataAngController::class,'checkrekapanggaran'])->name('checkrekapanggaran');
+
+//kro
+Route::resource('kro',KroController::class)->middleware('cekadmincaput');
 
 
 
