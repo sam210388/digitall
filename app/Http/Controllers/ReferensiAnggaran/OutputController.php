@@ -79,11 +79,20 @@ class OutputController extends Controller
                             'deskripsi' => $DESKRIPSI,
                             'satuan' => $SATUAN
                         );
-                        OutputModel::updateOrCreate(['kode' => $KODE,'tahunanggaran' => $tahunanggaran],$databaru);
+                        $where = array(
+                            'tahunanggaran' => $tahunanggaran,
+                            'kode' => $KODE
+                        );
+                        $jumlah = DB::table('outputall')->where($where)->count();
+                        if ($jumlah == 0){
+                            DB::table('outputall')->insert($databaru);
+                        }else{
+                            DB::table('outputall')->where($where)->update($databaru);
+                        }
                     }
                 }
             }
-            //DB::table('output')->upsert($datainsert,['tahunanggaran','kode']);
+            $this->importoutputdpr();
             return redirect()->to('output')->with('status',"Import Output Berhasil");
         }else if ($response == "Expired"){
 
@@ -92,6 +101,69 @@ class OutputController extends Controller
                 return redirect()->to('output')->with(['status' => 'Token Expired']);
         }else{
             return redirect()->to('output')->with(['status' => 'Gagal, Data Terlalu Besar']);
+        }
+    }
+
+    function importoutputdpr(){
+        $tahunanggaran = session('tahunanggaran');
+        $datasatker = ['001012','001030'];
+        $statusimport = "";
+
+        foreach ($datasatker as $satker){
+            //dapatkan data IDREFSTATUS terakhir
+            $idrefstatus = DB::table('ref_status')
+                ->where([
+                    ['tahunanggaran','=',$tahunanggaran],
+                    ['kd_sts_history','LIKE','B%'],
+                    ['kdsatker','=',$satker]
+                ])->orwhere([
+                    ['kd_sts_history','LIKE','C%'],
+                    ['kdsatker','=',$satker],
+                    ['tahunanggaran','=',$tahunanggaran],
+                    ['flag_update_coa','=',1]])
+                ->max('idrefstatus');
+
+            //dapatkan info kd_sts_history
+            //$kd_sts_history = DB::table('ref_status')->where('idrefstatus','=',$idrefstatus)->value('kd_sts_history');
+
+            //dapatkan data anggaran
+            $dataanggaran = DB::table('data_ang')
+                ->where('idrefstatus','=',$idrefstatus)
+                ->get();
+            //echo $dataanggaran;
+
+            if (count($dataanggaran) === 0) {
+                $statusimport = $statusimport.$satker." Data Ang Terakhir Belum Diimport ";
+            }else{
+                foreach ($dataanggaran as $item){
+                    $tahunanggaran = $item->tahunanggaran;
+                    $kodekegiatan = $item->kodekegiatan;
+                    $kodeoutput = $item->kodeoutput;
+                    $kode = $kodekegiatan.".".$kodeoutput;
+                    $uraianoutput = DB::table('outputall')
+                        ->where('tahunanggaran','=',$tahunanggaran)
+                        ->where('kode','=',$kode)
+                        ->value('deskripsi');
+                    $satuanoutput = DB::table('outputall')
+                        ->where('tahunanggaran','=',$tahunanggaran)
+                        ->where('kode','=',$kode)
+                        ->value('satuan');
+
+                    $data = array(
+                        'tahunanggaran' => $tahunanggaran,
+                        'kodekegiatan' => $kodekegiatan,
+                        'kodeoutput' => $kodeoutput,
+                        'kode' => $kode,
+                        'deskripsi' => $uraianoutput,
+                        'satuan' => $satuanoutput
+                    );
+
+                    OutputModel::updateOrCreate([
+                        'tahunanggaran' => $tahunanggaran,
+                        'kode' => $kode
+                    ],$data);
+                }
+            }
         }
     }
 }

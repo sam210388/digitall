@@ -97,9 +97,16 @@ class RincianIndikatorRoController extends Controller
         $kodekomponen = $request->get('komponen');
         $kodesubkomponen = $request->get('subkomponen');
         $indeks = $tahunanggaran.$kodesatker.$kodekegiatan.$kodeoutput.$kodesuboutput.$kodekomponen.$kodesubkomponen;
+        $indeksindikatorro = $tahunanggaran.$kodesatker.$kodekegiatan.$kodeoutput.$kodesuboutput.$kodekomponen;
+        $idindikatorro = DB::table('indikatorro')->where('indeks','=',$indeksindikatorro)->value('id');
+        $targetpengisian = $request->get('targetpengisian');
+        $volperbulan = $request->get('volperbulan');
+        $infoproses = $request->get('infoproses');
+        $keterangan = $request->get('keterangan');
 
         RincianIndikatorRoModel::create(
             [
+                'idindikatorro' => $idindikatorro,
                 'tahunanggaran' => $tahunanggaran,
                 'kodesatker' => $kodesatker,
                 'kodekegiatan' => $kodekegiatan,
@@ -107,12 +114,16 @@ class RincianIndikatorRoController extends Controller
                 'kodesuboutput' => $kodesuboutput,
                 'kodekomponen' => $kodekomponen,
                 'kodesubkomponen' => $kodesubkomponen,
+                'indeks' => $indeks,
                 'uraianrincianindikatorro' => $request->get('uraianrincianindikatorro'),
                 'target' => $request->get('target'),
                 'satuan' => $request->get('satuan'),
-                'indeks' => $indeks,
                 'jenisindikator' => $request->get('jenisindikator'),
-                'status' => "Dalam Proses"
+                'status' => "Dalam Proses",
+                'targetpengisian' => $targetpengisian,
+                'volperbulan' => $volperbulan,
+                'infoproses' => $infoproses,
+                'keterangan' => $keterangan
             ]);
 
         return response()->json(['status'=>'berhasil']);
@@ -172,6 +183,12 @@ class RincianIndikatorRoController extends Controller
         $kodekomponen = $request->get('komponen');
         $kodesubkomponen = $request->get('subkomponen');
         $indeks = $tahunanggaran.$kodesatker.$kodekegiatan.$kodeoutput.$kodesuboutput.$kodekomponen.$kodesubkomponen;
+        $indeksindikatorro = $tahunanggaran.$kodesatker.$kodekegiatan.$kodeoutput.$kodesuboutput.$kodekomponen;
+        $idindikatorro = DB::table('indikatorro')->where('indeks','=',$indeksindikatorro)->value('id');
+        $targetpengisian = $request->get('targetpengisian');
+        $volperbulan = $request->get('volperbulan');
+        $infoproses = $request->get('infoproses');
+        $keterangan = $request->get('keterangan');
         $statusawal = $request->get('statusawal');
 
         if ($statusawal == ""){
@@ -182,6 +199,7 @@ class RincianIndikatorRoController extends Controller
 
         RincianIndikatorRoModel::where('id','=',$id)->update(
             [
+                'idindikatorro' => $idindikatorro,
                 'tahunanggaran' => $tahunanggaran,
                 'kodesatker' => $kodesatker,
                 'kodekegiatan' => $kodekegiatan,
@@ -189,12 +207,16 @@ class RincianIndikatorRoController extends Controller
                 'kodesuboutput' => $kodesuboutput,
                 'kodekomponen' => $kodekomponen,
                 'kodesubkomponen' => $kodesubkomponen,
+                'indeks' => $indeks,
                 'uraianrincianindikatorro' => $request->get('uraianrincianindikatorro'),
                 'target' => $request->get('target'),
                 'satuan' => $request->get('satuan'),
-                'indeks' => $indeks,
                 'jenisindikator' => $request->get('jenisindikator'),
-                'status' => $status
+                'status' => $status,
+                'targetpengisian' => $targetpengisian,
+                'volperbulan' => $volperbulan,
+                'infoproses' => $infoproses,
+                'keterangan' => $keterangan
             ]);
         return response()->json(['status'=>'berhasil']);
     }

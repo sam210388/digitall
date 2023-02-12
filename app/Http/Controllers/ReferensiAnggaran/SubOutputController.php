@@ -82,10 +82,21 @@ class SubOutputController extends Controller
                             'deskripsi' => $DESKRIPSI,
                             'satuan' => $SATUAN
                         );
-                        SubOutputModel::updateOrCreate(['kode' => $KODE,'tahunanggaran' => $tahunanggaran],$databaru);
+
+                        $where = array(
+                            'kode' => $KODE,
+                            'tahunanggaran' => $tahunanggaran
+                        );
+                        $jumlah = DB::table('suboutputall')->where($where)->count();
+                        if ($jumlah == 0){
+                            DB::table('suboutputall')->insert($databaru);
+                        }else{
+                            DB::table('suboutputall')->where($where)->update($databaru);
+                        }
                     }
                 }
             }
+            $this->importsuboutputdpr();
             return redirect()->to('suboutput')->with('status',"Import SubOutput Berhasil");
         }else if ($response == "Expired"){
 
@@ -94,6 +105,71 @@ class SubOutputController extends Controller
                 return redirect()->to('suboutput')->with(['status' => 'Token Expired']);
         }else{
             return redirect()->to('suboutput')->with(['status' => 'Gagal, Data Terlalu Besar']);
+        }
+    }
+
+    function importsuboutputdpr(){
+        $tahunanggaran = session('tahunanggaran');
+        $datasatker = ['001012','001030'];
+        $statusimport = "";
+
+        foreach ($datasatker as $satker){
+            //dapatkan data IDREFSTATUS terakhir
+            $idrefstatus = DB::table('ref_status')
+                ->where([
+                    ['tahunanggaran','=',$tahunanggaran],
+                    ['kd_sts_history','LIKE','B%'],
+                    ['kdsatker','=',$satker]
+                ])->orwhere([
+                    ['kd_sts_history','LIKE','C%'],
+                    ['kdsatker','=',$satker],
+                    ['tahunanggaran','=',$tahunanggaran],
+                    ['flag_update_coa','=',1]])
+                ->max('idrefstatus');
+
+            //dapatkan info kd_sts_history
+            //$kd_sts_history = DB::table('ref_status')->where('idrefstatus','=',$idrefstatus)->value('kd_sts_history');
+
+            //dapatkan data anggaran
+            $dataanggaran = DB::table('data_ang')
+                ->where('idrefstatus','=',$idrefstatus)
+                ->get();
+            //echo $dataanggaran;
+
+            if (count($dataanggaran) === 0) {
+                $statusimport = $statusimport.$satker." Data Ang Terakhir Belum Diimport ";
+            }else{
+                foreach ($dataanggaran as $item){
+                    $tahunanggaran = $item->tahunanggaran;
+                    $kodekegiatan = $item->kodekegiatan;
+                    $kodeoutput = $item->kodeoutput;
+                    $kodesuboutput = $item->kodesuboutput;
+                    $kode = $kodekegiatan.".".$kodeoutput.".".$kodesuboutput;
+                    $uraiansuboutput = DB::table('suboutputall')
+                        ->where('tahunanggaran','=',$tahunanggaran)
+                        ->where('kode','=',$kode)
+                        ->value('deskripsi');
+                    $satuansuboutput = DB::table('suboutputall')
+                        ->where('tahunanggaran','=',$tahunanggaran)
+                        ->where('kode','=',$kode)
+                        ->value('satuan');
+
+                    $data = array(
+                        'tahunanggaran' => $tahunanggaran,
+                        'kodekegiatan' => $kodekegiatan,
+                        'kodeoutput' => $kodeoutput,
+                        'kodesuboutput' => $kodesuboutput,
+                        'kode' => $kode,
+                        'deskripsi' => $uraiansuboutput,
+                        'satuan' => $satuansuboutput
+                    );
+
+                    SubOutputModel::updateOrCreate([
+                        'tahunanggaran' => $tahunanggaran,
+                        'kode' => $kode
+                    ],$data);
+                }
+            }
         }
     }
 }

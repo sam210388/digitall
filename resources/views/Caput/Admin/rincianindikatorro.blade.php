@@ -92,7 +92,6 @@
                                             <input type="hidden" name="idbagianawal" id="idbagianawal">
                                             <input type="hidden" name="subkomponenawal" id="subkomponenawal">
                                             <input type="hidden" name="statusawal" id="statusawal">
-                                            <input type="hidden" name="idindikatorroawal" id="idkroawal">
                                             <div class="form-group">
                                                 <label for="tahunanggaran" class="col-sm-6 control-label">Tahun Anggaran</label>
                                                 <div class="col-sm-12">
@@ -115,17 +114,6 @@
                                                     <option value="001012">Sekretariat Jenderal</option>
                                                     <option value="001030">Dewan</option>
                                                 </select>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="indikatorro" class="col-sm-6 control-label">Indikator RO</label>
-                                                <div class="col-sm-12">
-                                                    <select class="form-control indikatorro" name="indikatorro" id="indikatorro" style="width: 100%;">
-                                                        <option value="">Pilih Indikator RO</option>
-                                                        @foreach($dataindikatorro as $data)
-                                                            <option value="{{ $data->id }}">{{ $data->indeks." | ".$data->uraianindikatorro }}</option>
-                                                        @endforeach
-                                                    </select>
                                                 </div>
                                             </div>
                                             <div class="form-group">
@@ -193,6 +181,30 @@
                                                         <option value="1">Internal</option>
                                                         <option value="2">Non Internal</option>
                                                     </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="targetpengisian" class="col-sm-6 control-label">Target Pengisian</label>
+                                                <div class="col-sm-12">
+                                                    <textarea type="text" class="form-control" id="targetpengisian" name="targetpengisian" placeholder="Target Pengisian" value=""></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="volperbulan" class="col-sm-6 control-label">Vol Perbulan</label>
+                                                <div class="col-sm-12">
+                                                    <textarea type="text" class="form-control" id="volperbulan" name="volperbulan" placeholder="Vol Perbulan" value=""></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="infoproses" class="col-sm-6 control-label">Info Proses</label>
+                                                <div class="col-sm-12">
+                                                    <textarea type="text" class="form-control" id="infoproses" name="infoproses" placeholder="Info Proses" value=""></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="keterangan" class="col-sm-6 control-label">Keterangan</label>
+                                                <div class="col-sm-12">
+                                                    <textarea type="text" class="form-control" id="keterangan" name="keterangan" placeholder="Keterangan" value=""></textarea>
                                                 </div>
                                             </div>
                                             <div class="form-group">
@@ -362,7 +374,6 @@
                     $('#id').val(data.id);
                     $('#tahunanggaran').val(data.tahunanggaran).trigger('change');
                     $('#kodesatker').val(data.kodesatker).trigger('change');
-                    $('#indikatorro').val(data.idindikatorro).trigger('change');
                     $('#kegiatan').val(data.kodekegiatan).trigger('change');
                     $('#kegiatanawal').val(data.kodekegiatan);
                     $('#iddeputi').val(data.iddeputi).trigger('change');
@@ -375,6 +386,10 @@
                     $('#statusawal').val(data.status);
                     $('#target').val(data.target);
                     $('#satuan').val(data.satuan);
+                    $('#targetpengisian').val(data.targetpengisian);
+                    $('#volperbulan').val(data.volperbulan);
+                    $('#infoproses').val(data.infoproses);
+                    $('#keterangan').val(data.keterangan);
                     $('#uraianrincianindikatorro').val(data.uraianrincianindikatorro);
                     $('#jenisindikator').val(data.jenisindikator).trigger('change');
                     $('#status').val(data.status);

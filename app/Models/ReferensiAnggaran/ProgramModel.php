@@ -11,5 +11,5 @@ class ProgramModel extends Model
 
     protected $table = "program";
 
-    protected $fillable = ['tahunanggaran','kode','deskripsi'];
+    protected $fillable = ['tahunanggaran','kode','uraianprogram'];
 }
