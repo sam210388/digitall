@@ -37,21 +37,19 @@
                     <div class="card-header">
                         <h3 class="card-title">{{$judul}}</h3>
                         <div class="btn-group float-sm-right" role="group">
-                            <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="tambahindikatorro"> Tambah Data</a>
-                            <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="importindikatorro"> Import</a>
+                            <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="tambahrincianindikatorro"> Tambah Data</a>
                         </div>
                     </div>
                     <div class="card-body">
-                        <table id="tabelindikatorro" class="table table-bordered table-striped tabelindikatorro">
+                        <table id="tabelrincianindikatorro" class="table table-bordered table-striped tabelrincianindikatorro">
                             <thead>
                             <tr>
                                 <th>No</th>
                                 <th>Tahun</th>
                                 <th>Satker</th>
-                                <th>KRO</th>
-                                <th>RO</th>
+                                <th>Indikator RO</th>
                                 <th>Indeks</th>
-                                <th>Uraian Indikator RO</th>
+                                <th>Uraian Rincian</th>
                                 <th>Target</th>
                                 <th>Satuan</th>
                                 <th>Jenis</th>
@@ -66,10 +64,9 @@
                                 <th>No</th>
                                 <th>Tahun</th>
                                 <th>Satker</th>
-                                <th>KRO</th>
-                                <th>RO</th>
-                                <th>Pengenal</th>
-                                <th>Uraian Indikator RO</th>
+                                <th>Indikator RO</th>
+                                <th>Indeks</th>
+                                <th>Uraian Rincian</th>
                                 <th>Target</th>
                                 <th>Satuan</th>
                                 <th>Jenis</th>
@@ -85,15 +82,17 @@
                                         <h4 class="modal-title" id="modelHeading"></h4>
                                     </div>
                                     <div class="modal-body">
-                                        <form id="formindikatorro" name="formindikatorro" class="form-horizontal" enctype="multipart/form-data">
+                                        <form id="formrincianindikatorro" name="formrincianindikatorro" class="form-horizontal" enctype="multipart/form-data">
                                             <input type="hidden" name="id" id="id">
                                             <input type="hidden" name="kegiatanawal" id="kegiatanawal">
                                             <input type="hidden" name="outputawal" id="outputawal">
                                             <input type="hidden" name="suboutputawal" id="suboutputawal">
                                             <input type="hidden" name="komponenawal" id="komponenawal">
+                                            <input type="hidden" name="idbiroawal" id="idbiroawal">
+                                            <input type="hidden" name="idbagianawal" id="idbagianawal">
+                                            <input type="hidden" name="subkomponenawal" id="subkomponenawal">
                                             <input type="hidden" name="statusawal" id="statusawal">
-                                            <input type="hidden" name="idkroawal" id="idkroawal">
-                                            <input type="hidden" name="idroawal" id="idkroawal">
+                                            <input type="hidden" name="idindikatorroawal" id="idkroawal">
                                             <div class="form-group">
                                                 <label for="tahunanggaran" class="col-sm-6 control-label">Tahun Anggaran</label>
                                                 <div class="col-sm-12">
@@ -119,23 +118,12 @@
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label for="kro" class="col-sm-6 control-label">KRO</label>
+                                                <label for="indikatorro" class="col-sm-6 control-label">Indikator RO</label>
                                                 <div class="col-sm-12">
-                                                    <select class="form-control kro" name="kro" id="kro" style="width: 100%;">
-                                                        <option value="">Pilih KRO</option>
-                                                        @foreach($datakro as $data)
-                                                            <option value="{{ $data->id }}">{{ $data->kodekegiatan.$data->kodeoutput." | ".$data->uraiankro }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="ro" class="col-sm-6 control-label">RO</label>
-                                                <div class="col-sm-12">
-                                                    <select class="form-control ro" name="ro" id="ro" style="width: 100%;">
-                                                        <option value="">Pilih RO</option>
-                                                        @foreach($dataro as $data)
-                                                            <option value="{{ $data->id }}">{{ $data->indeks." | ".$data->uraianro }}</option>
+                                                    <select class="form-control indikatorro" name="indikatorro" id="indikatorro" style="width: 100%;">
+                                                        <option value="">Pilih Indikator RO</option>
+                                                        @foreach($dataindikatorro as $data)
+                                                            <option value="{{ $data->id }}">{{ $data->indeks." | ".$data->uraianindikatorro }}</option>
                                                         @endforeach
                                                     </select>
                                                 </div>
@@ -173,9 +161,16 @@
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label for="uraianindikatorro" class="col-sm-6 control-label">Uraian RO</label>
+                                                <label for="subkomponen" class="col-sm-6 control-label">Sub Komponen</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control" id="uraianindikatorro" name="uraianindikatorro" placeholder="Uraian Indikator RO" value="">
+                                                    <select class="form-control subkomponen" name="subkomponen" id="subkomponen" style="width: 100%;">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="uraianrincianindikatorro" class="col-sm-6 control-label">Uraian Rincian</label>
+                                                <div class="col-sm-12">
+                                                    <input type="text" class="form-control" id="uraianrincianindikatorro" name="uraianrincianindikatorro" placeholder="Uraian Indikator RO" value="">
                                                 </div>
                                             </div>
                                             <div class="form-group">
@@ -197,6 +192,31 @@
                                                         <option value="">Jenis Indikator</option>
                                                         <option value="1">Internal</option>
                                                         <option value="2">Non Internal</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="deputi" class="col-sm-6 control-label">Deputi</label>
+                                                <div class="col-sm-12">
+                                                    <select class="form-control iddeputi" name="iddeputi" id="iddeputi" style="width: 100%;">
+                                                        <option value="">Pilih Deputi</option>
+                                                        @foreach($datadeputi as $data)
+                                                            <option value="{{ $data->id }}">{{ $data->uraiandeputi }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="Biro" class="col-sm-6 control-label">Biro</label>
+                                                <div class="col-sm-12">
+                                                    <select class="form-control idbiro" name="idbiro" id="idbiro" style="width: 100%;">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="Bagian" class="col-sm-6 control-label">Bagian</label>
+                                                <div class="col-sm-12">
+                                                    <select class="form-control idbagian" name="idbagian" id="idbagian" style="width: 100%;">
                                                     </select>
                                                 </div>
                                             </div>
@@ -240,6 +260,10 @@
 
             $('.komponen').select2({
                 theme: 'bootstrap4',
+            })
+
+            $('.subkomponen').select2({
+                theme: 'bootstrap4',
 
             })
 
@@ -247,11 +271,16 @@
                 theme: 'bootstrap4',
             })
 
-            $('.kro').select2({
+            $('.indikatorro').select2({
                 theme: 'bootstrap4',
             })
-
-            $('.ro').select2({
+            $('.iddeputi').select2({
+                theme: 'bootstrap4',
+            })
+            $('.idbiro').select2({
+                theme: 'bootstrap4',
+            })
+            $('.idbagian').select2({
                 theme: 'bootstrap4',
             })
 
@@ -261,14 +290,14 @@
             --------------------------------------------
             --------------------------------------------*/
             // Setup - add a text input to each footer cell
-            $('#tabelindikatorro tfoot th').each( function (i) {
-                var title = $('#tabelindikatorro thead th').eq( $(this).index() ).text();
+            $('#tabelrincianindikatorro tfoot th').each( function (i) {
+                var title = $('#tabelrincianindikatorro thead th').eq( $(this).index() ).text();
                 $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
                     {"width":"5%"},
                 );
             });
 
-            var table = $('.tabelindikatorro').DataTable({
+            var table = $('.tabelrincianindikatorro').DataTable({
                 fixedColumn:true,
                 scrollX:"100%",
                 autoWidth:true,
@@ -276,15 +305,14 @@
                 serverSide: true,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('indikatorro.index')}}",
+                ajax:"{{route('rincianindikatorro.index')}}",
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'tahunanggaran', name: 'tahunanggaran'},
                     {data: 'kodesatker', name: 'kodesatker'},
-                    {data: 'idkro', name: 'idkro'},
-                    {data: 'idro', name: 'idkro'},
+                    {data: 'idindikatorro', name: 'idindikatorro'},
                     {data: 'indeks', name: 'indeks'},
-                    {data: 'uraianindikatorro', name: 'uraianindikatorro'},
+                    {data: 'uraianrincianindikatorro', name: 'uraianrincianindikatorro'},
                     {data: 'target', name: 'target'},
                     {data: 'satuan', name: 'satuan'},
                     {data: 'jenisindikator', name: 'jenisindikator'},
@@ -312,19 +340,11 @@
             Click to Button
             --------------------------------------------
             --------------------------------------------*/
-            $('#tambahindikatorro').click(function () {
+            $('#tambahrincianindikatorro').click(function () {
                 $('#saveBtn').val("tambah");
-                $('#formrindikatoro').trigger("reset");
-                $('#modelHeading').html("Tambah Indikator RO");
+                $('#formrincianindikatorro').trigger("reset");
+                $('#modelHeading').html("Tambah Rincian Indikator RO");
                 $('#ajaxModel').modal('show');
-            });
-
-            $('#importindikatorro').click(function (e) {
-                if( confirm("Apakah Anda Yakin Mau Import Indikator RO dari Data Anggaran Terbaru ?")){
-                    e.preventDefault();
-                    $(this).html('Importing..');
-                    window.location="{{URL::to('importindikatorro')}}";
-                }
             });
 
 
@@ -333,26 +353,29 @@
             Click to Edit Button
             --------------------------------------------
             --------------------------------------------*/
-            $('body').on('click', '.editindikatorro', function () {
-                var idindikatorro = $(this).data('id');
-                $.get("{{ route('indikatorro.index') }}" +'/' + idindikatorro +'/edit', function (data) {
+            $('body').on('click', '.editrincianindikatorro', function () {
+                var idrincianindikatorro = $(this).data('id');
+                $.get("{{ route('rincianindikatorro.index') }}" +'/' + idrincianindikatorro +'/edit', function (data) {
                     $('#modelHeading').html("Edit RO");
                     $('#saveBtn').val("edit");
                     $('#ajaxModel').modal('show');
                     $('#id').val(data.id);
                     $('#tahunanggaran').val(data.tahunanggaran).trigger('change');
                     $('#kodesatker').val(data.kodesatker).trigger('change');
-                    $('#kro').val(data.idkro).trigger('change');
-                    $('#ro').val(data.idro).trigger('change');
+                    $('#indikatorro').val(data.idindikatorro).trigger('change');
                     $('#kegiatan').val(data.kodekegiatan).trigger('change');
                     $('#kegiatanawal').val(data.kodekegiatan);
+                    $('#iddeputi').val(data.iddeputi).trigger('change');
+                    $('#idbiroawal').val(data.idbiro);
+                    $('#idbagianawal').val(data.idbagian);
                     $('#outputawal').val(data.kodeoutput);
                     $('#suboutputawal').val(data.kodesuboutput);
                     $('#komponenawal').val(data.kodekomponen);
+                    $('#subkomponenawal').val(data.kodesubkomponen);
                     $('#statusawal').val(data.status);
                     $('#target').val(data.target);
                     $('#satuan').val(data.satuan);
-                    $('#uraianindikatorro').val(data.uraianindikatorro);
+                    $('#uraianrincianindikatorro').val(data.uraianrincianindikatorro);
                     $('#jenisindikator').val(data.jenisindikator).trigger('change');
                     $('#status').val(data.status);
 
@@ -367,7 +390,7 @@
             $('#saveBtn').click(function (e) {
                 e.preventDefault();
                 $(this).html('Sending..');
-                let form = document.getElementById('formindikatorro');
+                let form = document.getElementById('formrincianindikatorro');
                 let fd = new FormData(form);
                 let saveBtn = document.getElementById('saveBtn').value;
                 var id = document.getElementById('id').value;
@@ -380,7 +403,7 @@
                 }
                 $.ajax({
                     data: fd,
-                    url: saveBtn === "tambah" ? "{{route('indikatorro.store')}}":"{{route('indikatorro.update','')}}"+'/'+id,
+                    url: saveBtn === "tambah" ? "{{route('rincianindikatorro.store')}}":"{{route('rincianindikatorro.update','')}}"+'/'+id,
                     type: "POST",
                     enctype: 'multipart/form-data',
                     contentType: false,
@@ -445,13 +468,13 @@
             Delete Product Code
             --------------------------------------------
             --------------------------------------------*/
-            $('body').on('click', '.deleteindikatorro', function () {
+            $('body').on('click', '.deleterincianindikatorro', function () {
 
-                var idindikatorro = $(this).data("id");
+                var idrincianindikatorro = $(this).data("id");
                 if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
                     $.ajax({
                         type: "DELETE",
-                        url: "{{ route('indikatorro.destroy','') }}"+'/'+idindikatorro,
+                        url: "{{ route('rincianindikatorro.destroy','') }}"+'/'+idrincianindikatorro,
                         success: function (data) {
                             if (data.status == "berhasil"){
                                 Swal.fire({
@@ -562,6 +585,92 @@
                             $('select[name="komponen"]').append('<option value="'+value.kodekomponen+'" selected>'+value.kodekomponen+" | "+value.deskripsi+'</option>').trigger('change')
                         }else{
                             $("#komponen").append('<option value="' + value.kodekomponen + '">' +value.kodekomponen+" | "+value.deskripsi+ '</option>');
+                        }
+
+                    });
+                }
+
+            });
+        });
+
+        $('#komponen').on('change', function () {
+            var  kodekomponen = this.value;
+            var  kodekegiatan = document.getElementById('kegiatan').value;
+            var  kodeoutput = document.getElementById('output').value;
+            var  kodesuboutput = document.getElementById('suboutput').value;
+            $.ajax({
+                url: "{{url('ambildatasubkomponen')}}",
+                type: "POST",
+                data: {
+                    kodekegiatan: kodekegiatan,
+                    kodeoutput: kodeoutput,
+                    kodesuboutput: kodesuboutput,
+                    kodekomponen: kodekomponen,
+                    _token: '{{csrf_token()}}'
+                },
+                dataType: 'json',
+                success: function (result) {
+                    var subkomponen = document.getElementById('subkomponenawal').value;
+                    $('#subkomponen').html('<option value="">Pilih SubKomponen</option>');
+                    $.each(result.subkomponen, function (key, value) {
+                        if (subkomponen === value.kodesubkomponen) {
+                            $('select[name="subkomponen"]').append('<option value="'+value.kodesubkomponen+'" selected>'+value.kodesubkomponen+" | "+value.deskripsi+'</option>').trigger('change')
+                        }else{
+                            $("#subkomponen").append('<option value="' + value.kodesubkomponen + '">' +value.kodesubkomponen+" | "+value.deskripsi+ '</option>');
+                        }
+
+                    });
+                }
+
+            });
+        });
+
+        $('#iddeputi').on('change', function () {
+            var iddeputi = this.value;
+
+            $.ajax({
+                url: "{{url('ambildatabiro')}}",
+                type: "POST",
+                data: {
+                    iddeputi: iddeputi,
+                    _token: '{{csrf_token()}}'
+                },
+                dataType: 'json',
+                success: function (result) {
+                    var idbiro = document.getElementById('idbiroawal').value;
+                    $('#idbiro').html('<option value="">Pilih Biro</option>');
+                    $.each(result.biro, function (key, value) {
+                        if (idbiro == value.id) {
+                            $('select[name="idbiro"]').append('<option value="'+value.id+'" selected>'+value.uraianbiro+'</option>').trigger('change')
+                        }else{
+                            $("#idbiro").append('<option value="' + value.id + '">' + value.uraianbiro + '</option>');
+                        }
+
+                    });
+                }
+
+            });
+        });
+
+        $('#idbiro').on('change', function () {
+            var idbiro = this.value;
+
+            $.ajax({
+                url: "{{url('ambildatabagian')}}",
+                type: "POST",
+                data: {
+                    idbiro: idbiro,
+                    _token: '{{csrf_token()}}'
+                },
+                dataType: 'json',
+                success: function (result) {
+                    var idbagian = document.getElementById('idbagianawal').value;
+                    $('#idbagian').html('<option value="">Pilih Bagian</option>');
+                    $.each(result.bagian, function (key, value) {
+                        if (idbagian == value.id) {
+                            $('select[name="idbagian"]').append('<option value="'+value.id+'" selected>'+value.uraianbagian+'</option>').trigger('change')
+                        }else{
+                            $("#idbagian").append('<option value="' + value.id + '">' + value.uraianbagian + '</option>');
                         }
 
                     });

@@ -30,6 +30,8 @@ use App\Http\Controllers\Caput\Admin\KroController;
 use App\Http\Controllers\Caput\Admin\RoController;
 use App\Http\Controllers\AdminAnggaran\AnggaranBagianController;
 use App\Http\Controllers\Caput\Admin\IndikatorRoController;
+use App\Http\Controllers\ReferensiAnggaran\SubKomponenController;
+use App\Http\Controllers\Caput\Admin\RincianIndikatorRoController;
 
 
 /*
@@ -144,6 +146,13 @@ Route::get('importkomponen',[KomponenController::class,'importkomponen'])->name(
 Route::post('ambildatakomponen',[KomponenController::class,'ambildatakomponen'])->name('ambildatakomponen')->middleware('auth');
 
 
+//subkomponen
+Route::get('subkomponen',[SubKomponenController::class,'subkomponen'])->name('subkomponen')->middleware('cekadminanggaran');
+Route::get('getlistsubkomponen',[SubKomponenController::class,'getListSubKomponen'])->name('getlistsubkomponen')->middleware('cekadminanggaran');
+Route::get('importsubkomponen',[SubKomponenController::class,'importsubkomponen'])->name('importsubkomponen')->middleware('cekadminanggaran');
+Route::post('ambildatasubkomponen',[SubKomponenController::class,'ambildatasubkomponen'])->name('ambildatasubkomponen')->middleware('auth');
+
+
 //admin anggaran
 //refstatus
 Route::get('refstatus',[RefstatusController::class,'refstatus'])->name('refstatus')->middleware('cekadminanggaran');
@@ -173,6 +182,9 @@ Route::get('importro',[RoController::class,'importro'])->name('importro')->middl
 //INDIKATORRO
 Route::resource('indikatorro',IndikatorRoController::class)->middleware('cekadmincaput');
 Route::get('importindikatorro',[IndikatorRoController::class,'importindikatorro'])->name('importindikatorro')->middleware('cekadmincaput');
+
+//RINCIAN INDIKATOR RO
+Route::resource('rincianindikatorro',RincianIndikatorRoController::class)->middleware('cekadmincaput');
 
 
 
