@@ -27,6 +27,9 @@ use App\Http\Controllers\AdminAnggaran\RefstatusController;
 use App\Http\Controllers\AdminAnggaran\DataAngController;
 use App\Http\Controllers\Administrasi\PegawaiController;
 use App\Http\Controllers\Caput\Admin\KroController;
+use App\Http\Controllers\Caput\Admin\RoController;
+use App\Http\Controllers\AdminAnggaran\AnggaranBagianController;
+use App\Http\Controllers\Caput\Admin\IndikatorRoController;
 
 
 /*
@@ -126,16 +129,19 @@ Route::get('importkegiatan',[KegiatanController::class,'importkegiatan'])->name(
 Route::get('output',[OutputController::class,'output'])->name('output')->middleware('cekadminanggaran');
 Route::get('getlistoutput',[OutputController::class,'getListOutput'])->name('getlistoutput')->middleware('cekadminanggaran');
 Route::get('importoutput',[OutputController::class,'importoutput'])->name('importoutput')->middleware('cekadminanggaran');
+Route::post('ambildataoutput',[OutputController::class,'dapatkandataoutput'])->name('ambildataoutput')->middleware('auth');
 
 //suboutput
 Route::get('suboutput',[SubOutputController::class,'suboutput'])->name('suboutput')->middleware('cekadminanggaran');
 Route::get('getlistsuboutput',[SubOutputController::class,'getListSubOutput'])->name('getlistsuboutput')->middleware('cekadminanggaran');
 Route::get('importsuboutput',[SubOutputController::class,'importsuboutput'])->name('importsuboutput')->middleware('cekadminanggaran');
+Route::post('ambildatasuboutput',[SubOutputController::class,'ambildatasuboutput'])->name('ambildatasuboutput')->middleware('auth');
 
 //komponen
 Route::get('komponen',[KomponenController::class,'komponen'])->name('komponen')->middleware('cekadminanggaran');
 Route::get('getlistkomponen',[KomponenController::class,'getListKomponen'])->name('getlistkomponen')->middleware('cekadminanggaran');
 Route::get('importkomponen',[KomponenController::class,'importkomponen'])->name('importkomponen')->middleware('cekadminanggaran');
+Route::post('ambildatakomponen',[KomponenController::class,'ambildatakomponen'])->name('ambildatakomponen')->middleware('auth');
 
 
 //admin anggaran
@@ -150,9 +156,23 @@ Route::post('checkdataang',[DataAngController::class,'checkdata'])->name('checkd
 Route::get('rekapanggaran/{idrefstatus}',[DataAngController::class,'rekapanggaran'])->name('rekapanggaran')->middleware('cekadminanggaran');
 Route::post('checkrekapanggaran',[DataAngController::class,'checkrekapanggaran'])->name('checkrekapanggaran');
 
+//anggaranbagian
+Route::resource('anggaranbagian',AnggaranBagianController::class)->middleware('cekadminanggaran');
+
+
+
 //kro
 Route::resource('kro',KroController::class)->middleware('cekadmincaput');
-Route::post('ambildataoutput',[OutputController::class,'dapatkandataoutput'])->name('ambildataoutput')->middleware('auth');
 Route::get('importkro',[KroController::class,'importkro'])->name('importkro')->middleware('cekadmincaput');
+
+//RO
+Route::resource('ro',RoController::class)->middleware('cekadmincaput');
+Route::get('importro',[RoController::class,'importro'])->name('importro')->middleware('cekadmincaput');
+
+
+//INDIKATORRO
+Route::resource('indikatorro',IndikatorRoController::class)->middleware('cekadmincaput');
+Route::get('importindikatorro',[IndikatorRoController::class,'importindikatorro'])->name('importindikatorro')->middleware('cekadmincaput');
+
 
 

@@ -37,20 +37,21 @@
                     <div class="card-header">
                         <h3 class="card-title">{{$judul}}</h3>
                         <div class="btn-group float-sm-right" role="group">
-                            <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="tambahkro"> Tambah Data</a>
-                            <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="importkro"> Import</a>
+                            <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="tambahindikatorro"> Tambah Data</a>
+                            <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="importindikatorro"> Import</a>
                         </div>
                     </div>
                     <div class="card-body">
-                        <table id="tabelkro" class="table table-bordered table-striped tabelkro">
+                        <table id="tabelindikatorro" class="table table-bordered table-striped tabelindikatorro">
                             <thead>
                             <tr>
                                 <th>No</th>
                                 <th>Tahun</th>
                                 <th>Satker</th>
-                                <th>Kegiatan</th>
-                                <th>Output</th>
-                                <th>Uraian Kro</th>
+                                <th>KRO</th>
+                                <th>RO</th>
+                                <th>Indeks</th>
+                                <th>Uraian Indikator RO</th>
                                 <th>Target</th>
                                 <th>Satuan</th>
                                 <th>Jenis</th>
@@ -65,9 +66,10 @@
                                 <th>No</th>
                                 <th>Tahun</th>
                                 <th>Satker</th>
-                                <th>Kegiatan</th>
-                                <th>Output</th>
-                                <th>Uraian Kro</th>
+                                <th>KRO</th>
+                                <th>RO</th>
+                                <th>Pengenal</th>
+                                <th>Uraian Indikator RO</th>
                                 <th>Target</th>
                                 <th>Satuan</th>
                                 <th>Jenis</th>
@@ -83,11 +85,15 @@
                                         <h4 class="modal-title" id="modelHeading"></h4>
                                     </div>
                                     <div class="modal-body">
-                                        <form id="formkro" name="formkro" class="form-horizontal" enctype="multipart/form-data">
+                                        <form id="formindikatorro" name="formindikatorro" class="form-horizontal" enctype="multipart/form-data">
                                             <input type="hidden" name="id" id="id">
                                             <input type="hidden" name="kegiatanawal" id="kegiatanawal">
                                             <input type="hidden" name="outputawal" id="outputawal">
+                                            <input type="hidden" name="suboutputawal" id="suboutputawal">
+                                            <input type="hidden" name="komponenawal" id="komponenawal">
                                             <input type="hidden" name="statusawal" id="statusawal">
+                                            <input type="hidden" name="idkroawal" id="idkroawal">
+                                            <input type="hidden" name="idroawal" id="idkroawal">
                                             <div class="form-group">
                                                 <label for="tahunanggaran" class="col-sm-6 control-label">Tahun Anggaran</label>
                                                 <div class="col-sm-12">
@@ -113,6 +119,28 @@
                                                 </div>
                                             </div>
                                             <div class="form-group">
+                                                <label for="kro" class="col-sm-6 control-label">KRO</label>
+                                                <div class="col-sm-12">
+                                                    <select class="form-control kro" name="kro" id="kro" style="width: 100%;">
+                                                        <option value="">Pilih KRO</option>
+                                                        @foreach($datakro as $data)
+                                                            <option value="{{ $data->id }}">{{ $data->kodekegiatan.$data->kodeoutput." | ".$data->uraiankro }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="ro" class="col-sm-6 control-label">RO</label>
+                                                <div class="col-sm-12">
+                                                    <select class="form-control ro" name="ro" id="ro" style="width: 100%;">
+                                                        <option value="">Pilih RO</option>
+                                                        @foreach($dataro as $data)
+                                                            <option value="{{ $data->id }}">{{ $data->indeks." | ".$data->uraianro }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
                                                 <label for="kegiatan" class="col-sm-6 control-label">Kegiatan</label>
                                                 <div class="col-sm-12">
                                                     <select class="form-control kegiatan" name="kegiatan" id="kegiatan" style="width: 100%;">
@@ -131,9 +159,23 @@
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label for="uraiankro" class="col-sm-6 control-label">Uraian KRO</label>
+                                                <label for="suboutput" class="col-sm-6 control-label">SubOutput</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control" id="uraiankro" name="uraiankro" placeholder="uraiankro" value="">
+                                                    <select class="form-control suboutput" name="suboutput" id="suboutput" style="width: 100%;">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="komponen" class="col-sm-6 control-label">Komponen</label>
+                                                <div class="col-sm-12">
+                                                    <select class="form-control komponen" name="komponen" id="komponen" style="width: 100%;">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="uraianindikatorro" class="col-sm-6 control-label">Uraian RO</label>
+                                                <div class="col-sm-12">
+                                                    <input type="text" class="form-control" id="uraianindikatorro" name="uraianindikatorro" placeholder="Uraian Indikator RO" value="">
                                                 </div>
                                             </div>
                                             <div class="form-group">
@@ -176,33 +218,41 @@
     <script type="text/javascript">
         $(function () {
             $('.tahunanggaran').select2({
-                width: '100%',
                 theme: 'bootstrap4',
-                dropdownParent: $('#ajaxModel')
             })
 
             $('.kodesatker').select2({
-                width: '100%',
                 theme: 'bootstrap4',
-                dropdownParent: $('#ajaxModel')
             })
 
             $('.kegiatan').select2({
-                width: '100%',
                 theme: 'bootstrap4',
-                dropdownParent: $('#ajaxModel')
             })
 
             $('.output').select2({
-                width: '100%',
                 theme: 'bootstrap4',
-                dropdownParent: $('#ajaxModel')
+            })
+
+            $('.suboutput').select2({
+                theme: 'bootstrap4',
+
+            })
+
+            $('.komponen').select2({
+                theme: 'bootstrap4',
+
             })
 
             $('.jenisindikator').select2({
-                width: '100%',
                 theme: 'bootstrap4',
-                dropdownParent: $('#ajaxModel')
+            })
+
+            $('.kro').select2({
+                theme: 'bootstrap4',
+            })
+
+            $('.ro').select2({
+                theme: 'bootstrap4',
             })
 
             /*------------------------------------------
@@ -211,32 +261,33 @@
             --------------------------------------------
             --------------------------------------------*/
             // Setup - add a text input to each footer cell
-            $('#tabelkro tfoot th').each( function (i) {
-                var title = $('#tabelkro thead th').eq( $(this).index() ).text();
+            $('#tabelindikatorro tfoot th').each( function (i) {
+                var title = $('#tabelindikatorro thead th').eq( $(this).index() ).text();
                 $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
                     {"width":"5%"},
                 );
             });
 
-            var table = $('.tabelkro').DataTable({
+            var table = $('.tabelindikatorro').DataTable({
                 fixedColumn:true,
                 scrollX:"100%",
                 autoWidth:true,
                 processing: true,
-                serverSide: true,
+                serverSide: false,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('kro.index')}}",
+                ajax:"{{route('indikatorro.index')}}",
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'tahunanggaran', name: 'tahunanggaran'},
                     {data: 'kodesatker', name: 'kodesatker'},
-                    {data: 'kodekegiatan', name: 'kegiatan'},
-                    {data: 'kodeoutput', name: 'output'},
-                    {data: 'uraiankro', name: 'uraiankro'},
+                    {data: 'idkro', name: 'idkro'},
+                    {data: 'idro', name: 'idkro'},
+                    {data: 'indeks', name: 'indeks'},
+                    {data: 'uraianindikatorro', name: 'uraianindikatorro'},
                     {data: 'target', name: 'target'},
                     {data: 'satuan', name: 'satuan'},
-                    {data: 'jenisindikator', name: 'jenis'},
+                    {data: 'jenisindikator', name: 'jenisindikator'},
                     {data: 'status', name: 'status'},
                     {
                         data: 'action',
@@ -261,18 +312,18 @@
             Click to Button
             --------------------------------------------
             --------------------------------------------*/
-            $('#tambahkro').click(function () {
+            $('#tambahindikatorro').click(function () {
                 $('#saveBtn').val("tambah");
-                $('#formkro').trigger("reset");
-                $('#modelHeading').html("Tambah kro");
+                $('#formrindikatoro').trigger("reset");
+                $('#modelHeading').html("Tambah Indikator RO");
                 $('#ajaxModel').modal('show');
             });
 
-            $('#importkro').click(function (e) {
-                if( confirm("Apakah Anda Yakin Mau Import KRO dari Data Anggaran Terbaru ?")){
+            $('#importindikatorro').click(function (e) {
+                if( confirm("Apakah Anda Yakin Mau Import Indikator RO dari Data Anggaran Terbaru ?")){
                     e.preventDefault();
                     $(this).html('Importing..');
-                    window.location="{{URL::to('importkro')}}";
+                    window.location="{{URL::to('importindikatorro')}}";
                 }
             });
 
@@ -282,22 +333,26 @@
             Click to Edit Button
             --------------------------------------------
             --------------------------------------------*/
-            $('body').on('click', '.editkro', function () {
-                var idkro = $(this).data('id');
-                $.get("{{ route('kro.index') }}" +'/' + idkro +'/edit', function (data) {
-                    $('#modelHeading').html("Edit kro");
+            $('body').on('click', '.editindikatorro', function () {
+                var idindikatorro = $(this).data('id');
+                $.get("{{ route('indikatorro.index') }}" +'/' + idindikatorro +'/edit', function (data) {
+                    $('#modelHeading').html("Edit RO");
                     $('#saveBtn').val("edit");
                     $('#ajaxModel').modal('show');
                     $('#id').val(data.id);
                     $('#tahunanggaran').val(data.tahunanggaran).trigger('change');
                     $('#kodesatker').val(data.kodesatker).trigger('change');
+                    $('#kro').val(data.idkro).trigger('change');
+                    $('#ro').val(data.idro).trigger('change');
                     $('#kegiatan').val(data.kodekegiatan).trigger('change');
                     $('#kegiatanawal').val(data.kodekegiatan);
                     $('#outputawal').val(data.kodeoutput);
+                    $('#suboutputawal').val(data.kodesuboutput);
+                    $('#komponenawal').val(data.kodekomponen);
                     $('#statusawal').val(data.status);
                     $('#target').val(data.target);
                     $('#satuan').val(data.satuan);
-                    $('#uraiankro').val(data.uraiankro);
+                    $('#uraianindikatorro').val(data.uraianindikatorro);
                     $('#jenisindikator').val(data.jenisindikator).trigger('change');
                     $('#status').val(data.status);
 
@@ -312,7 +367,7 @@
             $('#saveBtn').click(function (e) {
                 e.preventDefault();
                 $(this).html('Sending..');
-                let form = document.getElementById('formkro');
+                let form = document.getElementById('formindikatorro');
                 let fd = new FormData(form);
                 let saveBtn = document.getElementById('saveBtn').value;
                 var id = document.getElementById('id').value;
@@ -325,7 +380,7 @@
                 }
                 $.ajax({
                     data: fd,
-                    url: saveBtn === "tambah" ? "{{route('kro.store')}}":"{{route('kro.update','')}}"+'/'+id,
+                    url: saveBtn === "tambah" ? "{{route('indikatorro.store')}}":"{{route('indikatorro.update','')}}"+'/'+id,
                     type: "POST",
                     enctype: 'multipart/form-data',
                     contentType: false,
@@ -352,8 +407,10 @@
                         $('#jenisindikator').val('').trigger('change');
                         $('#kegiatanawal').val('');
                         $('#outputawal').val('');
+                        $('#suboutputawal').val('');
+                        $('#komponenawal').val('');
                         $('#statusawal').val('');
-                        $('#formkro').trigger("reset");
+                        $('#formro').trigger("reset");
                         $('#ajaxModel').modal('hide');
                         $('#saveBtn').html('Simpan Data');
                         table.draw();
@@ -388,13 +445,13 @@
             Delete Product Code
             --------------------------------------------
             --------------------------------------------*/
-            $('body').on('click', '.deletekro', function () {
+            $('body').on('click', '.deleteindikatorro', function () {
 
-                var idkro = $(this).data("id");
+                var idindikatorro = $(this).data("id");
                 if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
                     $.ajax({
                         type: "DELETE",
-                        url: "{{ route('kro.destroy','') }}"+'/'+idkro,
+                        url: "{{ route('indikatorro.destroy','') }}"+'/'+idindikatorro,
                         success: function (data) {
                             if (data.status == "berhasil"){
                                 Swal.fire({
@@ -447,6 +504,64 @@
                             $('select[name="output"]').append('<option value="'+value.kodeoutput+'" selected>'+value.kodeoutput+" | "+value.deskripsi+'</option>').trigger('change')
                         }else{
                             $("#output").append('<option value="' + value.kodeoutput + '">' +value.kodeoutput+" | "+value.deskripsi+ '</option>');
+                        }
+
+                    });
+                }
+
+            });
+        });
+
+        $('#output').on('change', function () {
+            var  kodeoutput = this.value;
+            var  kodekegiatan = document.getElementById('kegiatan').value;
+            $.ajax({
+                url: "{{url('ambildatasuboutput')}}",
+                type: "POST",
+                data: {
+                    kodekegiatan: kodekegiatan,
+                    kodeoutput: kodeoutput,
+                    _token: '{{csrf_token()}}'
+                },
+                dataType: 'json',
+                success: function (result) {
+                    var suboutput = document.getElementById('suboutputawal').value;
+                    $('#suboutput').html('<option value="">Pilih SubOutput</option>');
+                    $.each(result.suboutput, function (key, value) {
+                        if (suboutput === value.kodesuboutput) {
+                            $('select[name="suboutput"]').append('<option value="'+value.kodesuboutput+'" selected>'+value.kodesuboutput+" | "+value.deskripsi+'</option>').trigger('change')
+                        }else{
+                            $("#suboutput").append('<option value="' + value.kodesuboutput + '">' +value.kodesuboutput+" | "+value.deskripsi+ '</option>');
+                        }
+
+                    });
+                }
+
+            });
+        });
+
+        $('#suboutput').on('change', function () {
+            var  kodesuboutput = this.value;
+            var  kodekegiatan = document.getElementById('kegiatan').value;
+            var  kodeoutput = document.getElementById('output').value;
+            $.ajax({
+                url: "{{url('ambildatakomponen')}}",
+                type: "POST",
+                data: {
+                    kodekegiatan: kodekegiatan,
+                    kodeoutput: kodeoutput,
+                    kodesuboutput: kodesuboutput,
+                    _token: '{{csrf_token()}}'
+                },
+                dataType: 'json',
+                success: function (result) {
+                    var komponen = document.getElementById('komponenawal').value;
+                    $('#komponen').html('<option value="">Pilih Komponen</option>');
+                    $.each(result.suboutput, function (key, value) {
+                        if (komponen === value.kodekomponen) {
+                            $('select[name="komponen"]').append('<option value="'+value.kodekomponen+'" selected>'+value.kodekomponen+" | "+value.deskripsi+'</option>').trigger('change')
+                        }else{
+                            $("#komponen").append('<option value="' + value.kodekomponen + '">' +value.kodekomponen+" | "+value.deskripsi+ '</option>');
                         }
 
                     });

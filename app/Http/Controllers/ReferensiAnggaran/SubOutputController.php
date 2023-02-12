@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Libraries\TarikDataMonsakti;
 use App\Models\ReferensiAnggaran\SubOutputModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 
 class SubOutputController extends Controller
@@ -15,6 +16,17 @@ class SubOutputController extends Controller
     {
         $this->middleware('auth');
     }
+
+    public function ambildatasuboutput(Request $request){
+        $data['suboutput'] = DB::table('suboutput')
+            ->where('kodekegiatan','=',$request->kodekegiatan)
+            ->where('kodeoutput','=',$request->kodeoutput)
+            ->get(['kodesuboutput','deskripsi']);
+
+        return response()->json($data);
+    }
+
+
     function suboutput(){
         $judul = "List Sub Output";
         return view('ReferensiAnggaran.suboutput',[

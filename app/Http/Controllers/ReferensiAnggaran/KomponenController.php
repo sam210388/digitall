@@ -8,6 +8,7 @@ use App\Libraries\TarikDataMonsakti;
 use App\Models\ReferensiAnggaran\KomponenModel;
 use App\Models\ReferensiAnggaran\SubOutputModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 
 class KomponenController extends Controller
@@ -16,6 +17,17 @@ class KomponenController extends Controller
     {
         $this->middleware('auth');
     }
+
+    public function ambildatakomponen(Request $request){
+        $data['komponen'] = DB::table('komponen')
+            ->where('kodekegiatan','=',$request->kodekegiatan)
+            ->where('kodeoutput','=',$request->kodeoutput)
+            ->where('kodesuboutput','=',$request->kodesuboutput)
+            ->get(['kodekomponen','deskripsi']);
+
+        return response()->json($data);
+    }
+
     function komponen(){
         $judul = "List Komponen";
         return view('ReferensiAnggaran.komponen',[

@@ -5,20 +5,19 @@ namespace App\Http\Controllers\Caput\Admin;
 use App\Http\Controllers\AdminAnggaran\DataAngController;
 use App\Http\Controllers\AdminAnggaran\RefstatusController;
 use App\Http\Controllers\Controller;
-use App\Models\Caput\Admin\KroModel;
+use App\Models\Caput\Admin\RoModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\DataTables;
 
-class KroController extends Controller
+class RoController extends Controller
 {
     public function __construct()
     {
         $this->middleware(['auth']);
     }
 
-    function importkro(){
+    function importro(){
         $tahunanggaran = session('tahunanggaran');
         $datasatker = ['001012','001030'];
         $statusimport = "";
@@ -56,67 +55,85 @@ class KroController extends Controller
                     $kodesatker = $item->kdsatker;
                     $kodekegiatan = $item->kodekegiatan;
                     $kodeoutput = $item->kodeoutput;
-                    $deskripsioutput = DB::table('output')
+                    $kodesuboutput = $item->kodesuboutput;
+                    $deskripsisuboutput = DB::table('suboutput')
                         ->where('tahunanggaran','=',$tahunanggaran)
                         ->where('kodekegiatan','=',$kodekegiatan)
                         ->where('kodeoutput','=',$kodeoutput)
+                        ->where('kodesuboutput','=',$kodesuboutput)
                         ->value('deskripsi');
-                    $satuan = DB::table('output')
+                    $satuansuboutput = DB::table('suboutput')
                         ->where('tahunanggaran','=',$tahunanggaran)
                         ->where('kodekegiatan','=',$kodekegiatan)
                         ->where('kodeoutput','=',$kodeoutput)
+                        ->where('kodesuboutput','=',$kodesuboutput)
                         ->value('satuan');
-                    $volumeoutput = $item->volumeoutput;
+                    $idkro = DB::table('kro')
+                        ->where('tahunanggaran','=',$tahunanggaran)
+                        ->where('kodekegiatan','=',$kodekegiatan)
+                        ->where('kodeoutput','=',$kodeoutput)
+                        ->value('id');
+                    $volumeoutput = $item->volumesuboutput;
 
                     $data = array(
                         'tahunanggaran' => $tahunanggaran,
                         'kodesatker' => $kodesatker,
                         'kodekegiatan' => $kodekegiatan,
                         'kodeoutput' => $kodeoutput,
-                        'uraiankro' => $deskripsioutput,
+                        'kodesuboutput' => $kodesuboutput,
+                        'uraianro' => $deskripsisuboutput,
                         'target' => $volumeoutput,
-                        'satuan' => $satuan,
-                        'indeks' => $tahunanggaran.$kodesatker.$kodekegiatan.$kodeoutput,
+                        'satuan' => $satuansuboutput,
+                        'indeks' => $tahunanggaran.$kodesatker.$kodekegiatan.$kodeoutput.$kodesuboutput,
                         'jenisindikator' => 2,
-                        'status' => "Dalam Proses"
+                        'status' => "Dalam Proses",
+                        'idkro' => $idkro
                     );
 
-                    KroModel::updateOrCreate([
-                        'indeks' => $tahunanggaran.$kodesatker.$kodekegiatan.$kodeoutput
+                    RoModel::updateOrCreate([
+                        'indeks' => $tahunanggaran.$kodesatker.$kodekegiatan.$kodeoutput.$kodesuboutput
                     ],$data);
                 }
-                $statusimport = $statusimport.$satker." KRO Berhasil Diimport ";
+                $statusimport = $statusimport.$satker." RO Berhasil Diimport ";
             }
         }
-        return redirect()->to('kro')->with('status',$statusimport);
+        return redirect()->to('ro')->with('status',$statusimport);
     }
 
     public function index(Request $request)
     {
-        $judul = 'List KRO';
+        $judul = 'List RO';
         $tahunanggaran = session('tahunanggaran');
 
         $datatahunanggaran = DB::table('tahunanggaran')->get();
         $datakegiatan = DB::table('kegiatan')->where('tahunanggaran','=',$tahunanggaran)->get();
-
+        $dataoutput = DB::table('output')->where('tahunanggaran','=',$tahunanggaran)->get();
+        $datakro = DB::table('kro')->where('tahunanggaran','=',$tahunanggaran)->get();
 
         if ($request->ajax()) {
-            $data = KroModel::where('tahunanggaran','=',$tahunanggaran)->get();
+            $data = RoModel::where('tahunanggaran','=',$tahunanggaran)->get();
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
-                    $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editkro">Edit</a>';
-                    $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deletekro">Delete</a>';
+                    $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editro">Edit</a>';
+                    $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deletero">Delete</a>';
                     return $btn;
+                })
+                ->addColumn('idkro', function($row){
+                    $idkro = $row->idkro;
+                    $uraiankro = DB::table('kro')->where('id','=',$idkro)->value('uraiankro');
+                    return $uraiankro;
                 })
                 ->rawColumns(['action'])
                 ->make(true);
         }
 
-        return view('Caput.Admin.kro',[
+        return view('Caput.Admin.ro',[
             "judul"=>$judul,
             "datatahunanggaran" => $datatahunanggaran,
-            "datakegiatan" => $datakegiatan
+            "datakegiatan" => $datakegiatan,
+            "dataoutput" => $dataoutput,
+            "datakro" => $datakro
         ]);
     }
 
@@ -134,7 +151,8 @@ class KroController extends Controller
             'kodesatker' => 'required',
             'kegiatan' => 'required',
             'output' => 'required',
-            'uraiankro' => 'required',
+            'suboutput' => 'required',
+            'uraianro' => 'required',
             'target' => 'required',
             'satuan' => 'required',
             'jenisindikator' => 'required',
@@ -145,17 +163,19 @@ class KroController extends Controller
         $kodesatker = $request->get('kodesatker');
         $kodekegiatan = $request->get('kegiatan');
         $kodeoutput = $request->get('output');
+        $kodesuboutput = $request->get('suboutput');
 
-        KroModel::create(
+        RoModel::create(
             [
                 'tahunanggaran' => $tahunanggaran,
                 'kodesatker' => $kodesatker,
                 'kodekegiatan' => $kodekegiatan,
                 'kodeoutput' => $kodeoutput,
-                'uraiankro' => $request->get('uraiankro'),
+                'kodesuboutput' => $kodesuboutput,
+                'uraianro' => $request->get('uraianro'),
                 'target' => $request->get('target'),
                 'satuan' => $request->get('satuan'),
-                'indeks' => $tahunanggaran.$kodesatker.$kodekegiatan.$kodeoutput,
+                'indeks' => $tahunanggaran.$kodesatker.$kodekegiatan.$kodeoutput.$kodesuboutput,
                 'jenisindikator' => $request->get('jenisindikator'),
                 'status' => "Dalam Proses"
             ]);
@@ -182,7 +202,7 @@ class KroController extends Controller
      */
     public function edit($id)
     {
-        $menu = KroModel::find($id);
+        $menu = RoModel::find($id);
         return response()->json($menu);
     }
 
@@ -200,7 +220,8 @@ class KroController extends Controller
             'kodesatker' => 'required',
             'kegiatan' => 'required',
             'output' => 'required',
-            'uraiankro' => 'required',
+            'suboutput' => 'required',
+            'uraianro' => 'required',
             'target' => 'required',
             'satuan' => 'required',
             'jenisindikator' => 'required',
@@ -211,6 +232,7 @@ class KroController extends Controller
         $kodesatker = $request->get('kodesatker');
         $kodekegiatan = $request->get('kegiatan');
         $kodeoutput = $request->get('output');
+        $kodesuboutput = $request->get('suboutput');
         $statusawal = $request->get('statusawal');
 
         if ($statusawal == ""){
@@ -219,16 +241,17 @@ class KroController extends Controller
             $status = $statusawal;
         }
 
-        KroModel::where('id','=',$id)->update(
+        RoModel::where('id','=',$id)->update(
             [
                 'tahunanggaran' => $tahunanggaran,
                 'kodesatker' => $kodesatker,
                 'kodekegiatan' => $kodekegiatan,
                 'kodeoutput' => $kodeoutput,
-                'uraiankro' => $request->get('uraiankro'),
+                'kodesuboutput' => $kodesuboutput,
+                'uraianro' => $request->get('uraianro'),
                 'target' => $request->get('target'),
                 'satuan' => $request->get('satuan'),
-                'indeks' => $tahunanggaran.$kodesatker.$kodekegiatan.$kodeoutput,
+                'indeks' => $tahunanggaran.$kodesatker.$kodekegiatan.$kodeoutput.$kodesuboutput,
                 'jenisindikator' => $request->get('jenisindikator'),
                 'status' => $status
             ]);
@@ -243,7 +266,7 @@ class KroController extends Controller
      */
     public function destroy($id)
     {
-        KroModel::find($id)->delete();
+        RoModel::find($id)->delete();
         return response()->json(['status'=>'berhasil']);
     }
 }

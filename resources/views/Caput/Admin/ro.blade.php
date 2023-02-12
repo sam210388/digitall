@@ -37,20 +37,22 @@
                     <div class="card-header">
                         <h3 class="card-title">{{$judul}}</h3>
                         <div class="btn-group float-sm-right" role="group">
-                            <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="tambahkro"> Tambah Data</a>
-                            <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="importkro"> Import</a>
+                            <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="tambahro"> Tambah Data</a>
+                            <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="importro"> Import</a>
                         </div>
                     </div>
                     <div class="card-body">
-                        <table id="tabelkro" class="table table-bordered table-striped tabelkro">
+                        <table id="tabelro" class="table table-bordered table-striped tabelro">
                             <thead>
                             <tr>
                                 <th>No</th>
                                 <th>Tahun</th>
                                 <th>Satker</th>
+                                <th>KRO</th>
                                 <th>Kegiatan</th>
                                 <th>Output</th>
-                                <th>Uraian Kro</th>
+                                <th>SubOutput</th>
+                                <th>Uraian RO</th>
                                 <th>Target</th>
                                 <th>Satuan</th>
                                 <th>Jenis</th>
@@ -65,9 +67,11 @@
                                 <th>No</th>
                                 <th>Tahun</th>
                                 <th>Satker</th>
+                                <th>KRO</th>
                                 <th>Kegiatan</th>
                                 <th>Output</th>
-                                <th>Uraian Kro</th>
+                                <th>SubOutput</th>
+                                <th>Uraian RO</th>
                                 <th>Target</th>
                                 <th>Satuan</th>
                                 <th>Jenis</th>
@@ -83,11 +87,13 @@
                                         <h4 class="modal-title" id="modelHeading"></h4>
                                     </div>
                                     <div class="modal-body">
-                                        <form id="formkro" name="formkro" class="form-horizontal" enctype="multipart/form-data">
+                                        <form id="formro" name="formro" class="form-horizontal" enctype="multipart/form-data">
                                             <input type="hidden" name="id" id="id">
                                             <input type="hidden" name="kegiatanawal" id="kegiatanawal">
                                             <input type="hidden" name="outputawal" id="outputawal">
+                                            <input type="hidden" name="suboutputawal" id="suboutputawal">
                                             <input type="hidden" name="statusawal" id="statusawal">
+                                            <input type="hidden" name="idkroawal" id="idkroawal">
                                             <div class="form-group">
                                                 <label for="tahunanggaran" class="col-sm-6 control-label">Tahun Anggaran</label>
                                                 <div class="col-sm-12">
@@ -113,6 +119,17 @@
                                                 </div>
                                             </div>
                                             <div class="form-group">
+                                                <label for="kro" class="col-sm-6 control-label">KRO</label>
+                                                <div class="col-sm-12">
+                                                    <select class="form-control kro" name="kro" id="kro" style="width: 100%;">
+                                                        <option value="">Pilih KRO</option>
+                                                        @foreach($datakro as $data)
+                                                            <option value="{{ $data->id }}">{{ $data->kodekegiatan.$data->kodeoutput." | ".$data->uraiankro }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
                                                 <label for="kegiatan" class="col-sm-6 control-label">Kegiatan</label>
                                                 <div class="col-sm-12">
                                                     <select class="form-control kegiatan" name="kegiatan" id="kegiatan" style="width: 100%;">
@@ -131,9 +148,16 @@
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label for="uraiankro" class="col-sm-6 control-label">Uraian KRO</label>
+                                                <label for="suboutput" class="col-sm-6 control-label">SubOutput</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control" id="uraiankro" name="uraiankro" placeholder="uraiankro" value="">
+                                                    <select class="form-control suboutput" name="suboutput" id="suboutput" style="width: 100%;">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="uraianro" class="col-sm-6 control-label">Uraian RO</label>
+                                                <div class="col-sm-12">
+                                                    <input type="text" class="form-control" id="uraianro" name="uraianro" placeholder="Uraian RO" value="">
                                                 </div>
                                             </div>
                                             <div class="form-group">
@@ -176,33 +200,32 @@
     <script type="text/javascript">
         $(function () {
             $('.tahunanggaran').select2({
-                width: '100%',
                 theme: 'bootstrap4',
-                dropdownParent: $('#ajaxModel')
             })
 
             $('.kodesatker').select2({
-                width: '100%',
                 theme: 'bootstrap4',
-                dropdownParent: $('#ajaxModel')
             })
 
             $('.kegiatan').select2({
-                width: '100%',
                 theme: 'bootstrap4',
-                dropdownParent: $('#ajaxModel')
             })
 
             $('.output').select2({
-                width: '100%',
                 theme: 'bootstrap4',
-                dropdownParent: $('#ajaxModel')
+            })
+
+            $('.suboutput').select2({
+                theme: 'bootstrap4',
+
             })
 
             $('.jenisindikator').select2({
-                width: '100%',
                 theme: 'bootstrap4',
-                dropdownParent: $('#ajaxModel')
+            })
+
+            $('.kro').select2({
+                theme: 'bootstrap4',
             })
 
             /*------------------------------------------
@@ -211,14 +234,14 @@
             --------------------------------------------
             --------------------------------------------*/
             // Setup - add a text input to each footer cell
-            $('#tabelkro tfoot th').each( function (i) {
-                var title = $('#tabelkro thead th').eq( $(this).index() ).text();
+            $('#tabelro tfoot th').each( function (i) {
+                var title = $('#tabelro thead th').eq( $(this).index() ).text();
                 $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
                     {"width":"5%"},
                 );
             });
 
-            var table = $('.tabelkro').DataTable({
+            var table = $('.tabelro').DataTable({
                 fixedColumn:true,
                 scrollX:"100%",
                 autoWidth:true,
@@ -226,17 +249,19 @@
                 serverSide: true,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('kro.index')}}",
+                ajax:"{{route('ro.index')}}",
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'tahunanggaran', name: 'tahunanggaran'},
                     {data: 'kodesatker', name: 'kodesatker'},
+                    {data: 'idkro', name: 'idkro'},
                     {data: 'kodekegiatan', name: 'kegiatan'},
                     {data: 'kodeoutput', name: 'output'},
-                    {data: 'uraiankro', name: 'uraiankro'},
+                    {data: 'kodesuboutput', name: 'suboutput'},
+                    {data: 'uraianro', name: 'uraianro'},
                     {data: 'target', name: 'target'},
                     {data: 'satuan', name: 'satuan'},
-                    {data: 'jenisindikator', name: 'jenis'},
+                    {data: 'jenisindikator', name: 'jenisindikator'},
                     {data: 'status', name: 'status'},
                     {
                         data: 'action',
@@ -261,18 +286,18 @@
             Click to Button
             --------------------------------------------
             --------------------------------------------*/
-            $('#tambahkro').click(function () {
+            $('#tambahro').click(function () {
                 $('#saveBtn').val("tambah");
-                $('#formkro').trigger("reset");
+                $('#formro').trigger("reset");
                 $('#modelHeading').html("Tambah kro");
                 $('#ajaxModel').modal('show');
             });
 
-            $('#importkro').click(function (e) {
-                if( confirm("Apakah Anda Yakin Mau Import KRO dari Data Anggaran Terbaru ?")){
+            $('#importro').click(function (e) {
+                if( confirm("Apakah Anda Yakin Mau Import RO dari Data Anggaran Terbaru ?")){
                     e.preventDefault();
                     $(this).html('Importing..');
-                    window.location="{{URL::to('importkro')}}";
+                    window.location="{{URL::to('importro')}}";
                 }
             });
 
@@ -282,22 +307,24 @@
             Click to Edit Button
             --------------------------------------------
             --------------------------------------------*/
-            $('body').on('click', '.editkro', function () {
-                var idkro = $(this).data('id');
-                $.get("{{ route('kro.index') }}" +'/' + idkro +'/edit', function (data) {
-                    $('#modelHeading').html("Edit kro");
+            $('body').on('click', '.editro', function () {
+                var idro = $(this).data('id');
+                $.get("{{ route('ro.index') }}" +'/' + idro +'/edit', function (data) {
+                    $('#modelHeading').html("Edit RO");
                     $('#saveBtn').val("edit");
                     $('#ajaxModel').modal('show');
                     $('#id').val(data.id);
                     $('#tahunanggaran').val(data.tahunanggaran).trigger('change');
                     $('#kodesatker').val(data.kodesatker).trigger('change');
+                    $('#kro').val(data.idkro).trigger('change');
                     $('#kegiatan').val(data.kodekegiatan).trigger('change');
                     $('#kegiatanawal').val(data.kodekegiatan);
                     $('#outputawal').val(data.kodeoutput);
+                    $('#suboutputawal').val(data.kodesuboutput);
                     $('#statusawal').val(data.status);
                     $('#target').val(data.target);
                     $('#satuan').val(data.satuan);
-                    $('#uraiankro').val(data.uraiankro);
+                    $('#uraianro').val(data.uraianro);
                     $('#jenisindikator').val(data.jenisindikator).trigger('change');
                     $('#status').val(data.status);
 
@@ -312,7 +339,7 @@
             $('#saveBtn').click(function (e) {
                 e.preventDefault();
                 $(this).html('Sending..');
-                let form = document.getElementById('formkro');
+                let form = document.getElementById('formro');
                 let fd = new FormData(form);
                 let saveBtn = document.getElementById('saveBtn').value;
                 var id = document.getElementById('id').value;
@@ -325,7 +352,7 @@
                 }
                 $.ajax({
                     data: fd,
-                    url: saveBtn === "tambah" ? "{{route('kro.store')}}":"{{route('kro.update','')}}"+'/'+id,
+                    url: saveBtn === "tambah" ? "{{route('ro.store')}}":"{{route('ro.update','')}}"+'/'+id,
                     type: "POST",
                     enctype: 'multipart/form-data',
                     contentType: false,
@@ -352,6 +379,7 @@
                         $('#jenisindikator').val('').trigger('change');
                         $('#kegiatanawal').val('');
                         $('#outputawal').val('');
+                        $('#suboutputawal').val('');
                         $('#statusawal').val('');
                         $('#formkro').trigger("reset");
                         $('#ajaxModel').modal('hide');
@@ -388,7 +416,7 @@
             Delete Product Code
             --------------------------------------------
             --------------------------------------------*/
-            $('body').on('click', '.deletekro', function () {
+            $('body').on('click', '.deletero', function () {
 
                 var idkro = $(this).data("id");
                 if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
@@ -447,6 +475,34 @@
                             $('select[name="output"]').append('<option value="'+value.kodeoutput+'" selected>'+value.kodeoutput+" | "+value.deskripsi+'</option>').trigger('change')
                         }else{
                             $("#output").append('<option value="' + value.kodeoutput + '">' +value.kodeoutput+" | "+value.deskripsi+ '</option>');
+                        }
+
+                    });
+                }
+
+            });
+        });
+
+        $('#output').on('change', function () {
+            var  kodeoutput = this.value;
+            var  kodekegiatan = document.getElementById('kegiatan').value;
+            $.ajax({
+                url: "{{url('ambildatasuboutput')}}",
+                type: "POST",
+                data: {
+                    kodekegiatan: kodekegiatan,
+                    kodeoutput: kodeoutput,
+                    _token: '{{csrf_token()}}'
+                },
+                dataType: 'json',
+                success: function (result) {
+                    var suboutput = document.getElementById('suboutputawal').value;
+                    $('#suboutput').html('<option value="">Pilih SubOutput</option>');
+                    $.each(result.suboutput, function (key, value) {
+                        if (suboutput === value.kodesuboutput) {
+                            $('select[name="suboutput"]').append('<option value="'+value.kodesuboutput+'" selected>'+value.kodesuboutput+" | "+value.deskripsi+'</option>').trigger('change')
+                        }else{
+                            $("#output").append('<option value="' + value.kodesuboutput + '">' +value.kodesuboutput+" | "+value.deskripsi+ '</option>');
                         }
 
                     });
