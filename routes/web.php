@@ -32,6 +32,7 @@ use App\Http\Controllers\AdminAnggaran\AnggaranBagianController;
 use App\Http\Controllers\Caput\Admin\IndikatorRoController;
 use App\Http\Controllers\ReferensiAnggaran\SubKomponenController;
 use App\Http\Controllers\Caput\Admin\RincianIndikatorRoController;
+use App\Http\Controllers\Caput\Bagian\RealisasiRincianIndikatorROConctroller;
 
 
 /*
@@ -185,6 +186,15 @@ Route::get('importindikatorro',[IndikatorRoController::class,'importindikatorro'
 
 //RINCIAN INDIKATOR RO
 Route::resource('rincianindikatorro',RincianIndikatorRoController::class)->middleware('cekadmincaput');
+
+//REALISASI RINCIAN INDIKATOR RO
+Route::get('realisasirincianindikatorro',[RealisasiRincianIndikatorROConctroller::class,'realisasirincianindikatorro'])->name('realisasirincianindikatorro')->middleware('cekoperatorbagian');
+Route::post('getdatarealisasi',[RealisasiRincianIndikatorROConctroller::class,'getdatarealisasi'])->name('getdatarealisasi')->middleware('cekoperatorbagian');
+Route::post('getdatarincianindikatorro',[RealisasiRincianIndikatorROConctroller::class,'getdatarincianindikatorro'])->name('getdatarincianindikatorro')->middleware('cekoperatorbagian');
+Route::post('simpanrealisasirincian',[RealisasiRincianIndikatorROConctroller::class,'simpanrealisasirincian'])->name('simpanrealisasirincian')->middleware('cekoperatorbagian');
+Route::post('updaterealisasirincian',[RealisasiRincianIndikatorROConctroller::class,'updaterealisasirincian'])->name('updaterealisasirincian')->middleware('cekoperatorbagian');
+Route::post('editrealisasirincian',[RealisasiRincianIndikatorROConctroller::class,'editrealisasirincian'])->name('editrealisasirincian')->middleware('cekoperatorbagian');
+
 
 
 

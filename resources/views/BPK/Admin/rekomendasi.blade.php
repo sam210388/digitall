@@ -288,10 +288,6 @@
                     $('#created_by_awal').val(data.created_by);
                     document.getElementById('aktuallinkbukti').href = "{{env('APP_URL')."/".asset('storage')}}"+"/"+data.bukti
                     $('#linkbukti').show();
-
-
-
-
                 })
             });
 

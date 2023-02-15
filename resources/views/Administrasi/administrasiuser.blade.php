@@ -277,14 +277,14 @@
                     $('#email').val(data.email);
                     if (data.pnsppnpn == "pns"){
                         $('#pns').prop('checked',true).change();
-                        $('#username').prop('disabled', 'disabled');
-                        $('#ppnpn').prop('disabled', 'disabled');
-                        $('#name').prop('disabled', 'disabled');
-                        $('#email').prop('disabled', 'disabled');
+                        $('#username').prop('readonly', 'readonly');
+                        $('#ppnpn').prop('readonly', 'readonly');
+                        $('#name').prop('readonly', 'readonly');
+                        $('#email').prop('readonly', 'readonly');
                     }else{
                         $('#ppnpn').prop('checked',true).change();
-                        $('#pns').prop('disabled', 'disabled');
-                        $('#username').prop('disabled', 'disabled');
+                        $('#pns').prop('readonly', 'readonly');
+                        $('#username').prop('readonly', 'readonly');
                     }
                     document.getElementById('gambarusernow').src ="{{env('APP_URL')."/".asset('storage')}}"+"/"+data.gambaruser;
                 })
