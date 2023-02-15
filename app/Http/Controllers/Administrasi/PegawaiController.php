@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Administrasi\PegawaiModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\DataTables;
 
 
@@ -80,7 +81,7 @@ class PegawaiController extends Controller
 
         $hasil = json_decode($response);
         //hapus dlu tabel nya
-        DB::table('apisiapuser')->truncate();
+        DB::table('pegawai')->truncate();
 
         foreach ($hasil as $item){
            $id = $item->id;
@@ -100,22 +101,16 @@ class PegawaiController extends Controller
                'email' => $email,
                'id_subsatker' => $id_subsatker
            );
-           DB::table('apisiapuser')->insert($data);
 
-            //isi table dengan user import
-            $datainsert = array(
-                'id' => $id,
-                'name' => $nama,
-                'username' => $email,
-                'email' => $email."@dpr.go.id",
-                'password' => Hash::make('123456')
-            );
-
-            //insert ke database
-            AdministrasiUserModel::updateOrCreate(['email' => $email."@dpr.go.id"],$datainsert);
-
+           //cek data dlu
+            $adadata = DB::table('pegawai')->where('email','=',$email)->count();
+            if ($adadata == 0){
+                DB::table('pegawai')->insert($data);
+            }else{
+                DB::table('pegawai')->where('email','=',$email)->update($data);
+            }
         }
-        return redirect()->to('kelolauser')->with('status','Import Datauser Dari SIAP Berhasil');
+        return redirect()->to('pegawai')->with('status','Import Datauser Dari SIAP Berhasil');
 
     }
 }
