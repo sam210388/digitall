@@ -375,6 +375,7 @@
 
             $('body').on('click', '.editrealisasi', function () {
                 var idrealisasi = $(this).data('id');
+                //alert(idrealisasi);
                 var idbulan = document.getElementById('idbulan').value;
                 if(idbulan === ""){
                     date = new Date();
@@ -396,13 +397,25 @@
                         $('#modelHeading').html("Lapor Kinerja");
                         $('#saveBtn').val("tambah");
                         $('#ajaxModel').modal('show');
-                        $('#infodetail').val("Target Pengisian : "+data[0]['targetpengisian']+". Vol Perbulan: "+data[0]['volperbulan']
-                            +" .Info Proses: "+data[0]['infoproses']+". Keterangan: "+data[0]['keterangan']);
+                        $('#infodetail').val("Target Pengisian : "+data[1]['targetpengisian']+". Vol Perbulan: "+data[1]['volperbulan']
+                            +" .Info Proses: "+data[1]['infoproses']+". Keterangan: "+data[1]['keterangan']);
+                        $('#id').val(data[0]['id']);
                         $('#idindikatorro').val(data[0]['idindikatorro']);
                         $('#idrincianindikatorro').val(data[0]['idrincianindikatorro']);
-                        $('#jumlahsdbulanlalu').val(data[0]['jumlahsdperiodeini']);
-                        $('#prosentasesdbulanlalu').val(data[0]['prosentasesdperiodeini']);
-                        $('#nilaibulan').val(data['nilaibulan']);
+                        $('#nilaibulan').val(data[0]['periode']);
+                        $('#tanggallapor').val(data[0]['tanggallapor']);
+                        $('#jumlah').val(data[0]['jumlah']);
+                        $('#jumlahsdperiodeini').val(data[0]['jumlahsdperiodeini']);
+                        $('#prosentase').val(data[0]['prosentase']);
+                        $('#prosentasesdperiodeini').val(data[0]['prosentasesdperiodeini']);
+                        $('#statuspelaksanaan').val(data[0]['statuspelaksanaan']).trigger('change');
+                        $('#kategoripermasalahan').val(data[0]['kategoripermasalahan']).trigger('change');
+                        $('#uraianoutputdihasilkan').val(data[0]['uraianoutputdihasilkan']);
+                        $('#keterangan').val(data[0]['keterangan']);
+                        let jumlahsdbulanlalu = parseInt(data[0]['jumlahsdperiodeini']) - parseInt(data[0]['jumlah']);
+                        $('#jumlahsdbulanlalu').val(jumlahsdbulanlalu);
+
+                        document.getElementById('aktuallinkbukti').href = "{{env('APP_URL')."/".asset('storage')}}"+"/"+data[0]['file']
                     }
                 });
             });
@@ -414,7 +427,8 @@
                 let fd = new FormData(form);
                 let file = $('#file')[0].files;
                 let saveBtn = document.getElementById('saveBtn').value;
-                var id = document.getElementById('id').value;
+                let idrealisasi = document.getElementById('id').value;
+
                 fd.append('file',file[0])
                 fd.append('saveBtn',saveBtn)
                 if(saveBtn === "edit"){
@@ -425,7 +439,7 @@
                 }
                 $.ajax({
                     data: fd,
-                    url: saveBtn === "tambah" ? "{{route('simpanrealisasirincian')}}":"{{route('updaterealisasirincian','')}}"+'/'+id,
+                    url: saveBtn === "tambah" ? "{{route('simpanrealisasirincian')}}":"{{route('updaterealisasirincian','')}}"+'/'+idrealisasi,
                     type: "POST",
                     dataType: 'json',
                     enctype: 'multipart/form-data',
@@ -475,23 +489,69 @@
                 });
             });
 
+            $('body').on('click', '.deleterealisasi', function () {
+                var idrealisasi = $(this).data("id");
+                if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
+                    $.ajax({
+                        type: "DELETE",
+                        url: "{{ route('deleterealisasirincian','') }}"+"/"+idrealisasi,
+                        success: function (data) {
+                            if (data.status == "berhasil"){
+                                Swal.fire({
+                                    title: 'Sukses',
+                                    text: 'Data Berhasil Dihapus ',
+                                    icon: 'success'
+                                })
+                            }else{
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Hapus Data Gagal',
+                                    icon: 'error'
+                                })
+                            }
+                            $('#tabelrealisasi').DataTable().ajax.reload();
+                        },
+                        error: function (xhr, textStatus, errorThrown) {
+                            if(xhr.responseJSON.errors){
+                                var errorsArr = [];
+                                $.each(xhr.responseJSON.errors, function(key,value) {
+                                    errorsArr.push(value);
+                                });
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: errorsArr,
+                                    icon: 'error'
+                                })
+                            }else{
+                                var jsonValue = jQuery.parseJSON(xhr.responseText);
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: jsonValue.message,
+                                    icon: 'error'
+                                })
+                            }
+
+                            $('#saveBtn').html('Simpan Data');
+                        },
+                    });
+                }
+            });
+
 
         });
         function realisasisdperiodeini(){
-            let jumlahsdbulanlalu = document.getElementById('jumlahsdbulanlalu').value;
-            let jumlah = document.getElementById('jumlah').value;
-            let jumlahsdperiodeini = jumlahsdbulanlalu+jumlah;
+            let jumlahsdbulanlalu = parseInt($('#jumlahsdbulanlalu').val());
+            let jumlah = parseInt($('#jumlah').val());
+            let jumlahsdperiodeini = parseInt(jumlahsdbulanlalu+jumlah);
             $('#jumlahsdperiodeini').val(jumlahsdperiodeini);
         }
 
         function nilaiprosentasesdperiodeini(){
-            let prosentasesdbulanlalu = document.getElementById('prosentasesdbulanlalu').value;
-            prosentasesdbulanlalu =  parseFloat(prosentasesdbulanlalu).toFixed(2);
-            let prosentase = document.getElementById('prosentase').value;
-            prosentase =  parseFloat(prosentase).toFixed(2);
-            let prosentasesdperiodeini = prosentasesdbulanlalu+prosentase;
-            //alert(" Jumlah =: "+jumlahsdperiodeini);
+            let prosentasesdbulanlalu = parseFloat($('#prosentasesdbulanlalu').val()).toFixed(2);
+            let prosentase = parseFloat($('#prosentase').val()).toFixed(2);
+            let prosentasesdperiodeini = parseFloat(prosentasesdbulanlalu+prosentase);
             $('#prosentasesdperiodeini').val(prosentasesdperiodeini);
+            alert(typeof(prosentasesdbulanlalu));
         }
     </script>
 

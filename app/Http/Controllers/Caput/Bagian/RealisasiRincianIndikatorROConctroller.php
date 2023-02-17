@@ -89,7 +89,8 @@ class RealisasiRincianIndikatorROConctroller extends Controller
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
                     if ($row->idrealisasi != null){
-                        $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->idrealisasi.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editrealisasi">Edit</a>';
+                        $btn = '<div class="btn-group" role="group">
+                        <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->idrealisasi.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editrealisasi">Edit</a>';
                         $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->idrealisasi.'" data-original-title="Delete" class="btn btn-danger btn-sm deleterealisasi">Delete</a>';
                         return $btn;
                     }else{
@@ -158,16 +159,95 @@ class RealisasiRincianIndikatorROConctroller extends Controller
 
     public function editrealisasirincian(Request $request){
         $idrealisasi = $request->get('idrealisasi');
-        $data = RealisasiRincianIndikatorROModel::where('id','=',$idrealisasi)->get();
-        return response()->json($data);
+        $datarealisasi = DB::table('realisasirincianindikatorro')->where('id','=',$idrealisasi)->get();
+        $idrincianindikatorro = null;
+        $datarealisasisebelumnya = null;
+        foreach ($datarealisasi as $data){
+            $idrincianindikatorro = $data->idrincianindikatorro;
+            $periode = $data->periode;
+            $datarincianindikatorro = DB::table('rincianindikatorro')->where('id','=',$idrincianindikatorro)->get()->toArray();
+
+            //dapatkan realisasi periode sebelumnya
+            $datarealisasisebelumnya = DB::table('realisasirincianindikatorro')
+                ->where('idrincianindikatorro','=',$idrincianindikatorro)
+                ->where('periode','=',$periode-1)
+                ->get();
+
+            //dapatkan data rincian indikator
+
+
+            //ambil konten data realisasi sebelumnya
+            foreach ($datarealisasisebelumnya as $datalalu){
+                $datarealisasilalu = array(
+                    'jumlahsdperiodeini' => $datalalu->jumlahsdperiodeini,
+                    'prosentasesdperiodeini' => $datalalu->prosentasesdperiodeini
+                );
+            }
+
+        }
+        $datagabung = array_merge($datarealisasi->toArray(), $datarincianindikatorro,$datarealisasilalu);
+
+        return response()->json($datagabung);
+
     }
 
     public function updaterealisasirincian(Request $request){
+        $tahunanggaran = session('tahunanggaran');
+        $validated = $request->validate([
+            'tanggallapor' => 'required',
+            'jumlah' => 'required|numeric',
+            'jumlahsdperiodeini' => 'required|numeric',
+            'prosentase' => 'required|between:0,100.00',
+            'prosentasesdperiodeini' => 'required|between:0,100.00',
+            'statuspelaksanaan' => 'required',
+            'kategoripermasalahan' => 'required',
+            'uraianoutputdihasilkan' => 'required',
+            'keterangan' => 'required'
+        ]);
 
+        $id = $request->get('id');
+        $tanggallapor = date_create($request->get('tanggallapor'));
+        $tanggallapor = date_format($tanggallapor,'Y-m-d');
+        $periode = $request->get('nilaibulan');
+        $jumlah = $request->get('jumlah');
+        $jumlahsdperiodeini = $request->get('jumlahsdperiodeini');
+        $prosentase = $request->get('prosentase');
+        $prosentasesdperiodeini = $request->get('prosentasesdperiodeini');
+        $statuspelaksanaan = $request->get('statuspelaksanaan');
+        $kategoripermasalahan = $request->get('kategoripermasalahan');
+        $uraianoutputdihasilkan = $request->get('uraianoutputdihasilkan');
+        $keterangan = $request->get('keterangan');
+        $idindikatorro = $request->get('idindikatorro');
+        $idrincianindikatorro = $request->get('idrincianindikatorro');
+
+        if ($request->file('file')){
+            $file = $request->file('file')->store(
+                'rincianindikatoroutput','public');
+        }
+
+        RealisasiRincianIndikatorROModel::where('id','=',$id)->update([
+            'tahunanggaran' => $tahunanggaran,
+            'tanggallapor' => $tanggallapor,
+            'periode' => $periode,
+            'jumlah' => $jumlah,
+            'jumlahsdperiodeini' => $jumlahsdperiodeini,
+            'prosentase' => $prosentase,
+            'prosentasesdperiodeini' => $prosentasesdperiodeini,
+            'statuspelaksanaan' => $statuspelaksanaan,
+            'kategoripermasalahan' => $kategoripermasalahan,
+            'uraianoutputdihasilkan' => $uraianoutputdihasilkan,
+            'keterangan' => $keterangan,
+            'status' => 1,
+            'idindikatorro' => $idindikatorro,
+            'idrincianindikatorro' => $idrincianindikatorro
+
+        ]);
+        return response()->json(['status'=>'berhasil']);
     }
 
-    public function destroy(Request $request){
-
+    public function deleterealisasi($idrealisasi){
+        DB::table('realisasirincianindikatorro')->delete($idrealisasi);
+        return response()->json(['status'=>'berhasil']);
     }
 
 }

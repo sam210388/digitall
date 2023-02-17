@@ -12,6 +12,6 @@ class RealisasiRincianIndikatorROModel extends Model
     protected $table = 'realisasirincianindikatorro';
 
     protected $fillable = ['tahunanggaran','tanggallapor','periode','jumlah','jumlahsdperiodeini',
-        'prosentase','prosentasesdperiodeini','statuspelaksanaan','kategoripermasalahan','keterangan',
+        'prosentase','prosentasesdperiodeini','statuspelaksanaan','kategoripermasalahan','uraianoutputdihasilkan','keterangan',
         'status','idindikatorro','idrincianindikatorro','file'];
 }
