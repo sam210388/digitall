@@ -33,6 +33,7 @@ use App\Http\Controllers\Caput\Admin\IndikatorRoController;
 use App\Http\Controllers\ReferensiAnggaran\SubKomponenController;
 use App\Http\Controllers\Caput\Admin\RincianIndikatorRoController;
 use App\Http\Controllers\Caput\Bagian\RealisasiRincianIndikatorROConctroller;
+use App\Http\Controllers\Caput\Admin\JadwalTutupController;
 
 
 /*
@@ -159,42 +160,40 @@ Route::post('ambildatasubkomponen',[SubKomponenController::class,'ambildatasubko
 Route::get('refstatus',[RefstatusController::class,'refstatus'])->name('refstatus')->middleware('cekadminanggaran');
 Route::get('getlistrefstatus',[RefstatusController::class,'getListRefstatus'])->name('getlistrefstatus')->middleware('cekadminanggaran');
 Route::get('importrefstatus',[RefstatusController::class,'importrefstatus'])->name('importrefstatus')->middleware('cekadminanggaran');
-
 //data anggaran
 Route::get('importanggaran/{kdsatker}/{kdstshistory}',[DataAngController::class,'importdataang'])->name('importanggaran')->middleware('cekadminanggaran');
 Route::post('checkdataang',[DataAngController::class,'checkdata'])->name('checkdataang')->middleware('cekadminanggaran');
 Route::get('rekapanggaran/{idrefstatus}',[DataAngController::class,'rekapanggaran'])->name('rekapanggaran')->middleware('cekadminanggaran');
 Route::post('checkrekapanggaran',[DataAngController::class,'checkrekapanggaran'])->name('checkrekapanggaran');
-
 //anggaranbagian
 Route::resource('anggaranbagian',AnggaranBagianController::class)->middleware('cekadminanggaran');
 
 
-
+//ADMIN CAPUT
 //kro
 Route::resource('kro',KroController::class)->middleware('cekadmincaput');
 Route::get('importkro',[KroController::class,'importkro'])->name('importkro')->middleware('cekadmincaput');
-
 //RO
 Route::resource('ro',RoController::class)->middleware('cekadmincaput');
 Route::get('importro',[RoController::class,'importro'])->name('importro')->middleware('cekadmincaput');
 
-
 //INDIKATORRO
 Route::resource('indikatorro',IndikatorRoController::class)->middleware('cekadmincaput');
 Route::get('importindikatorro',[IndikatorRoController::class,'importindikatorro'])->name('importindikatorro')->middleware('cekadmincaput');
-
 //RINCIAN INDIKATOR RO
 Route::resource('rincianindikatorro',RincianIndikatorRoController::class)->middleware('cekadmincaput');
-
 //REALISASI RINCIAN INDIKATOR RO
 Route::get('realisasirincianindikatorro',[RealisasiRincianIndikatorROConctroller::class,'realisasirincianindikatorro'])->name('realisasirincianindikatorro')->middleware('cekoperatorbagian');
-Route::post('getdatarealisasi',[RealisasiRincianIndikatorROConctroller::class,'getdatarealisasi'])->name('getdatarealisasi')->middleware('cekoperatorbagian');
+Route::get('getdatarealisasi/{idbulan}',[RealisasiRincianIndikatorROConctroller::class,'getdatarealisasi'])->name('getdatarealisasi')->middleware('cekoperatorbagian');
 Route::post('getdatarincianindikatorro',[RealisasiRincianIndikatorROConctroller::class,'getdatarincianindikatorro'])->name('getdatarincianindikatorro')->middleware('cekoperatorbagian');
 Route::post('simpanrealisasirincian',[RealisasiRincianIndikatorROConctroller::class,'simpanrealisasirincian'])->name('simpanrealisasirincian')->middleware('cekoperatorbagian');
-Route::post('updaterealisasirincian',[RealisasiRincianIndikatorROConctroller::class,'updaterealisasirincian'])->name('updaterealisasirincian')->middleware('cekoperatorbagian');
+Route::post('updaterealisasirincian/{idrealisasi}',[RealisasiRincianIndikatorROConctroller::class,'updaterealisasirincian'])->name('updaterealisasirincian')->middleware('cekoperatorbagian');
 Route::post('editrealisasirincian',[RealisasiRincianIndikatorROConctroller::class,'editrealisasirincian'])->name('editrealisasirincian')->middleware('cekoperatorbagian');
 Route::delete('deleterealisasirincian/{idrealisasi}',[RealisasiRincianIndikatorROConctroller::class,'deleterealisasi'])->name('deleterealisasirincian')->middleware('cekoperatorbagian');
+Route::get('cekjadwallapor/{idrincianindikatorro}/{idbulan}',[RealisasiRincianIndikatorROConctroller::class,'cekjadwallapor'])->name('cekjadwallapor')->middleware('cekoperatorbagian');
+
+//JADWALTUTUP
+Route::resource('jadwaltutup',JadwalTutupController::class)->middleware('cekadmincaput');
 
 
 

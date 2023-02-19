@@ -220,6 +220,19 @@
     <!-- /.content -->
     <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/bs-custom-file-input/bs-custom-file-input.min.js')}}"></script>
     <script type="text/javascript">
+        function dapatkanidbulan(){
+            let idbulan = document.getElementById('idbulan').value;
+            if(idbulan === ""){
+                date = new Date();
+                nilaibulan = date.getMonth();
+                nilaibulan = nilaibulan+1;
+                return parseInt(nilaibulan);
+            }else{
+                nilaibulan = idbulan;
+                return parseInt(nilaibulan);
+            }
+        }
+
         $(function () {
             bsCustomFileInput.init();
             $('.idbulan').select2({
@@ -256,8 +269,10 @@
                     {"width":"5%"},
                 );
             });
-            let idbulan = document.getElementById('idbulan').value;
+
+            idbulan = dapatkanidbulan();
             var table = $('.tabelrealisasi').DataTable({
+                destroy: true,
                 fixedColumn:true,
                 scrollX:"100%",
                 autoWidth:true,
@@ -265,14 +280,7 @@
                 serverSide: true,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                "ajax": {
-                    "url": "{{route('getdatarealisasi')}}",
-                    "type": "POST",
-                    "data": function (d){
-                        d._token = "{{ csrf_token() }}";
-                        d.idbulan = idbulan;
-                    }
-                },
+                ajax:"{{route('getdatarealisasi','')}}"+"/"+idbulan,
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'indikatorro', name: 'indikatorro'},
@@ -294,21 +302,6 @@
                         orderable: false,
                         searchable: false
                     },
-                    {
-                        data: 'idrincianindikatorro',
-                        name: 'idrincianindikatorro',
-                        target: 15,
-                        visible: false,
-                        searchable: false,
-                    },
-                    {
-                        data: 'idrealisasi',
-                        name: 'idrealisasi',
-                        target: 16,
-                        visible: false,
-                        searchable: false,
-                    },
-
 
                 ],
             });
@@ -322,101 +315,173 @@
                     .draw();
             });
 
-            $('#idbulan').on('change', function () {
-                var idbulan = this.value;
-                $.ajax({
-                    url: "{{url('getdatarealisasi')}}",
-                    type: "POST",
-                    data: {
-                        idbulan: idbulan,
-                        _token: '{{csrf_token()}}'
-                    },
-                    dataType: 'json',
-                    success: function (result) {
-                        table.ajax.reload();
-                    }
-
+            $('#idbulan').on('change',function (){
+                let idbulan = dapatkanidbulan();
+                /*
+                $.get("{{ route('getdatarealisasi','') }}" +'/' + idbulan, function (data) {
+                })
+                */
+                var table = $('#tabelrealisasi').DataTable({
+                    destroy: true,
+                    fixedColumn:true,
+                    scrollX:"100%",
+                    autoWidth:true,
+                    processing: true,
+                    serverSide: true,
+                    dom: 'Bfrtip',
+                    buttons: ['copy','excel','pdf','csv','print'],
+                    ajax:"{{route('getdatarealisasi','')}}"+"/"+idbulan,
+                    columns: [
+                        {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                        {data: 'indikatorro', name: 'indikatorro'},
+                        {data: 'rincianindikatorro', name: 'rincianindikatorro'},
+                        {data: 'target', name: 'target'},
+                        {data: 'jumlah', name: 'jumlah'},
+                        {data: 'jumlahsdperiodeini', name: 'jumlahsdperiodeini'},
+                        {data: 'prosentase', name: 'prosentase'},
+                        {data: 'prosentasesdperiodeini', name: 'prosentasesdperiodeini'},
+                        {data: 'statuspelaksanaan', name: 'statuspelaksanaan'},
+                        {data: 'kategoripermasalahan', name: 'kategoripermasalahan'},
+                        {data: 'uraianoutputdihasilkan', name: 'uraianoutputdihasilkan'},
+                        {data: 'keterangan', name: 'keterangan'},
+                        {data: 'file', name: 'file'},
+                        {data: 'statusrealisasi', name: 'statusrealisasi'},
+                        {
+                            data: 'action',
+                            name: 'action',
+                            orderable: false,
+                            searchable: false
+                        },
+                    ],
                 });
-            });
+                table.buttons().container()
+                    .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
+                // Filter event handler
+                $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
+                    table
+                        .column( $(this).data('index') )
+                        .search( this.value )
+                        .draw();
+                });
+            })
 
             $('body').on('click', '.laporkinerja', function () {
+                //cek dan pastikan bulan sebelumnya terisi dan waktu pengisian sudah dibuka
                 var idrincianindikatorro = $(this).data('id');
-                var idbulan = document.getElementById('idbulan').value;
-                if(idbulan === ""){
-                    date = new Date();
-                    nilaibulan = date.getMonth();
-                    nilaibulan = nilaibulan+1;
-                }else{
-                    nilaibulan = idbulan;
-                }
+                let nilaibulan = dapatkanidbulan();
                 $.ajax({
-                    url: "{{url('getdatarincianindikatorro')}}",
-                    type: "POST",
-                    data: {
-                        idrincianindikatorro: idrincianindikatorro,
-                        nilaibulan: nilaibulan,
-                        _token: '{{csrf_token()}}'
-                    },
-                    dataType: 'json',
+                    type: "GET",
+                    url: "{{ route('cekjadwallapor',['',''])}}"+"/"+idrincianindikatorro+"/"+nilaibulan,
                     success: function (data) {
-                        $('#modelHeading').html("Lapor Kinerja");
-                        $('#saveBtn').val("tambah");
-                        $('#ajaxModel').modal('show');
-                        $('#infodetail').val("Target Pengisian : "+data[0]['targetpengisian']+". Vol Perbulan: "+data[0]['volperbulan']
-                            +" .Info Proses: "+data[0]['infoproses']+". Keterangan: "+data[0]['keterangan']);
-                        $('#idindikatorro').val(data[0]['idindikatorro']);
-                        $('#idrincianindikatorro').val(data[0]['idrincianindikatorro']);
-                        $('#jumlahsdbulanlalu').val(data[0]['jumlahsdperiodeini']);
-                        $('#prosentasesdbulanlalu').val(data[0]['prosentasesdperiodeini']);
-                        $('#nilaibulan').val(data['nilaibulan']);
-                    }
+                        if (data.status == "Buka"){
+                            $.ajax({
+                                url: "{{url('getdatarincianindikatorro')}}",
+                                type: "POST",
+                                data: {
+                                    idrincianindikatorro: idrincianindikatorro,
+                                    nilaibulan: nilaibulan,
+                                    _token: '{{csrf_token()}}'
+                                },
+                                dataType: 'json',
+                                success: function (data) {
+                                    $('#modelHeading').html("Lapor Kinerja");
+                                    $('#saveBtn').val("tambah");
+                                    $('#ajaxModel').modal('show');
+                                    $('#infodetail').val("Target Pengisian : "+data[0]['targetpengisian']+". Vol Perbulan: "+data[0]['volperbulan']
+                                        +" .Info Proses: "+data[0]['infoproses']+". Keterangan: "+data[0]['keterangan']);
+                                    $('#idindikatorro').val(data[0]['idindikatorro']);
+                                    $('#idrincianindikatorro').val(data[0]['idrincianindikatorro']);
+                                    $('#jumlahsdbulanlalu').val(data[0]['jumlahsdperiodeini']);
+                                    $('#prosentasesdbulanlalu').val(data[0]['prosentasesdperiodeini']);
+                                    $('#nilaibulan').val(data['nilaibulan']);
+                                }
+                            });
+                        }else{
+                            Swal.fire({
+                                title: 'Error!',
+                                text: "Status: "+data.status+" Karena: "+data.kondisi,
+                                icon: 'error'
+                            })
+                            $('#tabelrealisasi').DataTable().ajax.reload();
+                        }
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        if(xhr.responseJSON.errors){
+                            var errorsArr = [];
+                            $.each(xhr.responseJSON.errors, function(key,value) {
+                                errorsArr.push(value);
+                            });
+                            Swal.fire({
+                                title: 'Error!',
+                                text: errorsArr,
+                                icon: 'error'
+                            })
+                        }else{
+                            var jsonValue = jQuery.parseJSON(xhr.responseText);
+                            Swal.fire({
+                                title: 'Error!',
+                                text: jsonValue.message,
+                                icon: 'error'
+                            })
+                        }
+                    },
                 });
             });
 
             $('body').on('click', '.editrealisasi', function () {
-                var idrealisasi = $(this).data('id');
-                //alert(idrealisasi);
-                var idbulan = document.getElementById('idbulan').value;
-                if(idbulan === ""){
-                    date = new Date();
-                    nilaibulan = date.getMonth();
-                    nilaibulan = nilaibulan+1;
-                }else{
-                    nilaibulan = idbulan;
-                }
+                let id = $(this).data('id');
+                let dataid = id.split("/");
+                let idrealisasi = dataid[0];
+                let idrincianindikatorro = dataid[1];
+                let nilaibulan = parseInt(dapatkanidbulan());
                 $.ajax({
-                    url: "{{url('editrealisasirincian')}}",
-                    type: "POST",
-                    data: {
-                        idrealisasi: idrealisasi,
-                        nilaibulan: nilaibulan,
-                        _token: '{{csrf_token()}}'
-                    },
-                    dataType: 'json',
+                    type: "GET",
+                    url: "{{ route('cekjadwallapor',['',''])}}"+"/"+idrincianindikatorro+"/"+nilaibulan,
                     success: function (data) {
-                        $('#modelHeading').html("Lapor Kinerja");
-                        $('#saveBtn').val("tambah");
-                        $('#ajaxModel').modal('show');
-                        $('#infodetail').val("Target Pengisian : "+data[1]['targetpengisian']+". Vol Perbulan: "+data[1]['volperbulan']
-                            +" .Info Proses: "+data[1]['infoproses']+". Keterangan: "+data[1]['keterangan']);
-                        $('#id').val(data[0]['id']);
-                        $('#idindikatorro').val(data[0]['idindikatorro']);
-                        $('#idrincianindikatorro').val(data[0]['idrincianindikatorro']);
-                        $('#nilaibulan').val(data[0]['periode']);
-                        $('#tanggallapor').val(data[0]['tanggallapor']);
-                        $('#jumlah').val(data[0]['jumlah']);
-                        $('#jumlahsdperiodeini').val(data[0]['jumlahsdperiodeini']);
-                        $('#prosentase').val(data[0]['prosentase']);
-                        $('#prosentasesdperiodeini').val(data[0]['prosentasesdperiodeini']);
-                        $('#statuspelaksanaan').val(data[0]['statuspelaksanaan']).trigger('change');
-                        $('#kategoripermasalahan').val(data[0]['kategoripermasalahan']).trigger('change');
-                        $('#uraianoutputdihasilkan').val(data[0]['uraianoutputdihasilkan']);
-                        $('#keterangan').val(data[0]['keterangan']);
-                        let jumlahsdbulanlalu = parseInt(data[0]['jumlahsdperiodeini']) - parseInt(data[0]['jumlah']);
-                        $('#jumlahsdbulanlalu').val(jumlahsdbulanlalu);
+                        if (data.status == "Buka") {
+                            $.ajax({
+                                url: "{{url('editrealisasirincian')}}",
+                                type: "POST",
+                                data: {
+                                    idrealisasi: idrealisasi,
+                                    nilaibulan: nilaibulan,
+                                    _token: '{{csrf_token()}}'
+                                },
+                                dataType: 'json',
+                                success: function (data) {
+                                    $('#modelHeading').html("Lapor Kinerja");
+                                    $('#saveBtn').val("edit");
+                                    $('#ajaxModel').modal('show');
+                                    $('#infodetail').val("Target Pengisian : " + data[1]['targetpengisian'] + ". Vol Perbulan: " + data[1]['volperbulan']
+                                        + " .Info Proses: " + data[1]['infoproses'] + ". Keterangan: " + data[1]['keterangan']);
+                                    $('#id').val(data[0]['idrealisasi']);
+                                    $('#idindikatorro').val(data[0]['indikatorro']);
+                                    $('#idrincianindikatorro').val(data[0]['idrincianindikatorro']);
+                                    $('#nilaibulan').val(data[0]['periode']);
+                                    $('#tanggallapor').val(data[0]['tanggallapor']);
+                                    $('#jumlah').val(data[0]['jumlah']);
+                                    $('#jumlahsdperiodeini').val(data[0]['jumlahsdperiodeini']);
+                                    $('#prosentase').val(data[0]['prosentase']);
+                                    $('#prosentasesdperiodeini').val(data[0]['prosentasesdperiodeini']);
+                                    $('#statuspelaksanaan').val(data[0]['statuspelaksanaan']).trigger('change');
+                                    $('#kategoripermasalahan').val(data[0]['kategoripermasalahan']).trigger('change');
+                                    $('#uraianoutputdihasilkan').val(data[0]['uraianoutputdihasilkan']);
+                                    $('#keterangan').val(data[0]['keterangan']);
+                                    $('#jumlahsdbulanlalu').val(data['jumlahsdperiodelalu']);
+                                    $('#prosentasesdbulanlalu').val(data['prosentasesdperiodelalu']);
+                                    document.getElementById('aktuallinkbukti').href = "{{env('APP_URL')."/".asset('storage')}}" + "/" + data[0]['file']
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: "Status: "+data.status+" Karena: "+data.kondisi,
+                                icon: 'error'
+                            })
+                            $('#tabelrealisasi').DataTable().ajax.reload();
+                        }
+                    },
 
-                        document.getElementById('aktuallinkbukti').href = "{{env('APP_URL')."/".asset('storage')}}"+"/"+data[0]['file']
-                    }
                 });
             });
 
@@ -431,9 +496,7 @@
 
                 fd.append('file',file[0])
                 fd.append('saveBtn',saveBtn)
-                if(saveBtn === "edit"){
-                    fd.append('_method','PUT')
-                }
+
                 for (var pair of fd.entries()) {
                     console.log(pair[0]+ ', ' + pair[1]);
                 }
@@ -539,6 +602,7 @@
 
 
         });
+
         function realisasisdperiodeini(){
             let jumlahsdbulanlalu = parseInt($('#jumlahsdbulanlalu').val());
             let jumlah = parseInt($('#jumlah').val());
@@ -547,11 +611,11 @@
         }
 
         function nilaiprosentasesdperiodeini(){
-            let prosentasesdbulanlalu = parseFloat($('#prosentasesdbulanlalu').val()).toFixed(2);
+            let prosentasesdbulanlalu = $('#prosentasesdbulanlalu').val();
+            prosentasebulanlalu = parseFloat(prosentasesdbulanlalu).toFixed(2);
             let prosentase = parseFloat($('#prosentase').val()).toFixed(2);
             let prosentasesdperiodeini = parseFloat(prosentasesdbulanlalu+prosentase);
             $('#prosentasesdperiodeini').val(prosentasesdperiodeini);
-            alert(typeof(prosentasesdbulanlalu));
         }
     </script>
 
