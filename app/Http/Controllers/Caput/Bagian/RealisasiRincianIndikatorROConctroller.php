@@ -121,6 +121,13 @@ class RealisasiRincianIndikatorROConctroller extends Controller
                         return $btn;
                     }
                 })
+                ->addColumn('statusrealisasi', function ($row) {
+                    $idstatus = $row->statusrealisasi;
+                    $uraianstatus = DB::table('statusrealisasi')
+                        ->where('id','=',$idstatus)
+                        ->value('uraianstatus');
+                    return $uraianstatus;
+                })
                 ->rawColumns(['action'])
                 ->make(true);
         }

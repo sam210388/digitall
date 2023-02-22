@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Caput\Biro;
 
 use App\Http\Controllers\Controller;
-use App\Models\Caput\Bagian\RealisasiRincianIndikatorROModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +21,7 @@ class MonitoringRincianIndikatorROConctroller extends Controller
         $datastatuspelaksanaan = DB::table('statuspelaksanaan')->get();
         $datakategoripermasalahan = DB::table('kategoripermasalahan')->get();
 
-        return view('Caput.Bagian.realisasirincianindikatorro',[
+        return view('Caput.Biro.monitoringrincianindikatorro',[
             "judul"=>$judul,
             "databulan" => $databulan,
             "datastatuspelaksanaan" => $datastatuspelaksanaan,
@@ -78,17 +77,96 @@ class MonitoringRincianIndikatorROConctroller extends Controller
                         return $btn;
                     }
                 })
+                ->addColumn('statusrealisasi', function ($row) {
+                    $idstatus = $row->statusrealisasi;
+                    $uraianstatus = DB::table('statusrealisasi')
+                        ->where('id','=',$idstatus)
+                        ->value('uraianstatus');
+                    return $uraianstatus;
+                })
                 ->rawColumns(['action'])
                 ->make(true);
         }
     }
 
-    function batalvalidasirincianindikator($idrealisasi){
+    function batalvalidasirincianindikator(Request $request){
+        $idrealisasi = $request->get('idrealisasi');
         DB::table('realisasirincianindikatorro')
             ->where('id','=',$idrealisasi)
             ->update([
                 'status' => 1
             ]);
+        return response()->json(['status'=> "berhasil"]);
+
+    }
+
+    public function cekjadwallapor($idrincianindikatorro, $idbulan){
+        $kondisilapor = "";
+        $tahunanggaran = session('tahunanggaran');
+        //cekrealisasisebelumnya
+        if ($idbulan == 1){
+            $laporsebelumnya = true;
+        }else{
+            $adarealisasi = DB::table('realisasirincianindikatorro')
+                ->where('idrincianindikatorro','=',$idrincianindikatorro)
+                ->where('tahunanggaran','=',$tahunanggaran)
+                ->where('periode','=',$idbulan-1)
+                ->get();
+            if (count($adarealisasi) == 0){
+                $laporsebelumnya = false;
+                $kondisi = "Realisasi Sebelumnya: Belum Diisi";
+                $kondisilapor = $kondisilapor.$kondisi;
+            }else{
+                $laporsebelumnya = true;
+            }
+        }
+
+        //cek jadwal lapor
+        $jadwalbuka = DB::table('jadwaltutup')
+            ->where('jenislaporan','=',1)
+            ->where('tahunanggaran','=',$tahunanggaran)
+            ->where('idbulan','=',$idbulan)
+            ->value('jadwalbuka');
+        $jadwaltutup = DB::table('jadwaltutup')
+            ->where('jenislaporan','=',1)
+            ->where('tahunanggaran','=',$tahunanggaran)
+            ->where('idbulan','=',$idbulan)
+            ->value('jadwaltutup');
+        if ($jadwalbuka == null){
+            $statusbuka = false;
+            $kondisi = " Jadwal Buka: Belum Ditetapkan";
+            $kondisilapor = $kondisilapor.$kondisi;
+        }else{
+            $tanggalsekarang = strtotime(date('Y-m-d'));
+            $jadwalbuka = strtotime($jadwalbuka);
+            if ($tanggalsekarang < $jadwalbuka){
+                $statusbuka = false;
+                $kondisi = "Jadwal Buka: Belum Dibuka";
+                $kondisilapor = $kondisilapor.$kondisi;
+            }else{
+                $statusbuka = true;
+            }
+        }
+
+        $statustutup = "";
+        if ($jadwaltutup != null){
+            $tanggalsekarang = strtotime(date('Y-m-d'));
+            $jadwaltutup = strtotime($jadwaltutup);
+            if ($tanggalsekarang <= $jadwaltutup){
+                $statustutup = false;
+            }else{
+                $statustutup = true;
+                $kondisi = "Jadwal Tutup: Sudah Tutup";
+                $kondisilapor = $kondisilapor.$kondisi;
+            }
+        }
+
+        if ($laporsebelumnya && $statusbuka && !$statustutup){
+            $status = "Buka";
+        }else{
+            $status = "Tutup";
+        }
+        return response()->json(['status'=> $status,'kondisi' => $kondisilapor]);
     }
 
 }

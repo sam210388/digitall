@@ -92,6 +92,12 @@
     <!-- /.content -->
     <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/bs-custom-file-input/bs-custom-file-input.min.js')}}"></script>
     <script type="text/javascript">
+        $('.idbulan').select2({
+            width: '100%',
+            theme: 'bootstrap4',
+
+        })
+
         function dapatkanidbulan(){
             let idbulan = document.getElementById('idbulan').value;
             if(idbulan === ""){
@@ -166,10 +172,6 @@
 
             $('#idbulan').on('change',function (){
                 let idbulan = dapatkanidbulan();
-                /*
-                $.get("{{ route('getdatarealisasi','') }}" +'/' + idbulan, function (data) {
-                })
-                */
                 var table = $('#tabelrealisasi').DataTable({
                     destroy: true,
                     fixedColumn:true,
@@ -222,7 +224,7 @@
                 let nilaibulan = parseInt(dapatkanidbulan());
                 $.ajax({
                     type: "GET",
-                    url: "{{ route('cekjadwallapor',['',''])}}"+"/"+idrincianindikatorro+"/"+nilaibulan,
+                    url: "{{ route('cekjadwallapormonitoring',['',''])}}"+"/"+idrincianindikatorro+"/"+nilaibulan,
                     success: function (data) {
                         if (data.status == "Buka") {
                             $.ajax({
