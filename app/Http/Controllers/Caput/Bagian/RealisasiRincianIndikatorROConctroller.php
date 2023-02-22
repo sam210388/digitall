@@ -107,13 +107,16 @@ class RealisasiRincianIndikatorROConctroller extends Controller
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    if ($row->idrealisasi != null) {
+                    if ($row->idrealisasi != null and $row->statusrealisasi != 3) {
                         $id = $row->idrealisasi."/".$row->idrincianindikatorro;
                         $btn = '<div class="btn-group" role="group">
                         <a href="javascript:void(0)" data-toggle="tooltip"  data-id="' . $id . '" data-original-title="Edit" class="edit btn btn-primary btn-sm editrealisasi">Edit</a>';
                         $btn = $btn . ' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="' . $row->idrealisasi . '" data-original-title="Delete" class="btn btn-danger btn-sm deleterealisasi">Delete</a>';
                         return $btn;
-                    } else {
+                    } else if ($row->idrealisasi != null and $row->statusrealisasi == 3){
+                        $btn = '';
+                        return $btn;
+                    }else{
                         $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="' . $row->idrincianindikatorro . '" data-original-title="Edit" class="edit btn btn-success btn-sm laporkinerja">Lapor</a>';
                         return $btn;
                     }

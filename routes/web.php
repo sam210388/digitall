@@ -35,6 +35,9 @@ use App\Http\Controllers\Caput\Admin\RincianIndikatorRoController;
 use App\Http\Controllers\Caput\Bagian\RealisasiRincianIndikatorROConctroller;
 use App\Http\Controllers\Caput\Admin\JadwalTutupController;
 use App\Http\Controllers\Caput\Biro\RealisasiIndikatorROConctroller;
+use App\Http\Controllers\Caput\Biro\RealisasiROConctroller;
+use App\Http\Controllers\Caput\Biro\RealisasiKROConctroller;
+use App\Http\Controllers\Caput\Biro\MonitoringRincianIndikatorROConctroller;
 
 
 /*
@@ -201,5 +204,26 @@ Route::get('realisasiindikatorro',[RealisasiIndikatorROConctroller::class,'reali
 Route::get('getdatarealisasiindikatorro/{idbulan}',[RealisasiIndikatorROConctroller::class,'getdatarealisasiindikatorro'])->name('getdatarealisasiindikatorro')->middleware('cekoperatorbiro');
 Route::get('cekjadwallaporindikatorro/{idindikatorro}/{nilaibulan}',[RealisasiIndikatorROConctroller::class,'cekjadwallapor'])->name('cekjadwallaporindikatorro')->middleware('cekoperatorbiro');
 Route::post('rekaprealisasiindikatorro',[RealisasiIndikatorROConctroller::class,'rekaprealisasiindikatorro'])->name('rekaprealisasiindikatorro')->middleware('cekoperatorbiro');
+
+//realisasi ro
+Route::get('realisasiro',[RealisasiROConctroller::class,'realisasiro'])->name('realisasiro')->middleware('cekoperatorbiro');
+Route::get('getdatarealisasiro/{idbulan}',[RealisasiROConctroller::class,'getdatarealisasiro'])->name('getdatarealisasiro')->middleware('cekoperatorbiro');
+Route::get('cekjadwallaporro/{idro}/{nilaibulan}',[RealisasiROConctroller::class,'cekjadwallapor'])->name('cekjadwallaporro')->middleware('cekoperatorbiro');
+Route::post('rekaprealisasiro',[RealisasiROConctroller::class,'rekaprealisasiro'])->name('rekaprealisasiro')->middleware('cekoperatorbiro');
+
+//realisasi kro
+Route::get('realisasikro',[RealisasiKROConctroller::class,'realisasikro'])->name('realisasikro')->middleware('cekoperatorbiro');
+Route::get('getdatarealisasikro/{idbulan}',[RealisasiKROConctroller::class,'getdatarealisasikro'])->name('getdatarealisasikro')->middleware('cekoperatorbiro');
+Route::get('cekjadwallaporkro/{idro}/{nilaibulan}',[RealisasiKROConctroller::class,'cekjadwallapor'])->name('cekjadwallaporkro')->middleware('cekoperatorbiro');
+Route::post('rekaprealisasikro',[RealisasiKROConctroller::class,'rekaprealisasikro'])->name('rekaprealisasikro')->middleware('cekoperatorbiro');
+
+//monitoring operator biro
+Route::get('monitoringrincianindikatorro',[MonitoringRincianIndikatorROConctroller::class,'realisasirincianindikatorro'])->name('monitoringrincianindikatorro')->middleware('cekoperatorbiro');
+Route::get('getdatarealisasimonitoring/{idbulan}',[MonitoringRincianIndikatorROConctroller::class,'getdatarealisasi'])->name('getdatarealisasimonitoring')->middleware('cekoperatorbiro');
+Route::post('batalvalidasi',[MonitoringRincianIndikatorROConctroller::class,'batalvalidasirincianindikator'])->name('batalvalidasi')->middleware('cekoperatorbiro');
+
+
+
+
 
 
