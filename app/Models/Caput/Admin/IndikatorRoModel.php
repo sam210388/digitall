@@ -12,5 +12,5 @@ class IndikatorRoModel extends Model
     protected $table = 'indikatorro';
 
     protected $fillable = ['idkro','idro','tahunanggaran','kodesatker','kodekegiatan','kodeoutput',
-        'kodesuboutput','kodekomponen','indeks','uraianindikatorro', 'target','satuan','jenisindikator','status'];
+        'kodesuboutput','kodekomponen','indeks','uraianindikatorro', 'target','satuan','jenisindikator','status','idbiro','iddeputi'];
 }

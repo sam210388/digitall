@@ -12,5 +12,5 @@ class RoModel extends Model
     protected $table = 'ro';
 
     protected $fillable = ['tahunanggaran','kodesatker','kodekegiatan','kodeoutput','kodesuboutput',
-        'indeks','uraianro', 'target','satuan','jenisindikator','status','idkro'];
+        'indeks','uraianro', 'target','satuan','jenisindikator','status','idkro','idbiro','iddeputi'];
 }

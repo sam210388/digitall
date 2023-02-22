@@ -39,16 +39,35 @@ class RealisasiRincianIndikatorROConctroller extends Controller
             'nilaibulan' => $nilaibulan
         );
         $idrincianindikator = $request->get('idrincianindikatorro');
+        $dataperiodesebelumnya = array();
 
+        if ($nilaibulan == 1){
+            $datarealisasisebelumnya = array(
+                'jumlahsdperiodelalu' => 0,
+                'prosentasesdperiodelalu' => 0.00
+            );
+            $dataperiodesebelumnya = array_merge($dataperiodesebelumnya,$datarealisasisebelumnya);
+        }else{
+            //dapatkan realisasi sebelumnya
+            $datarealisasisebelumnya = DB::table('realisasirincianindikatorro')
+                ->where('idrincianindikatorro','=',$idrincianindikator)
+                ->where('periode','=',$nilaibulan-1)
+                ->get(['jumlahsdperiodeini','prosentasesdperiodeini']);
+            foreach ($datarealisasisebelumnya as $drs){
+                $datasebelumnya = array(
+                    'jumlahsdperiodelalu' => $drs->jumlahsdperiodeini,
+                    'prosentasesdperiodelalu' => $drs->prosentasesdperiodeini
+                );
+                $dataperiodesebelumnya = array_merge($dataperiodesebelumnya,$datasebelumnya);
+            }
+        }
         $data = DB::table('rincianindikatorro as a')
             ->select(['a.targetpengisian as targetpengisian','a.volperbulan as volperbulan','a.infoproses as infoproses',
-                'a.keterangan as keterangan','a.id as idrincianindikatorro','a.idindikatorro as idindikatorro',
-                DB::raw('sum(b.jumlah) as jumlahsdperiodeini, sum(prosentase) as prosentasesdperiodeini')])
-            ->leftJoin('realisasirincianindikatorro as b','a.id','=','b.idrincianindikatorro')
+                'a.keterangan as keterangan','a.id as idrincianindikatorro','a.idindikatorro as idindikatorro','a.target as target'])
             ->where('a.id','=',$idrincianindikator)
-            ->where('b.periode','=',$nilaibulan)
             ->get()->toArray();
         $data = array_merge($data, $bulan);
+        $data = array_merge($data,$dataperiodesebelumnya);
         return response()->json($data);
     }
 
@@ -159,43 +178,45 @@ class RealisasiRincianIndikatorROConctroller extends Controller
 
     public function editrealisasirincian(Request $request){
         $idrealisasi = $request->get('idrealisasi');
+        $nilaibulan = $request->get('nilaibulan');
+        $idrincianindikatorro = $request->get('idrincianindikatorro');
+
+        //dapatkan data realisasi saat ini
         $datarealisasisaatini = DB::table('realisasirincianindikatorro as a')
             ->select(['a.tahunanggaran as tahunanggaran','a.periode as periode','a.tanggallapor as tanggallapor','a.jumlah as jumlah','a.jumlahsdperiodeini as jumlahsdperiodeini',
                 'a.prosentase as prosentase','a.prosentasesdperiodeini as prosentasesdperiodeini','a.statuspelaksanaan as statuspelaksanaan','a.kategoripermasalahan as kategoripermasalahan',
                 'a.uraianoutputdihasilkan as uraianoutputdihasilkan','a.keterangan as keterangan','a.status as status','a.idindikatorro as indikatorro','a.idrincianindikatorro as idrincianindikatorro',
                 'a.file as file','a.id as idrealisasi'])
             ->where('id','=',$idrealisasi)->get();
-        $idrincianindikatorro = 0;
-        $periode = 0;
-        $datarealisasisebelumnya = array();
-        //dapatkan data rincian indikator
-        foreach ($datarealisasisaatini as $drsi){
-            $idrincianindikatorro = $drsi->idrincianindikatorro;
-            $periode = $drsi->periode;
-            //dapatkan realisasi sebelumnya
+
+        //dapatkan realisasi sebelumnya
+        $datatambahan = array();
+        if ($nilaibulan == 1){
+            $datatambahan = array(
+                'jumlahsdperiodelalu' => 0,
+                'prosentasesdperiodelalu' => 0.00
+            );
+        } else{
             $datarealisasisebelumnya = DB::table('realisasirincianindikatorro')
                 ->where('idrincianindikatorro','=',$idrincianindikatorro)
-                ->where('periode','=',$periode-1)
+                ->where('periode','=',$nilaibulan-1)
                 ->get();
-        }
-        $datarincianindikatorro = DB::table('rincianindikatorro')->where('id','=',$idrincianindikatorro)->get()->toArray();
-
-        $jumlahsdperiodelalu = 0;
-        $prosentasesdperiodelalu = 0.00;
-        if (count($datarealisasisebelumnya) > 0){
             foreach ($datarealisasisebelumnya as $d){
                 $jumlahsdperiodelalu = $d->jumlahsdperiodeini;
                 $prosentasesdperiodelalu = $d->prosentasesdperiodeini;
+                $datatambahanbaru = array(
+                    'jumlahsdperiodelalu' => $jumlahsdperiodelalu,
+                    'prosentasesdperiodelalu' => $prosentasesdperiodelalu
+                );
+                $datatambahan = array_merge($datatambahan,$datatambahanbaru);
             }
-        }else{
-            $jumlahsdperiodelalu = 0;
-            $prosentasesdperiodelalu = 0.00;
         }
-        $datatambahan = array(
-            'jumlahsdperiodelalu' => $jumlahsdperiodelalu,
-            'prosentasesdperiodelalu' => $prosentasesdperiodelalu
-        );
-        $dataresponse = array_merge($datarealisasisaatini->toArray(), $datarincianindikatorro,$datatambahan);
+        //dapatkan data rincian indikator
+        $datarincianindikatorro = DB::table('rincianindikatorro')->where('id','=',$idrincianindikatorro)->get()->toArray();
+
+        //gabung data
+        $dataresponse = array_merge($datarealisasisaatini->toArray(), $datarincianindikatorro);
+        $dataresponse = array_merge($dataresponse, $datatambahan);
         return response()->json($dataresponse);
 
     }
@@ -310,7 +331,7 @@ class RealisasiRincianIndikatorROConctroller extends Controller
         if ($jadwaltutup != null){
             $tanggalsekarang = strtotime(date('Y-m-d'));
             $jadwaltutup = strtotime($jadwaltutup);
-            if ($tanggalsekarang < $jadwaltutup){
+            if ($tanggalsekarang <= $jadwaltutup){
                 $statustutup = false;
             }else{
                 $statustutup = true;

@@ -111,9 +111,11 @@ class TindakLanjutBagianController extends Controller
         $keterangan = $request->get('keterangan');
         $objektemuan = $request->get('objektemuan');
         $idrekomendasi = $request->get('idrekomendasi');
+
+
         $created_by = Auth::id();
 
-
+        $file = "";
         if ($request->file('file')){
             $file = $request->file('file')->store(
                 'buktitindaklanjut','public');

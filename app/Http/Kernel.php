@@ -74,5 +74,6 @@ class Kernel extends HttpKernel
         'cekadmin' => \App\Http\Middleware\CekAdmin::class,
         'cekadmincaput' => \App\Http\Middleware\CekAdminOrAdminCaput::class,
         'cekpemilikrincianindikator' => \App\Http\Middleware\CekPemilikRincianIndikator::class,
+        'cekoperatorbiro' => \App\Http\Middleware\CekOperatorBiro::class,
     ];
 }

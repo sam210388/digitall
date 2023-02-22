@@ -12,5 +12,5 @@ class KroModel extends Model
     protected $table = 'kro';
 
     protected $fillable = ['tahunanggaran','kodesatker','kodekegiatan','kodeoutput','uraiankro',
-        'target','satuan','indeks','jenisindikator','status'];
+        'target','satuan','indeks','jenisindikator','status','idbiro','iddeputi'];
 }

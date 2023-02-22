@@ -34,6 +34,7 @@ use App\Http\Controllers\ReferensiAnggaran\SubKomponenController;
 use App\Http\Controllers\Caput\Admin\RincianIndikatorRoController;
 use App\Http\Controllers\Caput\Bagian\RealisasiRincianIndikatorROConctroller;
 use App\Http\Controllers\Caput\Admin\JadwalTutupController;
+use App\Http\Controllers\Caput\Biro\RealisasiIndikatorROConctroller;
 
 
 /*
@@ -195,6 +196,10 @@ Route::get('cekjadwallapor/{idrincianindikatorro}/{idbulan}',[RealisasiRincianIn
 //JADWALTUTUP
 Route::resource('jadwaltutup',JadwalTutupController::class)->middleware('cekadmincaput');
 
-
+//realisasi indikator ro
+Route::get('realisasiindikatorro',[RealisasiIndikatorROConctroller::class,'realisasiindikatorro'])->name('realisasiindikatorro')->middleware('cekoperatorbiro');
+Route::get('getdatarealisasiindikatorro/{idbulan}',[RealisasiIndikatorROConctroller::class,'getdatarealisasiindikatorro'])->name('getdatarealisasiindikatorro')->middleware('cekoperatorbiro');
+Route::get('cekjadwallaporindikatorro/{idindikatorro}/{nilaibulan}',[RealisasiIndikatorROConctroller::class,'cekjadwallapor'])->name('cekjadwallaporindikatorro')->middleware('cekoperatorbiro');
+Route::post('rekaprealisasiindikatorro',[RealisasiIndikatorROConctroller::class,'rekaprealisasiindikatorro'])->name('rekaprealisasiindikatorro')->middleware('cekoperatorbiro');
 
 

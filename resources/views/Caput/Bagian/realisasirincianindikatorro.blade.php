@@ -107,6 +107,14 @@
                                                 </div>
                                             </div>
                                             <div class="form-group">
+                                                <label for="target" class="col-sm-6 control-label">Target</label>
+                                                <div class="col-sm-12">
+                                                    <div class="input-group mb-3">
+                                                        <input type="text" class="form-control" id="target" name="target" placeholder="Target" value="" maxlength="100" readonly>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
                                                 <label for="tanggallapor" class="col-sm-6 control-label">Tanggal</label>
                                                 <div class="col-sm-12">
                                                     <div class="input-group mb-3">
@@ -390,9 +398,10 @@
                                     $('#infodetail').val("Target Pengisian : "+data[0]['targetpengisian']+". Vol Perbulan: "+data[0]['volperbulan']
                                         +" .Info Proses: "+data[0]['infoproses']+". Keterangan: "+data[0]['keterangan']);
                                     $('#idindikatorro').val(data[0]['idindikatorro']);
+                                    $('#target').val(data[0]['target']);
                                     $('#idrincianindikatorro').val(data[0]['idrincianindikatorro']);
-                                    $('#jumlahsdbulanlalu').val(data[0]['jumlahsdperiodeini']);
-                                    $('#prosentasesdbulanlalu').val(data[0]['prosentasesdperiodeini']);
+                                    $('#jumlahsdbulanlalu').val(data['jumlahsdperiodelalu']);
+                                    $('#prosentasesdbulanlalu').val(data['prosentasesdperiodelalu']);
                                     $('#nilaibulan').val(data['nilaibulan']);
                                 }
                             });
@@ -445,6 +454,7 @@
                                 data: {
                                     idrealisasi: idrealisasi,
                                     nilaibulan: nilaibulan,
+                                    idrincianindikatorro: idrincianindikatorro,
                                     _token: '{{csrf_token()}}'
                                 },
                                 dataType: 'json',
@@ -485,71 +495,76 @@
                 });
             });
 
+
+
             $('#saveBtn').click(function (e) {
                 e.preventDefault();
-                $(this).html('Sending..');
-                let form = document.getElementById('formrealisasi');
-                let fd = new FormData(form);
-                let file = $('#file')[0].files;
-                let saveBtn = document.getElementById('saveBtn').value;
-                let idrealisasi = document.getElementById('id').value;
+                let status = bandingkanrealisasi();
+                if(status){
+                    $(this).html('Sending..');
+                    let form = document.getElementById('formrealisasi');
+                    let fd = new FormData(form);
+                    let file = $('#file')[0].files;
+                    let saveBtn = document.getElementById('saveBtn').value;
+                    let idrealisasi = document.getElementById('id').value;
 
-                fd.append('file',file[0])
-                fd.append('saveBtn',saveBtn)
+                    fd.append('file',file[0])
+                    fd.append('saveBtn',saveBtn)
 
-                for (var pair of fd.entries()) {
-                    console.log(pair[0]+ ', ' + pair[1]);
+                    for (var pair of fd.entries()) {
+                        console.log(pair[0]+ ', ' + pair[1]);
+                    }
+                    $.ajax({
+                        data: fd,
+                        url: saveBtn === "tambah" ? "{{route('simpanrealisasirincian')}}":"{{route('updaterealisasirincian','')}}"+'/'+idrealisasi,
+                        type: "POST",
+                        dataType: 'json',
+                        enctype: 'multipart/form-data',
+                        contentType: false,
+                        processData: false,
+                        success: function (data) {
+                            if (data.status == "berhasil"){
+                                Swal.fire({
+                                    title: 'Sukses',
+                                    text: 'Simpan Data Berhasil',
+                                    icon: 'success'
+                                })
+                            }else{
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Simpan Data Gagal',
+                                    icon: 'error'
+                                })
+                            }
+                            $('#formrealisasi').trigger("reset");
+                            $('#ajaxModel').modal('hide');
+                            $('#saveBtn').html('Simpan Data');
+                            $('#tabelrealisasi').DataTable().ajax.reload();
+
+                        },
+                        error: function (xhr, textStatus, errorThrown) {
+                            if(xhr.responseJSON.errors){
+                                var errorsArr = [];
+                                $.each(xhr.responseJSON.errors, function(key,value) {
+                                    errorsArr.push(value);
+                                });
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: errorsArr,
+                                    icon: 'error'
+                                })
+                            }else{
+                                var jsonValue = jQuery.parseJSON(xhr.responseText);
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: jsonValue.message,
+                                    icon: 'error'
+                                })
+                            }
+                            $('#saveBtn').html('Simpan Data');
+                        },
+                    });
                 }
-                $.ajax({
-                    data: fd,
-                    url: saveBtn === "tambah" ? "{{route('simpanrealisasirincian')}}":"{{route('updaterealisasirincian','')}}"+'/'+idrealisasi,
-                    type: "POST",
-                    dataType: 'json',
-                    enctype: 'multipart/form-data',
-                    contentType: false,
-                    processData: false,
-                    success: function (data) {
-                        if (data.status == "berhasil"){
-                            Swal.fire({
-                                title: 'Sukses',
-                                text: 'Simpan Data Berhasil',
-                                icon: 'success'
-                            })
-                        }else{
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'Simpan Data Gagal',
-                                icon: 'error'
-                            })
-                        }
-                        $('#formrealisasi').trigger("reset");
-                        $('#ajaxModel').modal('hide');
-                        $('#saveBtn').html('Simpan Data');
-                        $('#tabelrealisasi').DataTable().ajax.reload();
-
-                    },
-                    error: function (xhr, textStatus, errorThrown) {
-                        if(xhr.responseJSON.errors){
-                            var errorsArr = [];
-                            $.each(xhr.responseJSON.errors, function(key,value) {
-                                errorsArr.push(value);
-                            });
-                            Swal.fire({
-                                title: 'Error!',
-                                text: errorsArr,
-                                icon: 'error'
-                            })
-                        }else{
-                            var jsonValue = jQuery.parseJSON(xhr.responseText);
-                            Swal.fire({
-                                title: 'Error!',
-                                text: jsonValue.message,
-                                icon: 'error'
-                            })
-                        }
-                        $('#saveBtn').html('Simpan Data');
-                    },
-                });
             });
 
             $('body').on('click', '.deleterealisasi', function () {
@@ -606,7 +621,11 @@
         function realisasisdperiodeini(){
             let jumlahsdbulanlalu = parseInt($('#jumlahsdbulanlalu').val());
             let jumlah = parseInt($('#jumlah').val());
+            let target = parseInt($('#target').val());
             let jumlahsdperiodeini = parseInt(jumlahsdbulanlalu+jumlah);
+            if (jumlahsdperiodeini > target){
+                alert("Jumlah Realisasi Melebihi Target");
+            }
             $('#jumlahsdperiodeini').val(jumlahsdperiodeini);
         }
 
@@ -616,6 +635,18 @@
             let prosentase = parseFloat($('#prosentase').val()).toFixed(2);
             let prosentasesdperiodeini = parseFloat(prosentasesdbulanlalu+prosentase);
             $('#prosentasesdperiodeini').val(prosentasesdperiodeini);
+        }
+
+        function bandingkanrealisasi(){
+            let target = parseInt($('#target').val());
+            let jumlahsdperiodeini = parseInt($('#jumlahsdperiodeini').val());
+            let prosentasesdperiodeini = $('#prosentasesdperiodeini').val();
+            if(jumlahsdperiodeini > target || prosentasesdperiodeini > 100.00){
+                alert("Total Realisasi Tidak Boleh Melebihi Target dan Prosentase Tidak Boleh Melebihi 100%");
+                return false;
+            }else{
+                return true;
+            }
         }
     </script>
 
