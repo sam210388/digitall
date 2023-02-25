@@ -38,6 +38,7 @@ use App\Http\Controllers\Caput\Biro\RealisasiIndikatorROConctroller;
 use App\Http\Controllers\Caput\Biro\RealisasiROConctroller;
 use App\Http\Controllers\Caput\Biro\RealisasiKROConctroller;
 use App\Http\Controllers\Caput\Biro\MonitoringRincianIndikatorROConctroller;
+use App\Http\Controllers\Realisasi\RealisasiSemarController;
 
 
 /*
@@ -223,7 +224,10 @@ Route::get('getdatarealisasimonitoring/{idbulan}',[MonitoringRincianIndikatorROC
 Route::get('cekjadwallapormonitoring/{idrincianindikatorro}/{idbulan}',[MonitoringRincianIndikatorROConctroller::class,'cekjadwallapor'])->name('cekjadwallapormonitoring')->middleware('cekoperatorbiro');
 Route::post('batalvalidasi',[MonitoringRincianIndikatorROConctroller::class,'batalvalidasirincianindikator'])->name('batalvalidasi')->middleware('cekoperatorbiro');
 
-
+//ADMIN REALISASI
+//REALISASI SEMAR
+Route::get('realisasisemar',[RealisasiSemarController::class,'realisasisemar'])->name('realisasisemar')->middleware('auth');
+Route::get('importrealisasisemar',[RealisasiSemarController::class,'importrealisasisemar'])->name('importrealisasisemar');
 
 
 

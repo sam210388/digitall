@@ -80,9 +80,9 @@ class PegawaiController extends Controller
         curl_close($curl);
 
         $hasil = json_decode($response);
-        //hapus dlu tabel nya
-        DB::table('pegawai')->truncate();
+        //$cekisi = json_encode($hasil);
 
+        //DB::table('pegawai')->truncate();
         foreach ($hasil as $item){
            $id = $item->id;
            $nama = $item->nama;
@@ -110,7 +110,7 @@ class PegawaiController extends Controller
                 DB::table('pegawai')->where('email','=',$email)->update($data);
             }
         }
-        return redirect()->to('pegawai')->with('status','Import Datauser Dari SIAP Berhasil');
+        return redirect()->to('pegawai')->with(['status' => 'Import Data Pegawai Berhasil']);
 
     }
 }
