@@ -149,67 +149,44 @@ class SppHeaderController extends Controller
                         $SALDO_AKHIR = $DATA->SALDO_AKHIR;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        $no_spp = $DATA->NO_SPP;
-                        $no_sp2d = $DATA->NO_SP2D;
-                        $uraian = $DATA->URAIAN;
-                        $kode_coa = $DATA->KODE_COA;
-                        $kodeprogram = substr($kode_coa,23,2);
-                        $kodekeegiatan = substr($kode_coa,26,4);
-                        $kodeoutput = substr($kode_coa,30,3);
-                        $kodesuboutput = substr($kode_coa,74,3);
-                        $kodekomponen = substr($kode_coa,78,3);
-                        $kodesubbkomponen = substr($kode_coa,83,1);
-                        $kodeakun = substr($kode_coa,11,6);
-                        $pengenal = $kodeprogram.'.'.$kodekeegiatan.'.'.$kodeoutput.'.'.$kodesuboutput.'.'.$kodekomponen.'.'.$kodesubbkomponen.'.'.$kodeakun;
-                        $idbagian = AnggaranBagian::where('pengenal','=',$pengenal)->value('idbagian');
-                        $idbiro = Bagian::where('id','=',$idbagian)->value('idbiro');
-                        $iddeputi = Bagian::where('id','=',$idbagian)->value('iddeputi');
-                        $mata_uang = $DATA->MATA_UANG;
-                        $KURS = $DATA->KURS;
-                        $nilai_valas = $DATA->NILAI_VALAS;
-                        $nilai_rupiah = $DATA->NILAI_RUPIAH;
-                        $tgl_sp2d = new \DateTime($DATA->TGL_SP2D);
-                        $tgl_sp2d = $tgl_sp2d->format('Y-m-d');
-
-                        //001030.182.524111.00202CF.5804ABC.A000000001.00000.1.0151.2.000000.000000.001.052.0C.000000
-
                         $data = array(
-                            'tahunanggaran' => $tahunanggaran,
-                            'kdsatker' => $kdsatker,
-                            'kode_kementerian' => $kode_kementerian,
-                            'tgl_sp2d' => $tgl_sp2d,
-                            'no_spp' => $no_spp,
-                            'no_sp2d' => $no_sp2d,
-                            'uraian' => $uraian,
-                            'kode_coa' => $kode_coa,
-                            'kodeprogram' => $kodeprogram,
-                            'kodekegiatan' => $kodekeegiatan,
-                            'kodeoutput' => $kodeoutput,
-                            'kodesuboutput' => $kodesuboutput,
-                            'kodekomponen' => $kodekomponen,
-                            'kodesubkomponen' => $kodesubbkomponen,
-                            'kodeakun' => $kodeakun,
-                            'pengenal' => $pengenal,
-                            'idbagian' => $idbagian,
-                            'idbiro' => $idbiro,
-                            'iddeputi' => $iddeputi,
-                            'mata_uang' => $mata_uang,
-                            'kurs' => $KURS,
-                            'nilaivalas' => $nilai_valas,
-                            'nilairupiah' => $nilai_rupiah
+                            'KODE_KEMENTERIAN' => $KODE_KEMENTERIAN,
+                            'KDSATKER' => $KDSATKER,
+                            'KD_KPPN' => $KD_KPPN,
+                            'THN_ANG' => $THN_ANG,
+                            'ID_SPP' => $ID_SPP,
+                            'ID_SUPPLIER' => $ID_SUPPLIER,
+                            'ID_BAST' => $ID_BAST,
+                            'STS_DATA' => $STS_DATA,
+                            'KD_JNS_SPP' => $KD_JNS_SPP,
+                            'NO_SPP' => $NO_SPP,
+                            'NO_SPP2' => $NO_SPP2,
+                            'TGL_SPP' => $TGL_SPP,
+                            'ID_SPP_YG_DIKOREKSI' => $ID_SPP_YG_DIKOREKSI,
+                            'JNS_SPP_KOREKSI' => $JNS_SPP_KOREKSI,
+                            'TGL_SPP_KOREKSI' => $TGL_SPP_KOREKSI,
+                            'TGL_SPM_KOREKSI' => $TGL_SPM_KOREKSI,
+                            'TGL_SP2D_KOREKSI' => $TGL_SP2D_KOREKSI,
+                            'KOREKSI_FLAG'=> $KOREKSI_FLAG,
+                            'NO_SPM' => $NO_SPM,
+                            'TGL_SPM' => $TGL_SPM,
+                            'TGL_ADK_SPM' => $TGL_ADK_SPM,
+                            'NILAI_SPM' => $NILAI_SPM,
+                            'NO_SP2D' => $NO_SP2D,
+                            'TGL_SP2D' => $TGL_SP2D,
+                            'NILAI_SP2D' => $NILAI_SP2D,
+                            'NO_SP2B' => $NO_SP2B,
+                            'TGL_SP2B' => $TGL_SP2B,
+                            'NILAI_SP2B' => $NILAI_SP2B,
+                            'NO_SP3HL_BJS' => $NO_SP3HL_BJS,
+                            'TGL_SP3HL_BJS' => $TGL_SP3HL_BJS,
+                            'NO_GAJI' => $NO_GAJI,
+                            'BULAN_GAJI' => $BULAN_GAJI,
+                            'NO_REKSUS' => $NO_REKSUS,
+                            'ID_JADWAL_BYR_KONTRAK' => $ID_JADWAL_BYR_KONTRAK,
+                            'ID_KONTRAK' => $ID_KONTRAK,
+                            'NO_KONTRAK'=> $NO_KONTRAK,
+                            
                         );
                     }
                 }

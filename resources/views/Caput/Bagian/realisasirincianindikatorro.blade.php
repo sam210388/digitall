@@ -137,7 +137,7 @@
                                                 <label for="jumlahsdperiodeini" class="col-sm-6 control-label">Jumlah Output Sd Periode Ini</label>
                                                 <div class="col-sm-12">
                                                     <div class="input-group mb-3">
-                                                        <input type="text" class="form-control" id="jumlahsdperiodeini" name="jumlahsdperiodeini" placeholder="Jumlah sd Periode Ini" value="" maxlength="100" required="">
+                                                        <input type="text" class="form-control" id="jumlahsdperiodeini" name="jumlahsdperiodeini" placeholder="Jumlah sd Periode Ini" value="" maxlength="100" required="" readonly>
                                                     </div>
                                                 </div>
                                             </div>
@@ -153,7 +153,7 @@
                                                 <label for="prosentasesdperiodeini" class="col-sm-6 control-label">Prosentase sd Periode Ini</label>
                                                 <div class="col-sm-12">
                                                     <div class="input-group mb-3">
-                                                        <input type="text" class="form-control" id="prosentasesdperiodeini" name="prosentasesdperiodeini" placeholder="Prosentase Sd Periode Ini" value="" maxlength="100" required="">
+                                                        <input type="text" class="form-control" id="prosentasesdperiodeini" name="prosentasesdperiodeini" placeholder="Prosentase Sd Periode Ini" value="" maxlength="100" required="" readonly>
                                                     </div>
                                                 </div>
                                             </div>
