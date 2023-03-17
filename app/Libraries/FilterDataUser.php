@@ -43,4 +43,24 @@ class FilterDataUser
         }
         return $where;
     }
+
+    public function filterdatacaput(){
+        $idbagian = Auth::user()->idbagian;
+        $idbiro = Auth::user()->idbiro;
+        $iddeputi = Auth::user()->iddeputi;
+        $where = array();
+        if ($idbagian == 0){
+            $wheretambahan = array(
+                'idbagian' => $idbagian
+            );
+            $where = array_merge($where, $wheretambahan);
+        }else{
+            $wheretambahan = array(
+                'idbiro' => $idbiro
+            );
+            $where = array_merge($where, $wheretambahan);
+        }
+        return $where;
+
+    }
 }

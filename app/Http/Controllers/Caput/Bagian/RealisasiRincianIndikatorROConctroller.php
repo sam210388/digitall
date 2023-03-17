@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Caput\Bagian;
 
 use App\Http\Controllers\Controller;
+use App\Libraries\FilterDataUser;
 use App\Models\Caput\Bagian\RealisasiRincianIndikatorROModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -77,6 +78,7 @@ class RealisasiRincianIndikatorROConctroller extends Controller
         $tahunanggaran = session('tahunanggaran');
         $bulan = $idbulan;
         $idbagian = Auth::user()->idbagian;
+        $idbiro = Auth::user()->idbiro;
         if ($request->ajax()) {
             $data = DB::table('rincianindikatorro as a')
                 ->select([DB::raw('concat(a.tahunanggaran,".",a.kodesatker,".",a.kodekegiatan,".",
@@ -97,12 +99,17 @@ class RealisasiRincianIndikatorROConctroller extends Controller
                 ->leftJoin('statuspelaksanaan as c', 'b.statuspelaksanaan', '=', 'c.id')
                 ->leftJoin('kategoripermasalahan as d', 'b.kategoripermasalahan', '=', 'd.id')
                 ->leftJoin('indikatorro as e', 'a.idindikatorro', '=', 'e.id')
-                ->where('a.idbagian', '=', $idbagian)
                 ->where('a.tahunanggaran', '=', $tahunanggaran)
-                ->groupBy('a.id')
-                ->get(['indikatorro', 'rincianindikatorro', 'target', 'jumlah', 'jumlahsdperiodeini', 'prosentase',
-                    'prosentasesdperiodeini', 'statuspelaksanaan', 'kategoripermasalahan', 'uraianoutputdihasilkan',
-                    'keterangan', 'file', 'statusrealisasi']);
+                ->groupBy('a.id');
+
+            if ($idbagian == 0){
+                $data->where('a.idbiro','=',$idbiro);
+            }else{
+                $data->where('a.idbagian','=',$idbagian);
+            }
+            $data = $data->get(['indikatorro', 'rincianindikatorro', 'target', 'jumlah', 'jumlahsdperiodeini', 'prosentase',
+                'prosentasesdperiodeini', 'statuspelaksanaan', 'kategoripermasalahan', 'uraianoutputdihasilkan',
+                'keterangan', 'file', 'statusrealisasi']);
 
             return Datatables::of($data)
                 ->addIndexColumn()

@@ -103,6 +103,9 @@ class RincianIndikatorRoController extends Controller
         $volperbulan = $request->get('volperbulan');
         $infoproses = $request->get('infoproses');
         $keterangan = $request->get('keterangan');
+        $iddeputi = $request->get('iddeputi');
+        $idbiro = $request->get('idbiro');
+        $idbagian = $request->get('idbagian');
 
         RincianIndikatorRoModel::create(
             [
@@ -123,22 +126,15 @@ class RincianIndikatorRoController extends Controller
                 'targetpengisian' => $targetpengisian,
                 'volperbulan' => $volperbulan,
                 'infoproses' => $infoproses,
-                'keterangan' => $keterangan
+                'keterangan' => $keterangan,
+                'iddeputi' => $iddeputi,
+                'idbiro' => $idbiro,
+                'idbagian' => $idbagian
             ]);
 
         return response()->json(['status'=>'berhasil']);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
 
     /**
      * Show the form for editing the specified resource.
@@ -190,6 +186,9 @@ class RincianIndikatorRoController extends Controller
         $infoproses = $request->get('infoproses');
         $keterangan = $request->get('keterangan');
         $statusawal = $request->get('statusawal');
+        $iddeputi = $request->get('iddeputi');
+        $idbiro = $request->get('idbiro');
+        $idbagian = $request->get('idbagian');
 
         if ($statusawal == ""){
             $status = "Dalam Proses";
@@ -216,7 +215,10 @@ class RincianIndikatorRoController extends Controller
                 'targetpengisian' => $targetpengisian,
                 'volperbulan' => $volperbulan,
                 'infoproses' => $infoproses,
-                'keterangan' => $keterangan
+                'keterangan' => $keterangan,
+                'iddeputi' => $iddeputi,
+                'idbiro' => $idbiro,
+                'idbagian' => $idbagian
             ]);
         return response()->json(['status'=>'berhasil']);
     }
