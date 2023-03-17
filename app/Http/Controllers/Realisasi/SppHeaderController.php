@@ -186,13 +186,12 @@ class SppHeaderController extends Controller
                             'ID_JADWAL_BYR_KONTRAK' => $ID_JADWAL_BYR_KONTRAK,
                             'ID_KONTRAK' => $ID_KONTRAK,
                             'NO_KONTRAK'=> $NO_KONTRAK,
-                            
+
                         );
                     }
                 }
             }
-            //UBAH Status Importnya
-            DB::table('ref_status')->where('idrefstatus','=',$idrefstatus)->update(['statusimport' => 2]);
+
 
             return redirect()->to('refstatus')->with('status','Import Data Anggaran Berhasil');
         }else if ($response == "Expired"){
