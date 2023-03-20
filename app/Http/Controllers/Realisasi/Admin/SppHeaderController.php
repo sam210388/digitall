@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Realisasi;
+namespace App\Http\Controllers\Realisasi\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Libraries\BearerKey;
-use App\Libraries\FilterDataUser;
 use App\Libraries\TarikDataMonsakti;
+use App\Models\Realisasi\Admin\SppHeaderModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
@@ -26,20 +26,19 @@ class SppHeaderController extends Controller
                 ->make(true);
         }
 
-        return view('Realisasi.sppheader',[
+        return view('Realisasi.admin.sppheader',[
             "judul"=>$judul,
         ]);
     }
 
-    function importsppheader($kdsatker, $kd_sts_history){
+    function importsppheader(){
         $tahunanggaran = session('tahunanggaran');
         $kodemodul = 'PEM';
         $tipedata = 'sppHeader';
-        $variable = [$kdsatker];
 
         //tarikdata
         $response = new TarikDataMonsakti();
-        $response = $response->prosedurlengkap($tahunanggaran, $kodemodul, $tipedata, $variable);
+        $response = $response->prosedurlengkap($tahunanggaran, $kodemodul, $tipedata);
         //echo json_encode($response);
 
         if ($response != "Gagal" or $response != "Expired"){
@@ -86,7 +85,7 @@ class SppHeaderController extends Controller
                         $NO_SP2D = $DATA->NO_SP2D;
                         $TGL_SP2D = new \DateTime($DATA->TGL_SP2D);
                         $TGL_SP2D = $TGL_SP2D->format('Y-m-d');
-                        $NILAI_SP2D = $DATA->NILAISP2D;
+                        $NILAI_SP2D = $DATA->NILAI_SP2D;
                         $NO_SP2B = $DATA->NO_SP2B;
                         $TGL_SP2B = new \DateTime($DATA->TGL_SP2B);
                         $TGL_SP2B = $TGL_SP2B->format('Y-m-d');
@@ -116,7 +115,7 @@ class SppHeaderController extends Controller
                         $JML_PENGELUARAN = $DATA->JML_PENGELUARAN;
                         $JML_POTONGAN = $DATA->JML_POTONGAN;
                         $JML_PEMBAYARAN = $DATA->JML_PEMBAYARAN;
-                        $KD_VALAS = $DATA->NO_VALAS;
+                        $KD_VALAS = $DATA->KD_VALAS;
                         $TIPE_KURS = $DATA->TIPE_KURS;
                         $TGL_KURS = new \DateTime($DATA->TGL_KURS);
                         $TGL_KURS = $TGL_KURS ->format('Y-m-d');
@@ -137,7 +136,7 @@ class SppHeaderController extends Controller
                         $NO_WA = $DATA->NO_WA;
                         $TGL_WA = new \DateTime($DATA->TGL_WA);
                         $TGL_WA = $TGL_WA ->format('Y-m-d');
-                        $PEMBAYARAN_PENDAMPING = $DATA->PEMBAYARAN_PEDAMPING;
+                        $PEMBAYARAN_PENDAMPING = $DATA->PEMBAYARAN_PENDAMPING;
                         $PORSI_SETOR_SAAT_INI = $DATA->PORSI_SETOR_SAAT_INI;
                         $PORSI_TDK_SETOR_SAAT_INI = $DATA->PORSI_TDK_SETOR_SAAT_INI;
                         $STATUS_APD = $DATA->STATUS_APD;
@@ -186,14 +185,12 @@ class SppHeaderController extends Controller
                             'ID_JADWAL_BYR_KONTRAK' => $ID_JADWAL_BYR_KONTRAK,
                             'ID_KONTRAK' => $ID_KONTRAK,
                             'NO_KONTRAK'=> $NO_KONTRAK,
-
                         );
+                        SppHeaderModel::updateOrCreate(['ID_SPP' => $ID_SPP],$data);
                     }
                 }
             }
-
-
-            return redirect()->to('refstatus')->with('status','Import Data Anggaran Berhasil');
+            return redirect()->to('sppheader')->with('status','Import SPP Header dari SAKTI Berhasil');
         }else if ($response == "Expired"){
 
             $tokenbaru = new BearerKey();

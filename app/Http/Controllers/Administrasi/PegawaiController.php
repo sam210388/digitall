@@ -80,37 +80,40 @@ class PegawaiController extends Controller
         curl_close($curl);
 
         $hasil = json_decode($response);
+        $result = $hasil->result;
         //$cekisi = json_encode($hasil);
-
         //DB::table('pegawai')->truncate();
-        foreach ($hasil as $item){
-           $id = $item->id;
-           $nama = $item->nama;
-           $nip = $item->nip;
-           $nama_satker = $item->nama_satker;
-           $id_satker = $item->id_satker;
-           $email = $item->email;
-           $id_subsatker = $item->id_subsatker;
 
-           $data = array(
-               'id' => $id,
-               'nama' => $nama,
-               'nip' => $nip,
-               'nama_satker' => $nama_satker,
-               'id_satker' => $id_satker,
-               'email' => $email,
-               'id_subsatker' => $id_subsatker
-           );
 
-           //cek data dlu
-            $adadata = DB::table('pegawai')->where('email','=',$email)->count();
-            if ($adadata == 0){
-                DB::table('pegawai')->insert($data);
-            }else{
-                DB::table('pegawai')->where('email','=',$email)->update($data);
-            }
+        foreach ($result as $item){
+                $id = $item->id;
+                $nama = $item->nama;
+                $nip = $item->nip;
+                $nama_satker = $item->nama_satker;
+                $id_satker = $item->id_satker;
+                $email = $item->email;
+                $id_subsatker = $item->id_subsatker;
+                $eslelon = $item->eselon;
+
+                $data = array(
+                    'id' => $id,
+                    'nama' => $nama,
+                    'nip' => $nip,
+                    'nama_satker' => $nama_satker,
+                    'id_satker' => $id_satker,
+                    'email' => $email,
+                    'id_subsatker' => $id_subsatker,
+                    'eselon' => $eslelon
+                );
+
+                //cek data dlu
+                $adadata = DB::table('pegawai')->where('email','=',$email)->count();
+                if ($adadata == 0){
+                    DB::table('pegawai')->insert($data);
+                }else{
+                    DB::table('pegawai')->where('email','=',$email)->update($data);
+                }
         }
-        return redirect()->to('pegawai')->with(['status' => 'Import Data Pegawai Berhasil']);
-
+        return redirect()->to('pegawai')->with(['status' => 'Import Pegawai dari SIAP berhasil']);
     }
 }

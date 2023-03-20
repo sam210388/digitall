@@ -104,6 +104,7 @@ class RealisasiRincianIndikatorROConctroller extends Controller
 
             if ($idbagian == 0){
                 $data->where('a.idbiro','=',$idbiro);
+                $data->whereNull('a.idbagian');
             }else{
                 $data->where('a.idbagian','=',$idbagian);
             }

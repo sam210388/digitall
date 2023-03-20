@@ -38,7 +38,8 @@ use App\Http\Controllers\Caput\Biro\RealisasiIndikatorROConctroller;
 use App\Http\Controllers\Caput\Biro\RealisasiROConctroller;
 use App\Http\Controllers\Caput\Biro\RealisasiKROConctroller;
 use App\Http\Controllers\Caput\Biro\MonitoringRincianIndikatorROConctroller;
-use App\Http\Controllers\Realisasi\RealisasiSemarController;
+use App\Http\Controllers\Realisasi\Admin\RealisasiSemarController;
+use App\Http\Controllers\Realisasi\Admin\SppHeaderController;
 
 
 /*
@@ -228,6 +229,10 @@ Route::post('batalvalidasi',[MonitoringRincianIndikatorROConctroller::class,'bat
 //REALISASI SEMAR
 Route::get('realisasisemar',[RealisasiSemarController::class,'realisasisemar'])->name('realisasisemar')->middleware('auth');
 Route::get('importrealisasisemar',[RealisasiSemarController::class,'importrealisasisemar'])->name('importrealisasisemar');
+
+//REALISASI SP2D
+Route::get('sppheader',[SppHeaderController::class,'sppheader'])->name('sppheader')->middleware('auth');
+Route::get('importsppheader',[SppHeaderController::class,'importsppheader'])->name('importsppheader')->middleware('auth');
 
 
 

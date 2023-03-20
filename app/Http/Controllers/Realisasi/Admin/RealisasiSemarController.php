@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Realisasi;
+namespace App\Http\Controllers\Realisasi\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Libraries\CekPengenal;
@@ -53,7 +53,7 @@ class RealisasiSemarController extends Controller
                 ->make(true);
         }
 
-        return view('Realisasi.realisasisemar',[
+        return view('Realisasi.admin.realisasisemar',[
             "judul"=>$judul,
         ]);
     }

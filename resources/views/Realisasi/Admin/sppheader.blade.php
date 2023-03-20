@@ -31,7 +31,7 @@
                     <div class="card-header">
                         <h3 class="card-title">{{$judul}}</h3>
                         <div class="btn-group float-sm-right" role="group">
-                            <a class="btn btn-primary float-sm-right" href="javascript:void(0)" id="importrealisasisemar"> Import</a>
+                            <a class="btn btn-primary float-sm-right" href="javascript:void(0)" id="importsppheader"> Import</a>
                         </div>
                     </div>
                     <div class="card-body">
@@ -39,17 +39,16 @@
                             <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Biro</th>
-                                <th>Bagian</th>
-                                <th>No SPBy</th>
+                                <th>Satker</th>
+                                <th>ID SPP</th>
                                 <th>No SPP</th>
-                                <th>Tanggal SPBy/SPP</th>
+                                <th>Tgl SPP</th>
+                                <th>No SPM</th>
+                                <th>Tgl SPM</th>
                                 <th>No SP2D</th>
-                                <th>Tanggal SP2D</th>
-                                <th>Pengenal</th>
-                                <th>Pekerjaan</th>
+                                <th>Tgl SP2D</th>
+                                <th>Uraian</th>
                                 <th>Nilai</th>
-                                <th>Tahapan</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -57,17 +56,16 @@
                             <tfoot>
                             <tr>
                                 <th>No</th>
-                                <th>Biro</th>
-                                <th>Bagian</th>
-                                <th>No SPBy</th>
+                                <th>Satker</th>
+                                <th>ID SPP</th>
                                 <th>No SPP</th>
-                                <th>Tanggal SPBy/SPP</th>
+                                <th>Tgl SPP</th>
+                                <th>No SPM</th>
+                                <th>Tgl SPM</th>
                                 <th>No SP2D</th>
-                                <th>Tanggal SP2D</th>
-                                <th>Pengenal</th>
-                                <th>Pekerjaan</th>
+                                <th>Tgl SP2D</th>
+                                <th>Uraian</th>
                                 <th>Nilai</th>
-                                <th>Tahapan</th>
                             </tr>
                             </tfoot>
                         </table>
@@ -100,20 +98,19 @@
                 serverSide: true,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('realisasisemar')}}",
+                ajax:"{{route('sppheader')}}",
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                    {data: 'idbiro', name: 'idbiro'},
-                    {data: 'idbagian', name: 'idbagian'},
-                    {data: 'no_spby', name: 'no_spby'},
-                    {data: 'no_spp', name: 'no_spp'},
-                    {data: 'tanggal_spp_spby', name: 'tanggal_spp_spby'},
-                    {data: 'no_sp2d', name: 'no_sp2d'},
-                    {data: 'tanggal_sp2d', name: 'tanggal_sp2d'},
-                    {data: 'pengenal', name: 'pengenal'},
-                    {data: 'uraian_pekerjaan', name: 'uraian_pekerjaan'},
-                    {data: 'nilai_tagihan', name: 'nilai_tagihan'},
-                    {data: 'tahapan', name: 'tahapan'},
+                    {data: 'KDSATKER', name: 'KDSATKER'},
+                    {data: 'ID_SPP', name: 'ID_SPP'},
+                    {data: 'NO_SPP', name: 'NO_SPP'},
+                    {data: 'TGL_SPP', name: 'TGL_SPP'},
+                    {data: 'NO_SPM', name: 'NO_SPM'},
+                    {data: 'TGL_SPM', name: 'TGL_SPM'},
+                    {data: 'NO_SP2D', name: 'NO_SP2D'},
+                    {data: 'TGL_SP2D', name: 'TGL_SP2D'},
+                    {data: 'URAIAN', name: 'URAIAN'},
+                    {data: 'NILAI_SP2D', name: 'NILAI_SP2D'},
                 ],
             });
             table.buttons().container()
@@ -126,11 +123,11 @@
                     .draw();
             });
 
-            $('#importrealisasisemar').click(function (e) {
-                if( confirm("Apakah Anda Yakin Mau Import Realisasi SEMAR?")){
+            $('#importsppheader').click(function (e) {
+                if( confirm("Apakah Anda Yakin Mau Import SPP Header?")){
                     e.preventDefault();
                     $(this).html('Importing..');
-                    window.location="{{URL::to('importrealisasisemar')}}";
+                    window.location="{{URL::to('importsppheader')}}";
                 }
             });
 
