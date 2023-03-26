@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class SppPengeluaranModel extends Model
 {
     use HasFactory;
+
+    protected $table = 'spppengeluaran';
+
+    protected $guarded = [];
+
 }

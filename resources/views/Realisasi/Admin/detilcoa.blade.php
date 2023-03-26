@@ -35,21 +35,14 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <table id="tabelrealisasi" class="table table-bordered table-striped tabelrealisasi">
+                        <table id="tabelpengeluaran" class="table table-bordered table-striped tabelrealisasi">
                             <thead>
                             <tr>
                                 <th>No</th>
                                 <th>Satker</th>
                                 <th>ID SPP</th>
-                                <th>No SPP</th>
-                                <th>Tgl SPP</th>
-                                <th>No SPM</th>
-                                <th>Tgl SPM</th>
-                                <th>No SP2D</th>
-                                <th>Tgl SP2D</th>
-                                <th>Uraian</th>
+                                <th>Pengenal</th>
                                 <th>Nilai</th>
-                                <th>Action</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -59,15 +52,32 @@
                                 <th>No</th>
                                 <th>Satker</th>
                                 <th>ID SPP</th>
-                                <th>No SPP</th>
-                                <th>Tgl SPP</th>
-                                <th>No SPM</th>
-                                <th>Tgl SPM</th>
-                                <th>No SP2D</th>
-                                <th>Tgl SP2D</th>
-                                <th>Uraian</th>
+                                <th>Pengenal</th>
                                 <th>Nilai</th>
-                                <th>Action</th>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <div class="card-body">
+                        <table id="tabelpotongan" class="table table-bordered table-striped tabelrealisasi">
+                            <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Satker</th>
+                                <th>ID SPP</th>
+                                <th>Pengenal</th>
+                                <th>Nilai</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <th>No</th>
+                                <th>Satker</th>
+                                <th>ID SPP</th>
+                                <th>Pengenal</th>
+                                <th>Nilai</th>
                             </tr>
                             </tfoot>
                         </table>

@@ -6,11 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Libraries\BearerKey;
 use App\Libraries\TarikDataMonsakti;
 use App\Models\Realisasi\Admin\SppHeaderModel;
-use App\Models\Realisasi\Admin\SppPengeluaranModel;
-use App\Models\Realisasi\Admin\SppPotonganModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Monolog\Handler\IFTTTHandler;
 use Yajra\DataTables\DataTables;
 
 class SppHeaderController extends Controller
@@ -26,6 +23,16 @@ class SppHeaderController extends Controller
                 ->get();
             return Datatables::of($data)
                 ->addIndexColumn()
+                ->addColumn('action', function($row){
+                    if ($row->STATUS_PENGELUARAN == 1){
+                        $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->ID_SPP.'" data-original-title="importcoa" class="edit btn btn-primary btn-sm importcoa">Import COA</a>';
+                    }else{
+                        $btn = '<div class="btn-group" role="group">
+                            <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->ID_SPP.'" data-original-title="lihatcoa" class="btn btn-success btn-sm lihatcoa">Lihat COA</a>';
+                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->ID_SPP.'" data-original-title="importcoa" class="edit btn btn-primary btn-sm importcoa">Import COA</a>';
+                    }
+                    return $btn;
+                })
                 ->make(true);
         }
 
@@ -247,7 +254,6 @@ class SppHeaderController extends Controller
     }
 
     private function updatestatusspp($ID_SPP){
-        $tahunanggaran = session('tahunanggaran');
         $cekspppengeluaran = DB::table('spppengeluaran')->where('ID_SPP','=',$ID_SPP)->count();
         if ($cekspppengeluaran > 0){
             $data = array(
@@ -257,240 +263,6 @@ class SppHeaderController extends Controller
                 'UPDATE_POTONGAN' => 2
             );
             DB::table('sppheader')->where('ID_SPP','=',$ID_SPP)->update($data);
-        }else{
-            $this->importspppengeluaran($ID_SPP);
-            $this->importspppotongan($ID_SPP);
-        }
-    }
-
-
-    function importspppengeluaran($ID_SPP){
-        $tahunanggaran = session('tahunanggaran');
-        $kodemodul = 'PEM';
-        $tipedata = 'sppPengeluaran';
-        $variabel = [$ID_SPP];
-
-        //tarikdata
-        $response = new TarikDataMonsakti();
-        $response = $response->prosedurlengkap($tahunanggaran, $kodemodul, $tipedata, $variabel);
-        //echo json_encode($response);
-
-        if ($response != "Gagal" or $response != "Expired"){
-            $hasilasli = json_decode($response);
-            //echo json_encode($hasilasli);
-
-            foreach ($hasilasli as $item => $value) {
-                if ($item == "TOKEN") {
-                    foreach ($value as $data) {
-                        $tokenresponse = $data->TOKEN;
-                    }
-                    $token = new BearerKey();
-                    $token->simpantokenbaru($tahunanggaran, $kodemodul, $tokenresponse);
-                }
-            }
-            foreach ($hasilasli as $item => $value) {
-                if ($item != "TOKEN") {
-                    foreach ($value as $DATA) {
-                        $KODE_KEMENTERIAN = $DATA->KODE_KEMENTERIAN;
-                        $KDSATKER = $DATA->KDSATKER;
-                        $ID_SPP = $DATA->ID_SPP;
-                        $KODE_PROGRAM = $DATA->KODE_PROGRAM;
-                        $KODE_KEGIATAN = $DATA->KODE_KEGIATAN;
-                        $KODE_OUTPUT = $DATA->KODE_OUTPUT;
-                        $KODE_AKUN = $DATA->KODE_AKUN;
-                        $KODE_SUBOUTPUT = $DATA->KODE_SUBOUTPUT;
-                        $KODE_KOMPONEN = $DATA->KODE_KOMPONEN;
-                        $KODE_SUBKOMPONEN = $DATA->KODE_SUBKOMPONEN;
-                        $KODE_ITEM = $DATA->KODE_ITEM;
-                        $KD_CTARIK = $DATA->KD_CTARIK;
-                        $KD_REGISTER = $DATA->KD_REGISTER;
-                        $KODE_COA = $DATA->KODE_COA;
-                        $KODE_VALAS = $DATA->KODE_VALAS;
-                        $NILAI_AKUN_PENGELUARAN = $DATA->NILAI_AKUN_PENGELUARAN;
-                        $NILAI_TUKAR = $DATA->NILAI_TUKAR;
-                        $NILAI_TUKAR_SP2D = $DATA->NILAI_TUKAR_SP2D;
-                        $TGL_KURS_SP2D = new \DateTime($DATA->TGL_KURS_SP2D);
-                        $TGL_KURS_SP2D = $TGL_KURS_SP2D ->format('Y-m-d');
-                        $NILAI_VALAS = $DATA->NILAI_VALAS;
-                        $NILAI_PEMBAYARAN_VALAS_SP2D = $DATA->NILAI_PEMBAYARAN_VALAS_SP2D;
-
-                        if ($KDSATKER = '001012'){
-                            $where = array(
-                                'kodeprogram' => $KODE_PROGRAM,
-                                'kodekegiatan' => $KODE_KEGIATAN,
-                                'kodeoutput' => $KODE_OUTPUT,
-                                'kodesuboutput' => $KODE_SUBOUTPUT,
-                                'kodekomponen' => $KODE_KOMPONEN,
-                            );
-                        }else{
-                            $where = array(
-                                'kodeprogram' => $KODE_PROGRAM,
-                                'kodekegiatan' => $KODE_KEGIATAN,
-                                'kodeoutput' => $KODE_OUTPUT,
-                                'kodesuboutput' => $KODE_SUBOUTPUT,
-                                'kodekomponen' => $KODE_KOMPONEN,
-                                'kodesubkomponen' => $KODE_SUBKOMPONEN
-                            );
-                        }
-
-                        $dataanggaranbagian = DB::table('anggaranbagian')->where($where)->get();
-                        foreach ($dataanggaranbagian as $dab){
-                            $ID_BAGIAN = $dab->idbagian;
-                            $ID_BIRO = $dab->idbiro;
-                            $ID_DEPUTI = $dab->iddeputi;
-                        }
-
-                        $data = array(
-                            'KODE_KEMENTERIAN' => $KODE_KEMENTERIAN,
-                            'KDSATKER' => $KDSATKER,
-                            'ID_SPP' => $ID_SPP,
-                            'KODE_PROGRAM' => $KODE_PROGRAM,
-                            'KODE_KEGIATAN' => $KODE_KEGIATAN,
-                            'KODE_OUTPUT' => $KODE_OUTPUT,
-                            'KODE_AKUN' => $KODE_AKUN,
-                            'KODE_SUBOUTPUT' => $KODE_SUBOUTPUT,
-                            'KODE_KOMPONEN' => $KODE_KOMPONEN,
-                            'KODE_SUBKOMPONEN' => $KODE_SUBKOMPONEN,
-                            'KODE_ITEM' => $KODE_ITEM,
-                            'KD_CTARIK' => $KD_CTARIK,
-                            'KD_REGISTER' => $KD_REGISTER,
-                            'KODE_COA' => $KODE_COA,
-                            'KODE_VALAS' => $KODE_VALAS,
-                            'NILAI_AKUN_PENGELUARAN' => $NILAI_AKUN_PENGELUARAN,
-                            'NILAI_TUKAR' => $NILAI_TUKAR,
-                            'NILAI_TUKAR_SP2D' => $NILAI_TUKAR_SP2D,
-                            'TGL_KURS_SP2D' => $TGL_KURS_SP2D,
-                            'NILAI_VALAS' => $NILAI_VALAS,
-                            'NILAI_PEMBAYARAN_VALAS_SP2D' => $NILAI_PEMBAYARAN_VALAS_SP2D,
-                            'ID_BAGIAN' => $ID_BAGIAN,
-                            'ID_BIRO' => $ID_BIRO,
-                            'ID_DEPUTI' => $ID_DEPUTI
-                        );
-                        SppPengeluaranModel::updateOrCreate(['ID_SPP' => $ID_SPP],$data);
-                    }
-                }
-            }
-        }else if ($response == "Expired"){
-            $tokenbaru = new BearerKey();
-            $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
-            return redirect()->to('sppheader')->with(['status' => 'Token Expired']);
-        }else{
-            return redirect()->to('sppheader')->with(['status' => 'Gagal, Data Terlalu Besar']);
-        }
-    }
-
-    function importspppotongan($ID_SPP){
-        $tahunanggaran = session('tahunanggaran');
-        $kodemodul = 'PEM';
-        $tipedata = 'sppPotongan';
-        $variabel = [$ID_SPP];
-
-        //tarikdata
-        $response = new TarikDataMonsakti();
-        $response = $response->prosedurlengkap($tahunanggaran, $kodemodul, $tipedata, $variabel);
-        //echo json_encode($response);
-
-        if ($response != "Gagal" or $response != "Expired"){
-            $hasilasli = json_decode($response);
-            //echo json_encode($hasilasli);
-
-            foreach ($hasilasli as $item => $value) {
-                if ($item == "TOKEN") {
-                    foreach ($value as $data) {
-                        $tokenresponse = $data->TOKEN;
-                    }
-                    $token = new BearerKey();
-                    $token->simpantokenbaru($tahunanggaran, $kodemodul, $tokenresponse);
-                }
-            }
-            foreach ($hasilasli as $item => $value) {
-                if ($item != "TOKEN") {
-                    foreach ($value as $DATA) {
-                        $KODE_KEMENTERIAN = $DATA->KODE_KEMENTERIAN;
-                        $KDSATKER = $DATA->KDSATKER;
-                        $ID_SPP = $DATA->ID_SPP;
-                        $KODE_PROGRAM = $DATA->KODE_PROGRAM;
-                        $KODE_KEGIATAN = $DATA->KODE_KEGIATAN;
-                        $KODE_OUTPUT = $DATA->KODE_OUTPUT;
-                        $KODE_AKUN = $DATA->KODE_AKUN;
-                        $KODE_SUBOUTPUT = $DATA->KODE_SUBOUTPUT;
-                        $KODE_KOMPONEN = $DATA->KODE_KOMPONEN;
-                        $KODE_SUBKOMPONEN = $DATA->KODE_SUBKOMPONEN;
-                        $KODE_ITEM = $DATA->KODE_ITEM;
-                        $KD_CTARIK = $DATA->KD_CTARIK;
-                        $KD_REGISTER = $DATA->KD_REGISTER;
-                        $KODE_COA = $DATA->KODE_COA;
-                        $KODE_VALAS = $DATA->KODE_VALAS;
-                        $NILAI_AKUN_POT = $DATA->NILAI_AKUN_POT;
-                        $NILAI_TUKAR = $DATA->NILAI_TUKAR;
-                        $NILAI_TUKAR_SP2D = $DATA->NILAI_TUKAR_SP2D;
-                        $TGL_KURS_SP2D = new \DateTime($DATA->TGL_KURS_SP2D);
-                        $TGL_KURS_SP2D = $TGL_KURS_SP2D ->format('Y-m-d');
-                        $NILAI_VALAS = $DATA->NILAI_VALAS;
-                        $NILAI_PEMBAYARAN_VALAS_SP2D = $DATA->NILAI_PEMBAYARAN_VALAS_SP2D;
-
-                        if ($KDSATKER = '001012'){
-                            $where = array(
-                                'kodeprogram' => $KODE_PROGRAM,
-                                'kodekegiatan' => $KODE_KEGIATAN,
-                                'kodeoutput' => $KODE_OUTPUT,
-                                'kodesuboutput' => $KODE_SUBOUTPUT,
-                                'kodekomponen' => $KODE_KOMPONEN,
-                            );
-                        }else{
-                            $where = array(
-                                'kodeprogram' => $KODE_PROGRAM,
-                                'kodekegiatan' => $KODE_KEGIATAN,
-                                'kodeoutput' => $KODE_OUTPUT,
-                                'kodesuboutput' => $KODE_SUBOUTPUT,
-                                'kodekomponen' => $KODE_KOMPONEN,
-                                'kodesubkomponen' => $KODE_SUBKOMPONEN
-                            );
-                        }
-
-                        $dataanggaranbagian = DB::table('anggaranbagian')->where($where)->get();
-                        foreach ($dataanggaranbagian as $dab){
-                            $ID_BAGIAN = $dab->idbagian;
-                            $ID_BIRO = $dab->idbiro;
-                            $ID_DEPUTI = $dab->iddeputi;
-                        }
-
-                        $data = array(
-                            'KODE_KEMENTERIAN' => $KODE_KEMENTERIAN,
-                            'KDSATKER' => $KDSATKER,
-                            'ID_SPP' => $ID_SPP,
-                            'KODE_PROGRAM' => $KODE_PROGRAM,
-                            'KODE_KEGIATAN' => $KODE_KEGIATAN,
-                            'KODE_OUTPUT' => $KODE_OUTPUT,
-                            'KODE_AKUN' => $KODE_AKUN,
-                            'KODE_SUBOUTPUT' => $KODE_SUBOUTPUT,
-                            'KODE_KOMPONEN' => $KODE_KOMPONEN,
-                            'KODE_SUBKOMPONEN' => $KODE_SUBKOMPONEN,
-                            'KODE_ITEM' => $KODE_ITEM,
-                            'KD_CTARIK' => $KD_CTARIK,
-                            'KD_REGISTER' => $KD_REGISTER,
-                            'KODE_COA' => $KODE_COA,
-                            'KODE_VALAS' => $KODE_VALAS,
-                            'NILAI_AKUN_POT' => $NILAI_AKUN_POT,
-                            'NILAI_TUKAR' => $NILAI_TUKAR,
-                            'NILAI_TUKAR_SP2D' => $NILAI_TUKAR_SP2D,
-                            'TGL_KURS_SP2D' => $TGL_KURS_SP2D,
-                            'NILAI_VALAS' => $NILAI_VALAS,
-                            'NILAI_PEMBAYARAN_VALAS_SP2D' => $NILAI_PEMBAYARAN_VALAS_SP2D,
-                            'ID_BAGIAN' => $ID_BAGIAN,
-                            'ID_BIRO' => $ID_BIRO,
-                            'ID_DEPUTI' => $ID_DEPUTI
-                        );
-                        SppPotonganModel::updateOrCreate(['ID_SPP' => $ID_SPP],$data);
-                    }
-                }
-            }
-        }else if ($response == "Expired"){
-            $tokenbaru = new BearerKey();
-            $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
-            return redirect()->to('sppheader')->with(['status' => 'Token Expired']);
-        }else{
-            return redirect()->to('sppheader')->with(['status' => 'Gagal, Data Terlalu Besar']);
         }
     }
 }

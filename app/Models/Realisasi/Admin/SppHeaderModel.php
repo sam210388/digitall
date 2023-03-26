@@ -12,4 +12,6 @@ class SppHeaderModel extends Model
     protected $table = 'sppheader';
 
     protected $guarded = [];
+
+    protected $primaryKey = 'ID_SPP';
 }
