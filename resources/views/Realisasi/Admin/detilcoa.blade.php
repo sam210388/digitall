@@ -95,13 +95,13 @@
             --------------------------------------------
             --------------------------------------------*/
             // Setup - add a text input to each footer cell
-            $('#tabelrealisasi tfoot th').each( function (i) {
-                var title = $('#tabelrealisasi thead th').eq( $(this).index() ).text();
+            $('#tabelpengeluaran tfoot th').each( function (i) {
+                var title = $('#tabelpengeluaran thead th').eq( $(this).index() ).text();
                 $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
                     {"width":"5%"},
                 );
             });
-            var table = $('.tabelrealisasi').DataTable({
+            var table = $('.tabelpengeluaran').DataTable({
                 destroy: true,
                 fixedColumn:true,
                 scrollX:"100%",
@@ -110,25 +110,13 @@
                 serverSide: true,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('sppheader')}}",
+                ajax:"{{route('getlistpengeluaran')}}",
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'KDSATKER', name: 'KDSATKER'},
                     {data: 'ID_SPP', name: 'ID_SPP'},
-                    {data: 'NO_SPP', name: 'NO_SPP'},
-                    {data: 'TGL_SPP', name: 'TGL_SPP'},
-                    {data: 'NO_SPM', name: 'NO_SPM'},
-                    {data: 'TGL_SPM', name: 'TGL_SPM'},
-                    {data: 'NO_SP2D', name: 'NO_SP2D'},
-                    {data: 'TGL_SP2D', name: 'TGL_SP2D'},
-                    {data: 'URAIAN', name: 'URAIAN'},
-                    {data: 'NILAI_SP2D', name: 'NILAI_SP2D'},
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: true,
-                        searchable: true
-                    },
+                    {data: 'PENGENAL', name: 'PENGENAL'},
+                    {data: 'NILAI_PENGELUARAN', name: 'NILAI_PENGELUARAN'},
                 ],
             });
             table.buttons().container()
@@ -156,6 +144,42 @@
                     $(this).html('Importing..');
                     window.location="{{URL::to('importcoa')}}"+"/"+ID_SPP;
                 }
+            });
+
+
+            // Setup - add a text input to each footer cell
+            $('#tabelpotongan tfoot th').each( function (i) {
+                var title = $('#tabelpotongan thead th').eq( $(this).index() ).text();
+                $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
+                    {"width":"5%"},
+                );
+            });
+            var table2 = $('.tabelpotongan').DataTable({
+                destroy: true,
+                fixedColumn:true,
+                scrollX:"100%",
+                autoWidth:true,
+                processing: true,
+                serverSide: true,
+                dom: 'Bfrtip',
+                buttons: ['copy','excel','pdf','csv','print'],
+                ajax:"{{route('getlistpotongan')}}",
+                columns: [
+                    {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                    {data: 'KDSATKER', name: 'KDSATKER'},
+                    {data: 'ID_SPP', name: 'ID_SPP'},
+                    {data: 'PENGENAL', name: 'PENGENAL'},
+                    {data: 'NILAI_PENGELUARAN', name: 'NILAI_PENGELUARAN'},
+                ],
+            });
+            table2.buttons().container()
+                .appendTo( $('.col-sm-6:eq(0)', table2.table().container() ) );
+            // Filter event handler
+            $( table2.table().container() ).on( 'keyup', 'tfoot input', function () {
+                table
+                    .column( $(this).data('index') )
+                    .search( this.value )
+                    .draw();
             });
 
         });

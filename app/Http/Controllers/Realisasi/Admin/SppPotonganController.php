@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Realisasi\Admin;
 use App\Http\Controllers\Controller;
 use App\Libraries\BearerKey;
 use App\Libraries\TarikDataMonsakti;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\DataTables;
 
 class SppPotonganController extends Controller
 {
@@ -131,6 +133,16 @@ class SppPotonganController extends Controller
             return redirect()->to('sppheader')->with(['status' => 'Token Expired']);
         }else{
             return redirect()->to('sppheader')->with(['status' => 'Gagal, Data Terlalu Besar']);
+        }
+    }
+
+    public function getlistpotongan(Request $request){
+        $ID_SPP = $request->get('ID_SPP');
+        if ($request->ajax()) {
+            $data = DB::table('spppengeluaran')->where('ID_SPP','=',$ID_SPP)->get();
+            return Datatables::of($data)
+                ->addIndexColumn()
+                ->make(true);
         }
     }
 }

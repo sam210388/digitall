@@ -43,16 +43,6 @@ class SppPengeluaranController extends Controller
         }
     }
 
-    public function getlistpotongan(Request $request){
-        $ID_SPP = $request->get('ID_SPP');
-        $tahunanggaran = session('tahunanggaran');
-        if ($request->ajax()) {
-            $data = DB::table('spppengeluaran')->where('ID_SPP','=',$ID_SPP)->get();
-            return Datatables::of($data)
-                ->addIndexColumn()
-                ->make(true);
-        }
-    }
 
     function importspppengeluaran($ID_SPP){
         $tahunanggaran = session('tahunanggaran');
