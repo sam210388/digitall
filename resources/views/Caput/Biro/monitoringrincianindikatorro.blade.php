@@ -40,7 +40,19 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label for="bagian" class="col-sm-6 control-label">Bagian</label>
+                            <div class="col-sm-12">
+                                <select class="form-control idbagian" name="idbagian" id="idbagian" style="width: 100%;">
+                                    <option value="">Pilih Bagian</option>
+                                    @foreach($databagian as $data)
+                                        <option value="{{ $data->id }}">{{ $data->uraianbagian }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
                     </div>
+
                     <div class="card-body">
                         <table id="tabelrealisasi" class="table table-bordered table-striped tabelrealisasi">
                             <thead>
@@ -97,6 +109,9 @@
             theme: 'bootstrap4',
 
         })
+        $('.idbagian').select2({
+            theme: 'bootstrap4',
+        })
 
         function dapatkanidbulan(){
             let idbulan = document.getElementById('idbulan').value;
@@ -126,6 +141,7 @@
             });
 
             idbulan = dapatkanidbulan();
+            let idbagian = document.getElementById('idbagian').value;
             var table = $('.tabelrealisasi').DataTable({
                 destroy: true,
                 fixedColumn:true,
@@ -135,7 +151,7 @@
                 serverSide: true,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('getdatarealisasimonitoring','')}}"+"/"+idbulan,
+                ajax:"{{route('getdatarealisasimonitoring','','')}}"+"/"+idbulan+''+idbagian,
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'indikatorro', name: 'indikatorro'},
@@ -172,6 +188,7 @@
 
             $('#idbulan').on('change',function (){
                 let idbulan = dapatkanidbulan();
+                let idbagian = document.getElementById('idbagian').value;
                 var table = $('#tabelrealisasi').DataTable({
                     destroy: true,
                     fixedColumn:true,
@@ -181,7 +198,54 @@
                     serverSide: true,
                     dom: 'Bfrtip',
                     buttons: ['copy','excel','pdf','csv','print'],
-                    ajax:"{{route('getdatarealisasimonitoring','')}}"+"/"+idbulan,
+                    ajax:"{{route('getdatarealisasimonitoring','','')}}"+"/"+idbulan+"/"+idbagian,
+                    columns: [
+                        {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                        {data: 'indikatorro', name: 'indikatorro'},
+                        {data: 'rincianindikatorro', name: 'rincianindikatorro'},
+                        {data: 'target', name: 'target'},
+                        {data: 'jumlah', name: 'jumlah'},
+                        {data: 'jumlahsdperiodeini', name: 'jumlahsdperiodeini'},
+                        {data: 'prosentase', name: 'prosentase'},
+                        {data: 'prosentasesdperiodeini', name: 'prosentasesdperiodeini'},
+                        {data: 'statuspelaksanaan', name: 'statuspelaksanaan'},
+                        {data: 'kategoripermasalahan', name: 'kategoripermasalahan'},
+                        {data: 'uraianoutputdihasilkan', name: 'uraianoutputdihasilkan'},
+                        {data: 'keterangan', name: 'keterangan'},
+                        {data: 'file', name: 'file'},
+                        {data: 'statusrealisasi', name: 'statusrealisasi'},
+                        {
+                            data: 'action',
+                            name: 'action',
+                            orderable: false,
+                            searchable: false
+                        },
+                    ],
+                });
+                table.buttons().container()
+                    .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
+                // Filter event handler
+                $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
+                    table
+                        .column( $(this).data('index') )
+                        .search( this.value )
+                        .draw();
+                });
+            })
+
+            $('#idbagian').on('change',function (){
+                let idbulan = dapatkanidbulan();
+                let idbagian = document.getElementById('idbagian').value;
+                var table = $('#tabelrealisasi').DataTable({
+                    destroy: true,
+                    fixedColumn:true,
+                    scrollX:"100%",
+                    autoWidth:true,
+                    processing: true,
+                    serverSide: true,
+                    dom: 'Bfrtip',
+                    buttons: ['copy','excel','pdf','csv','print'],
+                    ajax:"{{route('getdatarealisasimonitoring','','')}}"+"/"+idbulan+"/"+idbagian,
                     columns: [
                         {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                         {data: 'indikatorro', name: 'indikatorro'},

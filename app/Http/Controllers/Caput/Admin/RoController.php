@@ -109,6 +109,7 @@ class RoController extends Controller
         $datakegiatan = DB::table('kegiatan')->where('tahunanggaran','=',$tahunanggaran)->get();
         $dataoutput = DB::table('output')->where('tahunanggaran','=',$tahunanggaran)->get();
         $datakro = DB::table('kro')->where('tahunanggaran','=',$tahunanggaran)->get();
+        $datadeputi = DB::table('deputi')->get();
 
         if ($request->ajax()) {
             $data = RoModel::where('tahunanggaran','=',$tahunanggaran)->get();
@@ -133,7 +134,8 @@ class RoController extends Controller
             "datatahunanggaran" => $datatahunanggaran,
             "datakegiatan" => $datakegiatan,
             "dataoutput" => $dataoutput,
-            "datakro" => $datakro
+            "datakro" => $datakro,
+            "datadeputi" => $datadeputi
         ]);
     }
 
@@ -164,6 +166,8 @@ class RoController extends Controller
         $kodekegiatan = $request->get('kegiatan');
         $kodeoutput = $request->get('output');
         $kodesuboutput = $request->get('suboutput');
+        $iddeputi = $request->get('iddeputi');
+        $idbiro = $request->get('idbiro');
 
         RoModel::create(
             [
@@ -177,7 +181,9 @@ class RoController extends Controller
                 'satuan' => $request->get('satuan'),
                 'indeks' => $tahunanggaran.$kodesatker.$kodekegiatan.$kodeoutput.$kodesuboutput,
                 'jenisindikator' => $request->get('jenisindikator'),
-                'status' => "Dalam Proses"
+                'status' => "Dalam Proses",
+                'iddeputi' => $iddeputi,
+                'idbiro' => $idbiro
             ]);
 
         return response()->json(['status'=>'berhasil']);
@@ -234,6 +240,8 @@ class RoController extends Controller
         $kodeoutput = $request->get('output');
         $kodesuboutput = $request->get('suboutput');
         $statusawal = $request->get('statusawal');
+        $iddeputi = $request->get('iddeputi');
+        $idbiro = $request->get('idbiro');
 
         if ($statusawal == ""){
             $status = "Dalam Proses";
@@ -253,7 +261,9 @@ class RoController extends Controller
                 'satuan' => $request->get('satuan'),
                 'indeks' => $tahunanggaran.$kodesatker.$kodekegiatan.$kodeoutput.$kodesuboutput,
                 'jenisindikator' => $request->get('jenisindikator'),
-                'status' => $status
+                'status' => $status,
+                'iddeputi' => $iddeputi,
+                'idbiro' => $idbiro
             ]);
         return response()->json(['status'=>'berhasil']);
     }

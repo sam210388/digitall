@@ -88,6 +88,7 @@
                                             <input type="hidden" name="kegiatanawal" id="kegiatanawal">
                                             <input type="hidden" name="outputawal" id="outputawal">
                                             <input type="hidden" name="statusawal" id="statusawal">
+                                            <input type="hidden" name="idbiroawal" id="idbiroawal">
                                             <div class="form-group">
                                                 <label for="tahunanggaran" class="col-sm-6 control-label">Tahun Anggaran</label>
                                                 <div class="col-sm-12">
@@ -158,6 +159,24 @@
                                                     </select>
                                                 </div>
                                             </div>
+                                            <div class="form-group">
+                                                <label for="deputi" class="col-sm-6 control-label">Deputi</label>
+                                                <div class="col-sm-12">
+                                                    <select class="form-control iddeputi" name="iddeputi" id="iddeputi" style="width: 100%;">
+                                                        <option value="">Pilih Deputi</option>
+                                                        @foreach($datadeputi as $data)
+                                                            <option value="{{ $data->id }}">{{ $data->uraiandeputi }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="Biro" class="col-sm-6 control-label">Biro</label>
+                                                <div class="col-sm-12">
+                                                    <select class="form-control idbiro" name="idbiro" id="idbiro" style="width: 100%;">
+                                                    </select>
+                                                </div>
+                                            </div>
                                             <div class="col-sm-offset-2 col-sm-10">
                                                 <button type="submit" class="btn btn-primary" id="saveBtn" value="create">Simpan Data
                                                 </button>
@@ -203,6 +222,12 @@
                 width: '100%',
                 theme: 'bootstrap4',
                 dropdownParent: $('#ajaxModel')
+            })
+            $('.iddeputi').select2({
+                theme: 'bootstrap4',
+            })
+            $('.idbiro').select2({
+                theme: 'bootstrap4',
             })
 
             /*------------------------------------------
@@ -300,6 +325,8 @@
                     $('#uraiankro').val(data.uraiankro);
                     $('#jenisindikator').val(data.jenisindikator).trigger('change');
                     $('#status').val(data.status);
+                    $('#iddeputi').val(data.iddeputi).trigger('change');
+                    $('#idbiroawal').val(data.idbiro);
 
                 })
             });
@@ -447,6 +474,58 @@
                             $('select[name="output"]').append('<option value="'+value.kodeoutput+'" selected>'+value.kodeoutput+" | "+value.deskripsi+'</option>').trigger('change')
                         }else{
                             $("#output").append('<option value="' + value.kodeoutput + '">' +value.kodeoutput+" | "+value.deskripsi+ '</option>');
+                        }
+
+                    });
+                }
+
+            });
+        });
+
+        $('#iddeputi').on('change', function () {
+            var iddeputi = this.value;
+            $.ajax({
+                url: "{{url('ambildatabiro')}}",
+                type: "POST",
+                data: {
+                    iddeputi: iddeputi,
+                    _token: '{{csrf_token()}}'
+                },
+                dataType: 'json',
+                success: function (result) {
+                    var idbiro = document.getElementById('idbiroawal').value;
+                    $('#idbiro').html('<option value="">Pilih Biro</option>');
+                    $.each(result.biro, function (key, value) {
+                        if (idbiro == value.id) {
+                            $('select[name="idbiro"]').append('<option value="'+value.id+'" selected>'+value.uraianbiro+'</option>').trigger('change')
+                        }else{
+                            $("#idbiro").append('<option value="' + value.id + '">' + value.uraianbiro + '</option>');
+                        }
+
+                    });
+                }
+
+            });
+        });
+
+        $('#idbiro').on('change', function () {
+            var idbiro = this.value;
+            $.ajax({
+                url: "{{url('ambildatabagian')}}",
+                type: "POST",
+                data: {
+                    idbiro: idbiro,
+                    _token: '{{csrf_token()}}'
+                },
+                dataType: 'json',
+                success: function (result) {
+                    var idbagian = document.getElementById('idbagianawal').value;
+                    $('#idbagian').html('<option value="">Pilih Bagian</option>');
+                    $.each(result.bagian, function (key, value) {
+                        if (idbagian == value.id) {
+                            $('select[name="idbagian"]').append('<option value="'+value.id+'" selected>'+value.uraianbagian+'</option>').trigger('change')
+                        }else{
+                            $("#idbagian").append('<option value="' + value.id + '">' + value.uraianbagian + '</option>');
                         }
 
                     });

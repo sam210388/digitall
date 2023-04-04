@@ -20,23 +20,26 @@ class MonitoringRincianIndikatorROConctroller extends Controller
         $databulan = DB::table('bulan')->get();
         $datastatuspelaksanaan = DB::table('statuspelaksanaan')->get();
         $datakategoripermasalahan = DB::table('kategoripermasalahan')->get();
+        $idbiro = Auth::user()->idbiro;
+        $databagian = DB::table('bagian')->where('idbiro','=',$idbiro)->get();
 
         return view('Caput.Biro.monitoringrincianindikatorro',[
             "judul"=>$judul,
             "databulan" => $databulan,
             "datastatuspelaksanaan" => $datastatuspelaksanaan,
             "datakategoripermasalahan" => $datakategoripermasalahan,
+            "databagian" => $databagian
             //"data" => $data
 
         ]);
 
     }
 
-    public function getdatarealisasi(Request $request, $idbulan)
+    public function getdatarealisasi(Request $request, $idbulan, $idbagian=null)
     {
         $tahunanggaran = session('tahunanggaran');
         $bulan = $idbulan;
-        $idbagian = Auth::user()->idbagian;
+        $idbiro = Auth::user()->idbiro;
         if ($request->ajax()) {
             $data = DB::table('rincianindikatorro as a')
                 ->select([DB::raw('concat(a.tahunanggaran,".",a.kodesatker,".",a.kodekegiatan,".",
@@ -57,12 +60,17 @@ class MonitoringRincianIndikatorROConctroller extends Controller
                 ->leftJoin('statuspelaksanaan as c', 'b.statuspelaksanaan', '=', 'c.id')
                 ->leftJoin('kategoripermasalahan as d', 'b.kategoripermasalahan', '=', 'd.id')
                 ->leftJoin('indikatorro as e', 'a.idindikatorro', '=', 'e.id')
-                ->where('a.idbagian', '=', $idbagian)
-                ->where('a.tahunanggaran', '=', $tahunanggaran)
-                ->groupBy('a.id')
+                ->where('a.idbiro', '=', $idbiro)
+                ->where('a.tahunanggaran', '=', $tahunanggaran);
+
+            if ($idbagian != null){
+                $data->where('a.idbagian','=',$idbagian);
+            }
+            $data = $data->groupBy('a.id')
                 ->get(['indikatorro', 'rincianindikatorro', 'target', 'jumlah', 'jumlahsdperiodeini', 'prosentase',
                     'prosentasesdperiodeini', 'statuspelaksanaan', 'kategoripermasalahan', 'uraianoutputdihasilkan',
                     'keterangan', 'file', 'statusrealisasi']);
+
 
             return Datatables::of($data)
                 ->addIndexColumn()

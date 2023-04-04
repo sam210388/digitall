@@ -221,7 +221,7 @@ Route::post('rekaprealisasikro',[RealisasiKROConctroller::class,'rekaprealisasik
 
 //monitoring operator biro
 Route::get('monitoringrincianindikatorro',[MonitoringRincianIndikatorROConctroller::class,'realisasirincianindikatorro'])->name('monitoringrincianindikatorro')->middleware('cekoperatorbiro');
-Route::get('getdatarealisasimonitoring/{idbulan}',[MonitoringRincianIndikatorROConctroller::class,'getdatarealisasi'])->name('getdatarealisasimonitoring')->middleware('cekoperatorbiro');
+Route::get('getdatarealisasimonitoring/{idbulan}/{idbagian?}',[MonitoringRincianIndikatorROConctroller::class,'getdatarealisasi'])->name('getdatarealisasimonitoring')->middleware('cekoperatorbiro');
 Route::get('cekjadwallapormonitoring/{idrincianindikatorro}/{idbulan}',[MonitoringRincianIndikatorROConctroller::class,'cekjadwallapor'])->name('cekjadwallapormonitoring')->middleware('cekoperatorbiro');
 Route::post('batalvalidasi',[MonitoringRincianIndikatorROConctroller::class,'batalvalidasirincianindikator'])->name('batalvalidasi')->middleware('cekoperatorbiro');
 

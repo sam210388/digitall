@@ -633,7 +633,8 @@
             let prosentasesdbulanlalu = $('#prosentasesdbulanlalu').val();
             prosentasebulanlalu = parseFloat(prosentasesdbulanlalu).toFixed(2);
             let prosentase = parseFloat($('#prosentase').val()).toFixed(2);
-            let prosentasesdperiodeini = parseFloat(prosentasesdbulanlalu+prosentase);
+
+            let prosentasesdperiodeini = parseFloat(prosentasebulanlalu)+parseFloat(prosentase);
             $('#prosentasesdperiodeini').val(prosentasesdperiodeini);
         }
 

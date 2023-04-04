@@ -59,34 +59,7 @@ class AnggaranBagianController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        AnggaranBagianModel::create(
-            [
-                'idmenu' => $request->get('idmenu'),
-                'idkewenangan' => $request->get('idkewenangan')
-            ]);
 
-        return response()->json(['status'=>'berhasil']);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
         $menu = DB::table('anggaranbagian')->where('indeks','=',$id)->get();
@@ -102,13 +75,11 @@ class AnggaranBagianController extends Controller
      */
     public function update(Request $request, $id)
     {
-
-        AnggaranBagianModel::where('id','=',$id)->update(
-            [
-                'idmenu' => $request->get('idmenu'),
-                'idkewenangan' => $request->get('idkewenangan')
+        DB::table('anggaranbagian')->where('indeks','=',$id)->update([
+                'iddeputi' => $request->get('iddeputi'),
+                'idbiro' => $request->get('idbiro'),
+                'idbagian' => $request->get('idbagian')
             ]);
-
         return response()->json(['status'=>'berhasil']);
     }
 

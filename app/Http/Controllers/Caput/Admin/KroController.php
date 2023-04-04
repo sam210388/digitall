@@ -98,6 +98,7 @@ class KroController extends Controller
 
         $datatahunanggaran = DB::table('tahunanggaran')->get();
         $datakegiatan = DB::table('kegiatan')->where('tahunanggaran','=',$tahunanggaran)->get();
+        $datadeputi = DB::table('deputi')->get();
 
 
         if ($request->ajax()) {
@@ -116,7 +117,8 @@ class KroController extends Controller
         return view('Caput.Admin.kro',[
             "judul"=>$judul,
             "datatahunanggaran" => $datatahunanggaran,
-            "datakegiatan" => $datakegiatan
+            "datakegiatan" => $datakegiatan,
+            "datadeputi" => $datadeputi
         ]);
     }
 
@@ -145,6 +147,8 @@ class KroController extends Controller
         $kodesatker = $request->get('kodesatker');
         $kodekegiatan = $request->get('kegiatan');
         $kodeoutput = $request->get('output');
+        $iddeputi = $request->get('iddeputi');
+        $idbiro = $request->get('idbiro');
 
         KroModel::create(
             [
@@ -157,7 +161,9 @@ class KroController extends Controller
                 'satuan' => $request->get('satuan'),
                 'indeks' => $tahunanggaran.$kodesatker.$kodekegiatan.$kodeoutput,
                 'jenisindikator' => $request->get('jenisindikator'),
-                'status' => "Dalam Proses"
+                'status' => "Dalam Proses",
+                'iddeputi' => $iddeputi,
+                'idbiro' => $idbiro
             ]);
 
         return response()->json(['status'=>'berhasil']);
@@ -212,6 +218,8 @@ class KroController extends Controller
         $kodekegiatan = $request->get('kegiatan');
         $kodeoutput = $request->get('output');
         $statusawal = $request->get('statusawal');
+        $iddeputi = $request->get('iddeputi');
+        $idbiro = $request->get('idbiro');
 
         if ($statusawal == ""){
             $status = "Dalam Proses";
@@ -230,7 +238,9 @@ class KroController extends Controller
                 'satuan' => $request->get('satuan'),
                 'indeks' => $tahunanggaran.$kodesatker.$kodekegiatan.$kodeoutput,
                 'jenisindikator' => $request->get('jenisindikator'),
-                'status' => $status
+                'status' => $status,
+                'iddeputi' => $iddeputi,
+                'idbiro' => $idbiro
             ]);
         return response()->json(['status'=>'berhasil']);
     }
