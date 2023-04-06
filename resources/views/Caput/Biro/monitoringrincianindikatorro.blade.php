@@ -45,6 +45,7 @@
                             <div class="col-sm-12">
                                 <select class="form-control idbagian" name="idbagian" id="idbagian" style="width: 100%;">
                                     <option value="">Pilih Bagian</option>
+                                    <option value="BIRO">ANGGARAN BIRO</option>
                                     @foreach($databagian as $data)
                                         <option value="{{ $data->id }}">{{ $data->uraianbagian }}</option>
                                     @endforeach

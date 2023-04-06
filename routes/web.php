@@ -34,6 +34,7 @@ use App\Http\Controllers\ReferensiAnggaran\SubKomponenController;
 use App\Http\Controllers\Caput\Admin\RincianIndikatorRoController;
 use App\Http\Controllers\Caput\Bagian\RealisasiRincianIndikatorROConctroller;
 use App\Http\Controllers\Caput\Admin\JadwalTutupController;
+use App\Http\Controllers\Caput\Biro\RealisasiRincianIndikatorROBiroConctroller;
 use App\Http\Controllers\Caput\Biro\RealisasiIndikatorROConctroller;
 use App\Http\Controllers\Caput\Biro\RealisasiROConctroller;
 use App\Http\Controllers\Caput\Biro\RealisasiKROConctroller;
@@ -188,6 +189,8 @@ Route::resource('indikatorro',IndikatorRoController::class)->middleware('cekadmi
 Route::get('importindikatorro',[IndikatorRoController::class,'importindikatorro'])->name('importindikatorro')->middleware('cekadmincaput');
 //RINCIAN INDIKATOR RO
 Route::resource('rincianindikatorro',RincianIndikatorRoController::class)->middleware('cekadmincaput');
+
+
 //REALISASI RINCIAN INDIKATOR RO
 Route::get('realisasirincianindikatorro',[RealisasiRincianIndikatorROConctroller::class,'realisasirincianindikatorro'])->name('realisasirincianindikatorro')->middleware('cekoperatorbagian');
 Route::get('getdatarealisasi/{idbulan}',[RealisasiRincianIndikatorROConctroller::class,'getdatarealisasi'])->name('getdatarealisasi')->middleware('cekoperatorbagian');
@@ -196,7 +199,20 @@ Route::post('simpanrealisasirincian',[RealisasiRincianIndikatorROConctroller::cl
 Route::post('updaterealisasirincian/{idrealisasi}',[RealisasiRincianIndikatorROConctroller::class,'updaterealisasirincian'])->name('updaterealisasirincian')->middleware('cekoperatorbagian');
 Route::post('editrealisasirincian',[RealisasiRincianIndikatorROConctroller::class,'editrealisasirincian'])->name('editrealisasirincian')->middleware('cekoperatorbagian');
 Route::delete('deleterealisasirincian/{idrealisasi}',[RealisasiRincianIndikatorROConctroller::class,'deleterealisasi'])->name('deleterealisasirincian')->middleware('cekoperatorbagian');
-Route::get('cekjadwallapor/{idrincianindikatorro}/{idbulan}',[RealisasiRincianIndikatorROConctroller::class,'cekjadwallapor'])->name('cekjadwallapor')->middleware('cekoperatorbagian');
+Route::get('cekjadwallapor/{idrincianindikatorro}/{idbulan}',[RealisasiRincianIndikatorROConctroller::class,'cekjadwallapor'])->name('cekjadwallapor');
+
+
+//REALISASI RINCIAN INDIKATOR RO dipegang biro
+Route::get('realisasirincianindikatorrobiro',[RealisasiRincianIndikatorROBiroConctroller::class,'realisasirincianindikatorro'])->name('realisasirincianindikatorrobiro');
+Route::get('getdatarealisasibiro/{idbulan}',[RealisasiRincianIndikatorROBiroConctroller::class,'getdatarealisasi'])->name('getdatarealisasibiro');
+Route::post('getdatarincianindikatorrobiro',[RealisasiRincianIndikatorROBiroConctroller::class,'getdatarincianindikatorro'])->name('getdatarincianindikatorrobiro');
+Route::post('simpanrealisasirincianbiro',[RealisasiRincianIndikatorROBiroConctroller::class,'simpanrealisasirincian'])->name('simpanrealisasirincianbiro');
+Route::post('updaterealisasirincianbiro/{idrealisasi}',[RealisasiRincianIndikatorROBiroConctroller::class,'updaterealisasirincian'])->name('updaterealisasirincianbiro');
+Route::post('editrealisasirincianbiro',[RealisasiRincianIndikatorROBiroConctroller::class,'editrealisasirincian'])->name('editrealisasirincianbiro');
+Route::delete('deleterealisasirincianbiro/{idrealisasi}',[RealisasiRincianIndikatorROBiroConctroller::class,'deleterealisasi'])->name('deleterealisasirincianbiro');
+
+
+
 
 //JADWALTUTUP
 Route::resource('jadwaltutup',JadwalTutupController::class)->middleware('cekadmincaput');

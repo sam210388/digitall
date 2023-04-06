@@ -64,8 +64,14 @@ class MonitoringRincianIndikatorROConctroller extends Controller
                 ->where('a.tahunanggaran', '=', $tahunanggaran);
 
             if ($idbagian != null){
-                $data->where('a.idbagian','=',$idbagian);
+                if ($idbagian = "BIRO"){
+                    $data->whereNull('a.idbagian');
+                }else{
+                    $data->where('a.idbagian','=',$idbagian);
+                }
             }
+
+
             $data = $data->groupBy('a.id')
                 ->get(['indikatorro', 'rincianindikatorro', 'target', 'jumlah', 'jumlahsdperiodeini', 'prosentase',
                     'prosentasesdperiodeini', 'statuspelaksanaan', 'kategoripermasalahan', 'uraianoutputdihasilkan',
