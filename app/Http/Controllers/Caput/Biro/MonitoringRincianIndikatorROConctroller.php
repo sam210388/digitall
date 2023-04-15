@@ -64,7 +64,7 @@ class MonitoringRincianIndikatorROConctroller extends Controller
                 ->where('a.tahunanggaran', '=', $tahunanggaran);
 
             if ($idbagian != null){
-                if ($idbagian = "BIRO"){
+                if ($idbagian == "BIRO"){
                     $data->whereNull('a.idbagian');
                 }else{
                     $data->where('a.idbagian','=',$idbagian);

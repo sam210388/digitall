@@ -41,6 +41,9 @@ use App\Http\Controllers\Caput\Biro\RealisasiKROConctroller;
 use App\Http\Controllers\Caput\Biro\MonitoringRincianIndikatorROConctroller;
 use App\Http\Controllers\Realisasi\Admin\RealisasiSemarController;
 use App\Http\Controllers\Realisasi\Admin\SppHeaderController;
+use App\Http\Controllers\Caput\Admin\RealisasiIndikatorROConctrollerAdmin;
+use App\Http\Controllers\Caput\Admin\MonitoringRincianIndikatorROAdminConctroller;
+use App\Http\Controllers\Caput\Admin\MonitoringNormalisasiDataRincian;
 
 
 /*
@@ -187,9 +190,19 @@ Route::get('importro',[RoController::class,'importro'])->name('importro')->middl
 //INDIKATORRO
 Route::resource('indikatorro',IndikatorRoController::class)->middleware('cekadmincaput');
 Route::get('importindikatorro',[IndikatorRoController::class,'importindikatorro'])->name('importindikatorro')->middleware('cekadmincaput');
+
+//MONITORING REALISASI INDIKATOR RO UNTUK BAPENAS
+Route::get('realisasiindikatorroadmin',[RealisasiIndikatorROConctrollerAdmin::class,'realisasiindikatorro'])->name('realisasiindikatorroadmin')->middleware('cekadmincaput');
+Route::get('getdatarealisasiindikatorroadmin/{idbulan}/{idbiro?}',[RealisasiIndikatorROConctrollerAdmin::class,'getdatarealisasiindikatorro'])->name('getdatarealisasiindikatorroadmin')->middleware('cekadmincaput');
+
+//monitoring rincian indikator ro
+Route::get('monitoringrincianindikatorroadmin',[MonitoringRincianIndikatorROAdminConctroller::class,'realisasirincianindikatorro'])->name('monitoringrincianindikatorroadmin')->middleware('cekadmincaput');
+Route::get('getdatarealisasimonitoringadmin/{idbulan}/{idbiro?}/{idbagian?}',[MonitoringRincianIndikatorROAdminConctroller::class,'getdatarealisasi'])->name('getdatarealisasimonitoringadmin')->middleware('cekadmincaput');
+Route::get('datanormalisasirincian',[MonitoringNormalisasiDataRincian::class,'datanormalisasirincianindikator'])->name('datanormalisasirincian')->middleware('cekadmincaput');
+Route::get('getdatanormalisasi/{idbulan}/{idbiro?}/{idbagian?}',[MonitoringNormalisasiDataRincian::class,'getdatanormalisasi'])->name('getdatanormalisasi')->middleware('cekadmincaput');
+
 //RINCIAN INDIKATOR RO
 Route::resource('rincianindikatorro',RincianIndikatorRoController::class)->middleware('cekadmincaput');
-
 
 //REALISASI RINCIAN INDIKATOR RO
 Route::get('realisasirincianindikatorro',[RealisasiRincianIndikatorROConctroller::class,'realisasirincianindikatorro'])->name('realisasirincianindikatorro')->middleware('cekoperatorbagian');
