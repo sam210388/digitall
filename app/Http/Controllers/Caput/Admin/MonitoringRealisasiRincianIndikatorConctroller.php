@@ -1,16 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\Caput\Bagian;
+namespace App\Http\Controllers\Caput\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Libraries\FilterDataUser;
 use App\Models\Caput\Bagian\RealisasiRincianIndikatorROModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 
-class RealisasiRincianIndikatorROConctroller extends Controller
+class RealisasiRincianIndikatorConctroller extends Controller
 {
     public function __construct()
     {
@@ -77,15 +76,13 @@ class RealisasiRincianIndikatorROConctroller extends Controller
     {
         $tahunanggaran = session('tahunanggaran');
         $bulan = $idbulan;
-        $iduser = Auth::id();
-        $role = DB::table('role_users')->where('iduser','=',$iduser)->pluck('idrole')->toArray();
         $idbagian = Auth::user()->idbagian;
         $idbiro = Auth::user()->idbiro;
         if ($request->ajax()) {
             $data = DB::table('rincianindikatorro as a')
                 ->select([DB::raw('concat(a.tahunanggaran,".",a.kodesatker,".",a.kodekegiatan,".",
                     a.kodeoutput,".",a.kodesuboutput,".",a.kodekomponen,".",a.kodesubkomponen," | ",
-                    a.uraianrincianindikatorro) as rincianindikatorro'), 'a.target as target','a.status as status',
+                    a.uraianrincianindikatorro) as rincianindikatorro'), 'a.target as target',
                     'b.id as idrealisasi', 'b.jumlah as jumlah',
                     'b.jumlahsdperiodeini as jumlahsdperiodeini', 'b.prosentase as prosentase', 'b.prosentasesdperiodeini as prosentasesdperiodeini',
                     'c.uraianstatus as statuspelaksanaan', 'd.uraiankategori as kategoripermasalahan',
@@ -125,9 +122,6 @@ class RealisasiRincianIndikatorROConctroller extends Controller
                         return $btn;
                     } else if ($row->idrealisasi != null and $row->statusrealisasi == 3){
                         $btn = '';
-                        return $btn;
-                    }else if ($row->status == 'Selesai'){
-                        $btn = '<a data-original-title="Edit" class="edit btn btn-success btn-sm targetkinerja">Target Tercapai</a>';
                         return $btn;
                     }else{
                         $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="' . $row->idrincianindikatorro . '" data-original-title="Edit" class="edit btn btn-success btn-sm laporkinerja">Lapor</a>';
@@ -196,17 +190,6 @@ class RealisasiRincianIndikatorROConctroller extends Controller
             'idrincianindikatorro' => $idrincianindikatorro
 
         ]);
-
-        //update status rincian menjadi selesai
-        if ($jumlahsdperiodeini == 100){
-            $updatestatus = array(
-                'status' => "Selesai",
-                'periodeselesai' => date('n',$tanggallapor)
-            );
-
-            DB::table('rincianindikatorro')->where('id','=',$idrincianindikatorro)->update($updatestatus);
-        }
-
         return response()->json(['status'=>'berhasil']);
     }
 
@@ -305,16 +288,6 @@ class RealisasiRincianIndikatorROConctroller extends Controller
             'idindikatorro' => $idindikatorro,
             'idrincianindikatorro' => $idrincianindikatorro
         ]);
-
-        if ($jumlahsdperiodeini == 100){
-            $updatestatus = array(
-                'status' => "Selesai",
-                'periodeselesai' => date('n',$tanggallapor)
-            );
-
-            DB::table('rincianindikatorro')->where('id','=',$idrincianindikatorro)->update($updatestatus);
-        }
-
         return response()->json(['status'=>'berhasil']);
     }
 

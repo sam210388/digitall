@@ -90,9 +90,8 @@ class IndikatorRoController extends Controller
                         'idro' => $idro
                     );
 
-                    IndikatorRoModel::updateOrCreate([
-                        'indeks' => $tahunanggaran.$kodesatker.$kodekegiatan.$kodeoutput.$kodesuboutput.$kodekomponen
-                    ],$data);
+                    $indeks = $tahunanggaran.$kodesatker.$kodekegiatan.$kodeoutput.$kodesuboutput.$kodekomponen;
+                    DB::table('indikatorro')->where('indeks','=',$indeks)->update($data);
                 }
                 $statusimport = $statusimport.$satker." RO Berhasil Diimport ";
             }

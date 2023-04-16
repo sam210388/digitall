@@ -288,7 +288,7 @@
                 serverSide: true,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('getdatarealisasi','')}}"+"/"+idbulan,
+                ajax:"{{route('getdatarealisasibiro','')}}"+"/"+idbulan,
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'indikatorro', name: 'indikatorro'},
@@ -326,7 +326,7 @@
             $('#idbulan').on('change',function (){
                 let idbulan = dapatkanidbulan();
                 /*
-                $.get("{{ route('getdatarealisasi','') }}" +'/' + idbulan, function (data) {
+                $.get("{{ route('getdatarealisasibiro','') }}" +'/' + idbulan, function (data) {
                 })
                 */
                 var table = $('#tabelrealisasi').DataTable({
@@ -338,7 +338,7 @@
                     serverSide: true,
                     dom: 'Bfrtip',
                     buttons: ['copy','excel','pdf','csv','print'],
-                    ajax:"{{route('getdatarealisasi','')}}"+"/"+idbulan,
+                    ajax:"{{route('getdatarealisasibiro','')}}"+"/"+idbulan,
                     columns: [
                         {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                         {data: 'indikatorro', name: 'indikatorro'},
@@ -383,7 +383,7 @@
                     success: function (data) {
                         if (data.status == "Buka"){
                             $.ajax({
-                                url: "{{url('getdatarincianindikatorro')}}",
+                                url: "{{url('getdatarincianindikatorrobiro')}}",
                                 type: "POST",
                                 data: {
                                     idrincianindikatorro: idrincianindikatorro,
@@ -449,7 +449,7 @@
                     success: function (data) {
                         if (data.status == "Buka") {
                             $.ajax({
-                                url: "{{url('editrealisasirincian')}}",
+                                url: "{{url('editrealisasirincianbiro')}}",
                                 type: "POST",
                                 data: {
                                     idrealisasi: idrealisasi,
@@ -516,7 +516,7 @@
                     }
                     $.ajax({
                         data: fd,
-                        url: saveBtn === "tambah" ? "{{route('simpanrealisasirincian')}}":"{{route('updaterealisasirincian','')}}"+'/'+idrealisasi,
+                        url: saveBtn === "tambah" ? "{{route('simpanrealisasirincianbiro')}}":"{{route('updaterealisasirincianbiro','')}}"+'/'+idrealisasi,
                         type: "POST",
                         dataType: 'json',
                         enctype: 'multipart/form-data',
@@ -572,7 +572,7 @@
                 if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
                     $.ajax({
                         type: "DELETE",
-                        url: "{{ route('deleterealisasirincian','') }}"+"/"+idrealisasi,
+                        url: "{{ route('deleterealisasirincianbiro','') }}"+"/"+idrealisasi,
                         success: function (data) {
                             if (data.status == "berhasil"){
                                 Swal.fire({

@@ -1,16 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\Caput\Bagian;
+namespace App\Http\Controllers\Caput\Biro;
 
 use App\Http\Controllers\Controller;
-use App\Libraries\FilterDataUser;
 use App\Models\Caput\Bagian\RealisasiRincianIndikatorROModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 
-class RealisasiRincianIndikatorROConctroller extends Controller
+class RealisasiRincianIndikatorROBiroConctroller extends Controller
 {
     public function __construct()
     {
@@ -23,7 +22,7 @@ class RealisasiRincianIndikatorROConctroller extends Controller
         $datastatuspelaksanaan = DB::table('statuspelaksanaan')->get();
         $datakategoripermasalahan = DB::table('kategoripermasalahan')->get();
 
-        return view('Caput.Bagian.realisasirincianindikatorro',[
+        return view('Caput.Biro.realisasirincianindikatorro',[
             "judul"=>$judul,
             "databulan" => $databulan,
             "datastatuspelaksanaan" => $datastatuspelaksanaan,
@@ -77,9 +76,6 @@ class RealisasiRincianIndikatorROConctroller extends Controller
     {
         $tahunanggaran = session('tahunanggaran');
         $bulan = $idbulan;
-        $iduser = Auth::id();
-        $role = DB::table('role_users')->where('iduser','=',$iduser)->pluck('idrole')->toArray();
-        $idbagian = Auth::user()->idbagian;
         $idbiro = Auth::user()->idbiro;
         if ($request->ajax()) {
             $data = DB::table('rincianindikatorro as a')
@@ -104,12 +100,9 @@ class RealisasiRincianIndikatorROConctroller extends Controller
                 ->where('a.tahunanggaran', '=', $tahunanggaran)
                 ->groupBy('a.id');
 
-            if ($idbagian == 0){
-                $data->where('a.idbiro','=',$idbiro);
-                $data->whereNull('a.idbagian');
-            }else{
-                $data->where('a.idbagian','=',$idbagian);
-            }
+            $data->where('a.idbiro', '=', $idbiro);
+            $data->whereNull('a.idbagian');
+
             $data = $data->get(['indikatorro', 'rincianindikatorro', 'target', 'jumlah', 'jumlahsdperiodeini', 'prosentase',
                 'prosentasesdperiodeini', 'statuspelaksanaan', 'kategoripermasalahan', 'uraianoutputdihasilkan',
                 'keterangan', 'file', 'statusrealisasi']);
@@ -196,7 +189,6 @@ class RealisasiRincianIndikatorROConctroller extends Controller
             'idrincianindikatorro' => $idrincianindikatorro
 
         ]);
-
         //update status rincian menjadi selesai
         if ($jumlahsdperiodeini == 100){
             $updatestatus = array(
@@ -306,6 +298,7 @@ class RealisasiRincianIndikatorROConctroller extends Controller
             'idrincianindikatorro' => $idrincianindikatorro
         ]);
 
+        //update status rincian menjadi selesai
         if ($jumlahsdperiodeini == 100){
             $updatestatus = array(
                 'status' => "Selesai",

@@ -209,6 +209,7 @@
                     $('#saveBtn').val("edit");
                     $('#ajaxModel').modal('show');
                     $('#anggarandipilih').val(data[0]['indeks']);
+                    $('#indeksanggaran').val(data[0]['indeks']);
                     $('#iddeputi').val(data[0]['iddeputi']).trigger('change');
                     $('#idbiroawal').val(data[0]['idbiro']);
                     $('#idbagianawal').val(data[0]['idbagian']);
@@ -224,10 +225,10 @@
             $('#saveBtn').click(function (e) {
                 e.preventDefault();
                 $(this).html('Sending..');
-                let form = document.getElementById('formbagian');
+                let form = document.getElementById('formanggaranbagian');
                 let fd = new FormData(form);
                 let saveBtn = document.getElementById('saveBtn').value;
-                var indeksanggaran = document.getElementById('indeksanggaran').value;
+                var indeksanggaran = document.getElementById('anggarandipilih').value;
                 fd.append('saveBtn',saveBtn)
                 if(saveBtn == "edit"){
                     fd.append('_method','PUT')
@@ -239,7 +240,7 @@
                 $.ajax({
 
                     data: fd,
-                    url: saveBtn === "tambah" ? "{{route('anggaranbagian.store')}}":"{{route('anggaranbagian.update','')}}"+'/'+id,
+                    url: saveBtn === "tambah" ? "{{route('anggaranbagian.store')}}":"{{route('anggaranbagian.update','')}}"+'/'+indeksanggaran,
                     type: "POST",
                     dataType: 'json',
                     contentType: false,

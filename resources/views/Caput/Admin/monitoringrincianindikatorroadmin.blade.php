@@ -26,8 +26,11 @@
                     <div class="card-header">
                         <h3 class="card-title">{{$judul}}</h3>
                         <div class="btn-group float-sm-right" role="group">
+                            <a class="btn btn-primary float-sm-right" href="javascript:void(0)" id="normalisasidata">Normalisasi Data</a>
+                            <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="lihatdatanormalisasi">Lihat Data Normalisasi</a>
                         </div>
                     </div>
+
                     <div class="card-header">
                         <div class="form-group">
                             <label for="bulan" class="col-sm-6 control-label">Bulan</label>
@@ -41,14 +44,20 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="bagian" class="col-sm-6 control-label">Bagian</label>
+                            <label for="biro" class="col-sm-6 control-label">Biro</label>
+                            <div class="col-sm-12">
+                                <select class="form-control idbiro" name="idbiro" id="idbiro" style="width: 100%;">
+                                    <option value="">Pilih Biro</option>
+                                    @foreach($databiro as $data)
+                                        <option value="{{ $data->id }}">{{ $data->uraianbiro }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="Bagian" class="col-sm-6 control-label">Bagian</label>
                             <div class="col-sm-12">
                                 <select class="form-control idbagian" name="idbagian" id="idbagian" style="width: 100%;">
-                                    <option value="">Pilih Bagian</option>
-                                    <option value="BIRO">ANGGARAN BIRO</option>
-                                    @foreach($databagian as $data)
-                                        <option value="{{ $data->id }}">{{ $data->uraianbagian }}</option>
-                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -59,6 +68,8 @@
                             <thead>
                             <tr>
                                 <th>No</th>
+                                <th>Biro</th>
+                                <th>Bagian</th>
                                 <th>Indikator RO</th>
                                 <th>Rincian Indikator RO</th>
                                 <th>Target</th>
@@ -70,9 +81,6 @@
                                 <th>Permasalahan</th>
                                 <th>Uraian Output</th>
                                 <th>Keterangan</th>
-                                <th>Dokumen</th>
-                                <th>Status</th>
-                                <th>Action</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -80,6 +88,8 @@
                             <tfoot>
                             <tr>
                                 <th>No</th>
+                                <th>Biro</th>
+                                <th>Bagian</th>
                                 <th>Indikator RO</th>
                                 <th>Rincian Indikator RO</th>
                                 <th>Target</th>
@@ -91,9 +101,6 @@
                                 <th>Permasalahan</th>
                                 <th>Uraian Output</th>
                                 <th>Keterangan</th>
-                                <th>Dokumen</th>
-                                <th>Status</th>
-                                <th>Action</th>
                             </tr>
                             </tfoot>
                         </table>
@@ -106,6 +113,11 @@
     <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/bs-custom-file-input/bs-custom-file-input.min.js')}}"></script>
     <script type="text/javascript">
         $('.idbulan').select2({
+            width: '100%',
+            theme: 'bootstrap4',
+
+        })
+        $('.idbiro').select2({
             width: '100%',
             theme: 'bootstrap4',
 
@@ -142,19 +154,20 @@
             });
 
             idbulan = dapatkanidbulan();
-            let idbagian = document.getElementById('idbagian').value;
             var table = $('.tabelrealisasi').DataTable({
                 destroy: true,
                 fixedColumn:true,
                 scrollX:"100%",
                 autoWidth:true,
                 processing: true,
-                serverSide: true,
+                serverSide: false,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('getdatarealisasimonitoring','','')}}"+"/"+idbulan+''+idbagian,
+                ajax:"{{route('getdatarealisasimonitoringadmin','','')}}"+"/"+idbulan,
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                    {data: 'biro', name: 'biro'},
+                    {data: 'bagian', name: 'bagian'},
                     {data: 'indikatorro', name: 'indikatorro'},
                     {data: 'rincianindikatorro', name: 'rincianindikatorro'},
                     {data: 'target', name: 'target'},
@@ -166,15 +179,6 @@
                     {data: 'kategoripermasalahan', name: 'kategoripermasalahan'},
                     {data: 'uraianoutputdihasilkan', name: 'uraianoutputdihasilkan'},
                     {data: 'keterangan', name: 'keterangan'},
-                    {data: 'file', name: 'file'},
-                    {data: 'statusrealisasi', name: 'statusrealisasi'},
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
-                    },
-
                 ],
             });
             table.buttons().container()
@@ -190,18 +194,21 @@
             $('#idbulan').on('change',function (){
                 let idbulan = dapatkanidbulan();
                 let idbagian = document.getElementById('idbagian').value;
-                var table = $('#tabelrealisasi').DataTable({
+                let idbiro = document.getElementById('idbiro').value;
+                var table = $('.tabelrealisasi').DataTable({
                     destroy: true,
                     fixedColumn:true,
                     scrollX:"100%",
                     autoWidth:true,
                     processing: true,
-                    serverSide: true,
+                    serverSide: false,
                     dom: 'Bfrtip',
                     buttons: ['copy','excel','pdf','csv','print'],
-                    ajax:"{{route('getdatarealisasimonitoring','','')}}"+"/"+idbulan+"/"+idbagian,
+                    ajax:"{{route('getdatarealisasimonitoringadmin','','')}}"+"/"+idbulan+"/"+idbiro+"/"+idbagian,
                     columns: [
                         {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                        {data: 'biro', name: 'biro'},
+                        {data: 'bagian', name: 'bagian'},
                         {data: 'indikatorro', name: 'indikatorro'},
                         {data: 'rincianindikatorro', name: 'rincianindikatorro'},
                         {data: 'target', name: 'target'},
@@ -213,14 +220,6 @@
                         {data: 'kategoripermasalahan', name: 'kategoripermasalahan'},
                         {data: 'uraianoutputdihasilkan', name: 'uraianoutputdihasilkan'},
                         {data: 'keterangan', name: 'keterangan'},
-                        {data: 'file', name: 'file'},
-                        {data: 'statusrealisasi', name: 'statusrealisasi'},
-                        {
-                            data: 'action',
-                            name: 'action',
-                            orderable: false,
-                            searchable: false
-                        },
                     ],
                 });
                 table.buttons().container()
@@ -237,18 +236,21 @@
             $('#idbagian').on('change',function (){
                 let idbulan = dapatkanidbulan();
                 let idbagian = document.getElementById('idbagian').value;
-                var table = $('#tabelrealisasi').DataTable({
+                let idbiro = document.getElementById('idbiro').value;
+                var table = $('.tabelrealisasi').DataTable({
                     destroy: true,
                     fixedColumn:true,
                     scrollX:"100%",
                     autoWidth:true,
                     processing: true,
-                    serverSide: true,
+                    serverSide: false,
                     dom: 'Bfrtip',
                     buttons: ['copy','excel','pdf','csv','print'],
-                    ajax:"{{route('getdatarealisasimonitoring','','')}}"+"/"+idbulan+"/"+idbagian,
+                    ajax:"{{route('getdatarealisasimonitoringadmin','','')}}"+"/"+idbulan+"/"+idbiro+"/"+idbagian,
                     columns: [
                         {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                        {data: 'biro', name: 'biro'},
+                        {data: 'bagian', name: 'bagian'},
                         {data: 'indikatorro', name: 'indikatorro'},
                         {data: 'rincianindikatorro', name: 'rincianindikatorro'},
                         {data: 'target', name: 'target'},
@@ -260,14 +262,6 @@
                         {data: 'kategoripermasalahan', name: 'kategoripermasalahan'},
                         {data: 'uraianoutputdihasilkan', name: 'uraianoutputdihasilkan'},
                         {data: 'keterangan', name: 'keterangan'},
-                        {data: 'file', name: 'file'},
-                        {data: 'statusrealisasi', name: 'statusrealisasi'},
-                        {
-                            data: 'action',
-                            name: 'action',
-                            orderable: false,
-                            searchable: false
-                        },
                     ],
                 });
                 table.buttons().container()
@@ -280,49 +274,39 @@
                         .draw();
                 });
             })
+        });
 
-            $('body').on('click', '.batalvalidasi', function () {
-                let id = $(this).data('id');
-                let dataid = id.split("/");
-                let idrealisasi = dataid[0];
-                let idrincianindikatorro = dataid[1];
-                let nilaibulan = parseInt(dapatkanidbulan());
-                $.ajax({
-                    type: "GET",
-                    url: "{{ route('cekjadwallapormonitoring',['',''])}}"+"/"+idrincianindikatorro+"/"+nilaibulan,
-                    success: function (data) {
-                        if (data.status == "Buka") {
-                            $.ajax({
-                                url: "{{url('batalvalidasi')}}",
-                                type: "POST",
-                                data: {
-                                    idrealisasi: idrealisasi,
-                                    nilaibulan: nilaibulan,
-                                    idrincianindikatorro: idrincianindikatorro,
-                                    _token: '{{csrf_token()}}'
-                                },
-                                dataType: 'json',
-                                success: function (data) {
-                                    Swal.fire({
-                                        title: 'Success!',
-                                        text: "Data Sudah Batal Validasi",
-                                        icon: 'success'
-                                    })
-                                    $('#tabelrealisasi').DataTable().ajax.reload();
-                                }
-                            });
-                        } else {
-                            Swal.fire({
-                                title: 'Error!',
-                                text: "Status: "+data.status+" Karena: "+data.kondisi,
-                                icon: 'error'
-                            })
-                            $('#tabelrealisasi').DataTable().ajax.reload();
-                        }
-                    },
+        $('#idbiro').on('change', function () {
+            var idbiro = this.value;
+            $.ajax({
+                url: "{{url('ambildatabagian')}}",
+                type: "POST",
+                data: {
+                    idbiro: idbiro,
+                    _token: '{{csrf_token()}}'
+                },
+                dataType: 'json',
+                success: function (result) {
+                    $('#idbagian').html('<option value="">Pilih Bagian</option>');
+                    $.each(result.bagian, function (key, value) {
+                            $("#idbagian").append('<option value="' + value.id + '">' + value.uraianbagian + '</option>');
+                    });
+                }
 
-                });
             });
+        });
+
+        $('#normalisasidata').click(function (e) {
+            let idbulan = dapatkanidbulan();
+            if( confirm("Apakah Anda Yakin Mau Melakukan Normalisasi Data Untuk Bulan "+idbulan+"?")){
+                e.preventDefault();
+                $(this).html('Normalisasi Data..');
+                window.location="{{URL::to('normalisasidatarincian')}}";
+            }
+        });
+
+        $('#lihatdatanormalisasi').click(function (e) {
+                window.location="{{URL::to('datanormalisasirincian')}}";
         });
     </script>
 
