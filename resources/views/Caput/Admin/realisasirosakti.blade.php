@@ -26,11 +26,9 @@
                     <div class="card-header">
                         <h3 class="card-title">{{$judul}}</h3>
                         <div class="btn-group float-sm-right" role="group">
-                            <a class="btn btn-primary float-sm-right" href="javascript:void(0)" id="hapusnormalisasidata">Hapus Normalisasi Data</a>
-                            <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="kembali">Kembali</a>
+                            <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="importrealisasirosakti"> Import</a>
                         </div>
                     </div>
-
                     <div class="card-header">
                         <div class="form-group">
                             <label for="bulan" class="col-sm-6 control-label">Bulan</label>
@@ -44,7 +42,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="biro" class="col-sm-6 control-label">Biro</label>
+                            <label for="bulan" class="col-sm-6 control-label">Biro</label>
                             <div class="col-sm-12">
                                 <select class="form-control idbiro" name="idbiro" id="idbiro" style="width: 100%;">
                                     <option value="">Pilih Biro</option>
@@ -54,33 +52,27 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label for="Bagian" class="col-sm-6 control-label">Bagian</label>
-                            <div class="col-sm-12">
-                                <select class="form-control idbagian" name="idbagian" id="idbagian" style="width: 100%;">
-                                </select>
-                            </div>
-                        </div>
                     </div>
-
                     <div class="card-body">
                         <table id="tabelrealisasi" class="table table-bordered table-striped tabelrealisasi">
                             <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Biro</th>
-                                <th>Bagian</th>
-                                <th>Indikator RO</th>
-                                <th>Rincian Indikator RO</th>
-                                <th>Target</th>
-                                <th>Realisasi Bulan Ini</th>
-                                <th>Realisasi sd Bulan Ini</th>
-                                <th>Prosentase Bulan Ini</th>
-                                <th>Prosentase sd Bulan Ini</th>
-                                <th>Status Pelaksanaan</th>
-                                <th>Permasalahan</th>
-                                <th>Uraian Output</th>
-                                <th>Keterangan</th>
+                                <th>Kode Suboutput</th>
+                                <th>Periode</th>
+                                <th>Rencana</th>
+                                <th>Penambahan Realisasi</th>
+                                <th>Total Realisasi</th>
+                                <th>Penambahan Proses</th>
+                                <th>Total Proses</th>
+                                <th>Anggaran</th>
+                                <th>Realisasi</th>
+                                <th>Gap</th>
+                                <th>Penambahan Realisasi DigitALl</th>
+                                <th>Total Realisasi DigitALl</th>
+                                <th>Penambahan Proses DigitALl</th>
+                                <th>Total Proses DigitALl</th>
+                                <th>Status Rekon</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -88,19 +80,21 @@
                             <tfoot>
                             <tr>
                                 <th>No</th>
-                                <th>Biro</th>
-                                <th>Bagian</th>
-                                <th>Indikator RO</th>
-                                <th>Rincian Indikator RO</th>
-                                <th>Target</th>
-                                <th>Realisasi Bulan Ini</th>
-                                <th>Realisasi sd Bulan Ini</th>
-                                <th>Prosentase Bulan Ini</th>
-                                <th>Prosentase sd Bulan Ini</th>
-                                <th>Status Pelaksanaan</th>
-                                <th>Permasalahan</th>
-                                <th>Uraian Output</th>
-                                <th>Keterangan</th>
+                                <th>Kode Suboutput</th>
+                                <th>Periode</th>
+                                <th>Rencana</th>
+                                <th>Penambahan Realisasi</th>
+                                <th>Total Realisasi</th>
+                                <th>Penambahan Proses</th>
+                                <th>Total Proses</th>
+                                <th>Anggaran</th>
+                                <th>Realisasi</th>
+                                <th>Gap</th>
+                                <th>Penambahan Realisasi DigitALl</th>
+                                <th>Total Realisasi DigitALl</th>
+                                <th>Penambahan Proses DigitALl</th>
+                                <th>Total Proses DigitALl</th>
+                                <th>Status Rekon</th>
                             </tr>
                             </tfoot>
                         </table>
@@ -110,22 +104,7 @@
         </div>
     </div>
     <!-- /.content -->
-    <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/bs-custom-file-input/bs-custom-file-input.min.js')}}"></script>
     <script type="text/javascript">
-        $('.idbulan').select2({
-            width: '100%',
-            theme: 'bootstrap4',
-
-        })
-        $('.idbiro').select2({
-            width: '100%',
-            theme: 'bootstrap4',
-
-        })
-        $('.idbagian').select2({
-            theme: 'bootstrap4',
-        })
-
         function dapatkanidbulan(){
             let idbulan = document.getElementById('idbulan').value;
             if(idbulan === ""){
@@ -140,6 +119,17 @@
         }
 
         $(function () {
+            $('.idbulan').select2({
+                width: '100%',
+                theme: 'bootstrap4',
+
+            })
+            $('.idbiro').select2({
+                width: '100%',
+                theme: 'bootstrap4',
+
+            })
+
             /*------------------------------------------
             --------------------------------------------
             Render DataTable
@@ -163,22 +153,29 @@
                 serverSide: false,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','csv','print'],
-                ajax:"{{route('getdatanormalisasi','','')}}"+"/"+idbulan,
+                ajax:"{{route('getdatarealisasirosakti','')}}"+"/"+idbulan,
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                    {data: 'biro', name: 'biro'},
-                    {data: 'bagian', name: 'bagian'},
-                    {data: 'indikatorro', name: 'indikatorro'},
-                    {data: 'rincianindikatorro', name: 'rincianindikatorro'},
-                    {data: 'target', name: 'target'},
-                    {data: 'jumlah', name: 'jumlah'},
-                    {data: 'jumlahsdperiodeini', name: 'jumlahsdperiodeini'},
-                    {data: 'prosentase', name: 'prosentase'},
-                    {data: 'prosentasesdperiodeini', name: 'prosentasesdperiodeini'},
-                    {data: 'statuspelaksanaan', name: 'statuspelaksanaan'},
-                    {data: 'kategoripermasalahan', name: 'kategoripermasalahan'},
-                    {data: 'uraianoutputdihasilkan', name: 'uraianoutputdihasilkan'},
-                    {data: 'keterangan', name: 'keterangan'},
+                    {data: 'KodeSubOutput', name: 'KodeSubOutput'},
+                    {data: 'Periode', name: 'Periode'},
+                    {data: 'Rencana', name: 'Rencana'},
+                    {data: 'RealisasiSaktiPeriodeIni', name: 'RealisasiSaktiPeriodeIni'},
+                    {data: 'TotalRealisasiSakti', name: 'TotalRealisasiSakti'},
+                    {data: 'ProsentaseSaktiPeriodeIni', name: 'ProsentaseSaktiPeriodeIni'},
+                    {data: 'TotalProsentaseSakti', name: 'TotalProsentaseSakti'},
+                    {data: 'Anggaran', name: 'Anggaran'},
+                    {data: 'Realisasi', name: 'Realisasi'},
+                    {data: 'Gap', name: 'Gap'},
+                    {data: 'JumlahDigitAll', name: 'JumlahDigitAll'},
+                    {data: 'TotalRealisasiDigitAll', name: 'TotalRealisasiDigitAll'},
+                    {data: 'ProsentasePeriodeIniDigitAll', name: 'ProsentasePeriodeIniDigitAll'},
+                    {data: 'TotalProsentaseDigitAll', name: 'TotalProsentaseDigitAll'},
+                    {
+                        data: 'StatusRekon',
+                        name: 'StatusRekon',
+                        orderable: true,
+                        searchable: true
+                    },
                 ],
             });
             table.buttons().container()
@@ -193,9 +190,8 @@
 
             $('#idbulan').on('change',function (){
                 let idbulan = dapatkanidbulan();
-                let idbagian = document.getElementById('idbagian').value;
                 let idbiro = document.getElementById('idbiro').value;
-                var table = $('.tabelrealisasi').DataTable({
+                var table = $('#tabelrealisasi').DataTable({
                     destroy: true,
                     fixedColumn:true,
                     scrollX:"100%",
@@ -203,23 +199,30 @@
                     processing: true,
                     serverSide: false,
                     dom: 'Bfrtip',
-                    buttons: ['copy','excel','csv','print'],
-                    ajax:"{{route('getdatanormalisasi','','')}}"+"/"+idbulan+"/"+idbiro+"/"+idbagian,
+                    buttons: ['copy','excel','pdf','csv','print'],
+                    ajax:"{{route('getdatarealisasirosakti','')}}"+"/"+idbulan+"/"+idbiro,
                     columns: [
                         {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                        {data: 'biro', name: 'biro'},
-                        {data: 'bagian', name: 'bagian'},
-                        {data: 'indikatorro', name: 'indikatorro'},
-                        {data: 'rincianindikatorro', name: 'rincianindikatorro'},
-                        {data: 'target', name: 'target'},
-                        {data: 'jumlah', name: 'jumlah'},
-                        {data: 'jumlahsdperiodeini', name: 'jumlahsdperiodeini'},
-                        {data: 'prosentase', name: 'prosentase'},
-                        {data: 'prosentasesdperiodeini', name: 'prosentasesdperiodeini'},
-                        {data: 'statuspelaksanaan', name: 'statuspelaksanaan'},
-                        {data: 'kategoripermasalahan', name: 'kategoripermasalahan'},
-                        {data: 'uraianoutputdihasilkan', name: 'uraianoutputdihasilkan'},
-                        {data: 'keterangan', name: 'keterangan'},
+                        {data: 'KodeSubOutput', name: 'KodeSubOutput'},
+                        {data: 'Periode', name: 'Periode'},
+                        {data: 'Rencana', name: 'Rencana'},
+                        {data: 'RealisasiSaktiPeriodeIni', name: 'RealisasiSaktiPeriodeIni'},
+                        {data: 'TotalRealisasiSakti', name: 'TotalRealisasiSakti'},
+                        {data: 'ProsentaseSaktiPeriodeIni', name: 'ProsentaseSaktiPeriodeIni'},
+                        {data: 'TotalProsentaseSakti', name: 'TotalProsentaseSakti'},
+                        {data: 'Anggaran', name: 'Anggaran'},
+                        {data: 'Realisasi', name: 'Realisasi'},
+                        {data: 'Gap', name: 'Gap'},
+                        {data: 'JumlahDigitAll', name: 'JumlahDigitAll'},
+                        {data: 'TotalRealisasiDigitAll', name: 'TotalRealisasiDigitAll'},
+                        {data: 'ProsentasePeriodeIniDigitAll', name: 'ProsentasePeriodeIniDigitAll'},
+                        {data: 'TotalProsentaseDigitAll', name: 'TotalProsentaseDigitAll'},
+                        {
+                            data: 'StatusRekon',
+                            name: 'StatusRekon',
+                            orderable: true,
+                            searchable: true
+                        },
                     ],
                 });
                 table.buttons().container()
@@ -233,11 +236,10 @@
                 });
             })
 
-            $('#idbagian').on('change',function (){
+            $('#idbiro').on('change',function (){
                 let idbulan = dapatkanidbulan();
-                let idbagian = document.getElementById('idbagian').value;
                 let idbiro = document.getElementById('idbiro').value;
-                var table = $('.tabelrealisasi').DataTable({
+                var table = $('#tabelrealisasi').DataTable({
                     destroy: true,
                     fixedColumn:true,
                     scrollX:"100%",
@@ -246,22 +248,29 @@
                     serverSide: false,
                     dom: 'Bfrtip',
                     buttons: ['copy','excel','csv','print'],
-                    ajax:"{{route('getdatanormalisasi','','')}}"+"/"+idbulan+"/"+idbiro+"/"+idbagian,
+                    ajax:"{{route('getdatarealisasirosakti','')}}"+"/"+idbulan+"/"+idbiro,
                     columns: [
                         {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                        {data: 'biro', name: 'biro'},
-                        {data: 'bagian', name: 'bagian'},
-                        {data: 'indikatorro', name: 'indikatorro'},
-                        {data: 'rincianindikatorro', name: 'rincianindikatorro'},
-                        {data: 'target', name: 'target'},
-                        {data: 'jumlah', name: 'jumlah'},
-                        {data: 'jumlahsdperiodeini', name: 'jumlahsdperiodeini'},
-                        {data: 'prosentase', name: 'prosentase'},
-                        {data: 'prosentasesdperiodeini', name: 'prosentasesdperiodeini'},
-                        {data: 'statuspelaksanaan', name: 'statuspelaksanaan'},
-                        {data: 'kategoripermasalahan', name: 'kategoripermasalahan'},
-                        {data: 'uraianoutputdihasilkan', name: 'uraianoutputdihasilkan'},
-                        {data: 'keterangan', name: 'keterangan'},
+                        {data: 'KodeSubOutput', name: 'KodeSubOutput'},
+                        {data: 'Periode', name: 'Periode'},
+                        {data: 'Rencana', name: 'Rencana'},
+                        {data: 'RealisasiSaktiPeriodeIni', name: 'RealisasiSaktiPeriodeIni'},
+                        {data: 'TotalRealisasiSakti', name: 'TotalRealisasiSakti'},
+                        {data: 'ProsentaseSaktiPeriodeIni', name: 'ProsentaseSaktiPeriodeIni'},
+                        {data: 'TotalProsentaseSakti', name: 'TotalProsentaseSakti'},
+                        {data: 'Anggaran', name: 'Anggaran'},
+                        {data: 'Realisasi', name: 'Realisasi'},
+                        {data: 'Gap', name: 'Gap'},
+                        {data: 'JumlahDigitAll', name: 'JumlahDigitAll'},
+                        {data: 'TotalRealisasiDigitAll', name: 'TotalRealisasiDigitAll'},
+                        {data: 'ProsentasePeriodeIniDigitAll', name: 'ProsentasePeriodeIniDigitAll'},
+                        {data: 'TotalProsentaseDigitAll', name: 'TotalProsentaseDigitAll'},
+                        {
+                            data: 'StatusRekon',
+                            name: 'StatusRekon',
+                            orderable: true,
+                            searchable: true
+                        },
                     ],
                 });
                 table.buttons().container()
@@ -276,37 +285,12 @@
             })
         });
 
-        $('#idbiro').on('change', function () {
-            var idbiro = this.value;
-            $.ajax({
-                url: "{{url('ambildatabagian')}}",
-                type: "POST",
-                data: {
-                    idbiro: idbiro,
-                    _token: '{{csrf_token()}}'
-                },
-                dataType: 'json',
-                success: function (result) {
-                    $('#idbagian').html('<option value="">Pilih Bagian</option>');
-                    $.each(result.bagian, function (key, value) {
-                        $("#idbagian").append('<option value="' + value.id + '">' + value.uraianbagian + '</option>');
-                    });
-                }
-
-            });
-        });
-
-        $('#hapusnormalisasidata').click(function (e) {
-            let idbulan = dapatkanidbulan();
-            if( confirm("Apakah Anda Yakin Mau Melakukan Hapus Normalisasi Data Untuk Bulan "+idbulan+"?")){
+        $('#importrealisasirosakti').click(function (e) {
+            if( confirm("Apakah Anda Yakin Mau Import Realisasi RO dari Mosankti ?")){
                 e.preventDefault();
-                $(this).html('Hapus Normalisasi Data..');
-                window.location="{{URL::to('hapusnormalisasidatarincian','')}}"+"/"+idbulan;
+                $(this).html('Importing..');
+                window.location="{{URL::to('importrealisasirosakti')}}";
             }
-        });
-
-        $('#kembali').click(function (e) {
-            window.location="{{URL::to('monitoringrincianindikatorroadmin')}}";
         });
     </script>
 
