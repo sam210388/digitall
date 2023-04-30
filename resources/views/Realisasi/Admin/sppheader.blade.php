@@ -99,7 +99,7 @@
                 processing: true,
                 serverSide: true,
                 dom: 'Bfrtip',
-                buttons: ['copy','excel','pdf','csv','print'],
+                buttons: ['copy','excel','csv','print'],
                 ajax:"{{route('sppheader')}}",
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
@@ -116,8 +116,8 @@
                     {
                         data: 'action',
                         name: 'action',
-                        orderable: true,
-                        searchable: true
+                        orderable: false,
+                        searchable: false
                     },
                 ],
             });
@@ -146,6 +146,12 @@
                     $(this).html('Importing..');
                     window.location="{{URL::to('importcoa')}}"+"/"+ID_SPP;
                 }
+            });
+
+            $('body').on('click', '.detilcoa', function (e) {
+                var ID_SPP = $(this).data('id');
+                window.location="{{URL::to('lihatcoa')}}"+"/"+ID_SPP;
+
             });
 
         });

@@ -12,6 +12,12 @@ use Yajra\DataTables\DataTables;
 class SppPotonganController extends Controller
 {
     function importspppotongan($ID_SPP){
+        //cek apakah sudah ada
+        $jumlahdata = DB::table('spppotongan')->where('ID_SPP','=',$ID_SPP)->count();
+        if ($jumlahdata > 0){
+            DB::table('spppotongan')->where('ID_SPP','=',$ID_SPP)->delete();
+        }
+
         $tahunanggaran = session('tahunanggaran');
         $kodemodul = 'PEM';
         $tipedata = 'sppPotongan';
@@ -117,16 +123,15 @@ class SppPotonganController extends Controller
                             'ID_BIRO' => $ID_BIRO,
                             'ID_DEPUTI' => $ID_DEPUTI
                         );
-                        //cek apakah sudah ada
-                        $jumlahdata = DB::table('spppotongan')->where('ID_SPP','=',$ID_SPP)->count();
-                        if ($jumlahdata > 0){
-                            DB::table('spppotongan')->where('ID_SPP','=',$ID_SPP)->delete();
-                        }else{
-                            DB::table('spppotongan')->insert($data);
-                        }
+                        DB::table('spppotongan')->insert($data);
                     }
                 }
             }
+            $datastatus = array(
+                'STATUS_POTONGAN' => 2,
+                'UPDATE_POTONGAN' => now()
+            );
+            DB::table('sppheader')->where('ID_SPP','=',$ID_SPP)->update($datastatus);
         }else if ($response == "Expired"){
             $tokenbaru = new BearerKey();
             $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
@@ -136,7 +141,7 @@ class SppPotonganController extends Controller
         }
     }
 
-    public function getlistpotongan(Request $request){
+    public function getlistpotongan(Request $request, $ID_SPP){
         $ID_SPP = $request->get('ID_SPP');
         if ($request->ajax()) {
             $data = DB::table('spppengeluaran')->where('ID_SPP','=',$ID_SPP)->get();

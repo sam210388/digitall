@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Realisasi;
+namespace App\Http\Controllers\Realisasi\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Realisasi\Admin\SppPotonganController;
@@ -21,19 +21,19 @@ class SppPengeluaranController extends Controller
         $importpotongan = new SppPotonganController();
         $importpotongan = $importpotongan->importspppotongan($ID_SPP);
 
-        return redirect()->to('sppheader',$ID_SPP)->with('status','Import COA Berhasil');
+        return redirect()->to('sppheader')->with('status','Import COA Berhasil');
     }
 
-    public function detilcoa(Request $request, $ID_SPP)
+    public function lihatcoa($ID_SPP)
     {
         $judul = 'Detil COA';
         return view('Realisasi.admin.detilcoa',[
             "judul"=>$judul,
+            "ID_SPP" => $ID_SPP
         ]);
     }
 
-    public function getlistpengeluaran(Request $request){
-        $ID_SPP = $request->get('ID_SPP');
+    public function getlistpengeluaran(Request $request, $ID_SPP){
         $tahunanggaran = session('tahunanggaran');
         if ($request->ajax()) {
             $data = DB::table('spppengeluaran')->where('ID_SPP','=',$ID_SPP)->get();
@@ -45,6 +45,12 @@ class SppPengeluaranController extends Controller
 
 
     function importspppengeluaran($ID_SPP){
+        //cek apakah sudah ada
+        $jumlahdata = DB::table('spppengeluaran')->where('ID_SPP','=',$ID_SPP)->count();
+        if ($jumlahdata > 0){
+            DB::table('spppengeluaran')->where('ID_SPP','=',$ID_SPP)->delete();
+        }
+
         $tahunanggaran = session('tahunanggaran');
         $kodemodul = 'PEM';
         $tipedata = 'sppPengeluaran';
@@ -153,17 +159,16 @@ class SppPengeluaranController extends Controller
                             'ID_BIRO' => $ID_BIRO,
                             'ID_DEPUTI' => $ID_DEPUTI
                         );
-
-                        //cek apakah sudah ada
-                        $jumlahdata = DB::table('spppengeluaran')->where('ID_SPP','=',$ID_SPP)->count();
-                        if ($jumlahdata > 0){
-                            DB::table('spppengeluaran')->where('ID_SPP','=',$ID_SPP)->delete();
-                        }else{
-                            DB::table('spppengeluaran')->insert($data);
-                        }
+                        DB::table('spppengeluaran')->insert($data);
                     }
                 }
             }
+            //update status SPP Header
+            $datastatus = array(
+                'STATUS_PENGELUARAN' => 2,
+                'UPDATE_PENGELUARAN' => now()
+            );
+            DB::table('sppheader')->where('ID_SPP','=',$ID_SPP)->update($datastatus);
         }else if ($response == "Expired"){
             $tokenbaru = new BearerKey();
             $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);

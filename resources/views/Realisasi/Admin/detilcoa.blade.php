@@ -31,7 +31,8 @@
                     <div class="card-header">
                         <h3 class="card-title">{{$judul}}</h3>
                         <div class="btn-group float-sm-right" role="group">
-                            <a class="btn btn-primary float-sm-right" href="javascript:void(0)" id="importsppheader"> Import</a>
+                            <a class="btn btn-primary float-sm-right" href="javascript:void(0)" id="kembali">Kembali</a>
+                            <input type="hidden"  id="ID_SPP" value="{{$ID_SPP}}">
                         </div>
                     </div>
                     <div class="card-body">
@@ -89,6 +90,7 @@
     <!-- /.content -->
     <script type="text/javascript">
         $(function () {
+            let ID_SPP = document.getElementById('ID_SPP').value;
             /*------------------------------------------
             --------------------------------------------
             Render DataTable
@@ -109,14 +111,14 @@
                 processing: true,
                 serverSide: true,
                 dom: 'Bfrtip',
-                buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('getlistpengeluaran')}}",
+                buttons: ['copy','excel','csv','print'],
+                ajax:"{{route('getlistpengeluaran','')}}"+"/"+ID_SPP,
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'KDSATKER', name: 'KDSATKER'},
                     {data: 'ID_SPP', name: 'ID_SPP'},
-                    {data: 'PENGENAL', name: 'PENGENAL'},
-                    {data: 'NILAI_PENGELUARAN', name: 'NILAI_PENGELUARAN'},
+                    {data: 'KODE_COA', name: 'KODE_COA'},
+                    {data: 'NILAI_AKUN_PENGELUARAN', name: 'NILAI_AKUN_PENGELUARAN'},
                 ],
             });
             table.buttons().container()
@@ -127,23 +129,6 @@
                     .column( $(this).data('index') )
                     .search( this.value )
                     .draw();
-            });
-
-            $('#importsppheader').click(function (e) {
-                if( confirm("Apakah Anda Yakin Mau Import SPP Header?")){
-                    e.preventDefault();
-                    $(this).html('Importing..');
-                    window.location="{{URL::to('importsppheader')}}";
-                }
-            });
-
-            $('body').on('click', '.importcoa', function () {
-                var ID_SPP = $(this).data('id');
-                if( confirm("Apakah Anda Yakin Mau Import COA untuk SPP "+ID_SPP+" ?")){
-                    e.preventDefault();
-                    $(this).html('Importing..');
-                    window.location="{{URL::to('importcoa')}}"+"/"+ID_SPP;
-                }
             });
 
 
@@ -163,13 +148,13 @@
                 serverSide: true,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('getlistpotongan')}}",
+                ajax:"{{route('getlistpotongan','')}}"+"/"+ID_SPP,
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'KDSATKER', name: 'KDSATKER'},
                     {data: 'ID_SPP', name: 'ID_SPP'},
-                    {data: 'PENGENAL', name: 'PENGENAL'},
-                    {data: 'NILAI_PENGELUARAN', name: 'NILAI_PENGELUARAN'},
+                    {data: 'KODE_COA', name: 'KODE_COA'},
+                    {data: 'NILAI_AKUN_POT', name: 'NILAI_AKUN_POT'},
                 ],
             });
             table2.buttons().container()

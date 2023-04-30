@@ -25,11 +25,10 @@ class SppHeaderController extends Controller
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
                     if ($row->STATUS_PENGELUARAN == 1){
-                        $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->ID_SPP.'" data-original-title="importcoa" class="edit btn btn-primary btn-sm importcoa">Import COA</a>';
+                        $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->ID_SPP.'" data-original-title="importcoa" class="importcoa btn btn-primary btn-sm importcoa">Import COA</a>';
                     }else{
-                        $btn = '<div class="btn-group" role="group">
-                            <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->ID_SPP.'" data-original-title="lihatcoa" class="btn btn-success btn-sm lihatcoa">Lihat COA</a>';
-                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->ID_SPP.'" data-original-title="importcoa" class="edit btn btn-primary btn-sm importcoa">Import COA</a>';
+                        $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->ID_SPP.'" data-original-title="detilcoa" class="detilcoa btn btn-success btn-sm detilcoa">Lihat Coa</a>';
+                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->ID_SPP.'" data-original-title="importcoa" class="importcoa btn btn-primary btn-sm importcoa">Import COA</a>';
                     }
                     return $btn;
                 })
