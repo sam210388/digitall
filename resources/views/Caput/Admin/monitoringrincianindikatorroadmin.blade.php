@@ -162,7 +162,7 @@
                 processing: true,
                 serverSide: false,
                 dom: 'Bfrtip',
-                buttons: ['copy','excel','pdf','csv','print'],
+                buttons: ['copy','excel','csv','print'],
                 ajax:"{{route('getdatarealisasimonitoringadmin','','')}}"+"/"+idbulan,
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
@@ -203,7 +203,7 @@
                     processing: true,
                     serverSide: false,
                     dom: 'Bfrtip',
-                    buttons: ['copy','excel','pdf','csv','print'],
+                    buttons: ['copy','excel','csv','print'],
                     ajax:"{{route('getdatarealisasimonitoringadmin','','')}}"+"/"+idbulan+"/"+idbiro+"/"+idbagian,
                     columns: [
                         {data: 'DT_RowIndex', name: 'DT_RowIndex'},
@@ -245,7 +245,7 @@
                     processing: true,
                     serverSide: false,
                     dom: 'Bfrtip',
-                    buttons: ['copy','excel','pdf','csv','print'],
+                    buttons: ['copy','excel','csv','print'],
                     ajax:"{{route('getdatarealisasimonitoringadmin','','')}}"+"/"+idbulan+"/"+idbiro+"/"+idbagian,
                     columns: [
                         {data: 'DT_RowIndex', name: 'DT_RowIndex'},
@@ -301,7 +301,7 @@
             if( confirm("Apakah Anda Yakin Mau Melakukan Normalisasi Data Untuk Bulan "+idbulan+"?")){
                 e.preventDefault();
                 $(this).html('Normalisasi Data..');
-                window.location="{{URL::to('normalisasidatarincian')}}";
+                window.location="{{URL::to('normalisasidatarincian','')}}"+"/"+idbulan;
             }
         });
 

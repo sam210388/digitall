@@ -1,72 +1,71 @@
 <?php
 
-namespace App\Http\Controllers\Caput\Biro;
+namespace App\Http\Controllers\Caput\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Caput\Biro\RealisasiIndikatorROModel;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ROExport;
 
-class RealisasiIndikatorROConctroller extends Controller
+class MonitoringRealisasiROConctroller extends Controller
 {
     public function __construct()
     {
         $this->middleware(['auth']);
     }
 
-    public function realisasiindikatorro(){
-        $judul = 'List Realisasi Indikator RO';
+    public function realisasiro(){
+        $judul = 'List Realisasi RO';
         $databulan = DB::table('bulan')->get();
-        $datastatuspelaksanaan = DB::table('statuspelaksanaan')->get();
-        $datakategoripermasalahan = DB::table('kategoripermasalahan')->get();
+        $databiro = DB::table('biro')->get();
 
-        return view('Caput.Biro.realisasiindikatorro',[
+        return view('Caput.Admin.monitoringrealisasiro',[
             "judul"=>$judul,
             "databulan" => $databulan,
-            "datastatuspelaksanaan" => $datastatuspelaksanaan,
-            "datakategoripermasalahan" => $datakategoripermasalahan,
+            "databiro" => $databiro
             //"data" => $data
 
         ]);
 
     }
 
-    public function getdatarealisasiindikatorro(Request $request, $idbulan)
+    public function getdatarealisasiro(Request $request, $idbulan, $idbiro = null)
     {
         $tahunanggaran = session('tahunanggaran');
         $bulan = $idbulan;
-        $idbiro = Auth::user()->idbiro;
         if ($request->ajax()) {
-            $data = DB::table('indikatorro as a')
+            $data = DB::table('ro as a')
                 ->select([DB::raw('concat(a.tahunanggaran,".",a.kodesatker,".",a.kodekegiatan,".",
-                    a.kodeoutput,".",a.kodesuboutput,".",a.kodekomponen," | ",
-                    a.uraianindikatorro) as indikatorro'), 'a.target as target','a.idkro as idkro','a.idro as idro','e.uraianro as uraianro',
+                    a.kodeoutput,".",a.kodesuboutput," | ",a.uraianro) as ro'), 'a.target as target','a.idkro as idkro',
                     'a.jenisindikator as jenisindikator','a.idbiro as idbiro','a.iddeputi as iddeputi','b.id as idrealisasi', 'b.jumlah as jumlah',
                     'b.jumlahsdperiodeini as jumlahsdperiodeini', 'b.prosentase as prosentase', 'b.prosentasesdperiodeini as prosentasesdperiodeini',
                     'c.uraianstatus as statuspelaksanaan', 'd.uraiankategori as kategoripermasalahan',
-                    'b.uraianoutputdihasilkan as uraianoutputdihasilkan', 'b.keterangan as keterangan',
-                    'b.status as statusrealisasi', 'e.uraianro as ro',
-                    'a.id as idindikatorro'
+                    'b.uraianoutputdihasilkan as uraianoutputdihasilkan', 'b.keterangan as keterangan','b.status as statusrealisasi',
+                    'e.uraiankro as kro','a.id as idro'
                 ])
                 //->leftJoin('realisasirincianindikatorro as b','a.id','=','b.idrincianindikatorro')
-                ->leftJoin('realisasiindikatorro as b', function ($join) use ($bulan) {
-                    $join->on('a.id', '=', 'b.idindikatorro');
+                ->leftJoin('realisasiro as b', function ($join) use ($bulan) {
+                    $join->on('a.id', '=', 'b.idro');
                     $join->on('b.periode', '=', DB::raw($bulan));
                 })
                 ->leftJoin('statuspelaksanaan as c', 'b.statuspelaksanaan', '=', 'c.id')
                 ->leftJoin('kategoripermasalahan as d', 'b.kategoripermasalahan', '=', 'd.id')
-                ->leftJoin('ro as e', 'a.idro', '=', 'e.id')
-                ->where('a.idbiro', '=', $idbiro)
-                ->where('a.tahunanggaran', '=', $tahunanggaran)
-                ->groupBy('a.id')
-                ->get();
+                ->leftJoin('kro as e', 'a.idkro', '=', 'e.id')
+                ->where('a.tahunanggaran', '=', $tahunanggaran);
+
+            if ($idbiro != null){
+                $data->where('a.idbiro','=',$idbiro);
+            }
+
+            $data = $data->groupBy('a.id');
+            $data = $data->get();
 
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="' . $row->idindikatorro . '" data-original-title="Edit" class="edit btn btn-success btn-sm laporkinerja">Lapor</a>';
+                    $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="' . $row->idro . '" data-original-title="Edit" class="edit btn btn-success btn-sm laporkinerja">Lapor</a>';
                     return $btn;
                 })
                 ->addColumn('statusrealisasi', function ($row) {
@@ -81,15 +80,15 @@ class RealisasiIndikatorROConctroller extends Controller
         }
     }
 
-    public function cekjadwallapor($idindikatorro, $idbulan){
+    public function cekjadwallapor($idro, $idbulan){
         $kondisilapor = "";
         $tahunanggaran = session('tahunanggaran');
         //cekrealisasisebelumnya
         if ($idbulan == 1){
             $laporsebelumnya = true;
         }else{
-            $adarealisasi = DB::table('realisasiindikatorro')
-                ->where('idindikatorro','=',$idindikatorro)
+            $adarealisasi = DB::table('realisasiro')
+                ->where('idro','=',$idro)
                 ->where('tahunanggaran','=',$tahunanggaran)
                 ->where('periode','=',$idbulan-1)
                 ->get();
@@ -150,25 +149,23 @@ class RealisasiIndikatorROConctroller extends Controller
         return response()->json(['status'=> $status,'kondisi' => $kondisilapor]);
     }
 
-    function rekaprealisasiindikatorro(Request $request){
+    function rekaprealisasiro(Request $request){
         $tahunanggaran = session('tahunanggaran');
-        $idindikatorro = $request->get('idindikatorro');
+        $idro = $request->get('idro');
         $idbulan = $request->get('nilaibulan');
         $tanggallapor = date('Y-m-d');
 
         //dapatkan target dan jenis indikatorro
-        $targetindikatorro = "";
+        $targetro = "";
         $jenisindikator = "";
         $idkro = "";
-        $idro = "";
-        $dataindikatorro = DB::table('indikatorro')
-            ->where('id','=',$idindikatorro)
+        $dataro = DB::table('ro')
+            ->where('id','=',$idro)
             ->get();
-        foreach ($dataindikatorro as $dir){
-            $targetindikatorro = $dir->target;
+        foreach ($dataro as $dir){
+            $targetro = $dir->target;
             $jenisindikator = $dir->jenisindikator;
             $idkro = $dir->idkro;
-            $idro = $dir->idro;
         }
 
         //dapatkan data periode sebelumnya
@@ -178,14 +175,14 @@ class RealisasiIndikatorROConctroller extends Controller
             $jumlahsdperiodesebelumnya = 0;
             $prosentasesdperiodesebelumnya = 0.00;
         }else{
-            $datarealisasisebelumnya = DB::table('realisasiindikatorro')
-                ->where('idindikatorro','=',$idindikatorro)
+            $datarealisasisebelumnya = DB::table('realisasiro')
+                ->where('idro','=',$idro)
                 ->where('tahunanggaran','=',$tahunanggaran)
                 ->where('periode','=',$idbulan-1)
                 ->get();
-            foreach ($datarealisasisebelumnya as $datarealisasisebelumnya){
-                $jumlahsdperiodesebelumnya = $datarealisasisebelumnya->jumlahsdperiodeini;
-                $prosentasesdperiodesebelumnya = $datarealisasisebelumnya->prosentasesdperiodeini;
+            foreach ($datarealisasisebelumnya as $drs){
+                $jumlahsdperiodesebelumnya = $drs->jumlahsdperiodeini;
+                $prosentasesdperiodesebelumnya = $drs->prosentasesdperiodeini;
             }
         }
 
@@ -200,34 +197,34 @@ class RealisasiIndikatorROConctroller extends Controller
             $prosentase = 8.33;
             $prosentasesdperiodeini = $idbulan * 8.33;
         }else{
-            $jumlah = DB::table('realisasirincianindikatorro')
+            $jumlah = DB::table('realisasiindikatorro')
                 ->select([DB::raw('sum(jumlah) as jumlah')])
-                ->where('idindikatorro','=',$idindikatorro)
+                ->where('idro','=',$idro)
                 ->where('tahunanggaran','=',$tahunanggaran)
                 ->where('periode','=',$idbulan)
                 ->value('jumlah');
             $jumlahsdperiodeini = $jumlahsdperiodesebelumnya+$jumlah;
-            $prosentase = $this->rekapprosentaseindikatorro($idindikatorro, $tahunanggaran, $idbulan, $targetindikatorro);
+            $prosentase = $this->rekapprosentasero($idro, $tahunanggaran, $idbulan, $targetro);
             $prosentase = round($prosentase,2);
             $prosentasesdperiodeini = $prosentasesdperiodesebelumnya+$prosentase;
+
         }
 
         //dapatkan statusterbanyak
-        $statuspelaksanaan = $this->dapatkanstatuspelaksanaanterbanyak($idindikatorro, $tahunanggaran, $idbulan);
+        $statuspelaksanaan = $this->dapatkanstatuspelaksanaanterbanyak($idro, $tahunanggaran, $idbulan);
 
         //dapatkan kategori permasalahan terbanyak
-        $kategoripermasalahan = $this->dapatkankategoripermasalahanterbanyak($idindikatorro, $tahunanggaran, $idbulan);
+        $kategoripermasalahan = $this->dapatkankategoripermasalahanterbanyak($idro, $tahunanggaran, $idbulan);
 
         //dapatkan uraian output dihasilkan
-        $uraianoutputdihasilkan = $this->dapatkanuraianoutputdihasilkan($idindikatorro, $tahunanggaran, $idbulan);
+        $uraianoutputdihasilkan = $this->dapatkanuraianoutputdihasilkan($idro, $tahunanggaran, $idbulan);
 
         //dapatkan keterangan
-        $keterangan = $this->dapatkanketerangan($idindikatorro, $tahunanggaran, $idbulan);
+        $keterangan = $this->dapatkanketerangan($idro, $tahunanggaran, $idbulan);
 
         $data = array(
-            'idindikatorro' => $idindikatorro,
-            'idkro' => $idkro,
             'idro' => $idro,
+            'idkro' => $idkro,
             'tahunanggaran' => $tahunanggaran,
             'periode' => $idbulan,
             'tanggallapor' => $tanggallapor,
@@ -242,68 +239,51 @@ class RealisasiIndikatorROConctroller extends Controller
             'status' => 1
         );
         //cek apakah sudah ada realisasi
-        $adarealisasi = DB::table('realisasiindikatorro')
-            ->where('idindikatorro','=',$idindikatorro)
+        $adarealisasi = DB::table('realisasiro')
+            ->where('idro','=',$idro)
             ->where('periode','=',$idbulan)
             ->where('tahunanggaran','=',$tahunanggaran)
             ->count();
         if ($adarealisasi == 0){
-            DB::table('realisasiindikatorro')->insert($data);
+            DB::table('realisasiro')->insert($data);
         }else{
-            DB::table('realisasiindikatorro')
-                ->where('idindikatorro','=',$idindikatorro)
+            DB::table('realisasiro')
+                ->where('idro','=',$idro)
                 ->where('periode','=',$idbulan)
                 ->where('tahunanggaran','=',$tahunanggaran)
                 ->delete();
-            DB::table('realisasiindikatorro')->insert($data);
+            DB::table('realisasiro')->insert($data);
         }
-        //ubah status ke sudah divalidasi
-        DB::table('realisasirincianindikatorro')
-            ->where('idindikatorro','=',$idindikatorro)
-            ->where('tahunanggaran','=',$tahunanggaran)
-            ->where('periode','=',$idbulan)
-            ->update(['status' => 3]);
-
-
-        if ($prosentasesdperiodeini == 100){
-            //jadikan indikator RO nya selesai
-            $dataupdate = array(
-                'status' => "Selesai",
-                'periodeselesai' => $idbulan
-            );
-            DB::table('indikatorro')->where('idindikatorro','=',$idindikatorro)->update($dataupdate);
-        }
-
         return response()->json(['status'=> 'Rekap Realisasi Berhasil']);
 
     }
 
-    function rekapprosentaseindikatorro($idindikatorro, $tahunanggaran, $idbulan, $targetindikatorro){
-        $prosentaseindikatorro = 0;
-        $datarincianindikatorro = DB::table('rincianindikatorro')
-            ->where('idindikatorro','=',$idindikatorro)
+    function rekapprosentasero($idro, $tahunanggaran, $idbulan, $targetro){
+        $prosentasero = 0;
+        $dataindikatorro = DB::table('indikatorro')
+            ->where('idro','=',$idro)
             ->get();
-        foreach ($datarincianindikatorro as $dri){
-            $idrincianindikatorro = $dri->id;
+        foreach ($dataindikatorro as $dri){
+            $idindikatorro = $dri->id;
             $target = $dri->target;
 
             //dapatkan realisasi prosentase dari masing masing realisasi
-            $prosentase = DB::table('realisasirincianindikatorro')
+            $prosentase = DB::table('realisasiindikatorro')
                 ->where('tahunanggaran','=',$tahunanggaran)
                 ->where('periode','=',$idbulan)
-                ->where('idrincianindikatorro','=',$idrincianindikatorro)
+                ->where('idindikatorro','=',$idindikatorro)
                 ->value('prosentase');
 
-            $porsiprosentase = ($target/$targetindikatorro) * $prosentase;
-            $prosentaseindikatorro = $prosentaseindikatorro + $porsiprosentase;
+            $porsiprosentase = ($target/$targetro) * $prosentase;
+            $prosentasero = $prosentasero + $porsiprosentase;
         }
-        return $prosentaseindikatorro;
+        return $prosentasero;
     }
 
-    function dapatkanstatuspelaksanaanterbanyak($idindikatorro, $tahunanggaran, $idbulan){
-        $statuspelaksanaan = DB::table('realisasirincianindikatorro')
+    function dapatkanstatuspelaksanaanterbanyak($idro, $tahunanggaran, $idbulan){
+        $statuspelaksanaan = DB::table('realisasiindikatorro')
             ->select(['statuspelaksanaan',DB::raw('count(statuspelaksanaan) as statusterbanyak')])
-            ->where('idindikatorro','=',$idindikatorro)
+            ->where('idro','=',$idro)
             ->where('tahunanggaran','=',$tahunanggaran)
             ->where('periode','=',$idbulan)
             ->groupBy('statuspelaksanaan')
@@ -312,36 +292,41 @@ class RealisasiIndikatorROConctroller extends Controller
         return $statuspelaksanaan;
     }
 
-    function dapatkankategoripermasalahanterbanyak($idindikatorro, $tahunanggaran, $idbulan){
-        $statuspelaksanaan = DB::table('realisasirincianindikatorro')
-            ->select(['kategoripermasalahan',DB::raw('count(kategoripermasalahan) as statusterbanyak')])
-            ->where('idindikatorro','=',$idindikatorro)
+    function dapatkankategoripermasalahanterbanyak($idro, $tahunanggaran, $idbulan){
+        $statuspelaksanaan = DB::table('realisasiindikatorro')
+            ->select(['kategoripermasalahan',DB::raw('count(kategoripermasalahan) as kategoriterbanyak')])
+            ->where('idro','=',$idro)
             ->where('tahunanggaran','=',$tahunanggaran)
             ->where('periode','=',$idbulan)
             ->groupBy('statuspelaksanaan')
-            ->orderBy('statusterbanyak','desc')
-            ->value('statusterbanyak');
+            ->orderBy('kategoriterbanyak','desc')
+            ->value('kategoriterbanyak');
         return $statuspelaksanaan;
     }
 
-    function dapatkanuraianoutputdihasilkan($idindikatorro, $tahunanggaran, $idbulan){
-        $uraianoutputdihasilkan = DB::table('realisasirincianindikatorro')
+    function dapatkanuraianoutputdihasilkan($idro, $tahunanggaran, $idbulan){
+        $uraianoutputdihasilkan = DB::table('realisasiindikatorro')
             ->select([DB::raw('group_concat(uraianoutputdihasilkan) as uraianoutputdihasilkan')])
-            ->where('idindikatorro','=',$idindikatorro)
+            ->where('idro','=',$idro)
             ->where('tahunanggaran','=',$tahunanggaran)
             ->where('periode','=',$idbulan)
             ->value('uraianoutputdihasilkan');
         return $uraianoutputdihasilkan;
     }
 
-    function dapatkanketerangan($idindikatorro, $tahunanggaran, $idbulan){
-        $uraianoutputdihasilkan = DB::table('realisasirincianindikatorro')
+    function dapatkanketerangan($idro, $tahunanggaran, $idbulan){
+        $keterangan = DB::table('realisasiindikatorro')
             ->select([DB::raw('group_concat(keterangan) as keterangan')])
-            ->where('idindikatorro','=',$idindikatorro)
+            ->where('idro','=',$idro)
             ->where('tahunanggaran','=',$tahunanggaran)
             ->where('periode','=',$idbulan)
             ->value('keterangan');
-        return $uraianoutputdihasilkan;
+        return $keterangan;
+    }
+
+    function exportrealisasiro(){
+        //Excel::download(new UsersExport, 'users.xlsx');
+        return Excel::download(new ROExport,'RealisasiRO.xlsx');
     }
 
 }

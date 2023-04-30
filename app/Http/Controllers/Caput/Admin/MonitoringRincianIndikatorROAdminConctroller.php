@@ -96,7 +96,10 @@ class MonitoringRincianIndikatorROAdminConctroller extends Controller
         $jumlahsdperiodesebelumnya = 0;
         $prosentasesdperiodesebelumnya = 0;
         //dapatkan data rincian indikator
-        $datarincianindikator = DB::table('rincianindikatorro')->where('tahunanggaran','=',$tahunanggaran)->get();
+        $datarincianindikator = DB::table('rincianindikatorro')
+            ->where('tahunanggaran','=',$tahunanggaran)
+            ->where('status','=','Dalam Proses')
+            ->get();
         foreach ($datarincianindikator as $dri){
             $idrincianindikatorro = $dri->id;
             $idindikatorro = $dri->idindikatorro;
@@ -104,6 +107,7 @@ class MonitoringRincianIndikatorROAdminConctroller extends Controller
             $adarealisasi = DB::table('realisasirincianindikatorro')
                 ->where('tahunanggaran','=',$tahunanggaran)
                 ->where('periode','=',$idbulan)
+                ->where('idrincianindikatorro','=',$idrincianindikatorro)
                 ->count();
             if ($adarealisasi <1){
                 //ambil data realisasi dan prosentase sd periode sebelumnya
@@ -118,7 +122,7 @@ class MonitoringRincianIndikatorROAdminConctroller extends Controller
                         ->get();
                     foreach ($dataperiodesebelumnya as $dps){
                         $jumlahsdperiodesebelumnya = $dps->jumlahsdperiodeini;
-                        $prosentasesdperiodesebelumnya = $dps->prosentaesdperiodeini;
+                        $prosentasesdperiodesebelumnya = $dps->prosentasesdperiodeini;
                     }
                 }
                 //tambahkan data normalisasi di tabel realisasi
@@ -152,6 +156,6 @@ class MonitoringRincianIndikatorROAdminConctroller extends Controller
                 DB::table('normalisasirealisasirincianindikatorro')->insert($databaru);
             }
         }
-        return redirect()->to('datanormalisasi')->with('status','Normalisasi Data Untuk Bulan '.$idbulan.' Berhasil');
+        return redirect()->to('datanormalisasirincian')->with('status','Normalisasi Data Untuk Bulan '.$idbulan.' Berhasil');
     }
 }

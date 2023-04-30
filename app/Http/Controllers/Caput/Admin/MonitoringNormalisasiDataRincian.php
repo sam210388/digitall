@@ -48,14 +48,14 @@ class MonitoringNormalisasiDataRincian extends Controller
                 //->leftJoin('realisasirincianindikatorro as b','a.id','=','b.idrincianindikatorro')
                 ->leftJoin('rincianindikatorro as b', function ($join) use ($bulan) {
                     $join->on('a.idrincianindikatorro', '=', 'b.id');
-                    $join->on('a.periode', '=', DB::raw($bulan));
                 })
                 ->leftJoin('statuspelaksanaan as c', 'a.statuspelaksanaan', '=', 'c.id')
                 ->leftJoin('kategoripermasalahan as d', 'a.kategoripermasalahan', '=', 'd.id')
                 ->leftJoin('indikatorro as e', 'a.idindikatorro', '=', 'e.id')
                 ->leftJoin('bagian as f','b.idbagian','=','f.id')
                 ->leftJoin('biro as g','b.idbiro','=','g.id')
-                ->where('a.tahunanggaran', '=', $tahunanggaran);
+                ->where('a.tahunanggaran', '=', $tahunanggaran)
+                ->where('a.periode','=',$bulan);
 
             if ($idbiro != null){
                 $data->where('b.idbiro','=',$idbiro);
@@ -70,8 +70,7 @@ class MonitoringNormalisasiDataRincian extends Controller
             }
 
 
-            $data = $data->groupBy('b.id')
-                ->get(['indikatorro', 'rincianindikatorro', 'target', 'jumlah', 'jumlahsdperiodeini', 'prosentase',
+            $data = $data->get(['indikatorro', 'rincianindikatorro', 'target', 'jumlah', 'jumlahsdperiodeini', 'prosentase',
                     'prosentasesdperiodeini', 'statuspelaksanaan', 'kategoripermasalahan', 'uraianoutputdihasilkan',
                     'keterangan', 'file', 'statusrealisasi','bagian','biro']);
 

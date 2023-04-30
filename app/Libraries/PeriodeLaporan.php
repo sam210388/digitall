@@ -56,4 +56,13 @@ class PeriodeLaporan {
         }
     }
 
+    public function formatcaput($tahunanggaran, $idbulan){
+        if ($idbulan < 10){
+            $formatbaru = $tahunanggaran."-"."0".$idbulan;
+        }else{
+            $formatbaru = $tahunanggaran."-".$idbulan;
+        }
+        return $formatbaru;
+    }
+
 }
