@@ -198,7 +198,7 @@ class RealisasiRincianIndikatorROConctroller extends Controller
         ]);
 
         //update status rincian menjadi selesai
-        if ($jumlahsdperiodeini == 100){
+        if ($prosentasesdperiodeini == 100){
             $updatestatus = array(
                 'status' => "Selesai",
                 'periodeselesai' => date('n',$tanggallapor)
@@ -306,7 +306,7 @@ class RealisasiRincianIndikatorROConctroller extends Controller
             'idrincianindikatorro' => $idrincianindikatorro
         ]);
 
-        if ($jumlahsdperiodeini == 100){
+        if ($prosentasesdperiodeini == 100){
             $updatestatus = array(
                 'status' => "Selesai",
                 'periodeselesai' => date('n',$tanggallapor)

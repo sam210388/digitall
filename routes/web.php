@@ -212,6 +212,8 @@ Route::resource('rincianindikatorro',RincianIndikatorRoController::class)->middl
 Route::get('monitoringrealisasiro',[MonitoringRealisasiROConctroller::class,'realisasiro'])->name('monitoringrealisasiro')->middleware('cekadmincaput');
 Route::get('getdatarealisasiroadmin/{idbulan}/{idbiro?}',[MonitoringRealisasiROConctroller::class, 'getdatarealisasiro'])->name('getdatarealisasiroadmin')->middleware('cekadmincaput');
 Route::post('rekaprealisasiroadmin',[MonitoringRealisasiROConctroller::class,'rekaprealisasiro'])->name('rekaprealisasiroadmin')->middleware('cekadmincaput');
+Route::get('exportrealisasiro',[MonitoringRealisasiROConctroller::class,'exportrealisasiro'])->name('exportrealisasiro')->middleware('cekadmincaput');
+
 
 //REKON REALISASI RO SAKTI
 Route::get('realisasirosakti',[RoSaktiController::class,'tampilrosakti'])->name('realisasirosakti')->middleware('cekadmincaput');

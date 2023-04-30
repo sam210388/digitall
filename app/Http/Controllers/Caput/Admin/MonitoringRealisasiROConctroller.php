@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Caput\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Caput\Biro\RealisasiROModel;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ROExport;
 
 class MonitoringRealisasiROConctroller extends Controller
 {
@@ -322,6 +322,11 @@ class MonitoringRealisasiROConctroller extends Controller
             ->where('periode','=',$idbulan)
             ->value('keterangan');
         return $keterangan;
+    }
+
+    function exportrealisasiro(){
+        //Excel::download(new UsersExport, 'users.xlsx');
+        return Excel::download(new ROExport,'RealisasiRO.xlsx');
     }
 
 }

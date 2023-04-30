@@ -210,7 +210,6 @@ class RealisasiIndikatorROConctroller extends Controller
             $prosentase = $this->rekapprosentaseindikatorro($idindikatorro, $tahunanggaran, $idbulan, $targetindikatorro);
             $prosentase = round($prosentase,2);
             $prosentasesdperiodeini = $prosentasesdperiodesebelumnya+$prosentase;
-
         }
 
         //dapatkan statusterbanyak
@@ -264,6 +263,16 @@ class RealisasiIndikatorROConctroller extends Controller
             ->where('tahunanggaran','=',$tahunanggaran)
             ->where('periode','=',$idbulan)
             ->update(['status' => 3]);
+
+
+        if ($prosentasesdperiodeini == 100){
+            //jadikan indikator RO nya selesai
+            $dataupdate = array(
+                'status' => "Selesai",
+                'periodeselesai' => $idbulan
+            );
+            DB::table('indikatorro')->where('idindikatorro','=',$idindikatorro)->update($dataupdate);
+        }
 
         return response()->json(['status'=> 'Rekap Realisasi Berhasil']);
 
