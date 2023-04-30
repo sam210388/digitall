@@ -139,7 +139,7 @@
                 }
             });
 
-            $('body').on('click', '.importcoa', function () {
+            $('body').on('click', '.importcoa', function (e) {
                 var ID_SPP = $(this).data('id');
                 if( confirm("Apakah Anda Yakin Mau Import COA untuk SPP "+ID_SPP+" ?")){
                     e.preventDefault();

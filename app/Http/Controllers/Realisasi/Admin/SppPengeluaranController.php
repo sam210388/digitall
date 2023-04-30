@@ -21,7 +21,7 @@ class SppPengeluaranController extends Controller
         $importpotongan = new SppPotonganController();
         $importpotongan = $importpotongan->importspppotongan($ID_SPP);
 
-        return redirect()->to('detilcoa',$ID_SPP)->with('status','Import COA Berhasil');
+        return redirect()->to('sppheader',$ID_SPP)->with('status','Import COA Berhasil');
     }
 
     public function detilcoa(Request $request, $ID_SPP)

@@ -41,6 +41,7 @@ use App\Http\Controllers\Caput\Biro\RealisasiKROConctroller;
 use App\Http\Controllers\Caput\Biro\MonitoringRincianIndikatorROConctroller;
 use App\Http\Controllers\Realisasi\Admin\RealisasiSemarController;
 use App\Http\Controllers\Realisasi\Admin\SppHeaderController;
+use App\Http\Controllers\Realisasi\SppPengeluaranController;
 use App\Http\Controllers\Caput\Admin\RealisasiIndikatorROConctrollerAdmin;
 use App\Http\Controllers\Caput\Admin\MonitoringRincianIndikatorROAdminConctroller;
 use App\Http\Controllers\Caput\Admin\MonitoringNormalisasiDataRincian;
@@ -279,7 +280,7 @@ Route::get('importrealisasisemar',[RealisasiSemarController::class,'importrealis
 //REALISASI SP2D
 Route::get('sppheader',[SppHeaderController::class,'sppheader'])->name('sppheader')->middleware('auth');
 Route::get('importsppheader',[SppHeaderController::class,'importsppheader'])->name('importsppheader')->middleware('auth');
-
+Route::get('importcoa',[SppPengeluaranController::class,'importcoa'])->name('importcoa')->middleware('auth');
 
 
 
