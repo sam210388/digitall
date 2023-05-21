@@ -32,23 +32,23 @@ class DataAngController extends Controller
             return response()->json("Tidak Ada");
         }
     }
+
     function importdataang($kdsatker, $kd_sts_history){
         $tahunanggaran = session('tahunanggaran');
+        $this->aksiimportdataang($kdsatker, $kd_sts_history, $tahunanggaran);
+    }
+
+
+    function aksiimportdataang($kdsatker, $kd_sts_history, $tahunanggaran){
         $kodemodul = 'ANG';
         $tipedata = 'dataAng';
         $variable = [$kdsatker, $kd_sts_history];
 
-        //dapatkan idrefstatus
+        //idrefstatus
         $idrefstatus = DB::table('ref_status')
             ->where('kd_sts_history','=',$kd_sts_history)
             ->where('kdsatker','=',$kdsatker)
             ->value('idrefstatus');
-
-        //delete data ang yang sudah diimport sebelumnya
-        DB::table('data_ang')
-            ->where('kdsatker','=',$kdsatker)
-            ->where('idrefstatus','=',$idrefstatus)
-            ->delete();
 
         //tarikdata
         $response = new TarikDataMonsakti();
@@ -180,22 +180,16 @@ class DataAngController extends Controller
                     }
                 }
             }
-            //UBAH Status Importnya
-            DB::table('ref_status')->where('idrefstatus','=',$idrefstatus)->update(['statusimport' => 2]);
-
-            return redirect()->to('refstatus')->with('status','Import Data Anggaran Berhasil');
         }else if ($response == "Expired"){
-
             $tokenbaru = new BearerKey();
             $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
-            return redirect()->to('refstatus')->with(['status' => 'Token Expired']);
         }else{
-            return redirect()->to('refstatus')->with(['status' => 'Gagal, Data Terlalu Besar']);
+            $tokenbaru = new BearerKey();
+            $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
         }
     }
 
-    public function rekapanggarannoredirect($idrefstatus){
-        $tahunanggaran = session('tahunanggaran');
+    public function rekapanggarannoredirect($idrefstatus, $tahunanggaran){
         $datapagu = DataAngModel::where([
             ['header1','=',0],
             ['header2','=',0],
@@ -209,12 +203,12 @@ class DataAngController extends Controller
             $kodeoutput = $item->kodeoutput;
             $kodesubout = $item->kodesuboutput;
             $kodekomponen = $item->kodekomponen;
+            $pengenal = $kodeprogram.'.'.$kodekegiatan.'.'.$kodeoutput.'.'.$kodesubout.'.'.$kodekomponen;
 
             if ($kdsatker == '001012'){
                 $kodesubkomponen = $item->kodesubkomponen;
                 $pengenal = $kodeprogram.'.'.$kodekegiatan.'.'.$kodeoutput.'.'.$kodesubout.'.'.$kodekomponen.'.'.$kodesubkomponen;
             }else{
-                $kodesubkomponen = null;
                 $pengenal = $kodeprogram.'.'.$kodekegiatan.'.'.$kodeoutput.'.'.$kodesubout.'.'.$kodekomponen;
             }
 
@@ -222,7 +216,6 @@ class DataAngController extends Controller
                 'tahunanggaran' => $tahunanggaran,
                 'pengenal' => $pengenal
             );
-
             $adadata = AnggaranBagianModel::where($where)->get()->count();
             if ($adadata == 0){
                 $data = array(
@@ -255,13 +248,13 @@ class DataAngController extends Controller
     }
 
     public function rekapanggaran($idrefstatus){
-        $this->rekapanggarannoredirect($idrefstatus);
-        $this->summarydipa($idrefstatus);
+        $tahunanggaran = session('tahunanggaran');
+        $this->rekapanggarannoredirect($idrefstatus, $tahunanggaran);
+        $this->summarydipa($idrefstatus, $tahunanggaran);
         return redirect()->to('refstatus')->with('rekapberhasil','Rekap Anggaran Bagian Berhasil');
     }
 
-    public function summarydipa($idrefstatus){
-        $tahunanggaran = session('tahunanggaran');
+    public function summarydipa($idrefstatus, $tahunanggaran){
         $datapagu = DB::table('data_ang')
             ->where('idrefstatus','=',$idrefstatus)
             ->where('header1','=',0)

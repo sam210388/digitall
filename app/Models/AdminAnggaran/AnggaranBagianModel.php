@@ -12,6 +12,6 @@ class AnggaranBagianModel extends Model
     protected $table = 'anggaranbagian';
 
     protected $fillable = ['tahunanggaran','kdsatker','kodeporgram','kodekegiatan','kodeoutput','kodesuboutput','kodekomponen','kodesubkomponen','kodeakun','pengenal','idrefstatus',
-        'idbagian','idbiro','iddeputi'];
+        'idbagian','idbiro','iddeputi','idindikatorro','idro','idkro'];
 
 }

@@ -32,6 +32,7 @@
                         <h3 class="card-title">{{$judul}}</h3>
                         <div class="btn-group float-sm-right" role="group">
                             <a class="btn btn-primary float-sm-right" href="javascript:void(0)" id="importsppheader"> Import</a>
+                            <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="importseluruhcoa"> Import COA</a>
                         </div>
                     </div>
                     <div class="card-body">
@@ -49,6 +50,7 @@
                                 <th>Tgl SP2D</th>
                                 <th>Uraian</th>
                                 <th>Nilai</th>
+                                <th>Status Nilai</th>
                                 <th>Action</th>
                             </tr>
                             </thead>
@@ -67,6 +69,7 @@
                                 <th>Tgl SP2D</th>
                                 <th>Uraian</th>
                                 <th>Nilai</th>
+                                <th>Status Nilai</th>
                                 <th>Action</th>
                             </tr>
                             </tfoot>
@@ -113,6 +116,7 @@
                     {data: 'TGL_SP2D', name: 'TGL_SP2D'},
                     {data: 'URAIAN', name: 'URAIAN'},
                     {data: 'NILAI_SP2D', name: 'NILAI_SP2D'},
+                    {data: 'statusnilai', name: 'statusnilai'},
                     {
                         data: 'action',
                         name: 'action',
@@ -139,12 +143,11 @@
                 }
             });
 
-            $('body').on('click', '.importcoa', function (e) {
-                var ID_SPP = $(this).data('id');
-                if( confirm("Apakah Anda Yakin Mau Import COA untuk SPP "+ID_SPP+" ?")){
+            $('#importseluruhcoa').click(function (e) {
+                if( confirm("Apakah Anda Yakin Mau Import Seluruh Coa?")){
                     e.preventDefault();
                     $(this).html('Importing..');
-                    window.location="{{URL::to('importcoa')}}"+"/"+ID_SPP;
+                    window.location="{{URL::to('importseluruhcoa')}}";
                 }
             });
 
@@ -152,6 +155,16 @@
                 var ID_SPP = $(this).data('id');
                 window.location="{{URL::to('lihatcoa')}}"+"/"+ID_SPP;
 
+            });
+
+
+            $('body').on('click', '.importcoa', function (e) {
+                var ID_SPP = $(this).data('id');
+                if( confirm("Apakah Anda Yakin Mau Import COA untuk SPP "+ID_SPP+" ?")){
+                    e.preventDefault();
+                    $(this).html('Importing..');
+                    window.location="{{URL::to('importcoa')}}"+"/"+ID_SPP;
+                }
             });
 
         });

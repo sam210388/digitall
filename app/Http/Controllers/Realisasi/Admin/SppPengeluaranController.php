@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Realisasi\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Realisasi\Admin\SppPotonganController;
+use App\Jobs\ImportCOA;
+use App\Jobs\UpdateUnitId;
 use App\Libraries\BearerKey;
 use App\Libraries\TarikDataMonsakti;
 use Illuminate\Http\Request;
@@ -14,12 +16,14 @@ class SppPengeluaranController extends Controller
 {
 
     function importcoa($ID_SPP){
+        $TA = session('tahunanggaran');
+
         //import pengeluaran
-        $this->importspppengeluaran($ID_SPP);
+        $this->importspppengeluaran($ID_SPP, $TA);
 
         //import potongan
         $importpotongan = new SppPotonganController();
-        $importpotongan = $importpotongan->importspppotongan($ID_SPP);
+        $importpotongan = $importpotongan->importspppotongan($ID_SPP, $TA);
 
         return redirect()->to('sppheader')->with('status','Import COA Berhasil');
     }
@@ -44,26 +48,29 @@ class SppPengeluaranController extends Controller
     }
 
 
-    function importspppengeluaran($ID_SPP){
+    function importspppengeluaran($ID_SPP, $TA){
         //cek apakah sudah ada
         $jumlahdata = DB::table('spppengeluaran')->where('ID_SPP','=',$ID_SPP)->count();
         if ($jumlahdata > 0){
             DB::table('spppengeluaran')->where('ID_SPP','=',$ID_SPP)->delete();
         }
 
-        $tahunanggaran = session('tahunanggaran');
         $kodemodul = 'PEM';
         $tipedata = 'sppPengeluaran';
         $variabel = [$ID_SPP];
 
+        //$tokenbaru = new BearerKey();
+        //$tokenbaru->resetapi($TA, $kodemodul, $tipedata);
+
+
         //tarikdata
         $response = new TarikDataMonsakti();
-        $response = $response->prosedurlengkap($tahunanggaran, $kodemodul, $tipedata, $variabel);
+        $response = $response->prosedurlengkap($TA, $kodemodul, $tipedata, $variabel);
         //echo json_encode($response);
+
 
         if ($response != "Gagal" or $response != "Expired"){
             $hasilasli = json_decode($response);
-            //echo json_encode($hasilasli);
 
             foreach ($hasilasli as $item => $value) {
                 if ($item == "TOKEN") {
@@ -71,7 +78,7 @@ class SppPengeluaranController extends Controller
                         $tokenresponse = $data->TOKEN;
                     }
                     $token = new BearerKey();
-                    $token->simpantokenbaru($tahunanggaran, $kodemodul, $tokenresponse);
+                    $token->simpantokenbaru($TA, $kodemodul, $tokenresponse);
                 }
             }
             foreach ($hasilasli as $item => $value) {
@@ -100,39 +107,10 @@ class SppPengeluaranController extends Controller
                         $NILAI_VALAS = $DATA->NILAI_VALAS;
                         $NILAI_PEMBAYARAN_VALAS_SP2D = $DATA->NILAI_PEMBAYARAN_VALAS_SP2D;
 
-                        if ($KDSATKER == '001030'){
-                            $where = array(
-                                'kodeprogram' => $KODE_PROGRAM,
-                                'kodekegiatan' => $KODE_KEGIATAN,
-                                'kodeoutput' => $KODE_OUTPUT,
-                                'kodesuboutput' => $KODE_SUBOUTPUT,
-                                'kodekomponen' => $KODE_KOMPONEN,
-                            );
-                        }else{
-                            $where = array(
-                                'kodeprogram' => $KODE_PROGRAM,
-                                'kodekegiatan' => $KODE_KEGIATAN,
-                                'kodeoutput' => $KODE_OUTPUT,
-                                'kodesuboutput' => $KODE_SUBOUTPUT,
-                                'kodekomponen' => $KODE_KOMPONEN,
-                                'kodesubkomponen' => $KODE_SUBKOMPONEN
-                            );
-                        }
-
-                        $dataanggaranbagian = DB::table('anggaranbagian')->where($where)->get();
-                        $ID_BAGIAN = 0;
-                        $ID_BIRO = 0;
-                        $ID_DEPUTI = 0;
-                        foreach ($dataanggaranbagian as $dab){
-                            if ($dab->idbagian){
-                                $ID_BAGIAN = $dab->idbagian;
-                            }else{
-                                $ID_BAGIAN = 0;
-                            }
-                            $ID_BIRO = $dab->idbiro;
-                            $ID_DEPUTI = $dab->iddeputi;
-                        }
-
+                        //bulan sp2d
+                        $tanggalsp2d = DB::table('sppheader')->where('ID_SPP','=',$ID_SPP)->value('TGL_SP2D');
+                        $bulan = new \DateTime($tanggalsp2d);
+                        $bulan = $bulan->format('n');
                         $data = array(
                             'KODE_KEMENTERIAN' => $KODE_KEMENTERIAN,
                             'KDSATKER' => $KDSATKER,
@@ -155,26 +133,26 @@ class SppPengeluaranController extends Controller
                             'TGL_KUR_SP2D' => $TGL_KURS_SP2D,
                             'NILAI_VALAS' => $NILAI_VALAS,
                             'NILAI_PEMBAYARAN_VALAS_SP2D' => $NILAI_PEMBAYARAN_VALAS_SP2D,
-                            'ID_BAGIAN' => $ID_BAGIAN,
-                            'ID_BIRO' => $ID_BIRO,
-                            'ID_DEPUTI' => $ID_DEPUTI
+                            'ID_BAGIAN' => null,
+                            'ID_BIRO' => null,
+                            'ID_DEPUTI' => null,
+                            'idindikatorro' => null,
+                            'idro' => null,
+                            'idkro' => null,
+                            'bulansp2d' => $bulan
                         );
                         DB::table('spppengeluaran')->insert($data);
                     }
                 }
             }
-            //update status SPP Header
-            $datastatus = array(
-                'STATUS_PENGELUARAN' => 2,
-                'UPDATE_PENGELUARAN' => now()
-            );
-            DB::table('sppheader')->where('ID_SPP','=',$ID_SPP)->update($datastatus);
         }else if ($response == "Expired"){
             $tokenbaru = new BearerKey();
-            $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
-            return redirect()->to('sppheader')->with(['status' => 'Token Expired']);
+            $tokenbaru->resetapi($TA, $kodemodul, $tipedata);
+            //return redirect()->to('sppheader')->with(['status' => 'Token Expired']);
         }else{
-            return redirect()->to('sppheader')->with(['status' => 'Gagal, Data Terlalu Besar']);
+            //return redirect()->to('sppheader')->with(['status' => 'Gagal, Data Terlalu Besar']);
         }
+
     }
+
 }

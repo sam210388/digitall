@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Caput\Admin;
 
+use App\Exports\ROExportRealisasi;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -325,8 +326,15 @@ class MonitoringRealisasiROConctroller extends Controller
     }
 
     function exportrealisasiro(){
+        $tahunanggaran = session('tahunanggaran');
         //Excel::download(new UsersExport, 'users.xlsx');
-        return Excel::download(new ROExport,'RealisasiRO.xlsx');
+        return Excel::download(new ROExport($tahunanggaran),'RealisasiRO.xlsx');
+    }
+
+    function exportrealisasianggaran(){
+        $tahunanggaran = session('tahunanggaran');
+        //Excel::download(new UsersExport, 'users.xlsx');
+        return Excel::download(new ROExportRealisasi($tahunanggaran),'RealisasiAnggaranRO.xlsx');
     }
 
 }

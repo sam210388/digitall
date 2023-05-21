@@ -26,7 +26,8 @@
                     <div class="card-header">
                         <h3 class="card-title">{{$judul}}</h3>
                         <div class="btn-group float-sm-right" role="group">
-                            <a class="btn btn-primary float-sm-right" href="javascript:void(0)" id="exportrealisasiro">Export Data Realisasi</a>
+                            <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="exportrealisasiro">Export Realisasi Output</a>
+                            <a class="btn btn-primary float-sm-right" href="javascript:void(0)" id="exportrealisasianggaran">Export Realisasi Anggaran</a>
                         </div>
                     </div>
                     <div class="card-header">
@@ -308,6 +309,13 @@
                     e.preventDefault();
                     $(this).html('Export Data..');
                     window.location="{{URL::to('exportrealisasiro','')}}";
+                }
+            });
+            $('#exportrealisasianggaran').click(function (e) {
+                if( confirm("Apakah Anda Yakin Mau Export Data Realisasi?")){
+                    e.preventDefault();
+                    $(this).html('Export Data..');
+                    window.location="{{URL::to('exportrealisasianggaran','')}}";
                 }
             });
         });

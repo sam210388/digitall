@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers\AdminAnggaran;
 
+use App\Jobs\ImportDataAng;
+use App\Jobs\ImportRefStatus;
+use App\Jobs\RekapAnggaran;
+use App\Jobs\UpdateIDKinerjaAnggaranBagian;
+use App\Jobs\UpdateStatusImportRefStatus;
 use App\Libraries\BearerKey;
 use App\Http\Controllers\Controller;
 use App\Libraries\TarikDataMonsakti;
 use App\Models\AdminAnggaran\RefStatusModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 
@@ -57,6 +63,16 @@ class RefstatusController extends Controller
 
     function importrefstatus(){
         $tahunanggaran = session('tahunanggaran');
+        ImportRefStatus::withChain([
+            new UpdateStatusImportRefStatus($tahunanggaran),
+            new ImportDataAng($tahunanggaran),
+            new RekapAnggaran($tahunanggaran),
+            new UpdateStatusImportRefStatus($tahunanggaran)
+        ])->dispatch($tahunanggaran);
+        return redirect()->to('refstatus')->with('status','Import Ref Status dari SAKTI Berhasil');
+    }
+
+    function aksiimportrefstatus($tahunanggaran){
         $kodemodul = 'ANG';
         $tipedata = 'refSts';
 
@@ -102,7 +118,7 @@ class RefstatusController extends Controller
 
                         $data = array(
                             'idrefstatus' => $ID,
-                            'tahunanggaran' => session('tahunanggaran'),
+                            'tahunanggaran' => $tahunanggaran,
                             'kode_kementerian' => $KODE_KEMENTERIAN,
                             'kdsatker' => $KDSATKER,
                             'kd_sts_history' => $KODE_STS_HISTORY,
@@ -121,26 +137,15 @@ class RefstatusController extends Controller
                             'statusimport' => 1
                         );
                         RefStatusModel::updateOrCreate(['idrefstatus' => $ID],$data);
-                        $this->updatestatusimport($ID);
                     }
                 }
             }
-            return redirect()->to('refstatus')->with('status','Import Refstatus Berhasil');
         }else if ($response == "Expired"){
                 $tokenbaru = new BearerKey();
                 $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
-                return redirect()->to('refstatus')->with(['status' => 'Token Expired']);
         }else{
-            return redirect()->to('refstatus')->with(['status' => 'Gagal, Data Terlalu Besar']);
-        }
-    }
-
-    function updatestatusimport($idrefstatus){
-        $checkdata = DB::table('data_ang')->where('idrefstatus','=',$idrefstatus)->count();
-        if ($checkdata >0){
-            DB::table('ref_status')->where('idrefstatus','=',$idrefstatus)->update([
-                'statusimport' => 2
-            ]);
+            $tokenbaru = new BearerKey();
+            $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
         }
     }
 }

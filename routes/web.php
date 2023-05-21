@@ -215,6 +215,7 @@ Route::get('monitoringrealisasiro',[MonitoringRealisasiROConctroller::class,'rea
 Route::get('getdatarealisasiroadmin/{idbulan}/{idbiro?}',[MonitoringRealisasiROConctroller::class, 'getdatarealisasiro'])->name('getdatarealisasiroadmin')->middleware('cekadmincaput');
 Route::post('rekaprealisasiroadmin',[MonitoringRealisasiROConctroller::class,'rekaprealisasiro'])->name('rekaprealisasiroadmin')->middleware('cekadmincaput');
 Route::get('exportrealisasiro',[MonitoringRealisasiROConctroller::class,'exportrealisasiro'])->name('exportrealisasiro')->middleware('cekadmincaput');
+Route::get('exportrealisasianggaran',[MonitoringRealisasiROConctroller::class,'exportrealisasianggaran'])->name('exportrealisasiro')->middleware('cekadmincaput');
 
 
 //REKON REALISASI RO SAKTI
@@ -280,8 +281,9 @@ Route::get('importrealisasisemar',[RealisasiSemarController::class,'importrealis
 
 //REALISASI SP2D
 Route::get('sppheader',[SppHeaderController::class,'sppheader'])->name('sppheader')->middleware('auth');
-Route::get('importsppheader',[SppHeaderController::class,'importsppheader'])->name('importsppheader')->middleware('auth');
-Route::get('importcoa/{idspp}',[SppPengeluaranController::class,'importcoa'])->name('importcoa')->middleware('auth');
+Route::get('importsppheader',[SppHeaderController::class,'importsppheader'])->name('importsppheader');
+Route::get('importseluruhcoa',[SppHeaderController::class,'importseluruhcoa'])->name('importseluruhcoa')->middleware('auth');
+Route::get('importcoa/{idspp}/{ta?}',[SppPengeluaranController::class,'importcoa'])->name('importcoa')->middleware('auth');
 Route::get('lihatcoa/{idspp}',[SppPengeluaranController::class,'lihatcoa'])->name('lihatcoa')->middleware('auth');
 Route::get('getlistpengeluaran/{ID_SPP}',[SppPengeluaranController::class,'getlistpengeluaran'])->name('getlistpengeluaran')->middleware('auth');
 Route::get('getlistpotongan/{ID_SPP}',[SppPotonganController::class,'getlistpotongan'])->name('getlistpotongan')->middleware('auth');

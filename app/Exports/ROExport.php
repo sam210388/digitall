@@ -14,24 +14,44 @@ class ROExport implements FromQuery, WithHeadings
     /**
      * @return \Illuminate\Support\Collection
      */
+    protected $TA;
+
+    public function __construct($TA)
+    {
+        $this->TA = $TA;
+    }
+
     public function query()
     {
-        $tahunanggaran = session('tahunanggaran');
+        $tahunanggaran = $this->TA;
         $data = DB::table('ro as a')
             ->select([DB::raw('concat(a.tahunanggaran,".",a.kodesatker,".",a.kodekegiatan,".",
                 a.kodeoutput,".",a.kodesuboutput," | ",a.uraianro) as ro'), 'a.target as target','n.uraianbiro as Biro','o.uraiandeputi as deputi',
+                'b.jumlah as jumlahjanuari','b.prosentase as prosentasejanuari',
                 'b.jumlahsdperiodeini as jumlahsdjanuari','b.prosentasesdperiodeini as prosentasesdjanuari',
+                'c.jumlah as jumlahfebruari','c.prosentase as prosentasefebruari',
                 'c.jumlahsdperiodeini as jumlahsdfebruari','c.prosentasesdperiodeini as prosentasesdfebruari',
+                'd.jumlah as jumlahmaret','d.prosentase as prosentasemaret',
                 'd.jumlahsdperiodeini as jumlahsdmaret','d.prosentasesdperiodeini as prosentasesdmaret',
+                'e.jumlah as jumlahapril','e.prosentase as prosentaseapril',
                 'e.jumlahsdperiodeini as jumlahsdapril','e.prosentasesdperiodeini as prosentasesdapril',
+                'f.jumlah as jumlahmei','f.prosentase as prosentasemei',
                 'f.jumlahsdperiodeini as jumlahsdmei','f.prosentasesdperiodeini as prosentasesdmei',
+                'g.jumlah as jumlahjuni','g.prosentase as prosentasejuni',
                 'g.jumlahsdperiodeini as jumlahsdjuni','g.prosentasesdperiodeini as prosentasesdjuni',
+                'h.jumlah as jumlahjuli','h.prosentase as prosentasejuli',
                 'h.jumlahsdperiodeini as jumlahsdjuli','h.prosentasesdperiodeini as prosentasesdjuli',
-                'i.jumlahsdperiodeini as jumlahagustus','i.prosentasesdperiodeini as prosentasesdagustuss',
-                'j.jumlahsdperiodeini as jumlahseptember','j.prosentasesdperiodeini as prosentasesdseptember',
-                'k.jumlahsdperiodeini as jumlahoktober','k.prosentasesdperiodeini as prosentasesdoktober',
-                'l.jumlahsdperiodeini as jumlahnovember','l.prosentasesdperiodeini as prosentasesdnovember',
-                'm.jumlahsdperiodeini as jumlahjanuari','m.prosentasesdperiodeini as prosentasesddesember',
+                'i.jumlah as jumlahagustus','i.prosentase as prosentaseagustus',
+                'i.jumlahsdperiodeini as jumlahsdagustus','i.prosentasesdperiodeini as prosentasesdagustus',
+                'j.jumlah as jumlahsdseptember','j.prosentase as prosentaseseptember',
+                'j.jumlahsdperiodeini as jumlahsdseptember','j.prosentasesdperiodeini as prosentasesdseptember',
+                'k.jumlah as jumlahoktober','k.prosentase as prosentaseoktober',
+                'k.jumlahsdperiodeini as jumlahsdoktober','k.prosentasesdperiodeini as prosentasesdoktober',
+                'l.jumlah as jumlahnovember','l.prosentase as prosentasenovember',
+                'l.jumlahsdperiodeini as jumlahsdnovember','l.prosentasesdperiodeini as prosentasesdnovember',
+                'm.jumlah as jumlahdesember','m.prosentase as prosentasedesember',
+                'm.jumlahsdperiodeini as jumlahsddesember','m.prosentasesdperiodeini as prosentasesddesember',
+
 
             ])
             ->leftJoin('biro as n','a.idbiro','=','n.id')
@@ -86,23 +106,35 @@ class ROExport implements FromQuery, WithHeadings
             })
             ->where('a.tahunanggaran', '=', $tahunanggaran)
             ->orderBy('a.id');
-
+       //echo json_encode($data);
         return $data;
     }
 
     public function headings(): array
     {
-       return ['RO','Target','Biro','Deputi','Jumlah sd Januari','Prosentase sd Januari',
+       return ['RO','Target','Biro','Deputi',
+           'Jumlah Januari','Prosentase Januari',
+           'Jumlah sd Januari','Prosentase sd Januari',
+           'Jumlah Februari','Prosentase Februari',
            'Jumlah sd Februari','Prosentase sd Februari',
+           'Jumlah Maret','Prosentase Maret',
            'Jumlah sd Maret','Prosentase sd Maret',
+           'Jumlah April','Prosentase April',
            'Jumlah sd April','Prosentase sd April',
+           'Jumlah Mei','Prosentase Mei',
            'Jumlah sd Mei','Prosentase sd Mei',
+           'Jumlah Juni','Prosentase Juni',
            'Jumlah sd Juni','Prosentase sd Juni',
            'Jumlah sd Juli','Prosentase sd Juli',
+           'Jumlah Agustus','Prosentase Agustus',
            'Jumlah sd Agustus','Prosentase sd Agustus',
+           'Jumlah September','Prosentase September',
            'Jumlah sd September','Prosentase sd September',
+           'Jumlah Oktober','Prosentase Oktober',
            'Jumlah sd Oktober','Prosentase sd Oktober',
+           'Jumlah November','Prosentase November',
            'Jumlah sd November','Prosentase sd November',
+           'Jumlah Desember','Prosentase Desember',
            'Jumlah sd Desember','Prosentase sd Desember'];
     }
 }

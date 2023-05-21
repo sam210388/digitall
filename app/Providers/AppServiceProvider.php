@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use Illuminate\Queue\Events\JobProcessed;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\ServiceProvider;
+use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,6 +27,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        config(['app.locale' => 'id']);
+        Carbon::setLocale('id');
+        date_default_timezone_set('Asia/Jakarta');
+
     }
 }

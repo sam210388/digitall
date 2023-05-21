@@ -11,21 +11,20 @@ use Yajra\DataTables\DataTables;
 
 class SppPotonganController extends Controller
 {
-    function importspppotongan($ID_SPP){
+    function importspppotongan($ID_SPP, $TA){
         //cek apakah sudah ada
         $jumlahdata = DB::table('spppotongan')->where('ID_SPP','=',$ID_SPP)->count();
         if ($jumlahdata > 0){
             DB::table('spppotongan')->where('ID_SPP','=',$ID_SPP)->delete();
         }
 
-        $tahunanggaran = session('tahunanggaran');
         $kodemodul = 'PEM';
         $tipedata = 'sppPotongan';
         $variabel = [$ID_SPP];
 
         //tarikdata
         $response = new TarikDataMonsakti();
-        $response = $response->prosedurlengkap($tahunanggaran, $kodemodul, $tipedata, $variabel);
+        $response = $response->prosedurlengkap($TA, $kodemodul, $tipedata, $variabel);
         //echo json_encode($response);
 
         if ($response != "Gagal" or $response != "Expired"){
@@ -38,7 +37,7 @@ class SppPotonganController extends Controller
                         $tokenresponse = $data->TOKEN;
                     }
                     $token = new BearerKey();
-                    $token->simpantokenbaru($tahunanggaran, $kodemodul, $tokenresponse);
+                    $token->simpantokenbaru($TA, $kodemodul, $tokenresponse);
                 }
             }
             foreach ($hasilasli as $item => $value) {
@@ -65,39 +64,15 @@ class SppPotonganController extends Controller
                         $NILAI_VALAS = $DATA->NILAI_VALAS;
                         $NILAI_PEMBAYARAN_VALAS_SP2D = $DATA->NILAI_PEMBAYARAN_VALAS_SP2D;
 
-                        if ($KDSATKER == '001030'){
-                            $where = array(
-                                'kodeprogram' => $KODE_PROGRAM,
-                                'kodekegiatan' => $KODE_KEGIATAN,
-                                'kodeoutput' => $KODE_OUTPUT,
-                                'kodesuboutput' => $KODE_SUBOUTPUT,
-                                'kodekomponen' => $KODE_KOMPONEN,
-                            );
-                        }else{
-                            $where = array(
-                                'kodeprogram' => $KODE_PROGRAM,
-                                'kodekegiatan' => $KODE_KEGIATAN,
-                                'kodeoutput' => $KODE_OUTPUT,
-                                'kodesuboutput' => $KODE_SUBOUTPUT,
-                                'kodekomponen' => $KODE_KOMPONEN,
-                                'kodesubkomponen' => $KODE_SUBKOMPONEN
-                            );
-                        }
-
-                        $dataanggaranbagian = DB::table('anggaranbagian')->where($where)->get();
+                        $datapengeluaran = DB::table('spppengeluaran')->where('ID_SPP','=',$ID_SPP)->get();
                         $ID_BAGIAN = 0;
                         $ID_BIRO = 0;
                         $ID_DEPUTI = 0;
-                        foreach ($dataanggaranbagian as $dab){
-                            if ($dab->idbagian){
-                                $ID_BAGIAN = $dab->idbagian;
-                            }else{
-                                $ID_BAGIAN = 0;
-                            }
-                            $ID_BIRO = $dab->idbiro;
-                            $ID_DEPUTI = $dab->iddeputi;
+                        foreach ($datapengeluaran as $dp){
+                            $ID_BAGIAN = $dp->ID_BAGIAN;
+                            $ID_BIRO = $dp->ID_BIRO;
+                            $ID_DEPUTI = $dp->ID_DEPUTI;
                         }
-
                         $data = array(
                             'KODE_KEMENTERIAN' => $KODE_KEMENTERIAN,
                             'KDSATKER' => $KDSATKER,
@@ -127,24 +102,18 @@ class SppPotonganController extends Controller
                     }
                 }
             }
-            $datastatus = array(
-                'STATUS_POTONGAN' => 2,
-                'UPDATE_POTONGAN' => now()
-            );
-            DB::table('sppheader')->where('ID_SPP','=',$ID_SPP)->update($datastatus);
         }else if ($response == "Expired"){
             $tokenbaru = new BearerKey();
-            $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
-            return redirect()->to('sppheader')->with(['status' => 'Token Expired']);
+            $tokenbaru->resetapi($TA, $kodemodul, $tipedata);
+            //return redirect()->to('sppheader')->with(['status' => 'Token Expired']);
         }else{
-            return redirect()->to('sppheader')->with(['status' => 'Gagal, Data Terlalu Besar']);
+            //return redirect()->to('sppheader')->with(['status' => 'Gagal, Data Terlalu Besar']);
         }
     }
 
     public function getlistpotongan(Request $request, $ID_SPP){
-        $ID_SPP = $request->get('ID_SPP');
         if ($request->ajax()) {
-            $data = DB::table('spppengeluaran')->where('ID_SPP','=',$ID_SPP)->get();
+            $data = DB::table('spppotongan')->where('ID_SPP','=',$ID_SPP)->get();
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->make(true);

@@ -62,7 +62,7 @@ class BearerKey
             $tokenbaru = $ITEM->TOKEN;
         }
 
-        $this->simpantokenbaru($tahunanggaran, $kodemodul, $tipedata);
+        $this->simpantokenbaru($tahunanggaran, $kodemodul, $tokenbaru);
         return $tokenbaru;
     }
 

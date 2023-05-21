@@ -36,7 +36,7 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <table id="tabelpengeluaran" class="table table-bordered table-striped tabelrealisasi">
+                        <table id="tabelpengeluaran" class="table table-bordered table-striped tabelpengeluaran">
                             <thead>
                             <tr>
                                 <th>No</th>
@@ -60,7 +60,7 @@
                         </table>
                     </div>
                     <div class="card-body">
-                        <table id="tabelpotongan" class="table table-bordered table-striped tabelrealisasi">
+                        <table id="tabelpotongan" class="table table-bordered table-striped tabelpotongan">
                             <thead>
                             <tr>
                                 <th>No</th>
@@ -90,7 +90,7 @@
     <!-- /.content -->
     <script type="text/javascript">
         $(function () {
-            let ID_SPP = document.getElementById('ID_SPP').value;
+
             /*------------------------------------------
             --------------------------------------------
             Render DataTable
@@ -103,6 +103,7 @@
                     {"width":"5%"},
                 );
             });
+            let ID_SPP = document.getElementById('ID_SPP').value;
             var table = $('.tabelpengeluaran').DataTable({
                 destroy: true,
                 fixedColumn:true,
@@ -130,7 +131,6 @@
                     .search( this.value )
                     .draw();
             });
-
 
             // Setup - add a text input to each footer cell
             $('#tabelpotongan tfoot th').each( function (i) {
@@ -167,6 +167,9 @@
                     .draw();
             });
 
+            $('#kembali').click(function (e) {
+                window.location="{{URL::to('sppheader')}}";
+            });
         });
     </script>
 

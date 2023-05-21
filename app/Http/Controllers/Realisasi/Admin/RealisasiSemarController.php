@@ -158,6 +158,6 @@ class RealisasiSemarController extends Controller
             );
             DB::table('realisasisemar')->insert($datainsert);
         }
-        return response()->json(['status'=>'berhasil']);
+        return redirect()->to('realisasisemar')->with('status','Import Realisasi SEMAR Berhasil');
     }
 }

@@ -3,11 +3,17 @@
 namespace App\Http\Controllers\Realisasi\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ImportCOA;
+use App\Jobs\ImportSppHeader;
+use App\Jobs\UpdateStatusPengeluaran;
+use App\Jobs\UpdateUnitId;
 use App\Libraries\BearerKey;
 use App\Libraries\TarikDataMonsakti;
 use App\Models\Realisasi\Admin\SppHeaderModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
+use JustIversen\JobChainer\JobChainer;
 use Yajra\DataTables\DataTables;
 
 class SppHeaderController extends Controller
@@ -27,21 +33,56 @@ class SppHeaderController extends Controller
                     if ($row->STATUS_PENGELUARAN == 1){
                         $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->ID_SPP.'" data-original-title="importcoa" class="importcoa btn btn-primary btn-sm importcoa">Import COA</a>';
                     }else{
-                        $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->ID_SPP.'" data-original-title="detilcoa" class="detilcoa btn btn-success btn-sm detilcoa">Lihat Coa</a>';
+                        $btn = '<div class="btn-group" role="group">
+                        <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->ID_SPP.'" data-original-title="detilcoa" class="detilcoa btn btn-success btn-sm detilcoa">Lihat Coa</a>';
                         $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->ID_SPP.'" data-original-title="importcoa" class="importcoa btn btn-primary btn-sm importcoa">Import COA</a>';
                     }
                     return $btn;
                 })
+                ->addColumn('statusnilai',function($row){
+                    $nilaipengeluaran = $row->JML_PENGELUARAN;
+                    $nilaipotongan = $row->JML_POTONGAN;
+                    $nilaispppengeluaran = DB::table('spppengeluaran')->where('ID_SPP','=',$row->ID_SPP)->sum('NILAI_AKUN_PENGELUARAN');
+                    if ($nilaipengeluaran == $nilaispppengeluaran){
+                        $statusnilai = $nilaispppengeluaran;
+                    }else{
+                        $statusnilai = $nilaispppengeluaran;
+                    }
+                    return $statusnilai;
+                })
                 ->make(true);
         }
 
-        return view('Realisasi.admin.sppheader',[
+        return view('Realisasi.Admin.sppheader',[
             "judul"=>$judul,
         ]);
     }
 
     function importsppheader(){
         $tahunanggaran = session('tahunanggaran');
+        /*
+        $kodemodul = 'PEM';
+        $tipedata = 'sppHeader';
+        $tokenbaru = new BearerKey();
+        $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
+        */
+
+
+        ImportSppHeader::withChain([
+            new ImportCOA($tahunanggaran),
+            new UpdateStatusPengeluaran($tahunanggaran),
+            new UpdateUnitId($tahunanggaran)
+        ])->dispatch($tahunanggaran);
+
+        /*
+        ImportSppHeader::withChain([
+            new UpdateStatusPengeluaran($tahunanggaran)
+        ])->dispatch($tahunanggaran);
+        */
+        return redirect()->to('sppheader')->with('status','Import SPP Header dari SAKTI Berhasil');
+    }
+
+    function aksiimportsppheader($tahunanggaran){
         $kodemodul = 'PEM';
         $tipedata = 'sppHeader';
 
@@ -237,31 +278,24 @@ class SppHeaderController extends Controller
                             'SALDO_AKHIR' => $SALDO_AKHIR
                         );
                         SppHeaderModel::updateOrCreate(['ID_SPP' => $ID_SPP],$data);
-                        $this->updatestatusspp($ID_SPP);
+                        //$this->updatestatusspp($ID_SPP);
                     }
                 }
             }
-            return redirect()->to('sppheader')->with('status','Import SPP Header dari SAKTI Berhasil');
         }else if ($response == "Expired"){
-
             $tokenbaru = new BearerKey();
             $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
-            return redirect()->to('refstatus')->with(['status' => 'Token Expired']);
+            //return redirect()->to('sppheader')->with(['status' => 'Token Expired']);
         }else{
-            return redirect()->to('refstatus')->with(['status' => 'Gagal, Data Terlalu Besar']);
+            $tokenbaru = new BearerKey();
+            $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
+            //return redirect()->to('sppheader')->with(['status' => 'Gagal, Data Terlalu Besar']);
         }
     }
 
-    private function updatestatusspp($ID_SPP){
-        $cekspppengeluaran = DB::table('spppengeluaran')->where('ID_SPP','=',$ID_SPP)->count();
-        if ($cekspppengeluaran > 0){
-            $data = array(
-                'STATUS_PENGELUARAN' => 2,
-                'UPDATE_PENGELUARAN' => now(),
-                'STATUS_POTONGAN' => 2,
-                'UPDATE_POTONGAN' => 2
-            );
-            DB::table('sppheader')->where('ID_SPP','=',$ID_SPP)->update($data);
-        }
+    function importseluruhcoa(){
+        $tahunanggaran = session('tahunanggaran');
+        $this->dispatch(new ImportCOA($tahunanggaran));
+        return redirect()->to('sppheader')->with('status','Import Seluruh COA dari SAKTI Dalam Proses, Mohon Ditunggu');
     }
 }
