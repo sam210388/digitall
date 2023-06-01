@@ -158,18 +158,10 @@
                 scrollX:"100%",
                 autoWidth:true,
                 processing: true,
-                serverSide: true,
+                serverSide: false,
                 dom: 'Bfrtip',
                 select: true,
-                buttons: ['copy','excel','pdf','csv','print',{
-                    text: "Cluster Anggaran",
-                    action:function (){
-                        var oData = table.rows('.selected').data();
-                        for (var i=0; i < oData.length ;i++){
-                            alert("Pengenal: " + oData[i][3] + " Bagian: " + oData[i][4]);
-                        }
-                    }
-                }],
+                buttons: ['copy','excel','pdf','csv','print'],
                 ajax:"{{route('anggaranbagian.index')}}",
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
@@ -238,7 +230,6 @@
                 }
 
                 $.ajax({
-
                     data: fd,
                     url: saveBtn === "tambah" ? "{{route('anggaranbagian.store')}}":"{{route('anggaranbagian.update','')}}"+'/'+indeksanggaran,
                     type: "POST",
@@ -246,7 +237,7 @@
                     contentType: false,
                     processData: false,
                     success: function (data) {
-                        if (data.status == "berhasil"){
+                        if (data.status === "berhasil"){
                             Swal.fire({
                                 title: 'Sukses',
                                 text: 'Simpan Data Berhasil',

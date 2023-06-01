@@ -6,7 +6,11 @@
         <div class="content-header">
             <div class="container-fluid">
                 <div class="row">
-                    {!! $card !!}
+                   @if($data)
+                       @foreach($data as $item)
+                        {!! $item !!}
+                        @endforeach
+                    @endif
                 </div>
             </div><!-- /.container-fluid -->
         </div>

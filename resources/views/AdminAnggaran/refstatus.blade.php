@@ -167,37 +167,7 @@
                         }
                     },
                 });
-
-
             });
-
-            $('body').on('click', '.rekapanggaran', function () {
-                var idrefstatus = $(this).data('id');
-                $.ajax({
-                    data: {idrefstatus: idrefstatus},
-                    url: "{{route('checkrekapanggaran')}}",
-                    type: "POST",
-                    dataType: 'json',
-                    contentType: false,
-                    processData: false,
-                    success: function (data) {
-                        if(data == "Ada"){
-                            if( confirm("Apakah Anda Yakin Mau Rekap Ulang Data Anggaran ini?")){
-                                $(this).html('Processing..');
-                                window.location="{{URL::to('rekapanggaran')}}"+"/"+idrefstatus;
-                            }
-                        }else{
-                            $(this).html('Processing..');
-                            window.location="{{URL::to('rekapanggaran')}}"+"/"+idrefstatus;
-                        }
-                    },
-                });
-
-
-            });
-
-
-
         });
 
     </script>

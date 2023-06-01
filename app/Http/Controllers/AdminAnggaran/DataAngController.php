@@ -138,7 +138,7 @@ class DataAngController extends Controller
                             'kodesubkomponen' => $KODE_SUBKOMPONEN,
                             'uraiansubkomponen' => $URAIAN_SUBKOMPONEN,
                             'kodeakun' => $KODE_AKUN,
-                            'pengenal' => $KODE_PROGRAM.'.'.$KODE_KEGIATAN.'.'.$KODE_OUTPUT.'.'.$KODE_SUBOUTPUT.'.'.$KODE_KOMPONEN.'.'.$KODE_SUBKOMPONEN.'.'.$KODE_AKUN,
+                            'pengenal' => $tahunanggaran.".".$kdsatker.".".$KODE_PROGRAM.'.'.$KODE_KEGIATAN.'.'.$KODE_OUTPUT.'.'.$KODE_SUBOUTPUT.'.'.$KODE_KOMPONEN.'.'.$KODE_SUBKOMPONEN.'.'.$KODE_AKUN,
                             'kodejenisbeban' => $KODE_JENIS_BEBAN,
                             'kodecaratarik' => $KODE_CARA_TARIK,
                             'header1' => $HEADER1,
@@ -203,20 +203,26 @@ class DataAngController extends Controller
             $kodeoutput = $item->kodeoutput;
             $kodesubout = $item->kodesuboutput;
             $kodekomponen = $item->kodekomponen;
-            $pengenal = $kodeprogram.'.'.$kodekegiatan.'.'.$kodeoutput.'.'.$kodesubout.'.'.$kodekomponen;
+            $kodesubkomponen = $item->kodesubkomponen;
+            $kodeakun = $item->kodeakun;
+            $jenisbelanja = substr($kodeakun,0,2);
+            $pengenalanggaranbagian = $kodeprogram.'.'.$kodekegiatan.'.'.$kodeoutput.'.'.$kodesubout.'.'.$kodekomponen;
+            $pengenalrealisasianggaran = $tahunanggaran.".".$kdsatker.".".$kodeprogram.'.'.$kodekegiatan.'.'.$kodeoutput.'.'.$kodesubout.'.'.$kodekomponen.".".$kodesubkomponen.".".$kodeakun;
+
+            $indeks = $tahunanggaran.$kdsatker.$kodeprogram.$kodekegiatan.$kodeoutput.$kodesubout.$kodekomponen;
 
             if ($kdsatker == '001012'){
-                $kodesubkomponen = $item->kodesubkomponen;
-                $pengenal = $kodeprogram.'.'.$kodekegiatan.'.'.$kodeoutput.'.'.$kodesubout.'.'.$kodekomponen.'.'.$kodesubkomponen;
+                $pengenalanggaranbagian = $pengenalanggaranbagian.".".$kodesubkomponen;
+                $indeks = $indeks.$kodesubkomponen;
             }else{
-                $pengenal = $kodeprogram.'.'.$kodekegiatan.'.'.$kodeoutput.'.'.$kodesubout.'.'.$kodekomponen;
+                $pengenalanggaranbagian = $pengenalanggaranbagian;
+                $indeks = $indeks;
             }
 
             $where = array(
-                'tahunanggaran' => $tahunanggaran,
-                'pengenal' => $pengenal
+                'indeks' => $indeks
             );
-            $adadata = AnggaranBagianModel::where($where)->get()->count();
+            $adadata = AnggaranBagianModel::where($where)->count();
             if ($adadata == 0){
                 $data = array(
                     'tahunanggaran' => $tahunanggaran,
@@ -227,109 +233,57 @@ class DataAngController extends Controller
                     'kodesuboutput' => $kodesubout,
                     'kodekomponen' => $kodekomponen,
                     'kodesubkomponen' => $kodesubkomponen,
-                    'pengenal' => $pengenal,
+                    'pengenal' => $pengenalanggaranbagian,
+                    'indeks' => $indeks,
                     'idbagian' => null
                 );
                 AnggaranBagianModel::insert($data);
             }
-        }
-    }
 
-    function checkrekapanggaran(Request $request){
-        $idrefstatus = $request->get('idrefstatus');
-        $jumlahdata = DB::table('summarydipa')->where($idrefstatus,'=',$idrefstatus)
-            ->count();
-
-        if ($jumlahdata > 0){
-            return response()->json("Ada");
-        }else{
-            return response()->json("Tidak Ada");
+            //insert ke laporan realisasi anggaran
+            $adadatarealisasi = DB::table('laporanrealisasianggaranbac')->where('pengenal','=',$pengenalrealisasianggaran)->count();
+            if ($adadatarealisasi == 0){
+                $datarealisasi = DB::table('anggaranbagian')->where('pengenal','=',$pengenalanggaranbagian)->get();
+                $idbagian = 0;
+                $idbiro = 0;
+                $iddeputi = 0;
+                foreach ($datarealisasi as $dr){
+                    $idbagian = $dr->idbagian;
+                    $idbiro = $dr->idbiro;
+                    $iddeputi = $dr->iddeputi;
+                    $idindikatorro = $dr->idindikatorro;
+                    $idro = $dr->idro;
+                    $idkro = $dr->idkro;
+                }
+                $datarealisasianggaran = array(
+                    'tahunanggaran' => $tahunanggaran,
+                    'kodesatker' => $kdsatker,
+                    'kodeprogram' => $kodeprogram,
+                    'kodekegiatan' => $kodekegiatan,
+                    'kodeoutput' => $kodeoutput,
+                    'kodesuboutput' => $kodesubout,
+                    'kodekomponen' => $kodekomponen,
+                    'kodesubkomponen' => $kodesubkomponen,
+                    'kodeakun' => $kodeakun,
+                    'jenisbelanja' => $jenisbelanja,
+                    'pengenal' => $pengenalrealisasianggaran,
+                    'idbagian' => $idbagian,
+                    'idbiro' => $idbiro,
+                    'iddeputi' => $iddeputi,
+                    'idindikatorro' => $idindikatorro,
+                    'idro' => $idro,
+                    'idkro' => $idkro
+                );
+                DB::table('laporanrealisasianggaranbac')->insert($datarealisasianggaran);
+            }
         }
     }
 
     public function rekapanggaran($idrefstatus){
         $tahunanggaran = session('tahunanggaran');
         $this->rekapanggarannoredirect($idrefstatus, $tahunanggaran);
-        $this->summarydipa($idrefstatus, $tahunanggaran);
         return redirect()->to('refstatus')->with('rekapberhasil','Rekap Anggaran Bagian Berhasil');
     }
 
-    public function summarydipa($idrefstatus, $tahunanggaran){
-        $datapagu = DB::table('data_ang')
-            ->where('idrefstatus','=',$idrefstatus)
-            ->where('header1','=',0)
-            ->where('header2','=',0)
-            ->select(DB::raw('pengenal, kdsatker, sum(total) as anggaran, sum(poknilai1) as pok1, sum(poknilai2) as pok2, sum(poknilai3) as pok3,
-                                                             sum(poknilai4) as pok4, sum(poknilai5) as pok5, sum(poknilai6) as pok6,
-                                                             sum(poknilai7) as pok7, sum(poknilai8) as pok8, sum(poknilai9) as pok9,
-                                                             sum(poknilai10) as pok10, sum(poknilai11) as pok11, sum(poknilai12) as pok12, sum(nilaiblokir) as nilaiblokir'))
-            ->groupBy(['pengenal','kdsatker'])
-            ->get();
-        foreach ($datapagu as $item){
-            $kdsatker = $item->kdsatker;
-            $pengenal = $item->pengenal;
-            if ($kdsatker == '001012'){
-                $pengenalkomponen = substr($pengenal,0,21);
-            }else{
-                $pengenalkomponen = substr($pengenal,0,19);
-            }
-            $idbagian = DB::table('anggaranbagian')
-                ->where('pengenal','=',$pengenalkomponen)
-                ->where('tahunanggaran','=',$tahunanggaran)
-                ->value('idbagian');
-            $jenisbelanja = substr($pengenal,22,2);
-            $idbiro = BagianModel::where('id',$idbagian)->value('idbiro');
-            $iddeputi = BagianModel::where('id',$idbagian)->value('iddeputi');
-            $anggaran = $item->anggaran;
-            $pok1 = $item->pok1;
-            $pok2 = $item->pok2;
-            $pok3 = $item->pok3;
-            $pok4 = $item->pok4;
-            $pok5 = $item->pok5;
-            $pok6 = $item->pok6;
-            $pok7 = $item->pok7;
-            $pok8 = $item->pok8;
-            $pok9 = $item->pok9;
-            $pok10 = $item->pok10;
-            $pok11 = $item->pok11;
-            $pok12 = $item->pok12;
-            $nilaiblokir = $item->nilaiblokir;
-
-            $data = array(
-                'tahunanggaran' => $tahunanggaran,
-                'kdsatker' => $kdsatker,
-                'idrefstatus' => $idrefstatus,
-                'pengenal' => $pengenal,
-                'jenisbelanja' => $jenisbelanja,
-                'idbagian' => $idbagian,
-                'idbiro' => $idbiro,
-                'iddeputi' => $iddeputi,
-                'anggaran' => $anggaran,
-                'pok1' => $pok1,
-                'pok2' => $pok2,
-                'pok3' => $pok3,
-                'pok4' => $pok4,
-                'pok5' => $pok5,
-                'pok6' => $pok6,
-                'pok7' => $pok7,
-                'pok8' => $pok8,
-                'pok9' => $pok9,
-                'pok10' => $pok10,
-                'pok11' => $pok11,
-                'pok12' => $pok12,
-                'nilaiblokir' => $nilaiblokir,
-            );
-
-            SummaryDipaModel::updateOrCreate(
-                [
-                    'tahunanggaran' => $tahunanggaran,
-                    'kdsatker' => $kdsatker,
-                    'idrefstatus' => $idrefstatus,
-                    'pengenal' => $pengenal
-                    ],
-                $data
-            );
-        }
-    }
 
 }

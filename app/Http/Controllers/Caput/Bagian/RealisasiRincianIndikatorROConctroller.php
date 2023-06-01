@@ -311,10 +311,8 @@ class RealisasiRincianIndikatorROConctroller extends Controller
                 'status' => "Selesai",
                 'periodeselesai' => date('n',$tanggallapor)
             );
-
             DB::table('rincianindikatorro')->where('id','=',$idrincianindikatorro)->update($updatestatus);
         }
-
         return response()->json(['status'=>'berhasil']);
     }
 

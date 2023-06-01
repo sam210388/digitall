@@ -15,7 +15,7 @@ class BearerKey
             ->where('modul','=',$kodemodul)
             ->value('token');
 
-        if ($bearerkeyhistory){
+        if ($bearerkeyhistory != null){
             $bearerkey = $bearerkeyhistory;
 
         }else{

@@ -37,13 +37,11 @@ class RekapAnggaran implements ShouldQueue
             ->where([
                 ['tahunanggaran','=',$tahunanggaran],
                 ['kd_sts_history','LIKE','B%'],
-                ['statusimport','=',1]
             ])
             ->orWhere([
                 ['tahunanggaran','=',$tahunanggaran],
                 ['kd_sts_history','LIKE','C%'],
                 ['flag_update_coa','=',1],
-                ['statusimport','=',1]
             ])
             ->get();
         foreach ($datarefstatus as $data){

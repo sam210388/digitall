@@ -18,7 +18,7 @@ class FilterDataUser
     public function filterdata(){
         $role = $this->kewenanganuser();
         $where = array();
-        if (in_array(2,$role) OR in_array(14, $role)){
+        if (in_array(2,$role) OR in_array(11, $role)){
             $idbagian = Auth::user()->idbagian;
             if ($idbagian){
                 $wheretambahan = array(
@@ -26,41 +26,14 @@ class FilterDataUser
                 );
                 $where = array_merge($where, $wheretambahan);
             }
-        }elseif (in_array(6,$role) OR in_array(13, $role)){
+        }elseif (in_array(6,$role) OR in_array(12, $role)){
             $idbiro = Auth::user()->idbiro;
             if ($idbiro){
                 $wheretambahan = array(
                     'idbiro' => $idbiro);
                 $where = array_merge($where, $wheretambahan);
             }
-        }elseif(in_array(11,$role)){
-            $iddeputi = Auth::user()->iddeputi;
-            if ($iddeputi){
-                $wheretambahan = array(
-                    'iddeputi' => $iddeputi);
-                $where = array_merge($where, $wheretambahan);
-            }
         }
         return $where;
-    }
-
-    public function filterdatacaput(){
-        $idbagian = Auth::user()->idbagian;
-        $idbiro = Auth::user()->idbiro;
-        $iddeputi = Auth::user()->iddeputi;
-        $where = array();
-        if ($idbagian == 0){
-            $wheretambahan = array(
-                'idbagian' => $idbagian
-            );
-            $where = array_merge($where, $wheretambahan);
-        }else{
-            $wheretambahan = array(
-                'idbiro' => $idbiro
-            );
-            $where = array_merge($where, $wheretambahan);
-        }
-        return $where;
-
     }
 }

@@ -75,7 +75,7 @@ Route::match(["GET", "POST"], "register", function(){
 
 //ADMINISTRASI APLIKASI
 Route::get('/home', [HomeController::class, 'index'])->name('home');
-Route::resource('kewenangan',KewenanganController::class);
+Route::resource('kewenangan',KewenanganController::class)->middleware('auth');
 Route::any('/tampillistmenu',[MenuController::class,'tampillistmenu'])->name('tampillistmenu');
 Route::resource('menu',MenuController::class);
 Route::resource('submenu',SubMenuController::class);
@@ -179,6 +179,7 @@ Route::get('importanggaran/{kdsatker}/{kdstshistory}',[DataAngController::class,
 Route::post('checkdataang',[DataAngController::class,'checkdata'])->name('checkdataang')->middleware('cekadminanggaran');
 Route::get('rekapanggaran/{idrefstatus}',[DataAngController::class,'rekapanggaran'])->name('rekapanggaran')->middleware('cekadminanggaran');
 Route::post('checkrekapanggaran',[DataAngController::class,'checkrekapanggaran'])->name('checkrekapanggaran');
+
 //anggaranbagian
 Route::resource('anggaranbagian',AnggaranBagianController::class)->middleware('cekadminanggaran');
 

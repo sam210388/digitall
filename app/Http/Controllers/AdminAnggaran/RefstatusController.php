@@ -5,8 +5,14 @@ namespace App\Http\Controllers\AdminAnggaran;
 use App\Jobs\ImportDataAng;
 use App\Jobs\ImportRefStatus;
 use App\Jobs\RekapAnggaran;
+use App\Jobs\RekapAnggaranMingguan;
+use App\Jobs\RekapCashPlanTriwulan;
+use App\Jobs\RekapRealisasiHarian;
+use App\Jobs\SummaryDipa;
 use App\Jobs\UpdateIDKinerjaAnggaranBagian;
+use App\Jobs\UpdateStatusAktifAnggaran;
 use App\Jobs\UpdateStatusImportRefStatus;
+use App\Jobs\UpdateUnitAnggaran;
 use App\Libraries\BearerKey;
 use App\Http\Controllers\Controller;
 use App\Libraries\TarikDataMonsakti;
@@ -49,7 +55,6 @@ class RefstatusController extends Controller
                     }else{
                         $btn = '<div class="btn-group" role="group">
                             <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->kdsatker."/".$row->kd_sts_history.'" data-original-title="importanggaran" class="btn btn-primary btn-sm importanggaran">Import</a>';
-                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->idrefstatus.'" data-original-title="rekapanggaran" class="btn btn-success btn-sm rekapanggaran">Rekap</a>';
                         $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->idrefstatus.'" data-original-title="exportanggaran" class="btn btn-success btn-sm exportanggaran">Export</a>';
                     }
 
@@ -63,10 +68,12 @@ class RefstatusController extends Controller
 
     function importrefstatus(){
         $tahunanggaran = session('tahunanggaran');
+
         ImportRefStatus::withChain([
             new UpdateStatusImportRefStatus($tahunanggaran),
             new ImportDataAng($tahunanggaran),
             new RekapAnggaran($tahunanggaran),
+            new UpdateStatusAktifAnggaran($tahunanggaran),
             new UpdateStatusImportRefStatus($tahunanggaran)
         ])->dispatch($tahunanggaran);
         return redirect()->to('refstatus')->with('status','Import Ref Status dari SAKTI Berhasil');

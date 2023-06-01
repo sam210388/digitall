@@ -139,7 +139,9 @@ class SppPengeluaranController extends Controller
                             'idindikatorro' => null,
                             'idro' => null,
                             'idkro' => null,
-                            'bulansp2d' => $bulan
+                            'bulansp2d' => $bulan,
+                            'tahunanggaran' => $TA,
+                            'pengenal' => $TA.'.'.$KDSATKER.'.'.$KODE_PROGRAM.'.'.$KODE_KEGIATAN.'.'.$KODE_OUTPUT.'.'.$KODE_SUBOUTPUT.'.'.$KODE_KOMPONEN.'.'.substr($KODE_SUBKOMPONEN,1,1).'.'.$KODE_AKUN
                         );
                         DB::table('spppengeluaran')->insert($data);
                     }

@@ -17,7 +17,6 @@ class TarikDataMonsakti
         }else{
             $url = 'https://monsakti.kemenkeu.go.id/sitp-monsakti-omspan/webservice/API/' . $kodemodul . '/' . $tipedata . '/KL002';
         }
-
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => $url,
@@ -35,6 +34,7 @@ class TarikDataMonsakti
         ));
         $response = curl_exec($curl);
         curl_close($curl);
+
         return $response;
 
     }
@@ -47,6 +47,8 @@ class TarikDataMonsakti
             return "Expired";
 
         }else if (str_contains($diolah,"Fatal")){
+            return "Gagal";
+        }else if (str_contains($diolah,"Anda")){
             return "Gagal";
         }else{
             return $response;
