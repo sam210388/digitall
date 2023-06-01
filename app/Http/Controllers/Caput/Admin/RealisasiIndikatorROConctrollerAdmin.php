@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Caput\Admin;
 
+use App\Exports\IndikatorROExport;
+use App\Exports\IndikatorROExportRealisasi;
 use App\Http\Controllers\Controller;
-use App\Models\Caput\Biro\RealisasiIndikatorROModel;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
+use Maatwebsite\Excel\Facades\Excel;
 
 class RealisasiIndikatorROConctrollerAdmin extends Controller
 {
@@ -74,4 +75,17 @@ class RealisasiIndikatorROConctrollerAdmin extends Controller
                 ->make(true);
         }
     }
+
+    function exportrealisasiindikatorro(){
+        $tahunanggaran = session('tahunanggaran');
+        //Excel::download(new UsersExport, 'users.xlsx');
+        return Excel::download(new IndikatorROExport($tahunanggaran),'RealisasiIndikatorRO.xlsx');
+    }
+
+    function exportrealisasianggaranindikatorro(){
+        $tahunanggaran = session('tahunanggaran');
+        //Excel::download(new UsersExport, 'users.xlsx');
+        return Excel::download(new IndikatorROExportRealisasi($tahunanggaran),'RealisasiAnggaranIndikatorRO.xlsx');
+    }
+
 }

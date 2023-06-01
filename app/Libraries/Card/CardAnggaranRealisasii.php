@@ -22,11 +22,11 @@ class CardAnggaranRealisasii
         //anggaran
         $role = new FilterDataUser();
         $role = $role->kewenanganuser();
-        $anggaransetjen = DB::table('laporanrealisasianggaran')
+        $anggaransetjen = DB::table('laporanrealisasianggaranbac')
             ->where('tahunanggaran','=',$tahunanggaran)
             ->where('kodesatker','=','001012');
 
-        $anggarandewan = DB::table('laporanrealisasianggaran')
+        $anggarandewan = DB::table('laporanrealisasianggaranbac')
             ->where('tahunanggaran','=',$tahunanggaran)
             ->where('kodesatker','=','001030');
 
