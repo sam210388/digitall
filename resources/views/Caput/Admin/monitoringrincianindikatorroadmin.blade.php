@@ -163,7 +163,7 @@
                 serverSide: false,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','csv','print'],
-                ajax:"{{route('getdatarealisasimonitoringadmin','','')}}"+"/"+idbulan,
+                ajax:"{{route('getdatarealisasimonitoringadmin','')}}"+"/"+idbulan,
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'biro', name: 'biro'},
@@ -204,7 +204,7 @@
                     serverSide: false,
                     dom: 'Bfrtip',
                     buttons: ['copy','excel','csv','print'],
-                    ajax:"{{route('getdatarealisasimonitoringadmin','','')}}"+"/"+idbulan+"/"+idbiro+"/"+idbagian,
+                    ajax:"{{route('getdatarealisasimonitoringadmin','')}}"+"/"+idbulan+"/"+idbiro+"/"+idbagian,
                     columns: [
                         {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                         {data: 'biro', name: 'biro'},
@@ -246,7 +246,7 @@
                     serverSide: false,
                     dom: 'Bfrtip',
                     buttons: ['copy','excel','csv','print'],
-                    ajax:"{{route('getdatarealisasimonitoringadmin','','')}}"+"/"+idbulan+"/"+idbiro+"/"+idbagian,
+                    ajax:"{{route('getdatarealisasimonitoringadmin','')}}"+"/"+idbulan+"/"+idbiro+"/"+idbagian,
                     columns: [
                         {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                         {data: 'biro', name: 'biro'},

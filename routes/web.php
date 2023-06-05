@@ -48,6 +48,11 @@ use App\Http\Controllers\Caput\Admin\MonitoringRincianIndikatorROAdminConctrolle
 use App\Http\Controllers\Caput\Admin\MonitoringNormalisasiDataRincian;
 use App\Http\Controllers\Caput\Admin\MonitoringRealisasiROConctroller;
 use App\Http\Controllers\Caput\Admin\RoSaktiController;
+use App\Http\Controllers\Sirangga\Admin\AreaController;
+use App\Http\Controllers\Sirangga\Admin\SubAreaController;
+use App\Http\Controllers\Sirangga\Admin\GedungController;
+use App\Http\Controllers\Sirangga\Admin\LantaiController;
+use App\Http\Controllers\Sirangga\Admin\RuanganController;
 
 
 /*
@@ -293,6 +298,14 @@ Route::get('lihatcoa/{idspp}',[SppPengeluaranController::class,'lihatcoa'])->nam
 Route::get('getlistpengeluaran/{ID_SPP}',[SppPengeluaranController::class,'getlistpengeluaran'])->name('getlistpengeluaran')->middleware('auth');
 Route::get('getlistpotongan/{ID_SPP}',[SppPotonganController::class,'getlistpotongan'])->name('getlistpotongan')->middleware('auth');
 
-
-
-
+//ADMIN SIRANGGA
+Route::resource('area',AreaController::class);
+Route::resource('subarea',SubAreaController::class);
+Route::resource('gedung',GedungController::class);
+Route::resource('lantai',LantaiController::class);
+Route::resource('ruangan',RuanganController::class);
+Route::post('/ambildatasubarea',[GedungController::class,'dapatkansubarea'])->name('ambildatasubarea');
+Route::post('/ambildatagedung',[LantaiController::class,'dapatkangedung'])->name('ambildatagedung');
+Route::post('/ambildatalantai',[RuanganController::class,'dapatkanlantai'])->name('ambildatalantai');
+Route::get('/getdataruangan/{statusdbr?}',[RuanganController::class,'getdataruangan'])->name('getdataruangan');
+Route::get('/buatdbr/{idruangan}',[RuanganController::class,'buatdbr'])->name('buatdbr');

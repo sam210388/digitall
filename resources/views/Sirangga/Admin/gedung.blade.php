@@ -25,16 +25,18 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="tambaharea"> Tambah Data</a>
+                        <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="tambahgedung"> Tambah Data</a>
                         <h3 class="card-title">{{$judul}}</h3>
                     </div>
                     <div class="card-body">
-                        <table id="tabelarea" class="table table-bordered table-striped tabelarea">
+                        <table id="tabelgedung" class="table table-bordered table-striped tabelgedung">
                             <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Kode Area</th>
-                                <th>Uraian Area</th>
+                                <th>Area</th>
+                                <th>Sub Area</th>
+                                <th>Kode Gedung</th>
+                                <th>Uraian Gedung</th>
                                 <th>Action</th>
                             </tr>
                             </thead>
@@ -43,8 +45,10 @@
                             <tfoot>
                             <tr>
                                 <th>No</th>
-                                <th>Kode Area</th>
-                                <th>Uraian Area</th>
+                                <th>Area</th>
+                                <th>Sub Area</th>
+                                <th>Kode Gedung</th>
+                                <th>Uraian Gedung</th>
                                 <th>Action</th>
                             </tr>
                             </tfoot>
@@ -56,18 +60,37 @@
                                         <h4 class="modal-title" id="modelHeading"></h4>
                                     </div>
                                     <div class="modal-body">
-                                        <form id="formarea" name="formarea" class="form-horizontal">
-                                            <input type="hidden" name="idarea" id="idarea">
+                                        <form id="formgedung" name="formgedung" class="form-horizontal">
+                                            <input type="hidden" name="idsubareaawal" id="idsubareaawal">
+                                            <input type="hidden" name="idgedung" id="idgedung">
                                             <div class="form-group">
-                                                <label for="Kode Area" class="col-sm-6 control-label">Kode Area</label>
+                                                <label for="Area" class="col-sm-6 control-label">Area</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control" id="kodearea" name="kodearea" placeholder="Masukan Kode Area" value="" maxlength="2" required="">
+                                                <select class="form-control idarea" name="idarea" id="idarea" style="width: 100%;">
+                                                    <option>Pilih Area</option>
+                                                    @foreach($dataarea as $data)
+                                                        <option value="{{ $data->id }}">{{ $data->uraianarea }}</option>
+                                                    @endforeach
+                                                </select>
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label for="Uraian Area" class="col-sm-6 control-label">Uraian Area</label>
+                                                <label for="Subarea" class="col-sm-6 control-label">Sub Area</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control" id="uraianarea" name="uraianarea" placeholder="Masukan Uraian Area" value="" maxlength="200" required="">
+                                                <select class="form-control idsubarea" name="idsubarea" id="idsubarea" style="width: 100%;">
+                                                </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="Kode gedung" class="col-sm-6 control-label">Kode gedung</label>
+                                                <div class="col-sm-12">
+                                                    <input type="text" class="form-control" id="kodegedung" name="kodegedung" placeholder="Masukan Kode gedung" value="" maxlength="4" required="">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="Uraian gedung" class="col-sm-6 control-label">Uraian gedung</label>
+                                                <div class="col-sm-12">
+                                                    <input type="text" class="form-control" id="uraiangedung" name="uraiangedung" placeholder="Masukan Uraian Sub Area" value="" maxlength="200" required="">
                                                 </div>
                                             </div>
                                             <div class="col-sm-offset-2 col-sm-10">
@@ -87,31 +110,48 @@
     <!-- /.content -->
     <script type="text/javascript">
         $(function () {
+            $('.idarea').select2({
+                width: '100%',
+                theme: 'bootstrap4',
+                dropdownParent: $('#ajaxModel')
+
+            })
+            $('.idsubarea').select2({
+                width: '100%',
+                theme: 'bootstrap4',
+                dropdownParent: $('#ajaxModel')
+
+            })
+            $("input[data-bootstrap-switch]").each(function(){
+                $(this).bootstrapSwitch('state', $(this).prop('checked'));
+            })
             /*------------------------------------------
             --------------------------------------------
             Render DataTable
             --------------------------------------------
             --------------------------------------------*/
             // Setup - add a text input to each footer cell
-            $('#tabelarea tfoot th').each( function (i) {
-                var title = $('#tabelarea thead th').eq( $(this).index() ).text();
+            $('#tabelgedung tfoot th').each( function (i) {
+                var title = $('#tabelgedung thead th').eq( $(this).index() ).text();
                 $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
                     {"width":"5%"},
                 );
             });
-            var table = $('.tabelarea').DataTable({
+            var table = $('.tabelgedung').DataTable({
                 fixedColumn:true,
                 scrollX:"100%",
                 autoWidth:true,
                 processing: true,
-                serverSide: false,
+                serverSide: true,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('area.index')}}",
+                ajax:"{{route('gedung.index')}}",
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                    {data: 'kodearea', name: 'kodearea'},
-                    {data: 'uraianarea', name: 'uraianarea'},
+                    {data: 'idarea', name: 'idarea'},
+                    {data: 'idsubarea', name: 'idsubarea'},
+                    {data: 'kodegedung', name: 'kodegedung'},
+                    {data: 'uraiangedung', name: 'uraiangedung'},
                     {
                         data: 'action',
                         name: 'action',
@@ -135,11 +175,11 @@
             Click to Button
             --------------------------------------------
             --------------------------------------------*/
-            $('#tambaharea').click(function () {
+            $('#tambahgedung').click(function () {
                 $('#saveBtn').val("tambah");
-                $('#idarea').val('');
-                $('#formarea').trigger("reset");
-                $('#modelHeading').html("Tambah Area");
+                $('#idgedung').val('');
+                $('#formgedung').trigger("reset");
+                $('#modelHeading').html("Tambah Gedung");
                 $('#ajaxModel').modal('show');
             });
 
@@ -148,15 +188,18 @@
             Click to Edit Button
             --------------------------------------------
             --------------------------------------------*/
-            $('body').on('click', '.editarea', function () {
-                var idarea = $(this).data('id');
-                $.get("{{ route('area.index') }}" +'/' + idarea +'/edit', function (data) {
-                    $('#modelHeading').html("Edit Area");
+            $('body').on('click', '.editgedung', function () {
+                var idgedung = $(this).data('id');
+                $.get("{{ route('gedung.index') }}" +'/' + idgedung +'/edit', function (data) {
+                    $('#modelHeading').html("Edit Gedung");
                     $('#saveBtn').val("edit");
                     $('#ajaxModel').modal('show');
-                    $('#idarea').val(data.id);
-                    $('#kodearea').val(data.kodearea);
-                    $('#uraianarea').val(data.uraianarea);
+                    $('#idgedung').val(data.id);
+                    $('#idsubareaawal').val(data.idsubarea);
+                    $('#idarea').val(data.idarea).trigger('change');
+                    $('#idsubarea').val(data.idsubarea).trigger('change');
+                    $('#kodegedung').val(data.kodegedung);
+                    $('#uraiangedung').val(data.uraiangedung);
                 })
             });
 
@@ -168,10 +211,10 @@
             $('#saveBtn').click(function (e) {
                 e.preventDefault();
                 $(this).html('Sending..');
-                let form = document.getElementById('formarea');
+                let form = document.getElementById('formgedung');
                 let fd = new FormData(form);
                 let saveBtn = document.getElementById('saveBtn').value;
-                var id = document.getElementById('idarea').value;
+                var id = document.getElementById('idgedung').value;
                 fd.append('saveBtn',saveBtn)
                 if(saveBtn == "edit"){
                     fd.append('_method','PUT')
@@ -182,7 +225,7 @@
 
                 $.ajax({
                     data: fd,
-                    url: saveBtn === "tambah" ? "{{route('area.store')}}":"{{route('area.update','')}}"+'/'+id,
+                    url: saveBtn === "tambah" ? "{{route('gedung.store')}}":"{{route('gedung.update','')}}"+'/'+id,
                     type: "POST",
                     dataType: 'json',
                     contentType: false,
@@ -201,7 +244,7 @@
                                 icon: 'error'
                             })
                         }
-                        $('#formarea').trigger("reset");
+                        $('#formgedung').trigger("reset");
                         $('#ajaxModel').modal('hide');
                         $('#saveBtn').html('Simpan Data');
                         table.draw();
@@ -236,13 +279,13 @@
             Delete Product Code
             --------------------------------------------
             --------------------------------------------*/
-            $('body').on('click', '.deletearea', function () {
+            $('body').on('click', '.deletegedung', function () {
 
-                var idarea = $(this).data("id");
+                var idgedung = $(this).data("id");
                 if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
                     $.ajax({
                         type: "DELETE",
-                        url: "{{ route('area.destroy','') }}"+'/'+idarea,
+                        url: "{{ route('gedung.destroy','') }}"+'/'+idgedung,
                         success: function (data) {
                             if (data.status == "berhasil"){
                                 Swal.fire({
@@ -283,6 +326,33 @@
                         },
                     });
                 }
+            });
+
+            $('#idarea').on('change', function () {
+                var idarea = this.value;
+
+                $.ajax({
+                    url: "{{url('ambildatasubarea')}}",
+                    type: "POST",
+                    data: {
+                        idarea: idarea,
+                        _token: '{{csrf_token()}}'
+                    },
+                    dataType: 'json',
+                    success: function (result) {
+                        var idsubarea = document.getElementById('idsubareaawal').value;
+                        $('#idsubarea').html('<option value="">Pilih Sub Area</option>');
+                        $.each(result.subarea, function (key, value) {
+                            if (idsubarea == value.id) {
+                                $('select[name="idsubarea"]').append('<option value="'+value.id+'" selected>'+value.uraiansubarea+'</option>').trigger('change')
+                            }else{
+                                $("#idsubarea").append('<option value="' + value.id + '">' + value.uraiansubarea + '</option>');
+                            }
+
+                        });
+                    }
+
+                });
             });
 
         });

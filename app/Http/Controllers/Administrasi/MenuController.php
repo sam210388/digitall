@@ -18,13 +18,13 @@ class MenuController extends Controller
 
     function tampillistmenu(Request $request){
         $userid = Auth::id();
-        $idkewenangan = DB::table('role_users')->where('iduser','=',$userid)->value('idrole');
+        $idkewenangan = DB::table('role_users')->where('iduser','=',$userid)->pluck('idrole');
         $datamenu = DB::table('menu_kewenangan')
             ->join('menu',function($join){
                 $join->on('menu_kewenangan.idmenu','=','menu.id')
                     ->where('menu.active','=','on');
             })
-            ->where('idkewenangan','=',$idkewenangan)
+            ->whereIn('idkewenangan',$idkewenangan)
             ->get();
         foreach ($datamenu as $menu) {
             $idmenu = $menu->idmenu;
