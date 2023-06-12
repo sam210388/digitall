@@ -22,9 +22,7 @@ class SubMenuController extends Controller
         $judul = 'Data Sub Menu';
         $datamenu = MenuModel::all();
         if ($request->ajax()) {
-
             $data = SubMenuModel::latest()->get();
-
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){

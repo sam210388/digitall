@@ -206,6 +206,7 @@ class RuanganController extends Controller
                 'dokumendbr' => null
             );
             DB::table('dbrinduk')->insert($datainsert);
+            return redirect()->to('lihatdbr/'.$idruangan)->with(['status' => 'DBR Berhasil Dibuat']);
         }
     }
 }

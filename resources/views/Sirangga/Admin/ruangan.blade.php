@@ -455,46 +455,7 @@
             $('body').on('click', '.buatdbr', function () {
                 var idruangan = $(this).data("id");
                 if(confirm("Apakah Anda Yakin AKan Membuat DBR untuk Ruangan Ini?")){
-                    $.ajax({
-                        type: "GET",
-                        url: "{{ route('buatdbr','') }}"+'/'+idruangan,
-                        success: function (data) {
-                            if (data.status == "berhasil"){
-                                Swal.fire({
-                                    title: 'Sukses',
-                                    text: 'Data Berhasil Dihapus',
-                                    icon: 'success'
-                                })
-                            }else{
-                                Swal.fire({
-                                    title: 'Error!',
-                                    text: 'Hapus Data Gagal',
-                                    icon: 'error'
-                                })
-                            }
-                            table.draw();
-                        },
-                        error: function (xhr, textStatus, errorThrown) {
-                            if(xhr.responseJSON.errors){
-                                var errorsArr = [];
-                                $.each(xhr.responseJSON.errors, function(key,value) {
-                                    errorsArr.push(value);
-                                });
-                                Swal.fire({
-                                    title: 'Error!',
-                                    text: errorsArr,
-                                    icon: 'error'
-                                })
-                            }else{
-                                var jsonValue = jQuery.parseJSON(xhr.responseText);
-                                Swal.fire({
-                                    title: 'Error!',
-                                    text: jsonValue.message,
-                                    icon: 'error'
-                                })
-                            }
-                        },
-                    });
+                    window.location="{{URL::to('buatdbr')}}"+"/"+idruangan;
                 }
             });
 

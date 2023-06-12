@@ -53,6 +53,8 @@ use App\Http\Controllers\Sirangga\Admin\SubAreaController;
 use App\Http\Controllers\Sirangga\Admin\GedungController;
 use App\Http\Controllers\Sirangga\Admin\LantaiController;
 use App\Http\Controllers\Sirangga\Admin\RuanganController;
+use App\Http\Controllers\Sirangga\Admin\DBRController;
+use App\Http\Controllers\Sirangga\Admin\ListImportSaktiController;
 
 
 /*
@@ -309,3 +311,16 @@ Route::post('/ambildatagedung',[LantaiController::class,'dapatkangedung'])->name
 Route::post('/ambildatalantai',[RuanganController::class,'dapatkanlantai'])->name('ambildatalantai');
 Route::get('/getdataruangan/{statusdbr?}',[RuanganController::class,'getdataruangan'])->name('getdataruangan');
 Route::get('/buatdbr/{idruangan}',[RuanganController::class,'buatdbr'])->name('buatdbr');
+Route::get('/lihatdbr/{idruangan}',[RuanganController::class,'buatdbr'])->name('buatdbr');
+
+//ADMINISTRASI DBR
+Route::get('dbrinduk',[DBRController::class,'dbrinduk'])->name('dbrinduk');
+Route::get('getdatadbr',[DBRController::class,'getDataBDR'])->name('getdatadbr');
+Route::get('updatepenanggungjawabdbr/{iddbr}',[DBRController::class,'updatepenanggungjawabdbr'])->name('updatepenanggungjawabdbr');
+Route::get('editdbr/{iddbr}',[DBRController::class,'editdbr'])->name('editdbr');
+Route::get('deletedbr/{iddbr}',[DBRController::class,'deletedbr'])->name('deletedbr');
+Route::get('kirimdbrkeunit/{iddbr}',[DBRController::class,'kirimdbrkeunit'])->name('kirimdbrkeunit');
+
+//list import aset
+Route::resource('listimportaset',ListImportSaktiController::class);
+Route::get('importtransaksiaset/{kodebarang}',[ListImportSaktiController::class,'importtransaksiaset'])->name('importtransaksiaset');
