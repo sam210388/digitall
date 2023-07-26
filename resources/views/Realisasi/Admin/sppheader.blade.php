@@ -39,9 +39,8 @@
                         <table id="tabelrealisasi" class="table table-bordered table-striped tabelrealisasi">
                             <thead>
                             <tr>
-                                <th>No</th>
-                                <th>Satker</th>
                                 <th>ID SPP</th>
+                                <th>Satker</th>
                                 <th>No SPP</th>
                                 <th>Tgl SPP</th>
                                 <th>No SPM</th>
@@ -58,9 +57,8 @@
                             </tbody>
                             <tfoot>
                             <tr>
-                                <th>No</th>
-                                <th>Satker</th>
                                 <th>ID SPP</th>
+                                <th>Satker</th>
                                 <th>No SPP</th>
                                 <th>Tgl SPP</th>
                                 <th>No SPM</th>
@@ -105,9 +103,8 @@
                 buttons: ['copy','excel','csv','print'],
                 ajax:"{{route('sppheader')}}",
                 columns: [
-                    {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                    {data: 'KDSATKER', name: 'KDSATKER'},
                     {data: 'ID_SPP', name: 'ID_SPP'},
+                    {data: 'KDSATKER', name: 'KDSATKER'},
                     {data: 'NO_SPP', name: 'NO_SPP'},
                     {data: 'TGL_SPP', name: 'TGL_SPP'},
                     {data: 'NO_SPM', name: 'NO_SPM'},

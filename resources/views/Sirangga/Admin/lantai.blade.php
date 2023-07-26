@@ -159,8 +159,6 @@
                 autoWidth:true,
                 processing: true,
                 serverSide: true,
-                dom: 'Bfrtip',
-                buttons: ['copy','excel','pdf','csv','print'],
                 ajax:"{{route('lantai.index')}}",
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},

@@ -36,10 +36,8 @@ class RealisasiSemarController extends Controller
             $data = DB::table('realisasisemar')
                 ->where('tahunanggaran','=',$tahunanggaran)
                 ->where('pengenal','!=',null)
-                ->where($wheretambahan)
-                ->get();
+                ->where($wheretambahan);
             return Datatables::of($data)
-                ->addIndexColumn()
                 ->addColumn('idbagian',function ($row){
                     $idbagian = $row->idbagian;
                     $uraianbagian = DB::table('bagian')->where('id','=',$idbagian)->value('uraianbagian');

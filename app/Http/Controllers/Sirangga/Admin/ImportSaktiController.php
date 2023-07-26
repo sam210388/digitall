@@ -3,23 +3,25 @@
 namespace App\Http\Controllers\Sirangga\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\RekapDataAset;
 use App\Libraries\BearerKey;
 use App\Libraries\TarikDataMonsakti;
+use App\Models\Sirangga\Admin\BarangModel;
+use App\Models\Sirangga\Admin\MasterSaktiModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ImportSaktiController extends Controller
 {
     public function importaset($TA){
+        //truncate Database nya
+        DB::table('mastersakti')->truncate();
 
+        //mulai lakukan penarikan
         $kodemodul = 'AST';
         $tipedata = 'asetTrx';
-        //$tokenbaru = new BearerKey();
-        //$tokenbaru->resetapi($TA, $kodemodul, $tipedata);
-
 
         $datakodebarang = DB::table('listimportaset')
-            ->where('status','=',1)
             ->get();
         foreach ($datakodebarang as $dk){
             $kdsatker = '001012';
@@ -30,7 +32,6 @@ class ImportSaktiController extends Controller
             $kdbrg = $dk->kdbrg;
             $variabel = [$kdsatker, $kdgol, $kdbid, $kdkel, $kdskel, $kdbrg];
             //echo json_encode($variabel);
-
 
 
             //tarikdata
@@ -145,6 +146,75 @@ class ImportSaktiController extends Controller
                 $tokenbaru = new BearerKey();
                 $tokenbaru->resetapi($TA, $kodemodul, $tipedata);
             }
+        }
+    }
+
+    public function rekapdataaset(){
+        $this->dispatch(new RekapDataAset());
+        return redirect()->to('barang')->with('status','Rekap Data Aset Sedang Dilakukan, Silahkan Menunggu');
+    }
+
+    public function aksirekapdataaset(){
+        $datamastersakti = DB::table('mastersakti')
+            ->select()
+            ->whereRaw('left(kdtrx,1)=1')
+            ->distinct(['kduakpb','kdbrg','nup','kdtrx'])
+            ->get();
+        //echo json_encode($datamastersakti);
+        if ($datamastersakti){
+            foreach ($datamastersakti as $data){
+                $kd_lokasi = $data->kduakpb;
+                $kd_brg = $data->kdbrg;
+                $no_aset = $data->nup;
+
+                $where = array(
+                    'kd_lokasi' => $kd_lokasi,
+                    'kd_brg' => $kd_brg,
+                    'no_aset' => $no_aset
+                );
+
+                $datainsert = array(
+                    'thn_ang' => $data->thn_ang,
+                    'periode' => $data->periode,
+                    'kd_lokasi' => $data->kduakpb,
+                    'kd_brg' => $data->kdbrg,
+                    'no_aset' => $data->nup,
+                    'tgl_perlh' => $data->tgl_oleh,
+                    'tercatat' => $data->catat,
+                    'kondisi' => $data->kondisi,
+                    'tgl_buku' => $data->tgl_buku,
+                    'jns_trn' => $data->kdtrx,
+                    'flag_sap' => $data->jns_aset,
+                    'kuantitas' => $data->q_ast,
+                    'rph_sat' => $data->nilaiaset,
+                    'rph_aset' => $data->nilaiaset,
+                    'keterangan' =>$data->keterangan,
+                    'merk_type' =>$data->merek_tipe,
+                    'asal_perlh' => $data->no_dok,
+                    'statusdbr' => 1,
+                    'statushenti' => 1,
+                    'tanggalhenti' => NULL,
+                    'statususul' => 1,
+                    'tanggalusul' => NULL,
+                    'statushapus' => 1,
+                    'tanggalhapus' => NULL,
+                    'diperiksaoleh' => NULL,
+                    'terakhirperiksa' => NULL
+                );
+                BarangModel::firstOrCreate($where,$datainsert);
+            }
+        }
+    }
+
+    public function rekapbarangdbr(){
+        $databarangdbr = DB::table('detildbr')->pluck('idbarang');
+        foreach ($databarangdbr as $d){
+            $idbarang = $d->idbarang;
+
+            //update status DBR nya
+            DB::table('barang')->where('id','=',$idbarang)->update([
+                'statusdbr' => 2
+            ]);
         }
     }
 }

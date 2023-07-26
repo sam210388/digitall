@@ -2,6 +2,7 @@
 
 namespace App\Models\Administrasi;
 
+use App\Models\Sirangga\Admin\DBRIndukModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,7 +12,15 @@ class PegawaiModel extends Model
 
     protected $table = 'pegawai';
 
-    protected $fillable = ['id','name','nip','nama_satker','id_satker','email','id_subsatker'];
+    protected $guarded = [];
+
+    public $timestamps = false;
+
+    public $incrementing = false;
+
+    public function dbrindukpenanggungjawabrelation(){
+        return $this->hasMany(DBRIndukModel::class, 'idpenanggungjawab','id');
+    }
 
 
 }

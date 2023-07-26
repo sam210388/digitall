@@ -67,7 +67,6 @@ class MenuController extends Controller
 
     public function index(Request $request)
     {
-        $this->authorize('view',MenuModel::class);
         $judul = 'Data Menu';
         if ($request->ajax()) {
             $data = MenuModel::latest()->get();
@@ -94,7 +93,6 @@ class MenuController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('create',MenuModel::class);
         if ($request->get('active') == null){
             $active = "off";
         }else{
@@ -135,7 +133,6 @@ class MenuController extends Controller
      */
     public function edit($id)
     {
-        $this->authorize('update',MenuModel::class);
         $menu = MenuModel::find($id);
         return response()->json($menu);
     }
@@ -149,7 +146,6 @@ class MenuController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->authorize('update',MenuModel::class);
         if ($request->get('active') == null){
             $active = "off";
         }else{
@@ -178,7 +174,6 @@ class MenuController extends Controller
      */
     public function destroy($id)
     {
-        $this->authorize('delete',MenuModel::class);
         //cek apakah ada menu sudah dipakai
         $adadata = DB::table('submenu')->where('idmenu','=',$id)->count();
         if ($adadata == 0){

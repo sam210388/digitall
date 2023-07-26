@@ -102,7 +102,7 @@
                 buttons: ['copy','excel','pdf','csv','print'],
                 ajax:"{{route('realisasisemar')}}",
                 columns: [
-                    {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                    {data: 'id', name:'id'},
                     {data: 'idbiro', name: 'idbiro'},
                     {data: 'idbagian', name: 'idbagian'},
                     {data: 'no_spby', name: 'no_spby'},

@@ -55,7 +55,11 @@ use App\Http\Controllers\Sirangga\Admin\LantaiController;
 use App\Http\Controllers\Sirangga\Admin\RuanganController;
 use App\Http\Controllers\Sirangga\Admin\DBRController;
 use App\Http\Controllers\Sirangga\Admin\ListImportSaktiController;
-
+use App\Http\Controllers\Administrasi\TokenApiController;
+use App\Http\Controllers\Sirangga\Admin\BarangController;
+use App\Http\Controllers\Sirangga\Admin\ImportSaktiController;
+use App\Http\Controllers\Sirangga\Bagian\DBRBagianController;
+use App\Http\Controllers\GL\BukuBesarController;
 
 /*
 |--------------------------------------------------------------------------
@@ -79,17 +83,22 @@ Route::match(["GET", "POST"], "register", function(){
 })->name("register");
 
 
-
 //ADMINISTRASI APLIKASI
+Route::group(['middleware' => ['cekadminadministrasi']], function() {
+    Route::resource('kewenangan',KewenanganController::class);
+    Route::resource('menu',MenuController::class);
+    Route::resource('submenu',SubMenuController::class);
+    Route::resource('kewenanganmenu',KewenanganMenuController::class);
+    Route::resource('kewenanganuser',KewenanganUserController::class);
+    Route::any('/editpassword/{id}',[AdministrasiUserController::class,'editpassword']);
+    Route::resource('kelolauser',AdministrasiUserController::class);
+});
+
 Route::get('/home', [HomeController::class, 'index'])->name('home');
-Route::resource('kewenangan',KewenanganController::class)->middleware('auth');
 Route::any('/tampillistmenu',[MenuController::class,'tampillistmenu'])->name('tampillistmenu');
-Route::resource('menu',MenuController::class);
-Route::resource('submenu',SubMenuController::class);
-Route::resource('kewenanganmenu',KewenanganMenuController::class);
-Route::resource('kewenanganuser',KewenanganUserController::class);
-Route::any('/editpassword/{id}',[AdministrasiUserController::class,'editpassword']);
-Route::resource('kelolauser',AdministrasiUserController::class);
+Route::resource('tokenapi', TokenApiController::class)->middleware('cekadmin');
+Route::get('resettoken/{idtokenapi}',[TokenApiController::class,'resettoken'])->name('resettoken')->middleware('cekadmin');
+
 //IMPORT USER DARI SIAP
 Route::get('importsiap',[PegawaiController::class,'importsiap'])->name('importsiap')->middleware('cekadmin');
 Route::get('getlistpegawai',[PegawaiController::class,'getlistpegawai'])->name('getlistpegawai')->middleware('cekadmin');
@@ -309,18 +318,40 @@ Route::resource('ruangan',RuanganController::class);
 Route::post('/ambildatasubarea',[GedungController::class,'dapatkansubarea'])->name('ambildatasubarea');
 Route::post('/ambildatagedung',[LantaiController::class,'dapatkangedung'])->name('ambildatagedung');
 Route::post('/ambildatalantai',[RuanganController::class,'dapatkanlantai'])->name('ambildatalantai');
-Route::get('/getdataruangan/{statusdbr?}',[RuanganController::class,'getdataruangan'])->name('getdataruangan');
+Route::get('getdataruangan',[RuanganController::class,'getdataruangan'])->name('getdataruangan');
 Route::get('/buatdbr/{idruangan}',[RuanganController::class,'buatdbr'])->name('buatdbr');
-Route::get('/lihatdbr/{idruangan}',[RuanganController::class,'buatdbr'])->name('buatdbr');
+
 
 //ADMINISTRASI DBR
-Route::get('dbrinduk',[DBRController::class,'dbrinduk'])->name('dbrinduk');
-Route::get('getdatadbr',[DBRController::class,'getDataBDR'])->name('getdatadbr');
-Route::get('updatepenanggungjawabdbr/{iddbr}',[DBRController::class,'updatepenanggungjawabdbr'])->name('updatepenanggungjawabdbr');
-Route::get('editdbr/{iddbr}',[DBRController::class,'editdbr'])->name('editdbr');
-Route::get('deletedbr/{iddbr}',[DBRController::class,'deletedbr'])->name('deletedbr');
-Route::get('kirimdbrkeunit/{iddbr}',[DBRController::class,'kirimdbrkeunit'])->name('kirimdbrkeunit');
+Route::get('dbrinduk',[DBRController::class,'dbrinduk'])->name('dbrinduk')->middleware('cekadminsirangga');
+Route::get('getdatadbr',[DBRController::class,'getDataBDR'])->name('getdatadbr')->middleware('cekadminsirangga');
+Route::get('updatepenanggungjawabdbr/{iddbr}',[DBRController::class,'updatepenanggungjawabdbr'])->name('updatepenanggungjawabdbr')->middleware('cekadminsirangga');
+Route::get('editdbr/{iddbr}',[DBRController::class,'editdbr'])->name('editdbr')->middleware('cekadminsirangga');
+Route::get('deletedbr/{iddbr}',[DBRController::class,'deletedbr'])->name('deletedbr')->middleware('cekadminsirangga');
+Route::get('kirimdbrkeunit/{iddbr}',[DBRController::class,'kirimdbrkeunit'])->name('kirimdbrkeunit')->middleware('cekadminsirangga');
+Route::get('/perubahanfinal/{iddbr}',[DBRController::class,'perubahanfinal'])->name('perubahanfinal')->middleware('cekadminsirangga');
+Route::get('/lihatdbr/{iddbr}',[DBRController::class,'lihatdbr'])->name('lihatdbr')->middleware('cekadminsirangga');
+Route::get('getdatadetildbr/{iddbr}',[DBRController::class,'getdatadetildbr'])->name('getdatadetildbr')->middleware('cekadminsirangga');
+Route::get('getdatabarangtambah',[DBRController::class,'getdatabarangtambah'])->name('getdatabarangtambah')->middleware('cekadminsirangga');
+Route::post('insertbarangdipilih',[DBRController::class,'insertbarangdipilih'])->name('insertbarangdipilih')->middleware('cekadminsirangga');
+Route::post('deletebarangdipilih',[DBRController::class,'deletebarangdipilih'])->name('deletebarangdipilih')->middleware('cekadminsirangga');
+Route::post('konfirmasibarangada',[DBRController::class,'konfirmasibarangada'])->name('konfirmasibarangada')->middleware('cekadminsirangga');
+Route::get('rekapbarang',[ImportSaktiController::class,'rekapdataaset'])->name('rekapbarang')->middleware('cekadminsirangga');
+Route::get('exportdatabartender/{iddbr}',[DBRController::class,'databartenderexport'])->name('exportdatabartender')->middleware('cekadminsirangga');
+Route::get('cekfisik/{iddbr}',[DBRController::class,'cekfisik'])->name('cekfisik');
 
 //list import aset
 Route::resource('listimportaset',ListImportSaktiController::class);
 Route::get('importtransaksiaset/{kodebarang}',[ListImportSaktiController::class,'importtransaksiaset'])->name('importtransaksiaset');
+Route::get('barang',[BarangController::class,'barang'])->name('barang');
+Route::get('getdatabarang',[BarangController::class,'getdatabarang'])->name('getdatabarang');
+
+//DBR BAGIAN
+Route::get('dbrindukbagian',[DBRBagianController::class,'dbrindukbagian'])->name('dbrindukbagian');
+Route::get('getdatadbrbagian',[DBRBagianController::class,'getdatadbrbagian'])->name('getdatadbrbagian');
+Route::get('setujuidbr/{iddbr}',[DBRBagianController::class,'setujuidbr'])->name('setujuidbr');
+
+
+//GL
+Route::resource('monitoringimportbukubesar',BukuBesarController::class);
+Route::get('importgl/{id}',[BukuBesarController::class,'importbukubesar']);

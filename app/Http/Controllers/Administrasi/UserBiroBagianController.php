@@ -18,8 +18,6 @@ class UserBiroBagianController extends Controller
     }
 
     public function index(Request $request){
-        $this->authorize('view', AdministrasiUserModel::class);
-
         $judul = 'Update Unit Kerja User';
         $deputi = DeputiModel::all();
         if ($request->ajax()) {
@@ -65,8 +63,6 @@ class UserBiroBagianController extends Controller
     }
 
     public function update(Request $request, $id){
-        $this->authorize('update', AdministrasiUserModel::class);
-
         $idbiro = $request->get('idbiro');
         $idbagian = $request->get('idbagian');
         $iddeputi = $request->get('iddeputi');
@@ -87,7 +83,6 @@ class UserBiroBagianController extends Controller
 
     public function edit($id)
     {
-        $this->authorize('update', AdministrasiUserModel::class);
         $menu = AdministrasiUserModel::find($id);
         return response()->json($menu);
     }

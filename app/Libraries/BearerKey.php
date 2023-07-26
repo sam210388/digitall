@@ -77,7 +77,8 @@ class BearerKey
                 ->where('modul','=',$kodemodul)
                 ->where('tahunanggaran','=',$tahunanggaran)
                 ->update([
-                    'token' => $tokenbaru
+                    'token' => $tokenbaru,
+                    'updated_at' => now()
                 ]);
         }else{
             DB::table('tokenapihistory')

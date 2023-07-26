@@ -51,8 +51,6 @@ class IndikatorROExport implements FromQuery, WithHeadings
                 'l.jumlahsdperiodeini as jumlahsdnovember','l.prosentasesdperiodeini as prosentasesdnovember',
                 'm.jumlah as jumlahdesember','m.prosentase as prosentasedesember',
                 'm.jumlahsdperiodeini as jumlahsddesember','m.prosentasesdperiodeini as prosentasesddesember',
-
-
             ])
             ->leftJoin('biro as n','a.idbiro','=','n.id')
             ->leftJoin('deputi as o','a.iddeputi','=','o.id')

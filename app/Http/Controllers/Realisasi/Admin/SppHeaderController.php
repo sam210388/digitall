@@ -11,9 +11,7 @@ use App\Libraries\BearerKey;
 use App\Libraries\TarikDataMonsakti;
 use App\Models\Realisasi\Admin\SppHeaderModel;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
-use JustIversen\JobChainer\JobChainer;
 use Yajra\DataTables\DataTables;
 
 class SppHeaderController extends Controller
@@ -25,10 +23,8 @@ class SppHeaderController extends Controller
 
         if ($request->ajax()) {
             $data = DB::table('sppheader')
-                ->where('THN_ANG','=',$tahunanggaran)
-                ->get();
+                ->where('THN_ANG','=',$tahunanggaran);
             return Datatables::of($data)
-                ->addIndexColumn()
                 ->addColumn('action', function($row){
                     if ($row->STATUS_PENGELUARAN == 1){
                         $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->ID_SPP.'" data-original-title="importcoa" class="importcoa btn btn-primary btn-sm importcoa">Import COA</a>';

@@ -2,9 +2,6 @@
 
 namespace App\Http;
 
-use App\Http\Controllers\Caput\Admin\KroController;
-use App\Http\Middleware\CekAdmin;
-use App\Http\Middleware\CekAdminOrAdminAnggaran;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -75,5 +72,7 @@ class Kernel extends HttpKernel
         'cekadmincaput' => \App\Http\Middleware\CekAdminOrAdminCaput::class,
         'cekpemilikrincianindikator' => \App\Http\Middleware\CekPemilikRincianIndikator::class,
         'cekoperatorbiro' => \App\Http\Middleware\CekOperatorBiro::class,
+        'cekadminsirangga' => \App\Http\Middleware\CekAdminOrAdminSirangga::class,
+        'cekadminadministrasi' => \App\Http\Middleware\CekAdminAdministrasi::class,
     ];
 }

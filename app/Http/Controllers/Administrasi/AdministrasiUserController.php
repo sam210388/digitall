@@ -27,8 +27,6 @@ class AdministrasiUserController extends Controller
 
     public function index(Request $request)
     {
-        $this->authorize('view', AdministrasiUserModel::class);
-
         $judul = 'Kelola User';
         if ($request->ajax()) {
             $data = AdministrasiUserModel::latest()->get();
@@ -56,7 +54,7 @@ class AdministrasiUserController extends Controller
                             <div class="input-group mb-3">
                                 <div class="user-panel">
                                 <div class="image">
-                                <img src="'.asset('storage')."/".$row->gambaruser.'" class="img-circle elevation-2" alt="User Image">
+                                <img src="'.env('APP_URL')."/".asset('storage')."/".$row->gambaruser.'" class="img-circle elevation-2" alt="User Image">
                                 </div>
                                 </div>
                             </div>
@@ -117,7 +115,6 @@ class AdministrasiUserController extends Controller
 
     public function store(Request $request)
     {
-        $this->authorize('create', AdministrasiUserModel::class);
         $saveBtn = $request->get('saveBtn');
         if ($saveBtn == "tambah"){
             $validated = $request->validate([
@@ -167,7 +164,6 @@ class AdministrasiUserController extends Controller
             }else{
                 $gambaruser = "gambaruser/default.png";
             }
-            $this->authorize('create', AdministrasiUserModel::class);
             AdministrasiUserModel::create([
                 'name' => $name,
                 'email' => $email,
@@ -185,14 +181,12 @@ class AdministrasiUserController extends Controller
     }
 
     public function update(Request $request, $id){
-        $this->authorize('update',AdministrasiUserModel::class);
         $saveBtn = $request->get('saveBtn');
         if ($saveBtn == 'edit'){
             $name = $request->get('name');
             $email = $request->get('email');
             $password = $request->get('password');
             $gambarlama = $request->get('gambarlama');
-
 
             if ($request->file('gambaruser') != ""){
                 if (file_exists(storage_path('app/public/').$gambarlama)){
@@ -237,7 +231,6 @@ class AdministrasiUserController extends Controller
 
     public function edit($id)
     {
-        $this->authorize('update', AdministrasiUserModel::class);
         $menu = AdministrasiUserModel::find($id);
         return response()->json($menu);
     }
@@ -253,8 +246,6 @@ class AdministrasiUserController extends Controller
      */
     public function destroy($id)
     {
-        $this->authorize('delete', AdministrasiUserModel::class);
-
         $gambaruser = DB::table('users')->where('id','=',$id)->value('gambaruser');
 
         if (file_exists(storage_path('app/public/').$gambaruser)){

@@ -13,17 +13,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        // 'App\Models\Model' => 'App\Policies\ModelPolicy',
-        'App\Models\Administrasi\AdministrasiUserModel' => 'App\Policies\Administrasi\KewenanganMenuPolicy',
-        'App\Models\Administrasi\KewenanganMenuModel' => 'App\Policies\Administrasi\KewenanganMenuPolicy',
-        'App\Models\Administrasi\KewenanganModel' => 'App\Policies\Administrasi\KewenanganPolicy',
-        'App\Models\Administrasi\KewenanganUserModel' => 'App\Policies\Administrasi\KewenanganUserPolicy',
-        'App\Models\Administrasi\MenuModel' => 'App\Policies\Administrasi\MenuPolicy',
-        'App\Models\Administrasi\SubMenuModel' => 'App\Policies\Administrasi\SubMenuPolicy',
-        'App\Models\ReferensiUnit\DeputiModel' => 'App\Policies\ReferensiUnit\DeputiPolicy',
-        'App\Models\ReferensiUnit\BiroModel' => 'App\Policies\ReferensiUnit\BiroPolicy',
-        'App\Models\ReferensiUnit\BagianModel' => 'App\Policies\ReferensiUnit\BagianPolicy',
-        'App\Models\BPK\Admin\RekomendasiModel' => 'App\Policies\BPK\Admin\RekomendasiPolicy',
+
     ];
 
     /**

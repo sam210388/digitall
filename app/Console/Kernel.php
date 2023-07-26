@@ -9,14 +9,14 @@ use App\Jobs\ImportRefStatus;
 use App\Jobs\RekapAnggaran;
 use App\Jobs\RekapAnggaranMingguan;
 use App\Jobs\RekapCashPlanTriwulan;
-use App\Jobs\RekapDataAnggaran;
+use App\Jobs\RekapDataAset;
+use App\Jobs\RekapDataBarangDBR;
 use App\Jobs\RekapRealisasiHarian;
 use App\Jobs\UpdateStatusAktifAnggaran;
 use App\Jobs\UpdateStatusImportRefStatus;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Jobs\ImportSppHeader;
-use App\Jobs\UpdateUnitId;
 
 
 class Kernel extends ConsoleKernel
@@ -53,8 +53,14 @@ class Kernel extends ConsoleKernel
             ])->dispatch($TA);
         })->weeklyOn(1,'01:00');
 
+        $schedule->call(function () use ($TA){
+            ImportAset::withChain([
+                new RekapDataAset(),
+                new RekapDataBarangDBR()
+            ])->dispatch($TA);
+        })->dailyAt('18:27');
 
-        //$schedule->job(new ImportAset($TA))->dailyAt('19:13');
+
 
     }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Libraries\Card\CardAnggaranRealisasii;
+use App\Libraries\Card\CardSirangga;
 use App\Libraries\Card\CardTemuanRekomendasi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -35,7 +36,12 @@ class HomeController extends Controller
         //card LRA
         $cardlra = new CardAnggaranRealisasii();
         $cardlra = $cardlra->dapatkancard();
-        $card = array_merge($cardlra, $cardtemuanrekomendasi);
+
+        //card Sirangga
+        $cardsirangga = new CardSirangga();
+        $cardsirangga = $cardsirangga->dapatkancard();
+
+        $card = array_merge($cardlra, $cardtemuanrekomendasi, $cardsirangga);
 
         return view('home',[
             'data' => $card

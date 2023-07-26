@@ -22,7 +22,6 @@ class KewenanganMenuController extends Controller
 
     public function index(Request $request)
     {
-        $this->authorize('view',KewenanganMenuModel::class);
 
         $judul = 'Data Kewenangan Menu';
         $datamenu = MenuModel::all();
@@ -75,7 +74,6 @@ class KewenanganMenuController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('create',KewenanganMenuModel::class);
         $validated = $request->validate([
             'idmenu' => 'required',
             'idkewenangan' => 'required',
@@ -109,7 +107,6 @@ class KewenanganMenuController extends Controller
      */
     public function edit($id)
     {
-        $this->authorize('update',KewenanganMenuModel::class);
         $menu = KewenanganMenuModel::find($id);
         return response()->json($menu);
     }
@@ -123,7 +120,6 @@ class KewenanganMenuController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->authorize('update',KewenanganMenuModel::class);
         $validated = $request->validate([
             'idmenu' => 'required',
             'idkewenangan' => 'required',
@@ -146,8 +142,6 @@ class KewenanganMenuController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-
-        $this->authorize('delete',KewenanganMenuModel::class);
         KewenanganMenuModel::find($id)->delete();
         return response()->json(['status'=>'berhasil']);
     }

@@ -28,18 +28,6 @@
                         <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="tambahruangan"> Tambah Data</a>
                         <h3 class="card-title">{{$judul}}</h3>
                     </div>
-                    <div class="card-header">
-                        <div class="form-group">
-                            <label for="statusdbr" class="col-sm-6 control-label">Status DBR</label>
-                            <div class="col-sm-12">
-                                <select class="form-control statusdbr" name="statusdbr" id="statusdbr" style="width: 100%;">
-                                    <option value="">Pilih Status</option>
-                                    <option value="2">Sudah DBR</option>
-                                    <option value="1">Belum DBR</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
                     <div class="card-body">
                         <table id="tabelruangan" class="table table-bordered table-striped tabelruangan">
                             <thead>
@@ -51,6 +39,7 @@
                                 <th>Lantai</th>
                                 <th>Kode ruangan</th>
                                 <th>Uraian ruangan</th>
+                                <th>Status DBR</th>
                                 <th>Action</th>
                             </tr>
                             </thead>
@@ -65,6 +54,7 @@
                                 <th>Lantai</th>
                                 <th>Kode ruangan</th>
                                 <th>Uraian ruangan</th>
+                                <th>Status DBR</th>
                                 <th>Action</th>
                             </tr>
                             </tfoot>
@@ -167,11 +157,6 @@
     <!-- /.content -->
     <script type="text/javascript">
         $(function () {
-            $('.statusdbr').select2({
-                width: '100%',
-                theme: 'bootstrap4',
-
-            })
             $('.idarea').select2({
                 width: '100%',
                 theme: 'bootstrap4',
@@ -226,27 +211,26 @@
                     {"width":"5%"},
                 );
             });
-            let statusdbr = document.getElementById('statusdbr').value;
+
             var table = $('.tabelruangan').DataTable({
                 fixedColumn:true,
                 scrollX:"100%",
                 autoWidth:true,
                 processing: true,
                 serverSide: true,
-                dom: 'Bfrtip',
-                buttons: ['copy','excel','pdf','csv','print'],
                 ajax:{
                     type: 'GET',
-                    url:'{{route('getdataruangan','')}}'+'/'+statusdbr,
+                    url:'{{route('getdataruangan')}}',
                 },
                 columns: [
-                    {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                    {data: 'area', name: 'area'},
-                    {data: 'subarea', name: 'subarea'},
-                    {data: 'gedung', name: 'gedung'},
-                    {data: 'lantai', name: 'lantai'},
+                    {data: 'id', name: 'id'},
+                    {data: 'area', name: 'arearelation.uraianarea'},
+                    {data: 'subarea', name: 'subarearelation.uraiansubarea'},
+                    {data: 'gedung', name: 'gedungrelation.uraiangedung'},
+                    {data: 'lantai', name: 'lantairelation.uraianlantai'},
                     {data: 'koderuangan', name: 'koderuangan'},
                     {data: 'uraianruangan', name: 'uraianruangan'},
+                    {data: 'dibuatdbr', name: 'statusruanganrelation.uraianstatus'},
                     {
                         data: 'action',
                         name: 'action',
@@ -364,48 +348,6 @@
                 });
             });
 
-            $('#statusdbr').on('change',function (){
-                let statusdbr = document.getElementById('statusdbr').value;
-                var table = $('#tabelruangan').DataTable({
-                    destroy: true,
-                    fixedColumn:true,
-                    scrollX:"100%",
-                    autoWidth:true,
-                    processing: true,
-                    serverSide: false,
-                    dom: 'Bfrtip',
-                    buttons: ['copy','excel','pdf','csv','print'],
-                    ajax:{
-                        type: 'GET',
-                        url:'{{route('getdataruangan','')}}'+'/'+statusdbr,
-                    },
-                    columns: [
-                        {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                        {data: 'area', name: 'area'},
-                        {data: 'subarea', name: 'subarea'},
-                        {data: 'gedung', name: 'gedung'},
-                        {data: 'lantai', name: 'lantai'},
-                        {data: 'koderuangan', name: 'koderuangan'},
-                        {data: 'uraianruangan', name: 'uraianruangan'},
-                        {
-                            data: 'action',
-                            name: 'action',
-                            orderable: true,
-                            searchable: true
-                        },
-                    ],
-                });
-                table.buttons().container()
-                    .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
-                // Filter event handler
-                $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
-                    table
-                        .column( $(this).data('index') )
-                        .search( this.value )
-                        .draw();
-                });
-            })
-
             $('body').on('click', '.deleteruangan', function () {
                 var idruangan = $(this).data("id");
                 if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
@@ -450,6 +392,12 @@
                         },
                     });
                 }
+            });
+
+            $('body').on('click', '.lihatdbr', function () {
+                var iddbr = $(this).data("id");
+                window.location="{{URL::to('lihatdbr')}}"+"/"+iddbr;
+
             });
 
             $('body').on('click', '.buatdbr', function () {

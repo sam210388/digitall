@@ -14,4 +14,8 @@ class GedungModel extends Model
     protected $guarded = [];
 
     public $timestamps = false;
+
+    public function dbrindukgedungrelation(){
+        return $this->belongsTo(DBRIndukModel::class,'idgedung','id');
+    }
 }

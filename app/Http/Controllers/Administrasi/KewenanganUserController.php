@@ -20,11 +20,9 @@ class KewenanganUserController extends Controller
 
     public function index(Request $request)
     {
-        $this->authorize('view',KewenanganUserModel::class);
-
         $judul = 'Data Kewenangan User';
         $datauser = User::all();
-        $datakewenangan = KewenanganModel::all();
+        $datakewenangan = DB::table('role')->where('id','!=',1)->get();
 
         if ($request->ajax()) {
             $data = KewenanganUserModel::latest()->get();
@@ -74,7 +72,6 @@ class KewenanganUserController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('create',KewenanganUserModel::class);
         $validated = $request->validate([
             'iduser' => 'required',
             'idrole' => 'required',
@@ -107,8 +104,6 @@ class KewenanganUserController extends Controller
      */
     public function edit($id)
     {
-        $this->authorize('update',KewenanganUserModel::class);
-
         $menu = KewenanganUserModel::find($id);
         return response()->json($menu);
     }
@@ -122,7 +117,6 @@ class KewenanganUserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->authorize('update',KewenanganUserModel::class);
         $validated = $request->validate([
             'iduser' => 'required',
             'idrole' => 'required',
@@ -144,8 +138,6 @@ class KewenanganUserController extends Controller
      */
     public function destroy($id)
     {
-        $this->authorize('delete',KewenanganUserModel::class);
-
         KewenanganUserModel::find($id)->delete();
         return response()->json(['status'=>'berhasil']);
     }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e111508edca74f9899ac819cc80b8b42",
+    "content-hash": "d7155e417deb196c517c9e0c47d8d6fb",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -3260,6 +3260,56 @@
             ],
             "abandoned": "symfony/mailer",
             "time": "2021-10-18T15:26:12+00:00"
+        },
+        {
+            "name": "syamsoul/laravel-datatable-two-ssp",
+            "version": "2.0.19",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/syamsoul/laravel-datatable-two-ssp.git",
+                "reference": "aa291246740f802e37b8140887826688f84192e6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/syamsoul/laravel-datatable-two-ssp/zipball/aa291246740f802e37b8140887826688f84192e6",
+                "reference": "aa291246740f802e37b8140887826688f84192e6",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "SoulDoit\\DataTableTwo\\DataTableServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "SoulDoit\\DataTableTwo\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Syamsoul Azrien (+60139584638)",
+                    "email": "syamsoulazrien.miat@gmail.com"
+                }
+            ],
+            "description": "DataTable SSP for Laravel. This package allows you to manage your DataTable from server-side in Laravel app.",
+            "support": {
+                "issues": "https://github.com/syamsoul/laravel-datatable-two-ssp/issues",
+                "source": "https://github.com/syamsoul/laravel-datatable-two-ssp/tree/2.0.19"
+            },
+            "time": "2023-05-19T11:34:42+00:00"
         },
         {
             "name": "symfony/console",

@@ -30,24 +30,32 @@ class RuanganController extends Controller
         ]);
     }
 
-    public function getdataruangan(Request $request, $statusdbr=null){
+    public function getdataruangan(Request $request){
         if ($request->ajax()) {
-            $data = DB::table('ruangan as a')
-                ->select(['b.uraianarea as area','c.uraiansubarea as subarea','d.uraiangedung as gedung','e.uraianlantai as lantai',
-                    'a.koderuangan as koderuangan','a.uraianruangan as uraianruangan','a.id as id','a.dibuatdbr as dibuatdbr'])
-                ->leftJoin('area as b','a.idarea','=','b.id')
-                ->leftJoin('subarea as c','a.idsubarea','=','c.id')
-                ->leftJoin('gedung as d','a.idgedung','=','d.id')
-                ->leftJoin('lantai as e','a.idlantai','=','e.id');
-            if ($statusdbr != null OR $statusdbr != ''){
-                $data->where('a.dibuatdbr','=',$statusdbr);
-                $data = $data->get();
-            }else{
-                $data = $data->get();
-            }
+            $model = RuanganModel::with('arearelation')
+                ->with('subarearelation')
+                ->with('gedungrelation')
+                ->with('lantairelation')
+                ->with('statusruanganrelation')
+                ->with('dbrindukrelation')
+                ->select('ruangan.*');
             //$data = RuanganModel::all();
-            return Datatables::of($data)
-                ->addIndexColumn()
+            return Datatables::eloquent($model)
+                ->addColumn('area', function (RuanganModel $ruangan) {
+                    return $ruangan->arearelation->uraianarea;
+                })
+                ->addColumn('subarea', function (RuanganModel $ruangan) {
+                    return $ruangan->subarearelation->uraiansubarea;
+                })
+                ->addColumn('gedung', function (RuanganModel $ruangan) {
+                    return $ruangan->gedungrelation->uraiangedung;
+                })
+                ->addColumn('lantai', function (RuanganModel $ruangan) {
+                    return $ruangan->lantairelation->uraianlantai;
+                })
+                ->addColumn('dibuatdbr', function (RuanganModel $ruangan) {
+                    return $ruangan->statusruanganrelation->uraianstatus;
+                })
                 ->addColumn('action', function($row){
                     if ($row->dibuatdbr == 1){
                         $btn = '<div class="btn-group" role="group">
@@ -56,7 +64,7 @@ class RuanganController extends Controller
                         $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="buatdbr" class="btn btn-info btn-sm buatdbr">Buat DBR</a>';
                         return $btn;
                     }else{
-                        $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="lihatdbr" class="btn btn-info btn-sm lihatdbr">Lihat DBR</a>';
+                        $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->dbrindukrelation->iddbr.'" data-original-title="lihatdbr" class="btn btn-info btn-sm lihatdbr">Lihat DBR</a>';
                         return $btn;
                     }
 

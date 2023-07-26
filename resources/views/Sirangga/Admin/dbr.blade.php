@@ -173,22 +173,24 @@
                 );
             });
             var table = $('.tabeldbr').DataTable({
-                fixedColumn:true,
-                scrollX:"100%",
+                scrollY: true,
+                scrollX:true,
                 autoWidth:true,
+                paging:true,
+                deferRender: true,
                 processing: true,
-                serverSide: false,
+                serverSide: true,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','csv','print'],
                 ajax: "{{ route('getdatadbr') }}",
                 columns: [
-                    {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                    {data: 'penanggungjawab', name: 'penanggungjawab'},
-                    {data: 'gedung', name: 'gedung'},
+                    {data: 'iddbr', name: 'iddbr'},
+                    {data: 'idpenanggungjawab', name:'penanggungjawabrelation.nama'},
+                    {data: 'idgedung', name: 'gedungrelation.uraiangedung'},
                     {data: 'idruangan', name: 'idruangan'},
-                    {data: 'ruangan', name: 'ruangan'},
-                    {data: 'statusdbr', name: 'statusdbr'},
-                    {data: 'useredit', name: 'useredit'},
+                    {data: 'uraianruangan', name: 'ruanganrelation.uraianruangan'},
+                    {data: 'statusdbr', name: 'statusdbrrelation.uraianstatus'},
+                    {data: 'useredit', name: 'userrelation.name'},
                     {data: 'terakhiredit', name: 'terakhiredit'},
                     {data: 'versike', name: 'versike'},
                     {data: 'dokumendbr', name: 'dokumendbr'},
@@ -203,13 +205,14 @@
             table.buttons().container()
                 .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
             // Filter event handler
-            $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
-                table
-                    .column( $(this).data('index') )
-                    .search( this.value )
-                    .draw();
+            $( table.table().container() ).on( 'keypress', 'tfoot input', function (e) {
+                if (e.key == "Enter"){
+                    table
+                        .column( $(this).data('index') )
+                        .search( this.value )
+                        .draw();
+                }
             } );
-
 
             $('#kembalikeruangan').click(function () {
                 window.location="{{URL::to('ruangan')}}"
@@ -418,6 +421,45 @@
             $('body').on('click', '.tambahbarang', function () {
                 var iddbr = $(this).data("id");
                 window.location="{{URL::to('lihatdbr')}}"+"/"+iddbr;
+            });
+
+            $('body').on('click', '.cekfisik', function () {
+                var iddbr = $(this).data("id");
+                if(confirm("Apakah Anda Yakin AKan Melakukan Opname Fisik pada DBR Ini?!")){
+                    $.ajax({
+                        type: "GET",
+                        url: "{{ route('cekfisik','') }}"+'/'+iddbr,
+                        success: function (data) {
+                            if (data.status == "berhasil"){
+                                Swal.fire({
+                                    title: 'Sukses',
+                                    text: 'DBR Siap Untuk Dilakukan Opname Fisik',
+                                    icon: 'success'
+                                })
+                            }
+                            else{
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'DBR Belum Dapat Dilakukan Opname Fisik',
+                                    icon: 'error'
+                                })
+                            }
+                            table.draw();
+                        },
+                        error: function (xhr) {
+                            var errorsArr = [];
+                            $.each(xhr.responseJSON.errors, function(key,value) {
+                                errorsArr.push(value);
+                            });
+                            Swal.fire({
+                                title: 'Error!',
+                                text: errorsArr,
+                                icon: 'error'
+                            })
+                            $('#saveBtn').html('Simpan Data');
+                        },
+                    });
+                };
             });
 
 

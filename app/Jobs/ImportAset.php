@@ -34,6 +34,5 @@ class ImportAset implements ShouldQueue
         $tahunanggaran = $this->tahunanggaran;
         $tarikdata = new ImportSaktiController();
         $tarikdata = $tarikdata->importaset($tahunanggaran);
-
     }
 }
