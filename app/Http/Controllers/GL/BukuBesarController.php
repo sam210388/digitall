@@ -101,7 +101,7 @@ class BukuBesarController extends Controller
                         $KDTRN = $DATA->KDTRN;
                         $KDMAKMAP = $DATA->KDMAKMAP;
                         $KDDK = $DATA->KDDK;
-                        $PERKSAI = $DATA->PERSAI;
+                        $PERKSAI = $DATA->PERKSAI;
                         $PERSAI1 = $DATA->PERKSAI1;
                         $PERKKOR = $DATA->PERKKOR;
                         $PERKKOR1 = $DATA->PERKKOR1;
@@ -173,7 +173,7 @@ class BukuBesarController extends Controller
                             'KDMAKMAP' => $KDMAKMAP,
                             'KDDK' => $KDDK,
                             'PERKSAI' => $PERKSAI,
-                            'PERSAI1' => $PERSAI1,
+                            'PERKSAI1' => $PERSAI1,
                             'PERKKOR' => $PERKKOR,
                             'PERKKOR1' => $PERKKOR1,
                             'KDKM' => $KDKM,

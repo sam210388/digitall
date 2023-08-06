@@ -98,7 +98,6 @@ class DBRController extends Controller
                 }
             })
             ->rawColumns(['action','dokumendbr'])
-
             ->toJson();
     }
 
@@ -202,9 +201,20 @@ class DBRController extends Controller
 
     public function lihatdbr($iddbr){
         $judul = "Data Barang DBR";
+        $datadbr = DB::table('dbrinduk as a')
+            ->select(['b.uraiangedung as gedung','c.uraianruangan as ruangan'])
+            ->leftJoin('gedung as b','a.idgedung','=','b.id')
+            ->leftJoin('ruangan as c','a.idruangan','=','c.id')
+            ->get();
+        foreach ($datadbr as $data){
+            $gedung = $data->gedung;
+            $ruangan = $data->ruangan;
+        }
         return view('Sirangga.Admin.lihatdbr',[
             "judul"=>$judul,
-            "iddbr" => $iddbr
+            "iddbr" => $iddbr,
+            "gedung" => $gedung,
+            "ruangan" => $ruangan
         ]);
     }
 

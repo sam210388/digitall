@@ -234,7 +234,7 @@
                 $(this).html('Sending..');
                 let form = document.getElementById('formdbr');
                 let fd = new FormData(form);
-                var id = document.getElementById('iddbr').value;
+                let iddbr = document.getElementById('iddbr').value;
                 fd.append('_method','PUT')
                 for (var pair of fd.entries()) {
                     console.log(pair[0]+ ', ' + pair[1]);

@@ -16,6 +16,7 @@ use Yajra\DataTables\DataTables;
 
 class SppHeaderController extends Controller
 {
+
     public function sppheader(Request $request)
     {
         $judul = 'Data SPP Header';

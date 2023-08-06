@@ -33,7 +33,15 @@ class BarangController extends Controller
             })
             ->editColumn('statusdbr', function ($row) {
                 if ($row->statusdbr == 2){
-                    return "Sudah DBR";
+                    $kd_lokasi = $row->kd_lokasi;
+                    $kd_brg = $row->kd_brg;
+                    $no_aset = $row->no_aset;
+                    $iddbr = DB::table('detildbr')
+                        ->where('kd_lokasi','=',$kd_lokasi)
+                        ->where('kd_brg','=',$kd_brg)
+                        ->where('no_aset','=',$no_aset)
+                        ->value('iddbr');
+                    return "IDDBR ".$iddbr;
                 }else{
                     return "Belum DBR";
                 }

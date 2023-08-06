@@ -22,7 +22,8 @@ class DataAngController extends Controller
     function checkdata(Request $request){
         $kdsatker = $request->get('kdsatker');
         $kd_sts_history = $request->get('kd_sts_history');
-        $jumlahdata = DB::table('data_ang')->where($kdsatker,'=',$kdsatker)
+        $jumlahdata = DB::table('data_ang')
+            ->where($kdsatker,'=',$kdsatker)
             ->where('kodestshistory','=',$kd_sts_history)
             ->count();
 
@@ -49,6 +50,9 @@ class DataAngController extends Controller
             ->where('kd_sts_history','=',$kd_sts_history)
             ->where('kdsatker','=',$kdsatker)
             ->value('idrefstatus');
+
+        //hapus idrefstatus
+        DB::table('data_ang')->where('idrefstatus','='.$idrefstatus)->delete();
 
         //tarikdata
         $response = new TarikDataMonsakti();

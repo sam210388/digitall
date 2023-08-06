@@ -2,16 +2,11 @@
 
 namespace App\Http\Controllers\Sirangga\Bagian;
 
-use App\Exports\DataBartenderExport;
 use App\Http\Controllers\Controller;
-use App\Models\Sirangga\Admin\BarangModel;
-use App\Models\Sirangga\Admin\DBRIndukModel;
 use App\Models\Sirangga\Admin\DetilDBRModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\DataTables;
 
 class DBRBagianController extends Controller

@@ -23,35 +23,13 @@ class KontrakHeaderController extends Controller
 
         if ($request->ajax()) {
             $data = DB::table('kontrakheader')
-                ->where('THN_ANG','=',$tahunanggaran)
-                ->get();
+                ->where('THN_ANG','=',$tahunanggaran);
             return Datatables::of($data)
                 ->addIndexColumn()
-                ->addColumn('action', function($row){
-                    if ($row->STATUS_PENGELUARAN == 1){
-                        $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->ID_SPP.'" data-original-title="importcoa" class="importcoa btn btn-primary btn-sm importcoa">Import COA</a>';
-                    }else{
-                        $btn = '<div class="btn-group" role="group">
-                        <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->ID_SPP.'" data-original-title="detilcoa" class="detilcoa btn btn-success btn-sm detilcoa">Lihat Coa</a>';
-                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->ID_SPP.'" data-original-title="importcoa" class="importcoa btn btn-primary btn-sm importcoa">Import COA</a>';
-                    }
-                    return $btn;
-                })
-                ->addColumn('statusnilai',function($row){
-                    $nilaipengeluaran = $row->JML_PENGELUARAN;
-                    $nilaipotongan = $row->JML_POTONGAN;
-                    $nilaispppengeluaran = DB::table('spppengeluaran')->where('ID_SPP','=',$row->ID_SPP)->sum('NILAI_AKUN_PENGELUARAN');
-                    if ($nilaipengeluaran == $nilaispppengeluaran){
-                        $statusnilai = $nilaispppengeluaran;
-                    }else{
-                        $statusnilai = $nilaispppengeluaran;
-                    }
-                    return $statusnilai;
-                })
                 ->make(true);
         }
 
-        return view('Realisasi.Admin.sppheader',[
+        return view('Realisasi.Admin.kontrakheader',[
             "judul"=>$judul,
         ]);
     }

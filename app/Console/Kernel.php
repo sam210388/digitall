@@ -58,7 +58,7 @@ class Kernel extends ConsoleKernel
                 new RekapDataAset(),
                 new RekapDataBarangDBR()
             ])->dispatch($TA);
-        })->dailyAt('18:27');
+        })->dailyAt('21:25');
 
 
 

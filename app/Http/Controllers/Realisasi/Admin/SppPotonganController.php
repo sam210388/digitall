@@ -11,6 +11,12 @@ use Yajra\DataTables\DataTables;
 
 class SppPotonganController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['auth']);
+
+    }
+
     function importspppotongan($ID_SPP, $TA){
         //cek apakah sudah ada
         $jumlahdata = DB::table('spppotongan')->where('ID_SPP','=',$ID_SPP)->count();

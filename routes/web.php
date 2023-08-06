@@ -60,6 +60,7 @@ use App\Http\Controllers\Sirangga\Admin\BarangController;
 use App\Http\Controllers\Sirangga\Admin\ImportSaktiController;
 use App\Http\Controllers\Sirangga\Bagian\DBRBagianController;
 use App\Http\Controllers\GL\BukuBesarController;
+use App\Http\Controllers\Realisasi\Admin\BASTKontrakHeaderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -192,7 +193,7 @@ Route::get('getlistrefstatus',[RefstatusController::class,'getListRefstatus'])->
 Route::get('importrefstatus',[RefstatusController::class,'importrefstatus'])->name('importrefstatus')->middleware('cekadminanggaran');
 //data anggaran
 Route::get('importanggaran/{kdsatker}/{kdstshistory}',[DataAngController::class,'importdataang'])->name('importanggaran')->middleware('cekadminanggaran');
-Route::post('checkdataang',[DataAngController::class,'checkdata'])->name('checkdataang')->middleware('cekadminanggaran');
+Route::post('checkdataang',[DataAngController::class,'checkdata'])->name('checkdataang');
 Route::get('rekapanggaran/{idrefstatus}',[DataAngController::class,'rekapanggaran'])->name('rekapanggaran')->middleware('cekadminanggaran');
 Route::post('checkrekapanggaran',[DataAngController::class,'checkrekapanggaran'])->name('checkrekapanggaran');
 
@@ -325,7 +326,7 @@ Route::get('/buatdbr/{idruangan}',[RuanganController::class,'buatdbr'])->name('b
 //ADMINISTRASI DBR
 Route::get('dbrinduk',[DBRController::class,'dbrinduk'])->name('dbrinduk')->middleware('cekadminsirangga');
 Route::get('getdatadbr',[DBRController::class,'getDataBDR'])->name('getdatadbr')->middleware('cekadminsirangga');
-Route::get('updatepenanggungjawabdbr/{iddbr}',[DBRController::class,'updatepenanggungjawabdbr'])->name('updatepenanggungjawabdbr')->middleware('cekadminsirangga');
+Route::post('updatepenanggungjawabdbr/{iddbr}',[DBRController::class,'updatepenanggungjawabdbr'])->name('updatepenanggungjawabdbr')->middleware('cekadminsirangga');
 Route::get('editdbr/{iddbr}',[DBRController::class,'editdbr'])->name('editdbr')->middleware('cekadminsirangga');
 Route::get('deletedbr/{iddbr}',[DBRController::class,'deletedbr'])->name('deletedbr')->middleware('cekadminsirangga');
 Route::get('kirimdbrkeunit/{iddbr}',[DBRController::class,'kirimdbrkeunit'])->name('kirimdbrkeunit')->middleware('cekadminsirangga');
@@ -353,5 +354,10 @@ Route::get('setujuidbr/{iddbr}',[DBRBagianController::class,'setujuidbr'])->name
 
 
 //GL
-Route::resource('monitoringimportbukubesar',BukuBesarController::class);
+Route::resource('monitoringimportbukubesar',BukuBesarController::class)->middleware('auth');
 Route::get('importgl/{id}',[BukuBesarController::class,'importbukubesar']);
+
+//KOMITMEN BAST KONTRAK
+Route::get('bastkontrakheader', [BASTKontrakHeaderController::class,'kontrakheader'])->name('bastkontrakheader');
+Route::get('importbastkontrakheader',[BASTKontrakHeaderController::class,'importbastkontrakheader'])->name('importbastkontrakheader');
+Route::get('importcoabastkontrak',[BASTKontrakHeaderController::class,'importcoabastkontrak'])->name('importcoabastkontrak');

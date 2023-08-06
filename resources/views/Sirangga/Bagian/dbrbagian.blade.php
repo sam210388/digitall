@@ -66,38 +66,6 @@
                             </tfoot>
                         </table>
                     </div>
-                    <div class="card-body">
-                        <div class="modal fade" id="ajaxModel" aria-hidden="true" data-focus="false">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h4 class="modal-title" id="modelHeading"></h4>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form id="formlaporperubahanfinal" name="formlaporperubahanfinal" class="form-horizontal">
-                                            <input type="hidden" name="iddbr" id="iddbr">
-                                            <div class="form-group">
-                                                <label for="Jumlah Barang" class="col-sm-6 control-label">Jumlah Barang</label>
-                                                <div class="col-sm-12">
-                                                    <input type="number" class="form-control" id="jumlahbarangdilaporkan" name="jumlahbarangdilaporkan" placeholder="Masukan Jumlah Barang Baru yang diterima" value="" maxlength="2" required="">
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="Deskripsi Barang" class="col-sm-6 control-label">Deskripsi Barang</label>
-                                                <div class="col-sm-12">
-                                                    <textarea class="form-control" id="deskripsibarangdilaporkan" name="deskripsibarangdilaporkan" placeholder="Masukan Barang Barang Yang Diterima" required></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-offset-2 col-sm-10">
-                                                <button type="submit" class="btn btn-primary" id="saveBtn" value="create">Simpan Data
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

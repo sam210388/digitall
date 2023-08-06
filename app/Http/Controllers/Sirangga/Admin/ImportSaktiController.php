@@ -22,6 +22,7 @@ class ImportSaktiController extends Controller
         $tipedata = 'asetTrx';
 
         $datakodebarang = DB::table('listimportaset')
+            ->where('status','=',1)
             ->get();
         foreach ($datakodebarang as $dk){
             $kdsatker = '001012';

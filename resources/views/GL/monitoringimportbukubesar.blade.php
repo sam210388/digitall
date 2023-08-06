@@ -97,7 +97,7 @@
                                                 <select class="form-control kdsatker" name="kdsatker" id="kdsatker" style="width: 100%;">
                                                     <option value="">Pilih Satker</option>
                                                     <option value="001012">001012</option>
-                                                    <option value="001012">001030</option>
+                                                    <option value="001030">001030</option>
                                                 </select>
                                             </div>
                                         </div>

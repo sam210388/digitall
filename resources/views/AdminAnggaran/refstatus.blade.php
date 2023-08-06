@@ -148,25 +148,10 @@
                 var id = $(this).data('id');
                 var kdsatker = id.substr(0,6);
                 var kd_sts_history = id.substr(7,3)
-                $.ajax({
-                    data: {kdsatker: kdsatker, kd_sts_history: kd_sts_history},
-                    url: "{{route('checkdataang')}}",
-                    type: "POST",
-                    dataType: 'json',
-                    contentType: false,
-                    processData: false,
-                    success: function (data) {
-                        if(data == "Ada"){
-                            if( confirm("Apakah Anda Yakin Mau Import Ulang Data Anggaran ini?")){
-                                $(this).html('Importing..');
-                                window.location="{{URL::to('importanggaran')}}"+"/"+kdsatker+"/"+kd_sts_history;
-                            }
-                        }else{
-                            $(this).html('Importing..');
-                            window.location="{{URL::to('importanggaran')}}"+"/"+kdsatker+"/"+kd_sts_history;
-                        }
-                    },
-                });
+                if( confirm("Apakah Anda Yakin Mau Import Ulang Data Anggaran ini?")){
+                    $(this).html('Importing..');
+                    window.location="{{URL::to('importanggaran')}}"+"/"+kdsatker+"/"+kd_sts_history;
+                }
             });
         });
 
