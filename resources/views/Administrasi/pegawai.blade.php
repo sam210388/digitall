@@ -44,6 +44,7 @@
                                 <th>Nama</th>
                                 <th>NIP</th>
                                 <th>Email</th>
+                                <th>No HP</th>
                                 <th>Unit Kerja</th>
                                 <th>Sub Unit Kerja</th>
                             </tr>
@@ -56,6 +57,7 @@
                                 <th>Nama</th>
                                 <th>NIP</th>
                                 <th>Email</th>
+                                <th>No HP</th>
                                 <th>Unit Kerja</th>
                                 <th>Sub Unit Kerja</th>
                             </tr>
@@ -95,6 +97,7 @@
                     {data: 'nama', name: 'nama'},
                     {data: 'nip', name: 'nip'},
                     {data: 'email', name: 'email'},
+                    {data: 'phone', name: 'phone'},
                     {data: 'satker', name: 'satker'},
                     {data: 'subsatker', name: 'subsatker'},
                 ],

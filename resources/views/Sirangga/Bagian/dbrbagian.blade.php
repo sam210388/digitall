@@ -66,6 +66,66 @@
                             </tfoot>
                         </table>
                     </div>
+                    <div class="modal fade" id="ajaxModelTolak" aria-hidden="true" data-focus="false">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title" id="modelHeadingTolak"></h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="formpenolakan" name="formpenolakan" class="form-horizontal" enctype="multipart/form-data">
+                                        <input type="hidden" name="iddbr" id="iddbr">
+                                        <div class="form-group">
+                                            <label for="penolakan" class="col-sm-6 control-label">Alasan Penolakan</label>
+                                            <div class="col-sm-12">
+                                                <div class="input-group mb-3">
+                                                    <textarea class="form-control" id="alasanpenolakan" name="alasanpenolakan" placeholder="Alasan Penolakan" value="" required=""></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-offset-2 col-sm-10">
+                                            <button type="submit" class="btn btn-primary" id="saveBtnTolak" name="saveBtnTolak" value="create">Simpan Data
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="ajaxModelPerubahan" aria-hidden="true" data-focus="false">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title" id="modelHeadingPerubahan"></h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="formperubahan" name="formperubahan" class="form-horizontal" enctype="multipart/form-data">
+                                        <input type="hidden" name="iddbr" id="iddbr">
+                                        <div class="form-group">
+                                            <label for="jumlahbarangdilaporkan" class="col-sm-6 control-label">Jumlah Barang Diterima</label>
+                                            <div class="col-sm-12">
+                                                <div class="input-group mb-3">
+                                                    <input type="text" class="form-control" id="jumlahbarangdilaporkan" name="jumlah" placeholder="jumlahbarangdilaporkan" value="" maxlength="100" required="" onfocusout="realisasisdperiodeini()">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="deskripsi" class="col-sm-6 control-label">Barang Yang Diterima</label>
+                                            <div class="col-sm-12">
+                                                <div class="input-group mb-3">
+                                                    <textarea class="form-control" id="deskripsibarangdilaporkan" name="deskripsibarangdilaporkan" placeholder="Barang Yang Diterima" value="" required=""></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-offset-2 col-sm-10">
+                                            <button type="submit" class="btn btn-primary" id="saveBtnPerubahan" name="saveBtnPerubahan" value="create">Simpan Data
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -129,19 +189,62 @@
             } );
 
             $('body').on('click', '.laporpenambahan', function () {
-                var iddbr = $(this).data('id');
-                $('#modelHeading').html("Lapor Penambahan");
-                $('#saveBtn').val("tambah");
-                $('#ajaxModel').modal('show');
+                var iddbr = $(this).data("id");
+                if(confirm("Apakah Anda Yakin AKan Mengajukan Perubahan Pada DBR Ini?")){
+                    $.ajax({
+                        url: "{{ url('/laporperubahan') }}"+'/'+iddbr,
+                        success: function (data) {
+                            if (data.status == "berhasil"){
+                                Swal.fire({
+                                    title: 'Sukses',
+                                    text: 'Unit Kerja Berhasil Diingatkan',
+                                    icon: 'success'
+                                })
+                            }
+                            else{
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Pengiriman Data Gagal',
+                                    icon: 'error'
+                                })
+                            }
+                            table.draw();
+                        },
+                        error: function (xhr) {
+                            var errorsArr = [];
+                            $.each(xhr.responseJSON.errors, function(key,value) {
+                                errorsArr.push(value);
+                            });
+                            Swal.fire({
+                                title: 'Error!',
+                                text: errorsArr,
+                                icon: 'error'
+                            })
+                            $('#saveBtn').html('Simpan Data');
+                        },
+                    });
+                }
             });
 
+            $('body').on('click', '.lihatdbr', function () {
+                var iddbr = $(this).data("id");
+                window.location="{{URL::to('lihatdbrbagian')}}"+"/"+iddbr;
+            });
 
-            $('#saveBtn').click(function (e) {
+            $('body').on('click', '.tolakdbr', function () {
+                var iddbr = $(this).data('id');
+                $('#modelHeadingTolak').html("Tolak DBR");
+                $('#saveBtnTolak').val("tolak");
+                $('#iddbr').val(iddbr);
+                $('#ajaxModelTolak').modal('show');
+            });
+
+            $('#saveBtnTolak').click(function (e) {
                 e.preventDefault();
                 $(this).html('Sending..');
-                let form = document.getElementById('formlaporperubahanfinal');
+                let form = document.getElementById('formpenolakan');
                 let fd = new FormData(form);
-                let saveBtn = document.getElementById('saveBtn').value;
+                let saveBtn = document.getElementById('saveBtnTolak').value;
                 let iddbr = document.getElementById('iddbr').value;
                 fd.append('saveBtn',saveBtn)
                 if(saveBtn === "edit"){
@@ -153,7 +256,7 @@
 
                 $.ajax({
                     data: fd,
-                    url: saveBtn === "tambah" ? "{{route('laporperubahanfinal')}}":"{{route('updateperubahanfinal','')}}"+"/"+iddbr,
+                    url: "{{route('penolakandbr','')}}"+"/"+iddbr,
                     type: "POST",
                     dataType: 'json',
                     contentType: false,
@@ -162,19 +265,19 @@
                         if (data.status == "berhasil"){
                             Swal.fire({
                                 title: 'Sukses',
-                                text: 'Simpan Data Berhasil',
+                                text: 'Penolakan DBR Berhasil Disampaikan',
                                 icon: 'success'
                             })
                         }else{
                             Swal.fire({
                                 title: 'Error!',
-                                text: 'Simpan Data Gagal',
+                                text: 'Penolakan DBR Gagal Disampaikan',
                                 icon: 'error'
                             })
                         }
-                        $('#formruangan').trigger("reset");
-                        $('#ajaxModel').modal('hide');
-                        $('#saveBtn').html('Simpan Data');
+                        $('#formpenolakan').trigger("reset");
+                        $('#ajaxModelTolak').modal('hide');
+                        $('#saveBtnTolak').html('Simpan Data');
                         table.draw();
                     },
                     error: function (xhr, textStatus, errorThrown) {
@@ -196,11 +299,11 @@
                                 icon: 'error'
                             })
                         }
-
-                        $('#saveBtn').html('Simpan Data');
+                        $('#saveBtnTolak').html('Simpan Data');
                     },
                 });
             });
+
             $('body').on('click', '.setujuidbr', function () {
                 var iddbr = $(this).data("id");
                 if(confirm("Apakah Anda Yakin AKan Menyetujui Data Ini? " +

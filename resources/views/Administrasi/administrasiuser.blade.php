@@ -118,7 +118,19 @@
                                                         </div>
                                                     </div>
                                                 </div>
-
+                                            </div>
+                                            <div class="input-group">
+                                                <label for="email" class="col-sm-6 control-label">No Telepon</label>
+                                                <div class="col-sm-12">
+                                                    <div class="input-group mb-3">
+                                                        <input type="phone" id="phone" name="phone" class="form-control" placeholder="Nomor WA Aktif Tanpa 0 (81312345678)">
+                                                        <div class="input-group-append">
+                                                            <div class="input-group-text">
+                                                                <span class="fas fa-phone"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="input-group">
                                                 <label for="password" class="col-sm-6 control-label">Password</label>
@@ -275,6 +287,7 @@
                     $('#gambarlama').val(data.gambaruser);
                     $('#name').val(data.name);
                     $('#email').val(data.email);
+                    $('#phone').val(data.phone);
                     if (data.pnsppnpn == "pns"){
                         $('#pns').prop('checked',true).change();
                         $('#username').prop('readonly', 'readonly');

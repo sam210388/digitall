@@ -119,6 +119,7 @@ class AdministrasiUserController extends Controller
         if ($saveBtn == "tambah"){
             $validated = $request->validate([
                 'name' => 'required|max:100',
+                'phone' => 'required|max:12',
                 'email' => 'required|unique:users|email',
                 'password' => 'confirmed|required|min:6',
                 //'gambaruser' => 'required|image|mimes:jpg,png,jpeg'
@@ -157,6 +158,8 @@ class AdministrasiUserController extends Controller
             $email = $request->get('email');
             $password = Hash::make($request->get('password'));
             $pnsppnpn = $request->get('pnsppnpn');
+            $phone = $request->get('phone');
+
 
             if ($request->file('gambaruser')){
                 $gambaruser = $request->file('gambaruser')->store(
@@ -168,6 +171,7 @@ class AdministrasiUserController extends Controller
                 'name' => $name,
                 'email' => $email,
                 'username' => $username,
+                'phone' => $phone,
                 'password' => $password,
                 'gambaruser' => $gambaruser,
                 'pnsppnpn' => $pnsppnpn,
@@ -187,6 +191,7 @@ class AdministrasiUserController extends Controller
             $email = $request->get('email');
             $password = $request->get('password');
             $gambarlama = $request->get('gambarlama');
+            $phone = $request->get('phone');
 
             if ($request->file('gambaruser') != ""){
                 if (file_exists(storage_path('app/public/').$gambarlama)){
@@ -210,7 +215,8 @@ class AdministrasiUserController extends Controller
                     'name' => $name,
                     'email' => $email,
                     'password' => $password,
-                    'gambaruser' => $gambaruser
+                    'gambaruser' => $gambaruser,
+                    'phone' => $phone
                 ]);
                 return response()->json(['status'=>'berhasil']);
 
@@ -222,7 +228,8 @@ class AdministrasiUserController extends Controller
                 AdministrasiUserModel::where('id','=',$id)->update([
                     'name' => $name,
                     'email' => $email,
-                    'gambaruser' => $gambaruser
+                    'gambaruser' => $gambaruser,
+                    'phone' => $phone
                 ]);
                 return response()->json(['status'=>'berhasil']);
             }

@@ -70,47 +70,6 @@
                             </tfoot>
                         </table>
                     </div>
-                    <div class="modal fade" id="ajaxModel">
-                        <div class="modal-dialog" style="max-width: 80%;" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="table-responsive">
-                                        <table id="tabelbarang" class="table table-bordered table-striped tabelbarang">
-                                            <thead>
-                                            <tr>
-                                                <th>IDBarang</th>
-                                                <th>KD BRG</th>
-                                                <th>Uraian BRG</th>
-                                                <th>NUP</th>
-                                                <th>Tgl Oleh</th>
-                                                <th>Action</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            </tbody>
-                                            <tfoot>
-                                            <tr>
-                                                <th>IDBarang</th>
-                                                <th>KD BRG</th>
-                                                <th>Uraian BRG</th>
-                                                <th>NUP</th>
-                                                <th>Tgl Oleh</th>
-                                                <th>Action</th>
-                                            </tr>
-                                            </tfoot>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-default " data-dismiss="modal">Close</button>
-                                </div>
-
-                            </div><!-- /.modal-content -->
-                        </div><!-- /.modal-dialog -->
-                    </div><!-- /.modal -->
                 </div>
             </div>
         </div>
@@ -161,14 +120,10 @@
                     .search( this.value )
                     .draw();
             });
-            $('#ajaxModel').on('shown.bs.modal', function (e) {
-                $("#tabelbarang").DataTable()
-                    .columns.adjust()
-                    .responsive.recalc();
-            });
+
 
             $('#kembalikedatadbr').click(function () {
-                window.location="{{URL::to('dbrinduk')}}"
+                window.location="{{URL::to('dbrindukbagian')}}"
             });
 
             $('#exportdatabartender').click(function () {
@@ -176,206 +131,270 @@
                 window.location="{{URL::to('exportdatabartender')}}"+"/"+iddbr;
             });
 
-            $('#tambahbarang').click(function () {
-                $('#saveBtn').val("tambah");
-                $('#iddbr').val('');
-                $('#modelHeading').html("Tambah Barang");
-                $('#ajaxModel').modal('show');
-            });
-
-
-
-
-            $('#tabelbarang tfoot th').each( function (i) {
-                var title = $('#tabelbarang thead th').eq( $(this).index() ).text();
-                $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
-                    {"width":"5%"},
-                );
-            });
-            var tablebarang = $('.tabelbarang').DataTable({
-                scrollX:true,
-                scrollY: 200,
-                scrollCollapse: true,
-                processing: true,
-                serverSide: true,
-                pageLength: 5,
-                ajax:"{{route('getdatabarangtambah')}}",
-                columns: [
-                    {data: 'id', name: 'id'},
-                    {data: 'kd_brg', name: 'kd_brg'},
-                    {data: 'ur_sskel', name: 'kodebarangrelation.ur_sskel'},
-                    {data: 'no_aset', name: 'no_aset'},
-                    {data: 'tgl_perlh', name: 'tgl_perlh'},
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: true,
-                        searchable: true
-                    },
-                ],
-            });
-            tablebarang.buttons().container()
-                .appendTo( $('.col-sm-6:eq(0)', tablebarang.table().container() ) );
-            // Filter event handler
-            $( tablebarang.table().container() ).on( 'keyup', 'tfoot input', function () {
-                tablebarang
-                    .column( $(this).data('index') )
-                    .search( this.value )
-                    .draw();
-            });
-
-            $('body').on('click', '.pilihbarang', function () {
-                var idbarang = $(this).data('id');
-                $.ajax({
-                    url: "{{url('insertbarangdipilih')}}",
-                    type: "POST",
-                    data: {
-                        idbarang: idbarang,
-                        iddbr: iddbr,
-                        _token: '{{csrf_token()}}'
-                    },
-                    dataType: 'json',
-                    success: function (data) {
-                        if (data.status == "berhasil"){
-                            Swal.fire({
-                                title: 'Sukses',
-                                text: 'Tambah Barang Berhasil',
-                                icon: 'success'
-                            })
+            $('body').on('click', '.konfirmasiada', function () {
+                var iddetil = $(this).data('id');
+                if(confirm("Apakah Anda Yakin Bahwa Barang ini Benar Benar Ada dan Dalam Penguasaan Anda?")){
+                    $.ajax({
+                        url: "{{url('bagiankonfirmbarangada')}}",
+                        type: "POST",
+                        data: {
+                            iddetil: iddetil,
+                            _token: '{{csrf_token()}}'
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.status == "berhasil"){
+                                Swal.fire({
+                                    title: 'Sukses',
+                                    text: 'Konfirmas Barang Berhasil',
+                                    icon: 'success'
+                                })
+                                table.draw();
+                            }else{
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Konfirmasi Barang Gagal',
+                                    icon: 'error'
+                                })
+                            }
+                            $('#ajaxModel').modal('hide');
                             tablebarang.draw();
-                        }else{
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'Tambah Barang Gagal, Barang Sudah Ada',
-                                icon: 'error'
-                            })
-                        }
-                        //$('#ajaxModel').modal('hide');
-                        table.draw();
-                    },
-                    error: function (xhr, textStatus, errorThrown) {
-                        if(xhr.responseJSON.errors){
-                            var errorsArr = [];
-                            $.each(xhr.responseJSON.errors, function(key,value) {
-                                errorsArr.push(value);
-                            });
-                            Swal.fire({
-                                title: 'Error!',
-                                text: errorsArr,
-                                icon: 'error'
-                            })
-                        }else{
-                            var jsonValue = jQuery.parseJSON(xhr.responseText);
-                            Swal.fire({
-                                title: 'Error!',
-                                text: jsonValue.message,
-                                icon: 'error'
-                            })
-                        }
-                    },
-                });
+                        },
+                        error: function (xhr, textStatus, errorThrown) {
+                            if(xhr.responseJSON.errors){
+                                var errorsArr = [];
+                                $.each(xhr.responseJSON.errors, function(key,value) {
+                                    errorsArr.push(value);
+                                });
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: errorsArr,
+                                    icon: 'error'
+                                })
+                            }else{
+                                var jsonValue = jQuery.parseJSON(xhr.responseText);
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: jsonValue.message,
+                                    icon: 'error'
+                                })
+                            }
+                        },
+                    });
+                }
+
             });
 
-            $('body').on('click', '.deletebarang', function () {
+            $('body').on('click', '.konfirmasitidakada', function () {
                 var iddetil = $(this).data('id');
-                $.ajax({
-                    url: "{{url('deletebarangdipilih')}}",
-                    type: "POST",
-                    data: {
-                        iddetil: iddetil,
-                        _token: '{{csrf_token()}}'
-                    },
-                    dataType: 'json',
-                    success: function (data) {
-                        if (data.status == "berhasil"){
-                            Swal.fire({
-                                title: 'Sukses',
-                                text: 'Delete Barang Berhasil',
-                                icon: 'success'
-                            })
-                            table.draw();
-                        }else{
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'Delete Barang Gagal',
-                                icon: 'error'
-                            })
-                        }
-                        $('#ajaxModel').modal('hide');
-                        tablebarang.draw();
-                    },
-                    error: function (xhr, textStatus, errorThrown) {
-                        if(xhr.responseJSON.errors){
-                            var errorsArr = [];
-                            $.each(xhr.responseJSON.errors, function(key,value) {
-                                errorsArr.push(value);
-                            });
-                            Swal.fire({
-                                title: 'Error!',
-                                text: errorsArr,
-                                icon: 'error'
-                            })
-                        }else{
-                            var jsonValue = jQuery.parseJSON(xhr.responseText);
-                            Swal.fire({
-                                title: 'Error!',
-                                text: jsonValue.message,
-                                icon: 'error'
-                            })
-                        }
-                    },
-                });
+                if(confirm("Apakah Anda Yakin Bahwa Barang ini Benar Benar Tidak Ada dan Tidak Dalam Penguasaan Anda?")){
+                    $.ajax({
+                        url: "{{url('bagiankonfirmbarangtidakada')}}",
+                        type: "POST",
+                        data: {
+                            iddetil: iddetil,
+                            _token: '{{csrf_token()}}'
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.status == "berhasil"){
+                                Swal.fire({
+                                    title: 'Sukses',
+                                    text: 'Konfirmasi Barang Berhasil',
+                                    icon: 'success'
+                                })
+                                table.draw();
+                            }else{
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Konfirmasi Barang Gagal',
+                                    icon: 'error'
+                                })
+                            }
+                            $('#ajaxModel').modal('hide');
+                            tablebarang.draw();
+                        },
+                        error: function (xhr, textStatus, errorThrown) {
+                            if(xhr.responseJSON.errors){
+                                var errorsArr = [];
+                                $.each(xhr.responseJSON.errors, function(key,value) {
+                                    errorsArr.push(value);
+                                });
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: errorsArr,
+                                    icon: 'error'
+                                })
+                            }else{
+                                var jsonValue = jQuery.parseJSON(xhr.responseText);
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: jsonValue.message,
+                                    icon: 'error'
+                                })
+                            }
+                        },
+                    });
+                }
             });
 
-            $('body').on('click', '.konfirmasibarang', function () {
+            $('body').on('click', '.konfirmasihilang', function () {
                 var iddetil = $(this).data('id');
-                $.ajax({
-                    url: "{{url('konfirmasibarangada')}}",
-                    type: "POST",
-                    data: {
-                        iddetil: iddetil,
-                        _token: '{{csrf_token()}}'
-                    },
-                    dataType: 'json',
-                    success: function (data) {
-                        if (data.status == "berhasil"){
-                            Swal.fire({
-                                title: 'Sukses',
-                                text: 'Konfirmas Barang Berhasil',
-                                icon: 'success'
-                            })
-                            table.draw();
-                        }else{
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'Konfirmasi Barang Gagal',
-                                icon: 'error'
-                            })
-                        }
-                        $('#ajaxModel').modal('hide');
-                        tablebarang.draw();
-                    },
-                    error: function (xhr, textStatus, errorThrown) {
-                        if(xhr.responseJSON.errors){
-                            var errorsArr = [];
-                            $.each(xhr.responseJSON.errors, function(key,value) {
-                                errorsArr.push(value);
-                            });
-                            Swal.fire({
-                                title: 'Error!',
-                                text: errorsArr,
-                                icon: 'error'
-                            })
-                        }else{
-                            var jsonValue = jQuery.parseJSON(xhr.responseText);
-                            Swal.fire({
-                                title: 'Error!',
-                                text: jsonValue.message,
-                                icon: 'error'
-                            })
-                        }
-                    },
-                });
+                if(confirm("Apakah Anda Yakin Bahwa Barang ini Benar Benar Hilang dan Tidak Dalam Penguasaan Anda Lagi?")){
+                    $.ajax({
+                        url: "{{url('bagiankonfirmbaranghilang')}}",
+                        type: "POST",
+                        data: {
+                            iddetil: iddetil,
+                            _token: '{{csrf_token()}}'
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.status == "berhasil"){
+                                Swal.fire({
+                                    title: 'Sukses',
+                                    text: 'Konfirmasi Barang Berhasil',
+                                    icon: 'success'
+                                })
+                                table.draw();
+                            }else{
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Konfirmasi Barang Gagal',
+                                    icon: 'error'
+                                })
+                            }
+                            $('#ajaxModel').modal('hide');
+                            tablebarang.draw();
+                        },
+                        error: function (xhr, textStatus, errorThrown) {
+                            if(xhr.responseJSON.errors){
+                                var errorsArr = [];
+                                $.each(xhr.responseJSON.errors, function(key,value) {
+                                    errorsArr.push(value);
+                                });
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: errorsArr,
+                                    icon: 'error'
+                                })
+                            }else{
+                                var jsonValue = jQuery.parseJSON(xhr.responseText);
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: jsonValue.message,
+                                    icon: 'error'
+                                })
+                            }
+                        },
+                    });
+                }
+            });
+
+            $('body').on('click', '.pemeliharaan', function () {
+                var iddetil = $(this).data('id');
+                if(confirm("Apakah Anda Yakin Bahwa Barang ini Mengalami Kerusakan Ringan/Sedang dan Dapat Dipergunakan Kembali dengan Perbaikan Ringan Hingga Menengah?")){
+                    $.ajax({
+                        url: "{{url('bagiankonfirmpemeliharaan')}}",
+                        type: "POST",
+                        data: {
+                            iddetil: iddetil,
+                            _token: '{{csrf_token()}}'
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.status == "berhasil"){
+                                Swal.fire({
+                                    title: 'Sukses',
+                                    text: 'Konfirmasi Barang Berhasil',
+                                    icon: 'success'
+                                })
+                                table.draw();
+                            }else{
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Konfirmasi Barang Gagal',
+                                    icon: 'error'
+                                })
+                            }
+                            $('#ajaxModel').modal('hide');
+                            tablebarang.draw();
+                        },
+                        error: function (xhr, textStatus, errorThrown) {
+                            if(xhr.responseJSON.errors){
+                                var errorsArr = [];
+                                $.each(xhr.responseJSON.errors, function(key,value) {
+                                    errorsArr.push(value);
+                                });
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: errorsArr,
+                                    icon: 'error'
+                                })
+                            }else{
+                                var jsonValue = jQuery.parseJSON(xhr.responseText);
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: jsonValue.message,
+                                    icon: 'error'
+                                })
+                            }
+                        },
+                    });
+                }
+            });
+
+            $('body').on('click', '.pengembalian', function () {
+                var iddetil = $(this).data('id');
+                if(confirm("Apakah Anda Yakin Bahwa Barang ini Mengalami Kerusakan Ringan/Sedang dan Dapat Dipergunakan Kembali dengan Perbaikan Ringan Hingga Menengah?")){
+                    $.ajax({
+                        url: "{{url('bagiankonfirmpengembalian')}}",
+                        type: "POST",
+                        data: {
+                            iddetil: iddetil,
+                            _token: '{{csrf_token()}}'
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.status == "berhasil"){
+                                Swal.fire({
+                                    title: 'Sukses',
+                                    text: 'Konfirmasi Barang Berhasil',
+                                    icon: 'success'
+                                })
+                                table.draw();
+                            }else{
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Konfirmasi Barang Gagal',
+                                    icon: 'error'
+                                })
+                            }
+                            $('#ajaxModel').modal('hide');
+                            tablebarang.draw();
+                        },
+                        error: function (xhr, textStatus, errorThrown) {
+                            if(xhr.responseJSON.errors){
+                                var errorsArr = [];
+                                $.each(xhr.responseJSON.errors, function(key,value) {
+                                    errorsArr.push(value);
+                                });
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: errorsArr,
+                                    icon: 'error'
+                                })
+                            }else{
+                                var jsonValue = jQuery.parseJSON(xhr.responseText);
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: jsonValue.message,
+                                    icon: 'error'
+                                })
+                            }
+                        },
+                    });
+                }
             });
         });
 

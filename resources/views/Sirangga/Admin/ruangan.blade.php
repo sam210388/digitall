@@ -71,6 +71,9 @@
                                             <input type="hidden" name="idgedungawal" id="idgedungawal">
                                             <input type="hidden" name="idlantaiawal" id="idlantaiawal">
                                             <input type="hidden" name="idruangan" id="idruangan">
+                                            <input type="hidden" name="iddeputiawal" id="iddeputiawal">
+                                            <input type="hidden" name="idbiroawal" id="idbiroawal">
+                                            <input type="hidden" name="idbagianawal" id="idbagianawal">
                                             <div class="form-group">
                                                 <label for="Area" class="col-sm-6 control-label">Area</label>
                                                 <div class="col-sm-12">
@@ -277,6 +280,12 @@
                     $('#idlantai').val(data.idlantai).trigger('change');
                     $('#koderuangan').val(data.koderuangan);
                     $('#uraianruangan').val(data.uraianruangan);
+                    $('#iddeputi').val(data.iddeputi).trigger('change');
+                    $('#iddeputiawal').val(data.iddeputi);
+                    $('#idbiro').val(data.idbiro).trigger('change');
+                    $('#idbiroawal').val(data.idbiro);
+                    $('#idbagian').val(data.idbagian).trigger('change');
+                    $('#idbagianawal').val(data.idbagian);
                 })
             });
 
@@ -461,7 +470,6 @@
             });
             $('#idgedung').on('change', function () {
                 var idgedung = this.value;
-
                 $.ajax({
                     url: "{{url('ambildatalantai')}}",
                     type: "POST",
@@ -486,6 +494,57 @@
                 });
             });
 
+            $('#iddeputi').on('change', function () {
+                var iddeputi = this.value;
+                $.ajax({
+                    url: "{{url('ambildatabiro')}}",
+                    type: "POST",
+                    data: {
+                        iddeputi: iddeputi,
+                        _token: '{{csrf_token()}}'
+                    },
+                    dataType: 'json',
+                    success: function (result) {
+                        var idbiro = document.getElementById('idbiroawal').value;
+                        $('#idbiro').html('<option value="">Pilih Biro</option>');
+                        $.each(result.biro, function (key, value) {
+                            if (idbiro == value.id) {
+                                $('select[name="idbiro"]').append('<option value="'+value.id+'" selected>'+value.uraianbiro+'</option>').trigger('change')
+                            }else{
+                                $("#idbiro").append('<option value="' + value.id + '">' + value.uraianbiro + '</option>');
+                            }
+
+                        });
+                    }
+
+                });
+            });
+
+            $('#idbiro').on('change', function () {
+                var idbiro = this.value;
+                $.ajax({
+                    url: "{{url('ambildatabagian')}}",
+                    type: "POST",
+                    data: {
+                        idbiro: idbiro,
+                        _token: '{{csrf_token()}}'
+                    },
+                    dataType: 'json',
+                    success: function (result) {
+                        var idbagian = document.getElementById('idbagianawal').value;
+                        $('#idbagian').html('<option value="">Pilih Bagian</option>');
+                        $.each(result.bagian, function (key, value) {
+                            if (idbagian == value.id) {
+                                $('select[name="idbagian"]').append('<option value="'+value.id+'" selected>'+value.uraianbagian+'</option>').trigger('change')
+                            }else{
+                                $("#idbagian").append('<option value="' + value.id + '">' + value.uraianbagian + '</option>');
+                            }
+
+                        });
+                    }
+
+                });
+            });
         });
 
     </script>

@@ -64,7 +64,9 @@ class RuanganController extends Controller
                         $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="buatdbr" class="btn btn-info btn-sm buatdbr">Buat DBR</a>';
                         return $btn;
                     }else{
-                        $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->dbrindukrelation->iddbr.'" data-original-title="lihatdbr" class="btn btn-info btn-sm lihatdbr">Lihat DBR</a>';
+                        $btn = '<div class="btn-group" role="group">
+                        <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editruangan">Edit</a>';
+                        $btn = $btn. '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->dbrindukrelation->iddbr.'" data-original-title="lihatdbr" class="btn btn-info btn-sm lihatdbr">Lihat DBR</a>';
                         return $btn;
                     }
 

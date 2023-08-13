@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Sirangga\Bagian;
 
 use App\Http\Controllers\Controller;
+use App\Libraries\KirimWhatsapp;
 use App\Models\Sirangga\Admin\DetilDBRModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,6 +31,7 @@ class DBRBagianController extends Controller
         $model = DB::table('dbrinduk as a')
             ->select(['a.iddbr as iddbr','a.idpenanggungjawab as idpenanggungjawab','b.uraiangedung as uraiangedung',
                 'a.idruangan as idruangan','c.uraianruangan as uraianruangan','d.uraianstatus as statusdbr','e.name as useredit',
+                'f.nama as penanggungjawab',
                 'a.terakhiredit as terakhiredit','a.versike as versike','a.dokumendbr as dokumendbr'])
             ->leftJoin('gedung as b','a.idgedung','=','b.id')
             ->leftJoin('ruangan as c','a.idruangan','=','c.id')
@@ -46,7 +48,7 @@ class DBRBagianController extends Controller
                 return $dbr->uraiangedung;
             })
             ->addColumn('idpenanggungjawab', function ($dbr) {
-                return $dbr->nama ?? 'Belum Ada Penanggungjawab';
+                return $dbr->penanggungjawab ?? 'Belum Ada Penanggungjawab';
             })
             ->addColumn('uraianruangan', function ($dbr) {
                 return $dbr->uraianruangan ?? 'Belum Ada Ruangan';
@@ -67,10 +69,13 @@ class DBRBagianController extends Controller
                 if($row->statusdbr == "Diajukan Ke Unit"){
                     $btn = '<div class="btn-group" role="group">
                             <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddbr.'" data-original-title="setujudbr" class="edit btn btn-primary btn-sm setujuidbr">Setuju DBR</a>';
+                    $btn = $btn . '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="' .$row->iddbr.'" data-original-title="tolakdbr" class="edit btn btn-danger btn-sm tolakdbr">Tolak DBR</a>';
+                    $btn = $btn . '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="' .$row->iddbr.'" data-original-title="lihatdbr" class="edit btn btn-info btn-sm lihatdbr">Lihat DBR</a>';
                     return $btn;
                 }else if ($row->statusdbr == "Final"){
                     $btn = '<div class="btn-group" role="group">
                             <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddbr.'" data-original-title="laporpenambahan" class="edit btn btn-primary btn-sm laporpenambahan">Lapor Perubahan</a>';
+                    $btn = $btn . '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="' .$row->iddbr.'" data-original-title="lihatdbr" class="edit btn btn-info btn-sm lihatdbr">Lihat DBR</a>';
                     return $btn;
                 }else{
                     return $btn = "";
@@ -91,7 +96,7 @@ class DBRBagianController extends Controller
         }else{
             $dataupdate = array(
                 'statusdbr' => 4,
-                'useredit' => Auth::id(),
+                'usersetujudbr' => Auth::id(),
                 'terakhiredit' => now(),
                 'tanggalpersetujuandbr' => now()
             );
@@ -100,47 +105,43 @@ class DBRBagianController extends Controller
         }
     }
 
+    public function penolakandbr(Request $request, $iddbr){
+        $alasanpenolakan = $request->get('alasanpenolakan');
+        $dataupdate = array(
+            'statusdbr' => 1,
+            'alasanpenolakan' => $alasanpenolakan,
+            'usersetujudbr' => Auth::id(),
+            'terakhiredit' => now(),
+            'tanggalpersetujuandbr' => now()
+        );
+        DB::table('dbrinduk')->where('iddbr','=',$iddbr)->update($dataupdate);
+        return response()->json(['status'=>'berhasil']);
+    }
+
+    public function laporperubahan(Request $request, $iddbr){
+        $dataupdate = array(
+            'statusdbr' => 5,
+            'userperubahdbr' => Auth::id(),
+            'tanggalperubahandbr' => now(),
+        );
+        DB::table('dbrinduk')->where('iddbr','=',$iddbr)->update($dataupdate);
+
+        //kirim notif ke admin
+        $pic = getenv("PIC_SIRANGGA");
+        $body = "Kami Mengajukan Perubahan DBR dengan ID ".$iddbr." pada Akun DigitAll. Mohon Konfirmasi dan Pengecekan Fisik Ruangan";
+
+        //kirim notif
+        $notif = new KirimWhatsapp();
+        $notif = $notif->whatsappNotification($pic, $body);
+        return response()->json(['status'=>'berhasil']);
+    }
+
     //TODO
     //UNTUK PENGAJUAN PERUBAHAN DBR JIKA UNIT MENERIMA BARANG DARI ULP
     //PERUBAHAN INI MEMBUAT DBR BERUBAH STATUS MENJADI PENGAJUAN PERUBAHAN, NAMUN PERSETUJUAN TETEP BUTUH KONFIRM DARI BMN
     //PROSES AKAN MEMBUAT ENTRI PADA TABEL BARU
 
-    function ajukanperubahan(Request $request){
-        $iddbr = $request->get('iddbr');
-        $jumlahbarangdilaporkan = $request->get('jumlahbarangdilaporkan');
-        $deskripsibarangdilaporkan = $request->get('deskripsibarangdilaporkan');
-
-        //AMBIL DATA DBR INDUK
-        $datadbr = DB::table('dbrinduk as a')
-            ->select(['a.idruangan as idruangan','b.idbagian as idbagian'])
-            ->leftJoin('ruangan as b','a.idruangan','=','b.id')
-            ->get();
-        foreach ($datadbr as $d){
-            $idruangan = $d->idruangan;
-            $idbagian = $d->idbagian;
-
-            //insert data di pengajuan perubahan final
-            DB::table('pengajuanperubahanfinal')->UpdateOrInsert(['iddbr' => $iddbr],[
-                'iddbr' => $iddbr,
-                'idruangan' => $idruangan,
-                'idbagian' => $idbagian,
-                'diajukanoleh' => Auth::id(),
-                'tanggalpengajuan' => now(),
-                'tanggalditindaklanjuti' => null,
-                'ditindaklanjutioleh' => null,
-                'jumlahbarangdilaporkan' => $jumlahbarangdilaporkan,
-                'deskripsibarangdilaporkan' => $deskripsibarangdilaporkan,
-                'statuspengajuan' => 1
-            ]);
-        }
-        return response()->json(['status'=>'berhasil']);
-
-    }
-
-
-
-
-    public function lihatdbr($iddbr){
+    public function lihatdbrbagian($iddbr){
         $judul = "Data Barang DBR";
         return view('Sirangga.Bagian.lihatdbrbagian',[
             "judul"=>$judul,
@@ -150,16 +151,26 @@ class DBRBagianController extends Controller
 
     public function getdatadetildbr($iddbr){
         $model = DetilDBRModel::where('iddbr','=',$iddbr);
+        $versike = DB::table('dbrinduk')->where('iddbr','=',$iddbr)->value('versike');
+        $statusdbr = DB::table('dbrinduk')->where('iddbr','=',$iddbr)->value('statusdbr');
+
 
         return Datatables::eloquent($model)
-            ->addColumn('action', function($row){
-                if ($row->statusbarang == "Ada"){
+            ->addColumn('action', function($row) use ($versike, $statusdbr){
+                if ($row->statusbarang == "Ada" and $versike == 1 ){
                     $btn = '<div class="btn-group" role="group">
-                        <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="Delete" class="btn btn-danger btn-sm deletebarang">Delete</a>';
-                }else{
+                        <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="Konfirmasi" class="btn btn-danger btn-sm konfirmasitidakada">Tidak Ada</a>';
+                    $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="Pemeliharaan" class="btn btn-info btn-sm pemeliharaan">Pemeliharaan</a>';
+                    $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="Pengembalian" class="btn btn-danger btn-sm pengembalian">Pengembalian</a>';
+                }else if ($row->statusbarang == "Ada" and $versike > 1 ) {
                     $btn = '<div class="btn-group" role="group">
-                        <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="Delete" class="btn btn-danger btn-sm deletebarang">Delete</a>';
-                    $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="Konfirmasi" class="btn btn-success btn-sm konfirmasibarang">Konfirm</a>';
+                        <a href="javascript:void(0)" data-toggle="tooltip"  data-id="' . $row->iddetil . '" data-original-title="Hilang" class="btn btn-danger btn-sm konfirmasihilang">Hilang</a>';
+                    $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="Pemeliharaan" class="btn btn-info btn-sm pemeliharaan">Pemeliharaan</a>';
+                    $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="Pengembalian" class="btn btn-danger btn-sm pengembalian">Pengembalian</a>';
+                } else{
+                    $btn = '<div class="btn-group" role="group">
+                        <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="Delete" class="btn btn-danger btn-sm konfirmasitidakada">Tidak Ada</a>';
+                    $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="Konfirmasi" class="btn btn-success btn-sm konfirmasiada">Ada</a>';
                 }
                 return $btn;
             })
@@ -178,8 +189,54 @@ class DBRBagianController extends Controller
             'terakhirperiksa' => now(),
             'diperiksaoleh' => Auth::id()
         ]);
-
         return response()->json(['status'=>'berhasil', with(['iddetil' => $iddetil])]);
     }
 
+    public function konfirmasibarangtidakada(Request $request){
+        $iddetil = $request->get('iddetil');
+
+        //ubah status dari table detildbr
+        DB::table('detildbr')->where('iddetil','=',$iddetil)->update([
+            'statusbarang' => "Tidak Ada",
+            'terakhirperiksa' => now(),
+            'diperiksaoleh' => Auth::id()
+        ]);
+        return response()->json(['status'=>'berhasil', with(['iddetil' => $iddetil])]);
+    }
+
+    public function konfirmasibaranghilang(Request $request){
+        $iddetil = $request->get('iddetil');
+
+        //ubah status dari table detildbr
+        DB::table('detildbr')->where('iddetil','=',$iddetil)->update([
+            'statusbarang' => "Hilang",
+            'terakhirperiksa' => now(),
+            'diperiksaoleh' => Auth::id()
+        ]);
+        return response()->json(['status'=>'berhasil', with(['iddetil' => $iddetil])]);
+    }
+
+    public function konfirmasibarangpemeliharaan(Request $request){
+        $iddetil = $request->get('iddetil');
+
+        //ubah status dari table detildbr
+        DB::table('detildbr')->where('iddetil','=',$iddetil)->update([
+            'statusbarang' => "Pemeliharaan",
+            'terakhirperiksa' => now(),
+            'diperiksaoleh' => Auth::id()
+        ]);
+        return response()->json(['status'=>'berhasil', with(['iddetil' => $iddetil])]);
+    }
+
+    public function konfirmasibarangpengembalian(Request $request){
+        $iddetil = $request->get('iddetil');
+
+        //ubah status dari table detildbr
+        DB::table('detildbr')->where('iddetil','=',$iddetil)->update([
+            'statusbarang' => "Pengembalian",
+            'terakhirperiksa' => now(),
+            'diperiksaoleh' => Auth::id()
+        ]);
+        return response()->json(['status'=>'berhasil', with(['iddetil' => $iddetil])]);
+    }
 }

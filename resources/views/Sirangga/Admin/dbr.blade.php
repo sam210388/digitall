@@ -224,7 +224,7 @@
                     $('#modelHeading').html("Edit DBR");
                     $('#saveBtn').val("edit");
                     $('#ajaxModel').modal('show');
-                    $('#iddbr').val(data.id);
+                    $('#iddbr').val(data[0]['iddbr']);
                     $('#idpenanggungjawab').val(data[0]['idpenanggungjawab']).trigger('change');
                 })
             });
@@ -234,14 +234,13 @@
                 $(this).html('Sending..');
                 let form = document.getElementById('formdbr');
                 let fd = new FormData(form);
-                let iddbr = document.getElementById('iddbr').value;
-                fd.append('_method','PUT')
+                let id = document.getElementById('iddbr').value;
                 for (var pair of fd.entries()) {
                     console.log(pair[0]+ ', ' + pair[1]);
                 }
                 $.ajax({
                     data: fd,
-                    url: "{{ route('updatepenanggungjawabdbr','') }}"+'/'+iddbr,
+                    url: "{{ route('updatepenanggungjawabdbr','') }}"+'/'+id,
                     type: "POST",
                     enctype: 'multipart/form-data',
                     contentType: false,
@@ -355,6 +354,12 @@
                                     text: 'Data Gagal Dikirim Ke Unit Kerja, Belum Ada Barang Dalam Ruangan',
                                     icon: 'error'
                                 })
+                            } else if (data.status == "belumpenanggungjawab"){
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: 'Data Gagal Dikirim Ke Unit Kerja, Belum Ada Penanggungjawab',
+                                    icon: 'error'
+                                })
                             }
                             else{
                                 Swal.fire({
@@ -460,6 +465,44 @@
                         },
                     });
                 };
+            });
+
+            $('body').on('click', '.ingatkanunit', function () {
+                var iddbr = $(this).data("id");
+                if(confirm("Apakah Anda Yakin AKan Mengingatkan Unit Kerja Terkait DBR Ini?")){
+                    $.ajax({
+                        url: "{{ url('/ingatkanunit') }}"+'/'+iddbr,
+                        success: function (data) {
+                            if (data.status == "berhasil"){
+                                Swal.fire({
+                                    title: 'Sukses',
+                                    text: 'Unit Kerja Berhasil Diingatkan',
+                                    icon: 'success'
+                                })
+                            }
+                            else{
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Pengiriman Data Gagal',
+                                    icon: 'error'
+                                })
+                            }
+                            table.draw();
+                        },
+                        error: function (xhr) {
+                            var errorsArr = [];
+                            $.each(xhr.responseJSON.errors, function(key,value) {
+                                errorsArr.push(value);
+                            });
+                            Swal.fire({
+                                title: 'Error!',
+                                text: errorsArr,
+                                icon: 'error'
+                            })
+                            $('#saveBtn').html('Simpan Data');
+                        },
+                    });
+                }
             });
 
 

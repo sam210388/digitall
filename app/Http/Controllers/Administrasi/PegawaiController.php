@@ -35,9 +35,8 @@ class PegawaiController extends Controller
     public function getlistpegawai(Request $request)
     {
         if ($request->ajax()) {
-            $data = PegawaiModel::orderBy('id','DESC')->get();
+            $data = PegawaiModel::orderBy('id','DESC');
             return Datatables::of($data)
-                ->addIndexColumn()
                 ->addColumn('satker', function($row){
                     $id_satker = $row->id_satker;
                     $uraiansatker = DB::table('apisiapunit')->where('id','=',$id_satker)->value('nama_satker');
@@ -81,9 +80,8 @@ class PegawaiController extends Controller
 
         $hasil = json_decode($response);
         $result = $hasil->result;
-        //$cekisi = json_encode($hasil);
+        $cekisi = json_encode($hasil);
         //DB::table('pegawai')->truncate();
-
 
         foreach ($result as $item){
                 $id = $item->id;
@@ -92,6 +90,7 @@ class PegawaiController extends Controller
                 $nama_satker = $item->nama_satker;
                 $id_satker = $item->id_satker;
                 $email = $item->email;
+                $phone = $item->handphone;
                 $id_subsatker = $item->id_subsatker;
                 $eslelon = $item->eselon;
 
@@ -102,18 +101,16 @@ class PegawaiController extends Controller
                     'nama_satker' => $nama_satker,
                     'id_satker' => $id_satker,
                     'email' => $email,
+                    'phone' => $phone,
                     'id_subsatker' => $id_subsatker,
                     'eselon' => $eslelon
                 );
 
-                //cek data dlu
-                $adadata = DB::table('pegawai')->where('email','=',$email)->count();
-                if ($adadata == 0){
-                    DB::table('pegawai')->insert($data);
-                }else{
-                    DB::table('pegawai')->where('email','=',$email)->update($data);
-                }
+                PegawaiModel::updateOrCreate(['id' => $id],$data);
         }
-        return redirect()->to('pegawai')->with(['status' => 'Import Pegawai dari SIAP berhasil']);
+
+
+        //return response()->json($cekisi);
+        return redirect()->to('pegawai')->with(['status' => "Import Pegawai dari SIAP berhasil"]);
     }
 }

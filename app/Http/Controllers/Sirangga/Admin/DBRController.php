@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Sirangga\Admin;
 
 use App\Exports\DataBartenderExport;
 use App\Http\Controllers\Controller;
+use App\Libraries\KirimWhatsapp;
 use App\Models\Sirangga\Admin\BarangModel;
 use App\Models\Sirangga\Admin\DBRIndukModel;
 use App\Models\Sirangga\Admin\DetilDBRModel;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\DataTables;
+use Twilio\Rest\Client;
 
 class DBRController extends Controller
 {
@@ -130,18 +132,50 @@ class DBRController extends Controller
 
     public function kirimdbrkeunit($iddbr){
         $adabarang = DB::table('detildbr')->where('iddbr','=',$iddbr)->count();
+        $penanggungjawab = DB::table('dbrinduk')->where('iddbr','=',$iddbr)->value('idpenanggungjawab');
+        $phonepenanggungjawab = DB::table('pegawai')->where('id','=',$penanggungjawab)->value('phone');
+        $pic = getenv("PIC_SIRANGGA");
+
         if ($adabarang == 0){
             return response()->json(['status'=>'adabarang']);
-        }else{
+        }else if ($penanggungjawab == NULL or $penanggungjawab == 0){
+            return response()->json(['status'=>'belumpenanggungjawab']);
+        }
+        else{
             $dataupdate = array(
                 'statusdbr' => 2,
                 'useredit' => Auth::id(),
                 'terakhiredit' => now(),
                 'tanggalpengajuanunit' => now()
             );
-            DB::table('dbrinudk')->where('iddbr','=',$iddbr)->update($dataupdate);
+            DB::table('dbrinduk')->where('iddbr','=',$iddbr)->update($dataupdate);
+            $body = "Kami Telah Mengirimkan DBR dengan ID ".$iddbr." pada Akun DigitAll Anda. Segera Login dan Konfirmasi Barang
+            dan Lakukan Persetujuan/Penolakan atas DBR dimaksud.
+            Untuk Informasi Lebih Lanjut dapat menghubungi PIC Modul Sirangga pada nomor  ".$pic."
+            Hormat Kami Tim DigitAll Modul Sirangga";
+
+            //kirim notif
+            $notif = new KirimWhatsapp();
+            $notif = $notif->whatsappNotification($phonepenanggungjawab, $body);
             return response()->json(['status'=>'berhasil']);
         }
+    }
+
+
+
+    public function ingatkanunit($iddbr){
+        $idpenanggungjawab = DB::table('dbrinduk')->where('iddbr','=',$iddbr)->value('idpenanggungjawab');
+        $phonepenanggungjawab = DB::table('pegawai')->where('id','=',$idpenanggungjawab)->value('phone');
+        $pic = getenv("PIC_SIRANGGA");
+
+        $body = "Kami Telah Mengirimkan DBR dengan ID ".$iddbr." pada Akun DigitAll Anda. Segera Login dan Konfirmasi Barang
+            dan Lakukan Persetujuan/Penolakan atas DBR dimaksud.
+            Untuk Informasi Lebih Lanjut dapat menghubungi PIC Modul Sirangga pada nomor  ".$pic."
+            Hormat Kami Tim DigitAll Modul Sirangga";
+
+        //kirim notif
+        $notif = new KirimWhatsapp();
+        $notif = $notif->whatsappNotification($phonepenanggungjawab, $body);
     }
 
     public function perubahanfinal($iddbr){
@@ -192,6 +226,7 @@ class DBRController extends Controller
                     'versike' => $versike+1
                 );
                 DB::table('dbrinduk')->where('iddbr','=',$iddbr)->update($dataupdate);
+
             }
             return response()->json(['status'=>'berhasil']);
         }else{
@@ -205,6 +240,7 @@ class DBRController extends Controller
             ->select(['b.uraiangedung as gedung','c.uraianruangan as ruangan'])
             ->leftJoin('gedung as b','a.idgedung','=','b.id')
             ->leftJoin('ruangan as c','a.idruangan','=','c.id')
+            ->where('a.iddbr','=',$iddbr)
             ->get();
         foreach ($datadbr as $data){
             $gedung = $data->gedung;

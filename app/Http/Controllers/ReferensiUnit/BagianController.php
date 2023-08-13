@@ -12,7 +12,11 @@ use App\Models\ReferensiUnit\BagianModel;
 
 class BagianController extends Controller
 {
-
+    public function __construct()
+    {
+        $this->middleware(['auth']);
+    }
+    
     function importunit(){
 
         $curl = curl_init();
@@ -158,7 +162,6 @@ class BagianController extends Controller
 
     public function index(Request $request)
     {
-        $this->authorize('view',BagianModel::class);
         $judul = 'List Bagian';
         $datadeputi = DeputiModel::all();
         $databiro = BiroModel::all();
@@ -213,7 +216,6 @@ class BagianController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('create',BagianModel::class);
         if ($request->get('status') == null){
             $status = "off";
         }else{
@@ -256,7 +258,6 @@ class BagianController extends Controller
      */
     public function edit($id)
     {
-        $this->authorize('view',BagianModel::class);
         $menu = BagianModel::find($id);
         return response()->json($menu);
     }
@@ -270,7 +271,6 @@ class BagianController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->authorize('update',BagianModel::class);
         if ($request->get('status') == null){
             $status = "off";
         }else{
@@ -302,7 +302,6 @@ class BagianController extends Controller
      */
     public function destroy($id)
     {
-        $this->authorize('delete',BagianModel::class);
         $dipakai = DB::table('temuan')->where('idbagian','=',$id)->count();
         if ($dipakai == 0){
             BagianModel::find($id)->delete();

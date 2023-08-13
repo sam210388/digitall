@@ -113,7 +113,7 @@ Route::resource('deputi',DeputiController::class);
 Route::resource('biro',BiroController::class);
 Route::post('/ambildatabiro',[BagianController::class,'dapatkandatabiro'])->name('ambildatabiro');
 Route::post('/ambildatabagian',[BagianController::class,'dapatkandatabagian'])->name('ambildatabagian');
-Route::resource('bagian',BagianController::class)->middleware(['auth']);
+Route::resource('bagian',BagianController::class);
 Route::resource('updateunitkerja',UserBiroBagianController::class);
 Route::get('importunit',[BagianController::class,'importunit'])->middleware('cekadmin');
 
@@ -332,14 +332,15 @@ Route::get('deletedbr/{iddbr}',[DBRController::class,'deletedbr'])->name('delete
 Route::get('kirimdbrkeunit/{iddbr}',[DBRController::class,'kirimdbrkeunit'])->name('kirimdbrkeunit')->middleware('cekadminsirangga');
 Route::get('/perubahanfinal/{iddbr}',[DBRController::class,'perubahanfinal'])->name('perubahanfinal')->middleware('cekadminsirangga');
 Route::get('/lihatdbr/{iddbr}',[DBRController::class,'lihatdbr'])->name('lihatdbr')->middleware('cekadminsirangga');
-Route::get('getdatadetildbr/{iddbr}',[DBRController::class,'getdatadetildbr'])->name('getdatadetildbr')->middleware('cekadminsirangga');
+Route::get('getdatadetildbr/{iddbr}',[DBRController::class,'getdatadetildbr'])->name('getdatadetildbr')->middleware('cekadminisirangga');
 Route::get('getdatabarangtambah',[DBRController::class,'getdatabarangtambah'])->name('getdatabarangtambah')->middleware('cekadminsirangga');
 Route::post('insertbarangdipilih',[DBRController::class,'insertbarangdipilih'])->name('insertbarangdipilih')->middleware('cekadminsirangga');
 Route::post('deletebarangdipilih',[DBRController::class,'deletebarangdipilih'])->name('deletebarangdipilih')->middleware('cekadminsirangga');
 Route::post('konfirmasibarangada',[DBRController::class,'konfirmasibarangada'])->name('konfirmasibarangada')->middleware('cekadminsirangga');
 Route::get('rekapbarang',[ImportSaktiController::class,'rekapdataaset'])->name('rekapbarang')->middleware('cekadminsirangga');
-Route::get('exportdatabartender/{iddbr}',[DBRController::class,'databartenderexport'])->name('exportdatabartender')->middleware('cekadminsirangga');
+Route::get('exportdatabartender/{iddbr}',[DBRController::class,'databartenderexport'])->name('exportdatabartender');
 Route::get('cekfisik/{iddbr}',[DBRController::class,'cekfisik'])->name('cekfisik');
+Route::get('ingatkanunit/{iddbr}',[DBRController::class,'ingatkanunit'])->name('ingatkanunit');
 
 //list import aset
 Route::resource('listimportaset',ListImportSaktiController::class);
@@ -349,8 +350,17 @@ Route::get('getdatabarang',[BarangController::class,'getdatabarang'])->name('get
 
 //DBR BAGIAN
 Route::get('dbrindukbagian',[DBRBagianController::class,'dbrindukbagian'])->name('dbrindukbagian');
+Route::get('lihatdbrbagian/{iddbr}',[DBRBagianController::class,'lihatdbrbagian'])->name('lihatdbrbagian');
 Route::get('getdatadbrbagian',[DBRBagianController::class,'getdatadbrbagian'])->name('getdatadbrbagian');
+Route::get('getdatadetildbr/{iddbr}',[DBRBagianController::class,'getdatadetildbr'])->name('getdatadetildbr');
+Route::post('bagiankonfirmbarangada',[DBRBagianController::class,'konfirmasibarangada'])->name('bagiankonfirmbarangada');
+Route::post('bagiankonfirmbarangtidakada',[DBRBagianController::class,'konfirmasibarangtidakada'])->name('bagiankonfirmbarangtidakada');
+Route::post('bagiankonfirmbaranghilang',[DBRBagianController::class,'konfirmasibaranghilang'])->name('bagiankonfirmbaranghilang');
+Route::post('bagiankonfirmpemeliharaan',[DBRBagianController::class,'konfirmasibarangpemeliharaan'])->name('bagiankonfirmpemeliharaan');
+Route::post('bagiankonfirmpengembalian',[DBRBagianController::class,'konfirmasibarangpengembalian'])->name('bagiankonfirmpengembalian');
 Route::get('setujuidbr/{iddbr}',[DBRBagianController::class,'setujuidbr'])->name('setujuidbr');
+Route::post('penolakandbr/{iddbr}',[DBRBagianController::class,'penolakandbr'])->name('penolakandbr');
+Route::get('/laporperubahan/{iddbr}',[DBRBagianController::class,'laporperubahan'])->name('laporperubahan');
 
 
 //GL

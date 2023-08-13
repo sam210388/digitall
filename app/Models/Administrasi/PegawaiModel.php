@@ -5,6 +5,7 @@ namespace App\Models\Administrasi;
 use App\Models\Sirangga\Admin\DBRIndukModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class PegawaiModel extends Model
 {
@@ -20,6 +21,11 @@ class PegawaiModel extends Model
 
     public function dbrindukpenanggungjawabrelation(){
         return $this->hasMany(DBRIndukModel::class, 'idpenanggungjawab','id');
+    }
+
+    public function routeNotificationForWhatsApp($idpenanggungjawab)
+    {
+        return $this->phone;
     }
 
 
