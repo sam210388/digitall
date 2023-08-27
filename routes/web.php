@@ -61,6 +61,7 @@ use App\Http\Controllers\Sirangga\Admin\ImportSaktiController;
 use App\Http\Controllers\Sirangga\Bagian\DBRBagianController;
 use App\Http\Controllers\GL\BukuBesarController;
 use App\Http\Controllers\Realisasi\Admin\BASTKontrakHeaderController;
+use App\Http\Controllers\Pemanfaatan\ObjekSewaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -218,6 +219,7 @@ Route::get('realisasiindikatorroadmin',[RealisasiIndikatorROConctrollerAdmin::cl
 Route::get('getdatarealisasiindikatorroadmin/{idbulan}/{idbiro?}',[RealisasiIndikatorROConctrollerAdmin::class,'getdatarealisasiindikatorro'])->name('getdatarealisasiindikatorroadmin')->middleware('cekadmincaput');
 Route::get('exportrealisasiindikatorro',[RealisasiIndikatorROConctrollerAdmin::class,'exportrealisasiindikatorro'])->name('exportrealisasiindikatorro')->middleware('cekadmincaput');
 Route::get('exportrealisasianggaranindikatorro',[RealisasiIndikatorROConctrollerAdmin::class,'exportrealisasianggaranindikatorro'])->name('exportrealisasianggaranindikatorro')->middleware('cekadmincaput');
+Route::get('exportrealisasirincianindikatorro',[MonitoringRincianIndikatorROAdminConctroller::class,'exportrealisasiindikatorro'])->name('exportrealisasirincianindikatorro')->middleware('cekadmincaput');
 
 
 //monitoring rincian indikator ro
@@ -321,6 +323,7 @@ Route::post('/ambildatagedung',[LantaiController::class,'dapatkangedung'])->name
 Route::post('/ambildatalantai',[RuanganController::class,'dapatkanlantai'])->name('ambildatalantai');
 Route::get('getdataruangan',[RuanganController::class,'getdataruangan'])->name('getdataruangan');
 Route::get('/buatdbr/{idruangan}',[RuanganController::class,'buatdbr'])->name('buatdbr');
+Route::post('/dapatkandataaset',[BarangController::class,'dapatkandataaset'])->name('dapatkandataaset');
 
 
 //ADMINISTRASI DBR
@@ -328,11 +331,11 @@ Route::get('dbrinduk',[DBRController::class,'dbrinduk'])->name('dbrinduk')->midd
 Route::get('getdatadbr',[DBRController::class,'getDataBDR'])->name('getdatadbr')->middleware('cekadminsirangga');
 Route::post('updatepenanggungjawabdbr/{iddbr}',[DBRController::class,'updatepenanggungjawabdbr'])->name('updatepenanggungjawabdbr')->middleware('cekadminsirangga');
 Route::get('editdbr/{iddbr}',[DBRController::class,'editdbr'])->name('editdbr')->middleware('cekadminsirangga');
-Route::get('deletedbr/{iddbr}',[DBRController::class,'deletedbr'])->name('deletedbr')->middleware('cekadminsirangga');
+Route::delete('deletedbr/{iddbr}',[DBRController::class,'deletedbr'])->name('deletedbr')->middleware('cekadminsirangga');
 Route::get('kirimdbrkeunit/{iddbr}',[DBRController::class,'kirimdbrkeunit'])->name('kirimdbrkeunit')->middleware('cekadminsirangga');
 Route::get('/perubahanfinal/{iddbr}',[DBRController::class,'perubahanfinal'])->name('perubahanfinal')->middleware('cekadminsirangga');
 Route::get('/lihatdbr/{iddbr}',[DBRController::class,'lihatdbr'])->name('lihatdbr')->middleware('cekadminsirangga');
-Route::get('getdatadetildbr/{iddbr}',[DBRController::class,'getdatadetildbr'])->name('getdatadetildbr')->middleware('cekadminisirangga');
+Route::get('getdatadetildbr/{iddbr}',[DBRController::class,'getdatadetildbr'])->name('getdatadetildbr')->middleware('cekadminsirangga');
 Route::get('getdatabarangtambah',[DBRController::class,'getdatabarangtambah'])->name('getdatabarangtambah')->middleware('cekadminsirangga');
 Route::post('insertbarangdipilih',[DBRController::class,'insertbarangdipilih'])->name('insertbarangdipilih')->middleware('cekadminsirangga');
 Route::post('deletebarangdipilih',[DBRController::class,'deletebarangdipilih'])->name('deletebarangdipilih')->middleware('cekadminsirangga');
@@ -341,6 +344,10 @@ Route::get('rekapbarang',[ImportSaktiController::class,'rekapdataaset'])->name('
 Route::get('exportdatabartender/{iddbr}',[DBRController::class,'databartenderexport'])->name('exportdatabartender');
 Route::get('cekfisik/{iddbr}',[DBRController::class,'cekfisik'])->name('cekfisik');
 Route::get('ingatkanunit/{iddbr}',[DBRController::class,'ingatkanunit'])->name('ingatkanunit');
+Route::get('cetakdbr/{iddbr}',[DBRController::class,'cetakdbr'])->name('cetakdbr');
+//Route::get('testanggal',[DBRController::class,'testanggal'])->name('testanggal');
+//Route::get('kirimperingatan',[DBRController::class,'aksikirimperingatankeunit'])->name('kirimperingatan');
+
 
 //list import aset
 Route::resource('listimportaset',ListImportSaktiController::class);
@@ -352,7 +359,7 @@ Route::get('getdatabarang',[BarangController::class,'getdatabarang'])->name('get
 Route::get('dbrindukbagian',[DBRBagianController::class,'dbrindukbagian'])->name('dbrindukbagian');
 Route::get('lihatdbrbagian/{iddbr}',[DBRBagianController::class,'lihatdbrbagian'])->name('lihatdbrbagian');
 Route::get('getdatadbrbagian',[DBRBagianController::class,'getdatadbrbagian'])->name('getdatadbrbagian');
-Route::get('getdatadetildbr/{iddbr}',[DBRBagianController::class,'getdatadetildbr'])->name('getdatadetildbr');
+Route::get('bagiangetdatadetildbr/{iddbr}',[DBRBagianController::class,'getdatadetildbr'])->name('bagiangetdatadetildbr');
 Route::post('bagiankonfirmbarangada',[DBRBagianController::class,'konfirmasibarangada'])->name('bagiankonfirmbarangada');
 Route::post('bagiankonfirmbarangtidakada',[DBRBagianController::class,'konfirmasibarangtidakada'])->name('bagiankonfirmbarangtidakada');
 Route::post('bagiankonfirmbaranghilang',[DBRBagianController::class,'konfirmasibaranghilang'])->name('bagiankonfirmbaranghilang');
@@ -371,3 +378,8 @@ Route::get('importgl/{id}',[BukuBesarController::class,'importbukubesar']);
 Route::get('bastkontrakheader', [BASTKontrakHeaderController::class,'kontrakheader'])->name('bastkontrakheader');
 Route::get('importbastkontrakheader',[BASTKontrakHeaderController::class,'importbastkontrakheader'])->name('importbastkontrakheader');
 Route::get('importcoabastkontrak',[BASTKontrakHeaderController::class,'importcoabastkontrak'])->name('importcoabastkontrak');
+
+
+//PEMANFAATAN
+Route::resource('objeksewa',ObjekSewaController::class)->middleware('auth');
+Route::get('getdataobjeksewa',[ObjekSewaController::class,'getDataObjekSewa'])->name('getdataobjeksewa');

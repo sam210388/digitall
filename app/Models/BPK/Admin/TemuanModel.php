@@ -11,6 +11,5 @@ class TemuanModel extends Model
 
     protected $table = "temuan";
 
-    protected $fillable = ['tahunanggaran','temuan','kondisi','kriteria','sebab','akibat','nilai'
-        ,'bukti','status','created_by','updated_by'];
+    protected $guarded = [];
 }

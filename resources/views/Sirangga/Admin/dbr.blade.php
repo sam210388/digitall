@@ -428,6 +428,11 @@
                 window.location="{{URL::to('lihatdbr')}}"+"/"+iddbr;
             });
 
+            $('body').on('click', '.cetakdbr', function () {
+                var iddbr = $(this).data("id");
+                window.location="{{URL::to('cetakdbr')}}"+"/"+iddbr;
+            });
+
             $('body').on('click', '.cekfisik', function () {
                 var iddbr = $(this).data("id");
                 if(confirm("Apakah Anda Yakin AKan Melakukan Opname Fisik pada DBR Ini?!")){

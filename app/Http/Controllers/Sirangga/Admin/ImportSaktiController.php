@@ -25,6 +25,11 @@ class ImportSaktiController extends Controller
             ->where('status','=',1)
             ->get();
         foreach ($datakodebarang as $dk){
+            //update token
+            $resetapi = new BearerKey();
+            $resetapi = $resetapi->resetapi($TA, $kodemodul, $tipedata);
+
+            //tarik data
             $kdsatker = '001012';
             $kdgol = $dk->kdgol;
             $kdbid = $dk->kdbid;
@@ -218,4 +223,5 @@ class ImportSaktiController extends Controller
             ]);
         }
     }
+
 }

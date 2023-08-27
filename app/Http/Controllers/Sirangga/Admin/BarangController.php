@@ -16,6 +16,13 @@ class BarangController extends Controller
         $this->middleware(['auth']);
     }
 
+    public function dapatkandataaset(Request $request){
+        $data['barang'] = DB::table('barang')
+            ->where('kd_brg','=',$request->kodebarang)
+            ->get(['no_aset','no_aset']);
+        return response()->json($data);
+    }
+
     public function barang(){
         $judul = "Data Barang";
         return view('Sirangga.Admin.barang',[

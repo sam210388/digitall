@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Caput\Admin;
 
+use App\Exports\RincianIndikatorExport;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\DataTables;
 
 class MonitoringRincianIndikatorROAdminConctroller extends Controller
@@ -157,5 +159,11 @@ class MonitoringRincianIndikatorROAdminConctroller extends Controller
             }
         }
         return redirect()->to('datanormalisasirincian')->with('status','Normalisasi Data Untuk Bulan '.$idbulan.' Berhasil');
+    }
+
+    function exportrealisasiindikatorro(){
+        $tahunanggaran = session('tahunanggaran');
+        //Excel::download(new UsersExport, 'users.xlsx');
+        return Excel::download(new RincianIndikatorExport($tahunanggaran),'RealisasiRincianIndikatorRO.xlsx');
     }
 }

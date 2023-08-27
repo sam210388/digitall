@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Sirangga\Bagian;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Sirangga\Admin\DBRController;
 use App\Libraries\KirimWhatsapp;
 use App\Models\Sirangga\Admin\DetilDBRModel;
 use Illuminate\Http\Request;
@@ -96,11 +97,16 @@ class DBRBagianController extends Controller
         }else{
             $dataupdate = array(
                 'statusdbr' => 4,
-                'usersetujudbr' => Auth::id(),
+                'usersetujutolakdbr' => Auth::id(),
                 'terakhiredit' => now(),
                 'tanggalpersetujuandbr' => now()
             );
             DB::table('dbrinduk')->where('iddbr','=',$iddbr)->update($dataupdate);
+
+            //cetak dan simpan DBR
+            $cetakdbr = new DBRController();
+            $cetakdbr = $cetakdbr->cetakdbr($iddbr);
+            
             return response()->json(['status'=>'berhasil']);
         }
     }

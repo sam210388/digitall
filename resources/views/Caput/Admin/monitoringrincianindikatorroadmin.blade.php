@@ -26,6 +26,7 @@
                     <div class="card-header">
                         <h3 class="card-title">{{$judul}}</h3>
                         <div class="btn-group float-sm-right" role="group">
+                            <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="exportrealisasiro">Export Realisasi Output</a>
                             <a class="btn btn-primary float-sm-right" href="javascript:void(0)" id="normalisasidata">Normalisasi Data</a>
                             <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="lihatdatanormalisasi">Lihat Data Normalisasi</a>
                         </div>
@@ -307,6 +308,14 @@
 
         $('#lihatdatanormalisasi').click(function (e) {
                 window.location="{{URL::to('datanormalisasirincian')}}";
+        });
+
+        $('#exportrealisasiro').click(function (e) {
+            if( confirm("Apakah Anda Yakin Mau Export Data Realisasi?")){
+                e.preventDefault();
+                $(this).html('Export Data..');
+                window.location="{{URL::to('exportrealisasirincianindikatorro','')}}";
+            }
         });
     </script>
 

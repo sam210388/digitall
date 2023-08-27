@@ -91,7 +91,7 @@
                 autoWidth:true,
                 processing: true,
                 serverSide: true,
-                ajax:"{{route('getdatadetildbr','')}}"+"/"+iddbr,
+                ajax:"{{route('bagiangetdatadetildbr','')}}"+"/"+iddbr,
                 columns: [
                     {data: 'iddetil', name: 'iddetil'},
                     {data: 'iddbr', name: 'iddbr'},

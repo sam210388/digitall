@@ -53,12 +53,16 @@ class Kernel extends ConsoleKernel
             ])->dispatch($TA);
         })->weeklyOn(1,'01:00');
 
+        /*
         $schedule->call(function () use ($TA){
             ImportAset::withChain([
                 new RekapDataAset(),
                 new RekapDataBarangDBR()
             ])->dispatch($TA);
-        })->dailyAt('21:25');
+        })->dailyAt('08:16');
+        */
+
+
 
 
 

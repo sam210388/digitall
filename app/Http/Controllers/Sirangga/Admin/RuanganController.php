@@ -94,6 +94,9 @@ class RuanganController extends Controller
         $idlantai = $request->get('idlantai');
         $koderuangan =$request->get('koderuangan');
         $uraianruangan = $request->get('uraianruangan');
+        $iddeputi = $request->get('iddeputi');
+        $idbiro = $request->get('idbiro');
+        $idbagian = $request->get('idbagian');
 
         $where = array(
             'idarea' => $idarea,
@@ -103,11 +106,23 @@ class RuanganController extends Controller
             'koderuangan' => $koderuangan,
             'uraianruangan' => $uraianruangan
         );
+
+        $datasimpan = array(
+            'idarea' => $idarea,
+            'idsubarea' => $idsubarea,
+            'idgedung' => $idgedung,
+            'idlantai' => $idlantai,
+            'koderuangan' => $koderuangan,
+            'uraianruangan' => $uraianruangan,
+            'iddeputi' => $iddeputi,
+            'idbiro' => $idbiro,
+            'idbagian' => $idbagian
+        );
         $adadata = DB::table('ruangan')->where($where)->count();
         if ($adadata > 0){
             return response()->json(['status'=>'gagal']);
         }else{
-            DB::table('ruangan')->insert($where);
+            DB::table('ruangan')->insert($datasimpan);
             return response()->json(['status'=>'berhasil']);
         }
     }
@@ -134,7 +149,9 @@ class RuanganController extends Controller
         $idlantai = $request->get('idlantai');
         $koderuangan =$request->get('koderuangan');
         $uraianruangan = $request->get('uraianruangan');
-        $statusdbr = $request->get('statusdbr');
+        $iddeputi = $request->get('iddeputi');
+        $idbiro = $request->get('idbiro');
+        $idbagian = $request->get('idbagian');
 
         $where = array(
             'idarea' => $idarea,
@@ -144,11 +161,22 @@ class RuanganController extends Controller
             'koderuangan' => $koderuangan,
             'uraianruangan' => $uraianruangan
         );
+        $dataupdate = array(
+            'idarea' => $idarea,
+            'idsubarea' => $idsubarea,
+            'idgedung' => $idgedung,
+            'idlantai' => $idlantai,
+            'koderuangan' => $koderuangan,
+            'uraianruangan' => $uraianruangan,
+            'iddeputi' => $iddeputi,
+            'idbiro' => $idbiro,
+            'idbagian' => $idbagian
+        );
         $adadata = DB::table('ruangan')->where($where)->count();
         if ($adadata > 1){
             return response()->json(['status'=>'gagal']);
         }else{
-            DB::table('ruangan')->where('id','=',$id)->update($where);
+            DB::table('ruangan')->where('id','=',$id)->update($dataupdate);
             return response()->json(['status'=>'berhasil']);
         }
     }
