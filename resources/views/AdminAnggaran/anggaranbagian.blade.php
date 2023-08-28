@@ -36,6 +36,13 @@
                         </div>
                         <h3 class="card-title">{{$judul}}</h3>
                     </div>
+                    <div class="card-header">
+                        <div class="btn-group float-sm-right" role="group">
+                            <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="seluruhanggaran"> Seluruh Anggaran</a>
+                            <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="anggaransetjenkosong"> Anggaran Setjen Kosong : {{$anggaransetjenkosong}}</a>
+                            <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="anggarandewankosong"> Anggaran Dewan Kosong : {{$anggarandewankosong}}</a>
+                        </div>
+                    </div>
                     <div class="card-body">
                         <table id="tabelanggaranbagian" class="table table-bordered table-striped tabelanggaranbagian">
                             <thead>
@@ -337,6 +344,141 @@
                 }
 
             });
+        });
+
+        $('#seluruhanggaran').click(function (e) {
+            $('#tabelanggaranbagian tfoot th').each( function (i) {
+                var title = $('#tabelanggaranbagian thead th').eq( $(this).index() ).text();
+                $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
+                    {"width":"5%"},
+                );
+            });
+            var table = $('.tabelanggaranbagian').DataTable({
+                destroy: true,
+                fixedColumn:true,
+                scrollX:"100%",
+                autoWidth:true,
+                processing: true,
+                serverSide: false,
+                dom: 'Bfrtip',
+                select: true,
+                buttons: ['copy','excel','pdf','csv','print'],
+                ajax:"{{route('anggaranbagian.index')}}",
+                columns: [
+                    {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                    {data: 'tahunanggaran', name: 'tahunanggaran'},
+                    {data: 'kdsatker', name: 'kdsatker'},
+                    {data: 'pengenal', name: 'pengenal'},
+                    {data: 'idbagian', name: 'idbagian'},
+                    {data: 'idbiro', name: 'idbiro'},
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: true,
+                        searchable: true
+                    },
+                ],
+            });
+
+            table.buttons().container()
+                .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
+            // Filter event handler
+            $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
+                table
+                    .column( $(this).data('index') )
+                    .search( this.value )
+                    .draw();
+            } );
+        });
+
+        $('#anggaransetjenkosong').click(function (e) {
+            $('#tabelanggaranbagian tfoot th').each( function (i) {
+                var title = $('#tabelanggaranbagian thead th').eq( $(this).index() ).text();
+                $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
+                    {"width":"5%"},
+                );
+            });
+            var table = $('.tabelanggaranbagian').DataTable({
+                destroy: true,
+                fixedColumn:true,
+                scrollX:"100%",
+                autoWidth:true,
+                processing: true,
+                serverSide: false,
+                dom: 'Bfrtip',
+                select: true,
+                buttons: ['copy','excel','pdf','csv','print'],
+                ajax:"{{route('getanggaransetjenkosong')}}",
+                columns: [
+                    {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                    {data: 'tahunanggaran', name: 'tahunanggaran'},
+                    {data: 'kdsatker', name: 'kdsatker'},
+                    {data: 'pengenal', name: 'pengenal'},
+                    {data: 'idbagian', name: 'idbagian'},
+                    {data: 'idbiro', name: 'idbiro'},
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: true,
+                        searchable: true
+                    },
+                ],
+            });
+
+            table.buttons().container()
+                .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
+            // Filter event handler
+            $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
+                table
+                    .column( $(this).data('index') )
+                    .search( this.value )
+                    .draw();
+            } );
+        });
+
+        $('#anggarandewankosong').click(function (e) {
+            $('#tabelanggaranbagian tfoot th').each( function (i) {
+                var title = $('#tabelanggaranbagian thead th').eq( $(this).index() ).text();
+                $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
+                    {"width":"5%"},
+                );
+            });
+            var table = $('.tabelanggaranbagian').DataTable({
+                destroy: true,
+                fixedColumn:true,
+                scrollX:"100%",
+                autoWidth:true,
+                processing: true,
+                serverSide: false,
+                dom: 'Bfrtip',
+                select: true,
+                buttons: ['copy','excel','pdf','csv','print'],
+                ajax:"{{route('getanggarandewankosong')}}",
+                columns: [
+                    {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                    {data: 'tahunanggaran', name: 'tahunanggaran'},
+                    {data: 'kdsatker', name: 'kdsatker'},
+                    {data: 'pengenal', name: 'pengenal'},
+                    {data: 'idbagian', name: 'idbagian'},
+                    {data: 'idbiro', name: 'idbiro'},
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: true,
+                        searchable: true
+                    },
+                ],
+            });
+
+            table.buttons().container()
+                .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
+            // Filter event handler
+            $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
+                table
+                    .column( $(this).data('index') )
+                    .search( this.value )
+                    .draw();
+            } );
         });
     </script>
 @endsection

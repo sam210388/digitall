@@ -200,7 +200,8 @@ Route::post('checkrekapanggaran',[DataAngController::class,'checkrekapanggaran']
 
 //anggaranbagian
 Route::resource('anggaranbagian',AnggaranBagianController::class)->middleware('cekadminanggaran');
-
+Route::get('getanggaransetjenkosong',[AnggaranBagianController::class,'getanggaransetjenkosong'])->name('getanggaransetjenkosong');
+Route::get('getanggarandewankosong',[AnggaranBagianController::class,'getanggarandewankosong'])->name('getanggarandewankosong');
 
 //ADMIN CAPUT
 //kro

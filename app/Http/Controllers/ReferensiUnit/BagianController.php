@@ -16,7 +16,7 @@ class BagianController extends Controller
     {
         $this->middleware(['auth']);
     }
-    
+
     function importunit(){
 
         $curl = curl_init();
@@ -166,15 +166,11 @@ class BagianController extends Controller
         $datadeputi = DeputiModel::all();
         $databiro = BiroModel::all();
         if ($request->ajax()) {
-            $data = BagianModel::latest()->get();
+            $data = BagianModel::all();
             return Datatables::of($data)
-                ->addIndexColumn()
                 ->addColumn('action', function($row){
-
                     $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editbagian">Edit</a>';
-
                     $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deletebagian">Delete</a>';
-
                     return $btn;
                 })
                 ->addColumn('iddeputi',function ($row){
@@ -224,6 +220,7 @@ class BagianController extends Controller
         $validated = $request->validate([
             'iddeputi' => 'required',
             'idbiro' => 'required',
+            'idbagian' => 'required',
             'uraianbagian' => 'required',
 
         ]);
@@ -232,6 +229,7 @@ class BagianController extends Controller
             [
                 'iddeputi' => $request->get('iddeputi'),
                 'idbiro' => $request->get('idbiro'),
+                'id' => $request->get('id'),
                 'uraianbagian' => $request->get('uraianbagian'),
                 'status' => $status
             ]);
@@ -239,23 +237,7 @@ class BagianController extends Controller
         return response()->json(['status'=>'berhasil']);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
         $menu = BagianModel::find($id);
@@ -279,6 +261,7 @@ class BagianController extends Controller
         $validated = $request->validate([
             'iddeputi' => 'required',
             'idbiro' => 'required',
+            'id' => 'required',
             'uraianbagian' => 'required',
 
         ]);
@@ -287,6 +270,7 @@ class BagianController extends Controller
             [
                 'iddeputi' => $request->get('iddeputi'),
                 'idbiro' => $request->get('idbiro'),
+                'id' => $request->get('idbagian'),
                 'uraianbagian' => $request->get('uraianbagian'),
                 'status' => $status
             ]);

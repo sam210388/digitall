@@ -15,6 +15,64 @@ class AnggaranBagianController extends Controller
         $this->middleware('auth');
     }
 
+    public function getanggaransetjenkosong(Request $request){
+        $tahunanggaran = session('tahunanggaran');
+        if ($request->ajax()) {
+            $data = AnggaranBagianModel::where('tahunanggaran','=',$tahunanggaran)
+                ->where('kdsatker','=','001012')
+                ->whereNull('idbagian')
+                ->orWhere('idbagian','=',0)
+                ->get();
+            return Datatables::of($data)
+                ->addIndexColumn()
+                ->addColumn('action', function($row){
+                    $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->indeks.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editanggaran">Edit</a>';
+                    return $btn;
+                })
+                ->addColumn('idbagian',function ($row){
+                    $idbagian = $row->idbagian;
+                    $uraianbagian = DB::table('bagian')->where('id','=',$idbagian)->value('uraianbagian');
+                    return $uraianbagian;
+                })
+                ->addColumn('idbiro',function ($row){
+                    $idbiro = $row->idbiro;
+                    $uraianbiro = DB::table('biro')->where('id','=',$idbiro)->value('uraianbiro');
+                    return $uraianbiro;
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+    }
+
+    public function getanggarandewankosong(Request $request){
+        $tahunanggaran = session('tahunanggaran');
+        if ($request->ajax()) {
+            $data = AnggaranBagianModel::where('tahunanggaran','=',$tahunanggaran)
+                ->where('kdsatker','=','001030')
+                ->whereNull('idbagian')
+                ->orWhere('idbagian','=',0)
+                ->get();
+            return Datatables::of($data)
+                ->addIndexColumn()
+                ->addColumn('action', function($row){
+                    $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->indeks.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editanggaran">Edit</a>';
+                    return $btn;
+                })
+                ->addColumn('idbagian',function ($row){
+                    $idbagian = $row->idbagian;
+                    $uraianbagian = DB::table('bagian')->where('id','=',$idbagian)->value('uraianbagian');
+                    return $uraianbagian;
+                })
+                ->addColumn('idbiro',function ($row){
+                    $idbiro = $row->idbiro;
+                    $uraianbiro = DB::table('biro')->where('id','=',$idbiro)->value('uraianbiro');
+                    return $uraianbiro;
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+    }
+
     public function index(Request $request)
     {
         $judul = 'Anggaran Bagian';
@@ -22,9 +80,20 @@ class AnggaranBagianController extends Controller
         $datadeputi = DB::table('deputi')->get();
         $databiro = DB::table('biro')->get();
         $databagian = DB::table('bagian')->get();
+        $anggaransetjenkosong = DB::table('anggaranbagian')
+            ->where('kdsatker','=','001012')
+            ->whereNull('idbagian')
+            ->orWhere('idbagian','=',0)
+            ->count();
+        $anggarandewankosong = DB::table('anggaranbagian')
+            ->where('kdsatker','=','001030')
+            ->whereNull('idbagian')
+            ->orWhere('idbagian','=',0)
+            ->count();
 
         if ($request->ajax()) {
-            $data = AnggaranBagianModel::where('tahunanggaran','=',$tahunanggaran)->get();
+            $data = AnggaranBagianModel::where('tahunanggaran','=',$tahunanggaran)
+                ->get();
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
@@ -49,7 +118,9 @@ class AnggaranBagianController extends Controller
             "judul"=>$judul,
             "datadeputi" => $datadeputi,
             "databiro" => $databiro,
-            "databagian" => $databagian
+            "databagian" => $databagian,
+            "anggaransetjenkosong" => $anggaransetjenkosong,
+            "anggarandewankosong" => $anggarandewankosong
         ]);
     }
 

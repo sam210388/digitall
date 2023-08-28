@@ -42,7 +42,7 @@
                         <table id="tabelbagian" class="table table-bordered table-striped tabelbagian">
                             <thead>
                             <tr>
-                                <th>No</th>
+                                <th>ID</th>
                                 <th>Deputi</th>
                                 <th>Biro</th>
                                 <th>Uraian Bagian</th>
@@ -54,7 +54,7 @@
                             </tbody>
                             <tfoot>
                             <tr>
-                                <th>No</th>
+                                <th>ID</th>
                                 <th>Deputi</th>
                                 <th>Biro</th>
                                 <th>Uraian Bagian</th>
@@ -71,8 +71,8 @@
                                     </div>
                                     <div class="modal-body">
                                         <form id="formbagian" name="formbagian" class="form-horizontal">
-                                            <input type="hidden" name="idbagian" id="idbagian">
                                             <input type="hidden" name="idbiroawal" id="idbiroawal">
+                                            <input type="hidden" name="idbagianawal" id="idbagianawal">
                                             <div class="form-group">
                                                 <label for="deputi" class="col-sm-6 control-label">Deputi</label>
                                                 <select class="form-control iddeputi" name="iddeputi" id="iddeputi" style="width: 100%;">
@@ -85,6 +85,11 @@
                                             <div class="form-group">
                                                 <label for="Biro" class="col-sm-6 control-label">Biro</label>
                                                 <select class="form-control idbiro" name="idbiro" id="idbiro" style="width: 100%;">
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="Biro" class="col-sm-6 control-label">ID Bagian</label>
+                                                <select class="form-control idbagian" name="idbagian" id="idbagian" style="width: 100%;">
                                                 </select>
                                             </div>
                                             <div class="form-group">
@@ -127,6 +132,12 @@
                 dropdownParent: $('#ajaxModel')
 
             })
+            $('.idbagian').select2({
+                width: '100%',
+                theme: 'bootstrap4',
+                dropdownParent: $('#ajaxModel')
+
+            })
 
             $("input[data-bootstrap-switch]").each(function(){
                 $(this).bootstrapSwitch('state', $(this).prop('checked'));
@@ -153,12 +164,11 @@
                 buttons: ['copy','excel','pdf','csv','print'],
                 ajax:"{{route('bagian.index')}}",
                 columns: [
-                    {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                    {data: 'id', name: 'id'},
                     {data: 'iddeputi', name: 'iddeputi'},
                     {data: 'idbiro', name: 'idbiro'},
                     {data: 'uraianbagian', name: 'uraianbagian'},
                     {data: 'status', name: 'status'},
-
                     {
                         data: 'action',
                         name: 'action',
@@ -201,7 +211,7 @@
                     $('#modelHeading').html("Edit Bagian");
                     $('#saveBtn').val("edit");
                     $('#ajaxModel').modal('show');
-                    $('#idbagian').val(data.id);
+                    $('#idbagianawal').val(data.id);
                     $('#iddeputi').val(data.iddeputi).trigger('change');
                     $('#idbiroawal').val(data.idbiro);
                     $('#uraianbagian').val(data.uraianbagian);
@@ -235,7 +245,6 @@
                 }
 
                 $.ajax({
-
                     data: fd,
                     url: saveBtn === "tambah" ? "{{route('bagian.store')}}":"{{route('bagian.update','')}}"+'/'+id,
                     type: "POST",
@@ -258,6 +267,7 @@
                         }
                         $('#iddeputi').val('').trigger('change');
                         $('#idbiroawal').val('');
+                        $('#idbagianawal').val('');
                         $('#formbagian').trigger("reset");
                         $('#ajaxModel').modal('hide');
                         $('#saveBtn').html('Simpan Data');
@@ -363,6 +373,32 @@
                             $('select[name="idbiro"]').append('<option value="'+value.id+'" selected>'+value.uraianbiro+'</option>').trigger('change')
                         }else{
                             $("#idbiro").append('<option value="' + value.id + '">' + value.uraianbiro + '</option>');
+                        }
+
+                    });
+                }
+
+            });
+        });
+
+        $('#idbiro').on('change', function () {
+            var idbiro = this.value;
+            $.ajax({
+                url: "{{url('ambildatabagian')}}",
+                type: "POST",
+                data: {
+                    idbiro: idbiro,
+                    _token: '{{csrf_token()}}'
+                },
+                dataType: 'json',
+                success: function (result) {
+                    var idbagianawal = document.getElementById('idbagianawal').value;
+                    $('#idbagian').html('<option value="">Pilih Bagian</option>');
+                    $.each(result.bagian, function (key, value) {
+                        if (idbagianawal == value.id) {
+                            $('select[name="idbagian"]').append('<option value="'+value.id+'" selected>'+value.uraianbagian+'</option>').trigger('change')
+                        }else{
+                            $("#idbagian").append('<option value="' + value.id + '">' + value.uraianbagian + '</option>');
                         }
 
                     });

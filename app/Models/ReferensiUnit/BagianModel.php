@@ -11,5 +11,9 @@ class BagianModel extends Model
 
     protected $table = 'bagian';
 
-    protected $fillable = ['iddeputi','idbiro','uraianbagian','status'];
+    protected $guarded = [];
+
+    protected $casts = [
+      'id' => 'string'
+    ];
 }
