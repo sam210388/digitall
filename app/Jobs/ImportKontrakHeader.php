@@ -35,6 +35,7 @@ class ImportKontrakHeader implements ShouldQueue
     {
         $tahunanggaran = $this->tahunanggaran;
         $importkontrakheader = new KontrakHeaderController();
+        $importkontrakheader = $importkontrakheader->aksiimportkontrakheader($tahunanggaran);
 
     }
 }
