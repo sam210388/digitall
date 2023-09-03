@@ -5,6 +5,7 @@ namespace App\Http\Controllers\AdminAnggaran;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Yajra\DataTables\DataTables;
 use App\Models\AdminAnggaran\AnggaranBagianModel;
 
@@ -76,7 +77,6 @@ class AnggaranBagianController extends Controller
     public function index(Request $request)
     {
         $judul = 'Anggaran Bagian';
-        $tahunanggaran = session('tahunanggaran');
         $datadeputi = DB::table('deputi')->get();
         $databiro = DB::table('biro')->get();
         $databagian = DB::table('bagian')->get();
@@ -90,10 +90,29 @@ class AnggaranBagianController extends Controller
             ->whereNull('idbagian')
             ->orWhere('idbagian','=',0)
             ->count();
+        return view('AdminAnggaran.anggaranbagian',[
+            "judul"=>$judul,
+            "datadeputi" => $datadeputi,
+            "databiro" => $databiro,
+            "databagian" => $databagian,
+            "anggaransetjenkosong" => $anggaransetjenkosong,
+            "anggarandewankosong" => $anggarandewankosong
+        ]);
+    }
 
+    public function getdataanggaranbagian(Request $request, $status){
+        $tahunanggaran = session('tahunanggaran');
         if ($request->ajax()) {
-            $data = AnggaranBagianModel::where('tahunanggaran','=',$tahunanggaran)
-                ->get();
+            $data = AnggaranBagianModel::where('tahunanggaran','=',$tahunanggaran);
+            if ($status == 2) {
+                $data->where('kdsatker','=','001012')
+                    ->whereNull('idbagian')
+                    ->orWhere('idbagian','=',0);
+            }else if($status == 3){
+                $data->where('kdsatker','=','001030')
+                    ->whereNull('idbagian')
+                    ->orWhere('idbagian','=',0);
+            }
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
@@ -113,15 +132,6 @@ class AnggaranBagianController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-
-        return view('AdminAnggaran.anggaranbagian',[
-            "judul"=>$judul,
-            "datadeputi" => $datadeputi,
-            "databiro" => $databiro,
-            "databagian" => $databagian,
-            "anggaransetjenkosong" => $anggaransetjenkosong,
-            "anggarandewankosong" => $anggarandewankosong
-        ]);
     }
 
     /**

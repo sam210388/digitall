@@ -7,13 +7,6 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <div class="col-sm-6">
-                            @if(session('status'))
-                                <div class="alert alert-success">
-                                    {{session('status')}}
-                                </div>
-                            @endif
-                        </div>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -29,7 +22,6 @@
         <!-- Main content -->
         <div class="content">
             <div class="container">
-
                 <div class="card">
                     <div class="card-header">
                         <div class="btn-group float-sm-right" role="group">
@@ -41,6 +33,18 @@
                             <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="seluruhanggaran"> Seluruh Anggaran</a>
                             <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="anggaransetjenkosong"> Anggaran Setjen Kosong : {{$anggaransetjenkosong}}</a>
                             <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="anggarandewankosong"> Anggaran Dewan Kosong : {{$anggarandewankosong}}</a>
+                        </div>
+                    </div>
+                    <div class="card-header">
+                        <div class="form-group">
+                            <label for="status" class="col-sm-6 control-label">Pilih Kondisi</label>
+                            <div class="col-sm-12">
+                                <select class="form-control idstatus" name="idstatus" id="idstatus" style="width: 100%;">
+                                    <option value="1" selected>Seluruh Anggaran</option>
+                                    <option value="2">Anggaran Setjen Kosong</option>
+                                    <option value="3">Anggaran Dewan Kosong</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body">
@@ -91,19 +95,19 @@
                                             <div class="form-group">
                                                 <label for="deputi" class="col-sm-6 control-label">Deputi</label>
                                                 <div class="col-sm-12">
-                                                <select class="form-control iddeputi" name="iddeputi" id="iddeputi" style="width: 100%;">
-                                                    <option value="">Pilih Deputi</option>
-                                                    @foreach($datadeputi as $data)
-                                                        <option value="{{ $data->id }}">{{ $data->uraiandeputi }}</option>
-                                                    @endforeach
-                                                </select>
+                                                    <select class="form-control iddeputi" name="iddeputi" id="iddeputi" style="width: 100%;">
+                                                        <option value="">Pilih Deputi</option>
+                                                        @foreach($datadeputi as $data)
+                                                            <option value="{{ $data->id }}">{{ $data->uraiandeputi }}</option>
+                                                        @endforeach
+                                                    </select>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="Biro" class="col-sm-6 control-label">Biro</label>
                                                 <div class="col-sm-12">
-                                                <select class="form-control idbiro" name="idbiro" id="idbiro" style="width: 100%;">
-                                                </select>
+                                                    <select class="form-control idbiro" name="idbiro" id="idbiro" style="width: 100%;">
+                                                    </select>
                                                 </div>
                                             </div>
                                             <div class="form-group">
@@ -128,78 +132,29 @@
         </div>
     </div>
     <!-- /.content -->
+    <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/bs-custom-file-input/bs-custom-file-input.min.js')}}"></script>
     <script type="text/javascript">
-        $(document).ready(function () {
-            $('.iddeputi').select2({
-                width: '100%',
-                theme: 'bootstrap4',
-            })
+        $('.iddeputi').select2({
+            width: '100%',
+            theme: 'bootstrap4',
+        })
 
-            $('.idbiro').select2({
-                width: '100%',
-                theme: 'bootstrap4',
-            })
+        $('.idstatus').select2({
+            width: '100%',
+            theme: 'bootstrap4',
+        })
 
-            $('.idbagian').select2({
-                width: '100%',
-                theme: 'bootstrap4',
-            })
+        $('.idbiro').select2({
+            width: '100%',
+            theme: 'bootstrap4',
+        })
 
-            $("input[data-bootstrap-switch]").each(function(){
-                $(this).bootstrapSwitch('state', $(this).prop('checked'));
-            })
-            /*------------------------------------------
-            --------------------------------------------
-            Render DataTable
-            --------------------------------------------
-            --------------------------------------------*/
-            // Setup - add a text input to each footer cell
-            $('#tabelanggaranbagian tfoot th').each( function (i) {
-                var title = $('#tabelanggaranbagian thead th').eq( $(this).index() ).text();
-                $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
-                    {"width":"5%"},
-                );
-            });
-            var table = $('.tabelanggaranbagian').DataTable({
-                fixedColumn:true,
-                scrollX:"100%",
-                autoWidth:true,
-                processing: true,
-                serverSide: false,
-                dom: 'Bfrtip',
-                select: true,
-                buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('anggaranbagian.index')}}",
-                columns: [
-                    {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                    {data: 'tahunanggaran', name: 'tahunanggaran'},
-                    {data: 'kdsatker', name: 'kdsatker'},
-                    {data: 'pengenal', name: 'pengenal'},
-                    {data: 'idbagian', name: 'idbagian'},
-                    {data: 'idbiro', name: 'idbiro'},
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: true,
-                        searchable: true
-                    },
-                ],
-            });
+        $('.idbagian').select2({
+            width: '100%',
+            theme: 'bootstrap4',
+        })
 
-            table.buttons().container()
-                .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
-            // Filter event handler
-            $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
-                table
-                    .column( $(this).data('index') )
-                    .search( this.value )
-                    .draw();
-            } );
-            /*------------------------------------------
-            --------------------------------------------
-            Click to Edit Button
-            --------------------------------------------
-            --------------------------------------------*/
+        $(function () {
             $('body').on('click', '.editanggaran', function () {
                 var indeksanggaran = $(this).data('id');
                 //alert(indeksanggaran);
@@ -210,6 +165,7 @@
                     $('#anggarandipilih').val(data[0]['indeks']);
                     $('#indeksanggaran').val(data[0]['indeks']);
                     $('#iddeputi').val(data[0]['iddeputi']).trigger('change');
+                    $('#idbiro').val(data[0]['idbiro']).trigger('change');
                     $('#idbiroawal').val(data[0]['idbiro']);
                     $('#idbagianawal').val(data[0]['idbagian']);
                     $('#idbagian').val(data[0]['idbagian']).trigger('change');
@@ -229,7 +185,7 @@
                 let saveBtn = document.getElementById('saveBtn').value;
                 var indeksanggaran = document.getElementById('anggarandipilih').value;
                 fd.append('saveBtn',saveBtn)
-                if(saveBtn == "edit"){
+                if(saveBtn === "edit"){
                     fd.append('_method','PUT')
                 }
                 for (var pair of fd.entries()) {
@@ -258,6 +214,8 @@
                             })
                         }
                         $('#iddeputi').val('').trigger('change');
+                        $('#idbiro').val('').trigger('change');
+                        $('#idbagian').val('').trigger('change');
                         $('#idbiroawal').val('');
                         $('#idbagianawal').val('');
                         $('#indeksanggaran').val('');
@@ -346,26 +304,71 @@
             });
         });
 
-        $('#seluruhanggaran').click(function (e) {
-            $('#tabelanggaranbagian tfoot th').each( function (i) {
-                var title = $('#tabelanggaranbagian thead th').eq( $(this).index() ).text();
-                $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
-                    {"width":"5%"},
-                );
-            });
-            var table = $('.tabelanggaranbagian').DataTable({
+        bsCustomFileInput.init();
+
+        /*------------------------------------------
+        --------------------------------------------
+        Render DataTable
+        --------------------------------------------
+        --------------------------------------------*/
+        // Setup - add a text input to each footer cell
+        $('#tabelanggaranbagian tfoot th').each( function (i) {
+            var title = $('#tabelanggaranbagian thead th').eq( $(this).index() ).text();
+            $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
+                {"width":"5%"},
+            );
+        });
+
+        let status = document.getElementById('idstatus').value;
+        var table = $('.tabelanggaranbagian').DataTable({
+            destroy: true,
+            fixedColumn:true,
+            scrollX:"100%",
+            autoWidth:true,
+            processing: true,
+            serverSide: false,
+            dom: 'lf<"floatright"B>rtip',
+            buttons: ['copy','excel','pdf','csv','print'],
+            ajax: "{{route('getdataanggaranbagian','')}}"+'/'+status,
+            columns: [
+                {data: 'id', name: 'id'},
+                {data: 'tahunanggaran', name: 'tahunanggaran'},
+                {data: 'kdsatker', name: 'kdsatker'},
+                {data: 'pengenal', name: 'pengenal'},
+                {data: 'idbagian', name: 'idbagian'},
+                {data: 'idbiro', name: 'idbiro'},
+                {
+                    data: 'action',
+                    name: 'action',
+                    orderable: true,
+                    searchable: true
+                },
+            ],
+        });
+        table.buttons().container()
+            .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
+        // Filter event handler
+        $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
+            table
+                .column( $(this).data('index') )
+                .search( this.value )
+                .draw();
+        });
+
+        $('#idstatus').on('change',function (){
+            let status = document.getElementById('idstatus').value;
+            var table = $('#tabelanggaranbagian').DataTable({
                 destroy: true,
                 fixedColumn:true,
                 scrollX:"100%",
                 autoWidth:true,
                 processing: true,
                 serverSide: false,
-                dom: 'Bfrtip',
-                select: true,
+                dom: 'lf<"floatright"B>rtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('anggaranbagian.index')}}",
+                ajax: "{{route('getdataanggaranbagian','')}}"+'/'+status,
                 columns: [
-                    {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                    {data: 'id', name: 'id'},
                     {data: 'tahunanggaran', name: 'tahunanggaran'},
                     {data: 'kdsatker', name: 'kdsatker'},
                     {data: 'pengenal', name: 'pengenal'},
@@ -379,7 +382,6 @@
                     },
                 ],
             });
-
             table.buttons().container()
                 .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
             // Filter event handler
@@ -388,97 +390,10 @@
                     .column( $(this).data('index') )
                     .search( this.value )
                     .draw();
-            } );
-        });
-
-        $('#anggaransetjenkosong').click(function (e) {
-            $('#tabelanggaranbagian tfoot th').each( function (i) {
-                var title = $('#tabelanggaranbagian thead th').eq( $(this).index() ).text();
-                $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
-                    {"width":"5%"},
-                );
             });
-            var table = $('.tabelanggaranbagian').DataTable({
-                destroy: true,
-                fixedColumn:true,
-                scrollX:"100%",
-                autoWidth:true,
-                processing: true,
-                serverSide: false,
-                dom: 'Bfrtip',
-                select: true,
-                buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('getanggaransetjenkosong')}}",
-                columns: [
-                    {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                    {data: 'tahunanggaran', name: 'tahunanggaran'},
-                    {data: 'kdsatker', name: 'kdsatker'},
-                    {data: 'pengenal', name: 'pengenal'},
-                    {data: 'idbagian', name: 'idbagian'},
-                    {data: 'idbiro', name: 'idbiro'},
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: true,
-                        searchable: true
-                    },
-                ],
-            });
+        })
 
-            table.buttons().container()
-                .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
-            // Filter event handler
-            $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
-                table
-                    .column( $(this).data('index') )
-                    .search( this.value )
-                    .draw();
-            } );
-        });
 
-        $('#anggarandewankosong').click(function (e) {
-            $('#tabelanggaranbagian tfoot th').each( function (i) {
-                var title = $('#tabelanggaranbagian thead th').eq( $(this).index() ).text();
-                $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
-                    {"width":"5%"},
-                );
-            });
-            var table = $('.tabelanggaranbagian').DataTable({
-                destroy: true,
-                fixedColumn:true,
-                scrollX:"100%",
-                autoWidth:true,
-                processing: true,
-                serverSide: false,
-                dom: 'Bfrtip',
-                select: true,
-                buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('getanggarandewankosong')}}",
-                columns: [
-                    {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                    {data: 'tahunanggaran', name: 'tahunanggaran'},
-                    {data: 'kdsatker', name: 'kdsatker'},
-                    {data: 'pengenal', name: 'pengenal'},
-                    {data: 'idbagian', name: 'idbagian'},
-                    {data: 'idbiro', name: 'idbiro'},
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: true,
-                        searchable: true
-                    },
-                ],
-            });
-
-            table.buttons().container()
-                .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
-            // Filter event handler
-            $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
-                table
-                    .column( $(this).data('index') )
-                    .search( this.value )
-                    .draw();
-            } );
-        });
     </script>
+
 @endsection

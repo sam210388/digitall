@@ -324,11 +324,6 @@
             });
 
             $('#idbulan').on('change',function (){
-                let idbulan = dapatkanidbulan();
-                /*
-                $.get("{{ route('getdatarealisasi','') }}" +'/' + idbulan, function (data) {
-                })
-                */
                 var table = $('#tabelrealisasi').DataTable({
                     destroy: true,
                     fixedColumn:true,

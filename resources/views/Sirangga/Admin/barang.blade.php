@@ -45,6 +45,7 @@
                                 <th>KD BRG</th>
                                 <th>Uraian BRG</th>
                                 <th>NUP</th>
+                                <th>Merek/Type</th>
                                 <th>Tgl Oleh</th>
                                 <th>Tgl Catat</th>
                                 <th>Kondisi</th>
@@ -62,6 +63,7 @@
                                 <th>KD BRG</th>
                                 <th>Uraian BRG</th>
                                 <th>NUP</th>
+                                <th>Merek/Type</th>
                                 <th>Tgl Oleh</th>
                                 <th>Tgl Catat</th>
                                 <th>Kondisi</th>
@@ -93,13 +95,19 @@
                 );
             });
             var table = $('.tabelbarang').DataTable({
+                lengthAdjust: true,
                 fixedColumn:true,
                 scrollX:"100%",
                 autoWidth:true,
                 processing: true,
                 serverSide: true,
-                dom: 'Bfrtip',
-                buttons: ['copy','excel','pdf','csv','print'],
+                dom: 'lf<"floatright"B>rtip',
+                buttons: [
+                    'copyHtml5',
+                    'excelHtml5',
+                    'csvHtml5',
+                    'pdfHtml5'
+                ],
                 ajax:"{{route('getdatabarang')}}",
                 columns: [
                     {data: 'id', name: 'id'},
@@ -107,6 +115,7 @@
                     {data: 'kd_brg', name: 'kd_brg'},
                     {data: 'ur_sskel', name: 'kodebarangrelation.ur_sskel'},
                     {data: 'no_aset', name: 'no_aset'},
+                    {data: 'merk_type', name: 'merk_type'},
                     {data: 'tgl_perlh', name: 'tgl_perlh'},
                     {data: 'tgl_buku', name: 'tgl_buku'},
                     {data: 'kondisi', name: 'kondisi'},
