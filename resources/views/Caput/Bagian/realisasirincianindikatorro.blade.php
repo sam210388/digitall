@@ -228,20 +228,20 @@
     <!-- /.content -->
     <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/bs-custom-file-input/bs-custom-file-input.min.js')}}"></script>
     <script type="text/javascript">
-        function dapatkanidbulan(){
-            let idbulan = document.getElementById('idbulan').value;
-            if(idbulan === ""){
-                date = new Date();
-                nilaibulan = date.getMonth();
-                nilaibulan = nilaibulan+1;
-                return parseInt(nilaibulan);
-            }else{
-                nilaibulan = idbulan;
-                return parseInt(nilaibulan);
-            }
-        }
-
         $(function () {
+            function dapatkanidbulan(){
+                var idbulan = document.getElementById('idbulan').value;
+                if(idbulan == ""){
+                    date = new Date();
+                    nilaibulan = date.getMonth();
+                    nilaibulan = nilaibulan+1;
+                    return parseInt(nilaibulan);
+                }else{
+                    nilaibulan = idbulan;
+                    return parseInt(nilaibulan);
+                }
+            }
+
             bsCustomFileInput.init();
             $('.idbulan').select2({
                 width: '100%',
@@ -278,7 +278,7 @@
                 );
             });
 
-            idbulan = dapatkanidbulan();
+            nilaibulan = dapatkanidbulan();
             var table = $('.tabelrealisasi').DataTable({
                 destroy: true,
                 fixedColumn:true,
@@ -288,7 +288,7 @@
                 serverSide: true,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('getdatarealisasi','')}}"+"/"+idbulan,
+                ajax:"{{route('getdatarealisasi','')}}"+"/"+nilaibulan,
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'indikatorro', name: 'indikatorro'},
@@ -324,6 +324,7 @@
             });
 
             $('#idbulan').on('change',function (){
+                nilaibulan = dapatkanidbulan();
                 var table = $('#tabelrealisasi').DataTable({
                     destroy: true,
                     fixedColumn:true,
@@ -333,7 +334,7 @@
                     serverSide: true,
                     dom: 'Bfrtip',
                     buttons: ['copy','excel','pdf','csv','print'],
-                    ajax:"{{route('getdatarealisasi','')}}"+"/"+idbulan,
+                    ajax:"{{route('getdatarealisasi','')}}"+"/"+nilaibulan,
                     columns: [
                         {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                         {data: 'indikatorro', name: 'indikatorro'},

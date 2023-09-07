@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Realisasi\Admin\RealisasiPerBiroController;
 use App\Http\Controllers\Realisasi\Admin\SppPengeluaranController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -299,6 +300,11 @@ Route::get('cekjadwallapormonitoring/{idrincianindikatorro}/{idbulan}',[Monitori
 Route::post('batalvalidasi',[MonitoringRincianIndikatorROConctroller::class,'batalvalidasirincianindikator'])->name('batalvalidasi')->middleware('cekoperatorbiro');
 
 //ADMIN REALISASI
+//REALISASI PER BIRO
+Route::get('realisasiperbiro',[RealisasiPerBiroController::class,'index'])->name('realisasiperbiro');
+Route::get('getrealisasiperbiro',[RealisasiPerBiroController::class,'getrealisasiperbiro'])->name('getrealisasiperbiro');
+
+
 //REALISASI SEMAR
 Route::get('realisasisemar',[RealisasiSemarController::class,'realisasisemar'])->name('realisasisemar')->middleware('auth');
 Route::get('importrealisasisemar',[RealisasiSemarController::class,'importrealisasisemar'])->name('importrealisasisemar');
