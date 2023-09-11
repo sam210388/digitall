@@ -58,35 +58,39 @@
                 </div>
                 <div class="card">
                     <div class="card-header">
-                        <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="exportrealisasiperpengenal"> Export</a>
+                        <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="exportrealisasibagianperpengenal"> Export</a>
                         <h3 class="card-title">{{$judul}}</h3>
                     </div>
                     <div class="card-body">
-                        <table id="tabelrealisasiperpengenal" class="table table-bordered table-striped tabelrealisasiperpengenal">
+                        <table id="tabelrealisasibagianperpengenal" class="table table-bordered table-striped tabelrealisasibagianperpengenal">
                             <thead>
                             <tr>
-                                <th>No</th>
                                 <th>Satker</th>
-                                <th>Pengenal</th>
                                 <th>Biro</th>
                                 <th>Bagian</th>
-                                <th>Pagu Anggaran</th>
-                                <th>Realisasi</th>
-                                <th>Prosentase</th>
+                                <th>Pengenal</th>
+                                <th>Nilai</th>
+                                <th>No SPM</th>
+                                <th>TGL SPM</th>
+                                <th>No SP2D</th>
+                                <th>TGL SP2D</th>
+                                <th>Uraian</th>
                             </tr>
                             </thead>
                             <tbody>
                             </tbody>
                             <tfoot>
                             <tr>
-                                <th>No</th>
                                 <th>Satker</th>
-                                <th>Pengenal</th>
                                 <th>Biro</th>
                                 <th>Bagian</th>
-                                <th>Pagu Anggaran</th>
-                                <th>Realisasi</th>
-                                <th>Prosentase</th>
+                                <th>Pengenal</th>
+                                <th>Nilai</th>
+                                <th>No SPM</th>
+                                <th>TGL SPM</th>
+                                <th>No SP2D</th>
+                                <th>TGL SP2D</th>
+                                <th>Uraian</th>
                             </tr>
                             </tfoot>
                         </table>
@@ -99,44 +103,38 @@
     <script type="text/javascript">
         $(function () {
             // Setup - add a text input to each footer cell
-            $('#tabelrealisasiperpengenal tfoot th').each( function (i) {
-                var title = $('#tabelrealisasiperpengenal thead th').eq( $(this).index() ).text();
+            $('#tabelrealisasibagianperpengenal tfoot th').each( function (i) {
+                var title = $('#tabelrealisasibagianperpengenal thead th').eq( $(this).index() ).text();
                 $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
                     {"width":"5%"},
                 );
             });
-            var table = $('.tabelrealisasiperpengenal').DataTable({
+            var table = $('.tabelrealisasibagianperpengenal').DataTable({
                 fixedColumn:true,
                 scrollX:"100%",
                 autoWidth:true,
                 processing: true,
                 serverSide: true,
-                dom: 'Bfrtip',
+                dom: 'lf<"floatright"B>rtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('getrealisasiperpengenal')}}",
+                ajax:"{{route('getdetilrealisasi','')}}",
                 columns: [
-                    {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                    {data: 'kodesatker', name: 'kodesatker'},
-                    {data: 'pengenal', name: 'pengenal'},
+                    {data: 'kdsatker', name: 'kdsatker'},
                     {data: 'biro', name: 'biro'},
                     {data: 'bagian', name: 'bagian'},
-                    {data: 'pagu', name: 'pagu'},
-                    {data: 'realisasi', name: 'realisasi'},
-                    {data: 'prosentase', name: 'prosentase'},
+                    {data: 'pengenal', name: 'pengenal'},
+                    {data: 'nilai', name: 'nilai'},
+                    {data: 'no_spm', name: 'no_spm'},
+                    {data: 'tgl_spm', name: 'tgl_spm'},
+                    {data: 'no_sp2d', name: 'no_sp2d'},
+                    {data: 'tgl_sp2d', name: 'tgl_sp2d'},
+                    {data: 'uraian', name: 'uraian'},
                 ],
                 columnDefs: [
                     {
-                        targets: 5,
+                        targets: 4,
                         render: $.fn.dataTable.render.number('.', ',', 0, '')
                     },
-                    {
-                        targets: 6,
-                        render: $.fn.dataTable.render.number('.', ',', 0, '')
-                    },
-                    {
-                        targets: 7,
-                        render: $.fn.dataTable.render.number('.', ',', 2, '')
-                    }
                 ],
             });
             table.buttons().container()
@@ -150,8 +148,8 @@
             } );
         });
 
-        $('#exportrealisasiperpengenal').click(function () {
-            window.location="{{URL::to('exportrealisasiperpengenal')}}";
+        $('#exportrealisasibagianperpengenal').click(function () {
+            window.location="{{URL::to('exportdetilrealisasi')}}";
         });
 
     </script>

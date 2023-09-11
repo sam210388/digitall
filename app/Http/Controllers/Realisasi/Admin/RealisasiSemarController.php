@@ -56,8 +56,7 @@ class RealisasiSemarController extends Controller
         ]);
     }
 
-    public function importrealisasisemar(){
-        $tahunanggaran = session('tahunanggaran');
+    public function importrealisasisemar($tahunanggaran){
         //ambil bulan sekarang
         $tanggalserver = new DateTime();
         $bulan = $tanggalserver->format('m');
@@ -156,6 +155,5 @@ class RealisasiSemarController extends Controller
             );
             DB::table('realisasisemar')->insert($datainsert);
         }
-        return redirect()->to('realisasisemar')->with('status','Import Realisasi SEMAR Berhasil');
     }
 }

@@ -5,6 +5,7 @@ namespace App\Console;
 use App\Jobs\ImportAset;
 use App\Jobs\ImportCOA;
 use App\Jobs\ImportDataAng;
+use App\Jobs\ImportRealisasiSemar;
 use App\Jobs\ImportRefStatus;
 use App\Jobs\RekapAnggaran;
 use App\Jobs\RekapAnggaranMingguan;
@@ -31,6 +32,8 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $TA = date('Y');
+
+        $schedule->job(new ImportRealisasiSemar($TA))->Hourly();
 
         $schedule->job(new RekapCashPlanTriwulan($TA))->monthlyOn(1,'00:01');
 

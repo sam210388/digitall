@@ -1,20 +1,21 @@
 <?php
 
-use App\Http\Controllers\Realisasi\Admin\RealisasiPerBiroController;
-use App\Http\Controllers\Realisasi\Admin\SppPengeluaranController;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Administrasi\KewenanganController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Administrasi\MenuController;
 use App\Http\Controllers\Administrasi\SubMenuController;
 use App\Http\Controllers\Administrasi\KewenanganMenuController;
 use App\Http\Controllers\Administrasi\KewenanganUserController;
 use App\Http\Controllers\Administrasi\AdministrasiUserController;
+use App\Http\Controllers\Administrasi\TokenApiController;
+Use App\Http\Controllers\Administrasi\UserBiroBagianController;
+use App\Http\Controllers\Administrasi\KewenanganController;
+use App\Http\Controllers\Administrasi\PegawaiController;
 use App\Http\Controllers\ReferensiUnit\DeputiController;
 use App\Http\Controllers\ReferensiUnit\BiroController;
 use App\Http\Controllers\ReferensiUnit\BagianController;
-Use App\Http\Controllers\Administrasi\UserBiroBagianController;
 use App\Http\Controllers\BPK\Admin\RekomendasiController;
 use App\Http\Controllers\BPK\Bagian\RekomendasiBagianController;
 use App\Http\Controllers\BPK\Bagian\TindakLanjutBagianController;
@@ -27,7 +28,6 @@ use App\Http\Controllers\ReferensiAnggaran\SubOutputController;
 use App\Http\Controllers\ReferensiAnggaran\KomponenController;
 use App\Http\Controllers\AdminAnggaran\RefstatusController;
 use App\Http\Controllers\AdminAnggaran\DataAngController;
-use App\Http\Controllers\Administrasi\PegawaiController;
 use App\Http\Controllers\Caput\Admin\KroController;
 use App\Http\Controllers\Caput\Admin\RoController;
 use App\Http\Controllers\AdminAnggaran\AnggaranBagianController;
@@ -41,9 +41,6 @@ use App\Http\Controllers\Caput\Biro\RealisasiIndikatorROConctroller;
 use App\Http\Controllers\Caput\Biro\RealisasiROConctroller;
 use App\Http\Controllers\Caput\Biro\RealisasiKROConctroller;
 use App\Http\Controllers\Caput\Biro\MonitoringRincianIndikatorROConctroller;
-use App\Http\Controllers\Realisasi\Admin\RealisasiSemarController;
-use App\Http\Controllers\Realisasi\Admin\SppHeaderController;
-use App\Http\Controllers\Realisasi\Admin\SppPotonganController;
 use App\Http\Controllers\Caput\Admin\RealisasiIndikatorROConctrollerAdmin;
 use App\Http\Controllers\Caput\Admin\MonitoringRincianIndikatorROAdminConctroller;
 use App\Http\Controllers\Caput\Admin\MonitoringNormalisasiDataRincian;
@@ -56,13 +53,24 @@ use App\Http\Controllers\Sirangga\Admin\LantaiController;
 use App\Http\Controllers\Sirangga\Admin\RuanganController;
 use App\Http\Controllers\Sirangga\Admin\DBRController;
 use App\Http\Controllers\Sirangga\Admin\ListImportSaktiController;
-use App\Http\Controllers\Administrasi\TokenApiController;
 use App\Http\Controllers\Sirangga\Admin\BarangController;
 use App\Http\Controllers\Sirangga\Admin\ImportSaktiController;
 use App\Http\Controllers\Sirangga\Bagian\DBRBagianController;
 use App\Http\Controllers\GL\BukuBesarController;
 use App\Http\Controllers\Realisasi\Admin\BASTKontrakHeaderController;
 use App\Http\Controllers\Pemanfaatan\ObjekSewaController;
+use App\Http\Controllers\Realisasi\Admin\RealisasiSemarController;
+use App\Http\Controllers\Realisasi\Admin\SppHeaderController;
+use App\Http\Controllers\Realisasi\Admin\SppPotonganController;
+use App\Http\Controllers\Realisasi\Admin\RealisasiPerBiroController;
+use App\Http\Controllers\Realisasi\Admin\SppPengeluaranController;
+use App\Http\Controllers\Realisasi\Admin\RealisasiPengenal;
+use App\Http\Controllers\Realisasi\Biro\RealisasiPerBagianController;
+use App\Http\Controllers\Realisasi\Bagian\RealisasiBagianPerPengenal;
+use App\Http\Controllers\Realisasi\Bagian\DetilRealisasiBagian;
+use App\Http\Controllers\Realisasi\Admin\DetilRealisasi;
+use App\Http\Controllers\Realisasi\Biro\DetilRealisasiBiro;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -303,6 +311,36 @@ Route::post('batalvalidasi',[MonitoringRincianIndikatorROConctroller::class,'bat
 //REALISASI PER BIRO
 Route::get('realisasiperbiro',[RealisasiPerBiroController::class,'index'])->name('realisasiperbiro');
 Route::get('getrealisasiperbiro',[RealisasiPerBiroController::class,'getrealisasiperbiro'])->name('getrealisasiperbiro');
+Route::get('detilrealisasi',[DetilRealisasi::class,'index'])->name('detilrealisasi');
+Route::get('getdetilrealisasi',[DetilRealisasi::class,'getdetilrealisasi'])->name('getdetilrealisasi');
+Route::get('exportdetilrealisasi',[DetilRealisasi::class,'exportdetilrealisasi'])->name('exportdetilrealisasi');
+Route::get('detilrealisasibiro',[DetilRealisasiBiro::class,'index'])->name('detilrealisasibiro');
+Route::get('getdetilrealisasibiro/{idbiro}',[DetilRealisasiBiro::class,'getdetilrealisasibiro'])->name('getdetilrealisasibiro');
+Route::get('exportdetilrealisasibiro/{idbiro}',[DetilRealisasiBiro::class,'exportdetilrealisasibiro'])->name('exportdetilrealisasibiro');
+
+//REALISASI PER PENGENAL
+Route::get('realisasipengenal',[RealisasiPengenal::class,'index'])->name('realisasipengenal');
+Route::get('getrealisasiperpengenal',[RealisasiPengenal::class,'getrealisasiperpengenal'])->name('getrealisasiperpengenal');
+Route::get('exportrealisasiperpengenal',[RealisasiPengenal::class,'exportrealisasiperpengenal'])->name('exportrealisasiperpengenal');
+
+//BIRO REALISASI
+//REALISASI PERBAGIAN
+Route::get('realisasiperbagian',[RealisasiPerBagianController::class,'index'])->name('realisasiperbagian');
+Route::get('getrealisasiperbagian',[RealisasiPerBagianController::class,'getrealisasiperbagian'])->name('getrealisasiperbagian');
+Route::get('realisasibagianperpengenal/{idbagian}',[RealisasiPerBagianController::class,'realisasibagianperpengenal'])->name('realisasibagianperpengenal');
+Route::get('getrealisasibagianperpengenal/{idbagian}',[RealisasiPerBagianController::class,'getrealisasibagianperpengenal'])->name('getrealisasibagianperpengenal');
+Route::get('exportrealisasibagianperpengenal/{idbagian}',[RealisasiPerBagianController::class,'exportrealisasibagianperpengenal'])->name('exportrealisasibagianperpengenal');
+
+
+//BAGIAN REALISASI
+Route::get('realisasiperpengenal',[RealisasiBagianPerPengenal::class,'index'])->name('realisasiperpengenal');
+Route::get('getrealisasiperpengenal/{idbagian}',[RealisasiBagianPerPengenal::class,'getrealisasiperpengenal'])->name('getrealisasiperpengenal');
+Route::get('exportrealisasipengenal/{idbagian}',[RealisasiBagianPerPengenal::class,'exportrealisasiperpengenal'])->name('exportrealisasiperpengenal');
+Route::get('detilrealisasibagian',[DetilRealisasiBagian::class,'index'])->name('detilrealisasibagian');
+Route::get('getdetilrealisasibagian/{idbagian}',[DetilRealisasiBagian::class,'getdetilrealisasibagian'])->name('getdetilrealisasibagian');
+Route::get('exportdetilrealisasi/{idbagian}',[DetilRealisasiBagian::class,'exportdetilrealisasi'])->name('exportdetilrealisasi');
+
+
 
 
 //REALISASI SEMAR

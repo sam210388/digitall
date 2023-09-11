@@ -58,18 +58,17 @@
                 </div>
                 <div class="card">
                     <div class="card-header">
-                        <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="exportrealisasiperpengenal"> Export</a>
-                        <h3 class="card-title">{{$judul}}</h3>
+                        <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="exportrealisasibagianperpengenal"> Export</a>
+                        <h3 class="card-title">{{$judul}} | {{{$uraianbagian}}}</h3>
+                        <input type="hidden" name="idbagian" id="idbagian" value="{{$idbagian}}">
                     </div>
                     <div class="card-body">
-                        <table id="tabelrealisasiperpengenal" class="table table-bordered table-striped tabelrealisasiperpengenal">
+                        <table id="tabelrealisasibagianperpengenal" class="table table-bordered table-striped tabelrealisasibagianperpengenal">
                             <thead>
                             <tr>
                                 <th>No</th>
                                 <th>Satker</th>
                                 <th>Pengenal</th>
-                                <th>Biro</th>
-                                <th>Bagian</th>
                                 <th>Pagu Anggaran</th>
                                 <th>Realisasi</th>
                                 <th>Prosentase</th>
@@ -82,8 +81,6 @@
                                 <th>No</th>
                                 <th>Satker</th>
                                 <th>Pengenal</th>
-                                <th>Biro</th>
-                                <th>Bagian</th>
                                 <th>Pagu Anggaran</th>
                                 <th>Realisasi</th>
                                 <th>Prosentase</th>
@@ -99,13 +96,14 @@
     <script type="text/javascript">
         $(function () {
             // Setup - add a text input to each footer cell
-            $('#tabelrealisasiperpengenal tfoot th').each( function (i) {
-                var title = $('#tabelrealisasiperpengenal thead th').eq( $(this).index() ).text();
+            $('#tabelrealisasibagianperpengenal tfoot th').each( function (i) {
+                var title = $('#tabelrealisasibagianperpengenal thead th').eq( $(this).index() ).text();
                 $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
                     {"width":"5%"},
                 );
             });
-            var table = $('.tabelrealisasiperpengenal').DataTable({
+            let idbagian = document.getElementById('idbagian').value;
+            var table = $('.tabelrealisasibagianperpengenal').DataTable({
                 fixedColumn:true,
                 scrollX:"100%",
                 autoWidth:true,
@@ -113,28 +111,26 @@
                 serverSide: true,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('getrealisasiperpengenal')}}",
+                ajax:"{{route('getrealisasiperpengenal','')}}"+"/"+idbagian,
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'kodesatker', name: 'kodesatker'},
                     {data: 'pengenal', name: 'pengenal'},
-                    {data: 'biro', name: 'biro'},
-                    {data: 'bagian', name: 'bagian'},
                     {data: 'pagu', name: 'pagu'},
                     {data: 'realisasi', name: 'realisasi'},
                     {data: 'prosentase', name: 'prosentase'},
                 ],
                 columnDefs: [
                     {
+                        targets: 3,
+                        render: $.fn.dataTable.render.number('.', ',', 0, '')
+                    },
+                    {
+                        targets: 4,
+                        render: $.fn.dataTable.render.number('.', ',', 0, '')
+                    },
+                    {
                         targets: 5,
-                        render: $.fn.dataTable.render.number('.', ',', 0, '')
-                    },
-                    {
-                        targets: 6,
-                        render: $.fn.dataTable.render.number('.', ',', 0, '')
-                    },
-                    {
-                        targets: 7,
                         render: $.fn.dataTable.render.number('.', ',', 2, '')
                     }
                 ],
@@ -150,8 +146,9 @@
             } );
         });
 
-        $('#exportrealisasiperpengenal').click(function () {
-            window.location="{{URL::to('exportrealisasiperpengenal')}}";
+        $('#exportrealisasibagianperpengenal').click(function () {
+            idbagian = document.getElementById('idbagian').value;
+            window.location="{{URL::to('exportrealisasipengenal','')}}"+"/"+idbagian;
         });
 
     </script>

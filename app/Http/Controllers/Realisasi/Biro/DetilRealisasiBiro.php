@@ -1,15 +1,17 @@
 <?php
 
-namespace App\Http\Controllers\Realisasi\Admin;
+namespace App\Http\Controllers\Realisasi\Biro;
 
-use App\Exports\ExportRealisasiPengenal;
+use App\Exports\ExportDetilRealisasiBagian;
+use App\Exports\ExportDetilRealisasiBiro;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\DataTables;
 
-class RealisasiPengenal extends Controller
+class DetilRealisasiBiro extends Controller
 {
     public function __construct()
     {
@@ -19,11 +21,14 @@ class RealisasiPengenal extends Controller
     public function index(Request $request)
     {
         $tahunanggaran = session('tahunanggaran');
-        $judul = 'Realisasi Per Pengenal';
+        $judul = 'Realisasi Detil Bagian';
+        $idbiro = Auth::user()->idbiro;
+        $uraianbiro = DB::table('biro')->where('id','=',$idbiro)->value('uraianbiro');
         $datarealisasisetjen = DB::table('laporanrealisasianggaranbac')
             ->select(DB::raw('sum(paguanggaran) as pagu, sum(rsd12) as realisasi, (sum(rsd12)/sum(paguanggaran))*100 as prosentase'))
             ->where('kodesatker','=','001012')
             ->where('tahunanggaran','=',$tahunanggaran)
+            ->where('idbiro','=',$idbiro)
             ->get();
         foreach ($datarealisasisetjen  as $rs){
             $pagusetjen = $rs->pagu;
@@ -35,14 +40,17 @@ class RealisasiPengenal extends Controller
             ->select(DB::raw('sum(paguanggaran) as pagu, sum(rsd12) as realisasi, (sum(rsd12)/sum(paguanggaran))*100 as prosentase'))
             ->where('kodesatker','=','001030')
             ->where('tahunanggaran','=',$tahunanggaran)
+            ->where('idbiro','=',$idbiro)
             ->get();
         foreach ($datarealisasidewan as $drd){
             $pagudewan = $drd->pagu;
             $realisasidewan = $drd->realisasi;
             $prosentasedewan = $drd->prosentase;
         }
-        return view('realisasi.admin.realisasiperpengenal',[
+        return view('realisasi.biro.detilrealisasibiro',[
             "judul"=>$judul,
+            "idbiro" => $idbiro,
+            "uraianbiro" => $uraianbiro,
             "pagusetjen" => $pagusetjen,
             "realisasisetjen" => $realisasisetjen,
             "prosentasesetjen" => $prosentasesetjen,
@@ -52,20 +60,18 @@ class RealisasiPengenal extends Controller
         ]);
     }
 
-    public function getrealisasiperpengenal(Request $request){
+    public function getdetilrealisasibiro(Request $request, $idbiro){
         $tahunanggaran = session('tahunanggaran');
         if ($request->ajax()) {
-            $data = DB::table('laporanrealisasianggaranbac as a')
-                ->select(['a.kodesatker as kodesatker','a.pengenal as pengenal','a.paguanggaran as pagu','a.rsd12 as realisasi',
-                    'b.uraianbiro as biro','c.uraianbagian as bagian',
-                    DB::raw('(a.rsd12/a.paguanggaran)*100 as prosentase')
+            $data = DB::table('spppengeluaran as a')
+                ->select(['a.KDSATKER as kdsatker','c.uraianbagian as bagian','a.pengenal as pengenal','a.NILAI_AKUN_PENGELUARAN as nilai',
+                    'b.NO_SPM AS no_spm','b.TGL_SPM as tgl_spm','b.NO_SP2D as no_sp2d','b.TGL_SP2D as tgl_sp2d',
+                    'b.URAIAN as uraian'
                 ])
-                ->leftJoin('biro as b','a.idbiro','=','b.id')
-                ->leftJoin('bagian as c', function ($join){
-                    $join->on('a.idbagian','=','c.id');
-                    $join->on('a.idbiro','=','c.idbiro');
-                })
+                ->leftJoin('sppheader as b','a.ID_SPP','=','b.ID_SPP')
+                ->leftJoin('bagian as c','a.ID_BAGIAN','=','c.id')
                 ->where('tahunanggaran','=',$tahunanggaran)
+                ->where('a.ID_BIRO','=',$idbiro)
                 ->get();
             return Datatables::of($data)
                 ->addIndexColumn()
@@ -73,10 +79,9 @@ class RealisasiPengenal extends Controller
         }
     }
 
-    function exportrealisasiperpengenal(){
+    function exportdetilrealisasibiro($idbiro){
         $tahunanggaran = session('tahunanggaran');
         //Excel::download(new UsersExport, 'users.xlsx');
-        return Excel::download(new ExportRealisasiPengenal($tahunanggaran),'RealisasiPerPengenal.xlsx');
+        return Excel::download(new ExportDetilRealisasiBiro($tahunanggaran, $idbiro),'DetilRealisasiBiro.xlsx');
     }
-
 }
