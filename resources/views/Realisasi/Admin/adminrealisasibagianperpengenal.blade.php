@@ -58,17 +58,20 @@
                 </div>
                 <div class="card">
                     <div class="card-header">
-                        <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="exportrealisasi"> Export</a>
-                        <h3 class="card-title">{{$judul}}</h3>
+                        <h3 class="card-title">{{$judul}} | {{{$uraianbagian}}}</h3>
+                        <input type="hidden" name="idbagian" id="idbagian" value="{{$idbagian}}">
+                        <div class="btn-group float-sm-right" role="group">
+                            <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="exportrealisasibagianperpengenal"> Export</a>
+                            <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="kembali"> Kembali</a>
+                        </div>
                     </div>
                     <div class="card-body">
-                        <table id="tabelrealisasiperbiro" class="table table-bordered table-striped tabelrealisasiperbiro">
+                        <table id="tabelrealisasibagianperpengenal" class="table table-bordered table-striped tabelrealisasibagianperpengenal">
                             <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Deputi</th>
-                                <th>Uraian Biro</th>
                                 <th>Satker</th>
+                                <th>Pengenal</th>
                                 <th>Pagu Anggaran</th>
                                 <th>Realisasi</th>
                                 <th>Prosentase</th>
@@ -79,9 +82,8 @@
                             <tfoot>
                             <tr>
                                 <th>No</th>
-                                <th>Deputi</th>
-                                <th>Uraian Biro</th>
                                 <th>Satker</th>
+                                <th>Pengenal</th>
                                 <th>Pagu Anggaran</th>
                                 <th>Realisasi</th>
                                 <th>Prosentase</th>
@@ -97,13 +99,14 @@
     <script type="text/javascript">
         $(function () {
             // Setup - add a text input to each footer cell
-            $('#tabelrealisasiperbiro tfoot th').each( function (i) {
-                var title = $('#tabelrealisasiperbiro thead th').eq( $(this).index() ).text();
+            $('#tabelrealisasibagianperpengenal tfoot th').each( function (i) {
+                var title = $('#tabelrealisasibagianperpengenal thead th').eq( $(this).index() ).text();
                 $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
                     {"width":"5%"},
                 );
             });
-            var table = $('.tabelrealisasiperbiro').DataTable({
+            let idbagian = document.getElementById('idbagian').value;
+            var table = $('.tabelrealisasibagianperpengenal').DataTable({
                 fixedColumn:true,
                 scrollX:"100%",
                 autoWidth:true,
@@ -111,27 +114,26 @@
                 serverSide: true,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('getrealisasiperbiro')}}",
+                ajax:"{{route('admingetrealisasibagianperpengenal','')}}"+"/"+idbagian,
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                    {data: 'uraiandeputi', name: 'uraiandeputi'},
-                    {data: 'uraianbiro', name: 'uraianbiro'},
                     {data: 'kodesatker', name: 'kodesatker'},
-                    {data: 'paguanggaran', name: 'paguanggaran'},
+                    {data: 'pengenal', name: 'pengenal'},
+                    {data: 'pagu', name: 'pagu'},
                     {data: 'realisasi', name: 'realisasi'},
                     {data: 'prosentase', name: 'prosentase'},
                 ],
                 columnDefs: [
+                    {
+                        targets: 3,
+                        render: $.fn.dataTable.render.number('.', ',', 0, '')
+                    },
                     {
                         targets: 4,
                         render: $.fn.dataTable.render.number('.', ',', 0, '')
                     },
                     {
                         targets: 5,
-                        render: $.fn.dataTable.render.number('.', ',', 0, '')
-                    },
-                    {
-                        targets: 6,
                         render: $.fn.dataTable.render.number('.', ',', 2, '')
                     }
                 ],
@@ -147,8 +149,13 @@
             } );
         });
 
-        $('#exportrealisasi').click(function () {
-            window.location="{{URL::to('exportrealisasiperbiro')}}";
+        $('#exportrealisasibagianperpengenal').click(function () {
+            idbagian = document.getElementById('idbagian').value;
+            window.location="{{URL::to('exportrealisasibagianperpengenal','')}}"+"/"+idbagian;
+        });
+
+        $('#kembali').click(function () {
+            window.location="{{URL::to('adminrealisasiperbagian')}}";
         });
 
     </script>

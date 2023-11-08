@@ -54,7 +54,7 @@ class AdministrasiUserController extends Controller
                             <div class="input-group mb-3">
                                 <div class="user-panel">
                                 <div class="image">
-                                <img src="'.env('APP_URL')."/".asset('storage')."/".$row->gambaruser.'" class="img-circle elevation-2" alt="User Image">
+                                <img src="'.asset('storage')."/".$row->gambaruser.'" class="img-circle elevation-2" alt="User Image">
                                 </div>
                                 </div>
                             </div>

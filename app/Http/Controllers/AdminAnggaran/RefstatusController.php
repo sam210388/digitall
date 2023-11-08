@@ -15,6 +15,7 @@ use App\Http\Controllers\Controller;
 use App\Libraries\TarikDataMonsakti;
 use App\Models\AdminAnggaran\RefStatusModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 
 class RefstatusController extends Controller
@@ -41,24 +42,31 @@ class RefstatusController extends Controller
                 ['kd_sts_history','LIKE','C%'],
                 ['tahunanggaran','=',$tahunanggaran],
                 ['flag_update_coa','=',1]
-            ])->get();
+            ]);
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
                     if ($row->statusimport == 1){
-                        $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->kdsatker."/".$row->kd_sts_history.'" data-original-title="importanggaran" class="edit btn btn-primary btn-sm importanggaran">Import</a>';
+                        $btn = '<div class="btn-group" role="group">';
+                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->idrefstatus.'" data-original-title="importanggaran" class="edit btn btn-primary btn-sm importanggaran">Import</a>';
+                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->idrefstatus.'" data-original-title="rekonanggaran" class="edit btn btn-info btn-sm rekonanggaran">Rekon</a>';
                     }else{
                         $btn = '<div class="btn-group" role="group">
-                            <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->kdsatker."/".$row->kd_sts_history.'" data-original-title="importanggaran" class="btn btn-primary btn-sm importanggaran">Import</a>';
+                            <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->idrefstatus.'" data-original-title="importanggaran" class="btn btn-primary btn-sm importanggaran">Import</a>';
                         $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->idrefstatus.'" data-original-title="exportanggaran" class="btn btn-success btn-sm exportanggaran">Export</a>';
+                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->idrefstatus.'" data-original-title="rekonanggaran" class="edit btn btn-info btn-sm rekonanggaran">Rekon</a>';
                     }
-
-
                     return $btn;
                 })
                 ->rawColumns(['action'])
                 ->make(true);
         }
+    }
+
+    public function updatestatusaktif(){
+        $tahunanggaran = session('tahunanggaran');
+        $this->dispatch(new UpdateStatusAktifAnggaran($tahunanggaran));
+        return redirect()->to('refstatus')->with('updatestatusaktif','Update Status Aktif Anggaran Berhasil Dilakukan');
     }
 
     function importrefstatus(){

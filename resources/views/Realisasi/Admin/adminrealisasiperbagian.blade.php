@@ -62,16 +62,17 @@
                         <h3 class="card-title">{{$judul}}</h3>
                     </div>
                     <div class="card-body">
-                        <table id="tabelrealisasiperbiro" class="table table-bordered table-striped tabelrealisasiperbiro">
+                        <table id="tabelrealisasiperbagian" class="table table-bordered table-striped tabelrealisasiperbagian">
                             <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Deputi</th>
-                                <th>Uraian Biro</th>
+                                <th>Biro</th>
+                                <th>Bagian</th>
                                 <th>Satker</th>
                                 <th>Pagu Anggaran</th>
                                 <th>Realisasi</th>
                                 <th>Prosentase</th>
+                                <th>Aksi</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -79,12 +80,13 @@
                             <tfoot>
                             <tr>
                                 <th>No</th>
-                                <th>Deputi</th>
-                                <th>Uraian Biro</th>
+                                <th>Biro</th>
+                                <th>Bagian</th>
                                 <th>Satker</th>
                                 <th>Pagu Anggaran</th>
                                 <th>Realisasi</th>
                                 <th>Prosentase</th>
+                                <th>Aksi</th>
                             </tr>
                             </tfoot>
                         </table>
@@ -97,13 +99,13 @@
     <script type="text/javascript">
         $(function () {
             // Setup - add a text input to each footer cell
-            $('#tabelrealisasiperbiro tfoot th').each( function (i) {
-                var title = $('#tabelrealisasiperbiro thead th').eq( $(this).index() ).text();
+            $('#tabelrealisasiperbagian tfoot th').each( function (i) {
+                var title = $('#tabelrealisasiperbagian thead th').eq( $(this).index() ).text();
                 $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
                     {"width":"5%"},
                 );
             });
-            var table = $('.tabelrealisasiperbiro').DataTable({
+            var table = $('.tabelrealisasiperbagian').DataTable({
                 fixedColumn:true,
                 scrollX:"100%",
                 autoWidth:true,
@@ -111,15 +113,21 @@
                 serverSide: true,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('getrealisasiperbiro')}}",
+                ajax:"{{route('admingetrealisasiperbagian')}}",
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                    {data: 'uraiandeputi', name: 'uraiandeputi'},
-                    {data: 'uraianbiro', name: 'uraianbiro'},
+                    {data: 'biro', name: 'biro'},
+                    {data: 'uraianbagian', name: 'uraianbagian'},
                     {data: 'kodesatker', name: 'kodesatker'},
                     {data: 'paguanggaran', name: 'paguanggaran'},
                     {data: 'realisasi', name: 'realisasi'},
                     {data: 'prosentase', name: 'prosentase'},
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    },
                 ],
                 columnDefs: [
                     {
@@ -145,10 +153,16 @@
                     .search( this.value )
                     .draw();
             } );
-        });
 
-        $('#exportrealisasi').click(function () {
-            window.location="{{URL::to('exportrealisasiperbiro')}}";
+            $('body').on('click', '.realisasiperpengenal', function () {
+                var idbagian = $(this).data("id");
+                window.location="{{URL::to('adminrealisasibagianperpengenal','')}}"+"/"+idbagian;
+
+            });
+
+            $('#exportrealisasi').click(function () {
+                window.location="{{URL::to('exportrealisasiperbagian')}}";
+            });
         });
 
     </script>

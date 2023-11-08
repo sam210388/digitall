@@ -25,6 +25,7 @@ class SppHeaderController extends Controller
         if ($request->ajax()) {
             $data = DB::table('sppheader')
                 ->where('THN_ANG','=',$tahunanggaran);
+
             return Datatables::of($data)
                 ->addColumn('action', function($row){
                     if ($row->STATUS_PENGELUARAN == 1){
@@ -35,17 +36,6 @@ class SppHeaderController extends Controller
                         $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->ID_SPP.'" data-original-title="importcoa" class="importcoa btn btn-primary btn-sm importcoa">Import COA</a>';
                     }
                     return $btn;
-                })
-                ->addColumn('statusnilai',function($row){
-                    $nilaipengeluaran = $row->JML_PENGELUARAN;
-                    $nilaipotongan = $row->JML_POTONGAN;
-                    $nilaispppengeluaran = DB::table('spppengeluaran')->where('ID_SPP','=',$row->ID_SPP)->sum('NILAI_AKUN_PENGELUARAN');
-                    if ($nilaipengeluaran == $nilaispppengeluaran){
-                        $statusnilai = $nilaispppengeluaran;
-                    }else{
-                        $statusnilai = $nilaispppengeluaran;
-                    }
-                    return $statusnilai;
                 })
                 ->make(true);
         }
@@ -76,7 +66,7 @@ class SppHeaderController extends Controller
             new UpdateStatusPengeluaran($tahunanggaran)
         ])->dispatch($tahunanggaran);
         */
-        return redirect()->to('sppheader')->with('status','Import SPP Header dari SAKTI Berhasil');
+        return redirect()->to('sppheader')->with('status','Proses Import SPP Header dari SAKTI Berhasil Dijalankan');
     }
 
     function aksiimportsppheader($tahunanggaran){

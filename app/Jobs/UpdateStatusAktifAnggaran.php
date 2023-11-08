@@ -52,11 +52,6 @@ class UpdateStatusAktifAnggaran implements ShouldQueue
                     ['kdsatker', '=', $kdsatker],
                     ['tahunanggaran', '=', $tahunanggaran],
                     ['kd_sts_history', 'LIKE', 'B%']
-                ])->orwhere([
-                    ['kdsatker', '=', $kdsatker],
-                    ['kd_sts_history', 'LIKE', 'C%'],
-                    ['tahunanggaran', '=', $tahunanggaran],
-                    ['flag_update_coa', '=', 1]
                 ])->max('idrefstatus');
             DB::table('data_ang')->where('idrefstatus', '=', $idrefstatusterakhir)->update(['active' => 2]);
 
@@ -67,12 +62,6 @@ class UpdateStatusAktifAnggaran implements ShouldQueue
                         ['kdsatker','=',$kdsatker],
                         ['tahunanggaran','=',$tahunanggaran],
                         ['kd_sts_history','LIKE','B%'],
-                        ['tgl_revisi','<=',$tanggaltutup]
-                    ])->orwhere([
-                        ['kdsatker','=',$kdsatker],
-                        ['kd_sts_history','LIKE','C%'],
-                        ['tahunanggaran','=',$tahunanggaran],
-                        ['flag_update_coa','=',1],
                         ['tgl_revisi','<=',$tanggaltutup]
                     ])->max('idrefstatus');
                 $datawhere = array(

@@ -9,19 +9,13 @@ use App\Libraries\BearerKey;
 use App\Libraries\TarikDataMonsakti;
 use App\Models\Realisasi\Admin\BASTKontrakCoaModel;
 use App\Models\Realisasi\Admin\BASTKontrakHeaderModel;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 
-class BASTKontrakHeaderController extends Controller
+class BASTNonTKontrakHeaderController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
-    public function bastkontrakheader(Request $request)
+    public function kontrakheader(Request $request)
     {
         $judul = 'BAST Kontrak Header';
         $tahunanggaran = session('tahunanggaran');
@@ -44,6 +38,15 @@ class BASTKontrakHeaderController extends Controller
         $kdsatker = ['001012','001030'];
         foreach ($kdsatker as $kdsatker){
             $this->dispatch(new BASTKontrakHeader($tahunanggaran, $kdsatker));
+        }
+        return redirect()->to('bastkontrakheader')->with('status','Import Kontrak Header dari SAKTI Berhasil');
+    }
+
+    function importcoabastkontrak(){
+        $tahunanggaran = session('tahunanggaran');
+        $kdsatker = ['001012','001030'];
+        foreach ($kdsatker as $kdsatker){
+            $this->dispatch(new COABASTKontrakHeader($tahunanggaran, $kdsatker));
         }
         return redirect()->to('bastkontrakheader')->with('status','Import Kontrak Header dari SAKTI Berhasil');
     }
@@ -74,24 +77,26 @@ class BASTKontrakHeaderController extends Controller
             foreach ($hasilasli as $item => $value) {
                 if ($item != "TOKEN") {
                     foreach ($value as $DATA) {
-                        $ID_BAST = $DATA->ID_BAST;
                         $KODE_KEMENTERIAN = $DATA->KODE_KEMENTERIAN;
                         $KDSATKER = $DATA->KDSATKER;
+                        $KD_KPPN = $DATA->KD_KPPN;
                         $THN_ANG = $DATA->THN_ANG;
+                        $ID_BAST = $DATA->ID_BAST;
                         $NO_KONTRAK = $DATA->NO_KONTRAK;
                         $NO_BAST = $DATA->NO_BAST;
-                        $TANGGAL_BAST = strtotime($DATA->TANGGAL_BAST);
-                        $TANGGAL_BAST = date('Y-m-d',$TANGGAL_BAST);
+                        $TANGGAL_BAST = new \DateTime($DATA->TANGGAL_BAST);
+                        $TANGGAL_BAST = $TANGGAL_BAST->format('Y-m-d');
                         $KATEGORI_BAST = $DATA->KATEGORI_BAST;
                         $NILAI_BAST = $DATA->NILAI_BAST;
                         $NOMOR_DAN_STATUS_SPP = $DATA->NOMOR_DAN_STATUS_SPP;
                         $JENIS_SPP = $DATA->JENIS_SPP;
 
                         $data = array(
-                            'ID_BAST' => $ID_BAST,
                             'KODE_KEMENTERIAN' => $KODE_KEMENTERIAN,
                             'KDSATKER' => $KDSATKER,
+                            'KD_KPPN' => $KD_KPPN,
                             'THN_ANG' => $THN_ANG,
+                            'ID_BAST' => $ID_BAST,
                             'NO_KONTRAK' => $NO_KONTRAK,
                             'NO_BAST' => $NO_BAST,
                             'TANGGAL_BAST' => $TANGGAL_BAST,
@@ -114,15 +119,6 @@ class BASTKontrakHeaderController extends Controller
             $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
             //return redirect()->to('sppheader')->with(['status' => 'Gagal, Data Terlalu Besar']);
         }
-    }
-
-    function importcoabastkontrak(){
-        $tahunanggaran = session('tahunanggaran');
-        $kdsatker = ['001012','001030'];
-        foreach ($kdsatker as $kdsatker){
-            $this->dispatch(new COABASTKontrakHeader($tahunanggaran, $kdsatker));
-        }
-        return redirect()->to('bastkontrakheader')->with('status','Import Kontrak Header dari SAKTI Berhasil');
     }
 
     function aksiimportbastcoakontraktual($tahunanggaran, $kdsatker){

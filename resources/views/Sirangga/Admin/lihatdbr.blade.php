@@ -42,10 +42,14 @@
                                 <span class="info-box-icon bg-info elevation-1"><i class="fas fa-cog"></i></span>
                                 <div class="info-box-content">
                                     <span class="info-box-number">
-                                        {{$gedung}}
+                                        @if($gedung)
+                                            {{$gedung}}
+                                        @endif
                                     </span>
                                     <span class="info-box-number">
-                                        {{$ruangan}}
+                                        @if($ruangan)
+                                            {{$ruangan}}
+                                        @endif
                                     </span>
                                 </div>
                             </div>

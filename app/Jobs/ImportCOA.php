@@ -36,7 +36,9 @@ class ImportCOA implements ShouldQueue
     public function handle()
     {
         $tahunanggaran = $this->tahunanggaran;
+
         $dataspp = DB::table('sppheader')
+            ->whereRaw('RIGHT(STS_DATA,2) NOT IN (01,02,03)')
             ->where('THN_ANG','=',$tahunanggaran)
             ->where('REKON_SP2D','=','BEDA')
             ->orWhere('REKON_SP2D','=',"")
@@ -52,6 +54,11 @@ class ImportCOA implements ShouldQueue
             //download spp potongannya
             $spppotongan = new SppPotonganController();
             $spppotongan = $spppotongan->importspppotongan($ID_SPP, $tahunanggaran);
+
+            //update statusnya
+            $updatesp2d = new SppPengeluaranController();
+            $updatesp2d = $updatesp2d->updatestatussp2d($tahunanggaran);
+
         }
     }
 }

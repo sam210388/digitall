@@ -2,28 +2,26 @@
 
 namespace App\Jobs;
 
-use App\Http\Controllers\Realisasi\Admin\BASTKontrakHeaderController;
+use App\Http\Controllers\AdminAnggaran\DataAngController;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 
-class BASTKontrakHeader implements ShouldQueue
+class UpdateBagian implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     protected $tahunanggaran;
-    protected $kdsatker;
-
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($tahunanggaran, $kdsatker)
+    public function __construct($tahunanggaran)
     {
         $this->tahunanggaran = $tahunanggaran;
-        $this->kdsatker = $kdsatker;
     }
 
     /**
@@ -34,8 +32,8 @@ class BASTKontrakHeader implements ShouldQueue
     public function handle()
     {
         $tahunanggaran = $this->tahunanggaran;
-        $kdsatker = $this->kdsatker;
-        $bastkontrakheader = new BASTKontrakHeaderController();
-        $bastkontrakheader = $bastkontrakheader->aksiimportbastkontrakheader($tahunanggaran, $kdsatker);
+        $updateunit = new DataAngController();
+        $updateunit = $updateunit->aksiupdatebagian($tahunanggaran);
+
     }
 }

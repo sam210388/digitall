@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\DataTables;
-use Twilio\Rest\Client;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class DBRController extends Controller
@@ -90,6 +89,7 @@ class DBRController extends Controller
                     $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddbr.'" data-original-title="Tambah Barang" class="btn btn-secondary btn-sm tambahbarang">Tambah Barang
                                 <span class="badge badge-danger navbar-badge">'.$jumlahdetil.'</span></a>';
                     $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddbr.'" data-original-title="Kirim" class="btn btn-success btn-sm kirimkeunit">Kirim</a>';
+                    $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddbr.'" data-original-title="Update Penanggungjawab" class="btn btn-danger btn-sm updatepenanggungjawab">Update</a>';
                     return $btn;
                 }elseif($row->statusdbrrelation->id == 2){
                     $btn = '<div class="btn-group" role="group">
@@ -100,6 +100,7 @@ class DBRController extends Controller
                             <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddbr.'" data-original-title="perubahanfinal" class="edit btn btn-primary btn-sm perubahanfinal">Perubahan Final</a>';
                     $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddbr.'" data-original-title="CekFisik" class="btn btn-secondary btn-sm cekfisik">CekFisik</a>';
                     $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddbr.'" data-original-title="CetakDBR" class="btn btn-success btn-sm cetakdbr">Cetak DBR</a>';
+                    $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddbr.'" data-original-title="Update Penanggungjawab" class="btn btn-danger btn-sm updatepenanggungjawab">Update</a>';
                     return $btn;
                 }
             })
@@ -137,7 +138,7 @@ class DBRController extends Controller
             QrCode::generate($dataqrunit,asset('storage/qrunit/DBR'.$iddbr.'.svg'));
         }
 
-        $datalokasidbrfinal = getenv('APP_URL')."/".asset('storage')."/dbrfinaldigitall/DBRRuangan ".$iddbr.".pdf";
+        $datalokasidbrfinal = getenv('APP_URL')."/".asset('storage')."/dbrfinaldigitall/DBRRuangan".$iddbr.".pdf";
         QrCode::generate($datalokasidbrfinal,asset('storage/qrdbrfinal/DBR'.$iddbr.'.svg'));
 
         //penandatangan
@@ -174,8 +175,8 @@ class DBRController extends Controller
             'jabatanpenandatangan' => $jabatanpenandatangan
         ]);
 
-        Storage::put('public/dbrfinaldigitall/DBRRuangan '.$iddbr.'.pdf', $pdf->output());
-        return $pdf->stream('DBRRuangan '.$iddbr.'.pdf');
+        Storage::put('public/dbrfinaldigitall/DBRRuangan'.$iddbr.'.pdf', $pdf->output());
+        return $pdf->stream('DBRRuangan'.$iddbr.'.pdf');
     }
 
 
@@ -185,6 +186,9 @@ class DBRController extends Controller
             'useredit' => Auth::id(),
             'terakhiredit' => now()
         );
+        //TODO
+        //flow chart terkait update
+
         DB::table('dbrinduk')->where('iddbr','=',$iddbr)->update($dataupdate);
         return response()->json(['status'=>'berhasil']);
     }
@@ -193,6 +197,23 @@ class DBRController extends Controller
         $data = DB::table('dbrinduk')->where('iddbr','=',$iddbr)->get();
         return response()->json($data);
     }
+
+    public function updatepenanggungjawab($iddbr){
+        $data = DB::table('dbrinduk')->where('iddbr','=',$iddbr)->get();
+        //TODO
+        //flow chart terkait update
+
+        return response()->json($data);
+    }
+
+    public function aksiupdatepenanggungjawab(Request $request, $iddbr){
+        $dataupdate = array(
+            'idpenanggungjawab' => $request->get('idpenanggungjawab')
+        );
+        DB::table('dbrinduk')->where('iddbr','=',$iddbr)->update($dataupdate);
+        return response()->json(['status'=>'berhasil']);
+    }
+
 
     public function deletedbr(Request $request, $iddbr){
         //cek apakah ada barang didalamnya

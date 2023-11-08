@@ -41,18 +41,15 @@
 
 </style>
 <header>
-    <img src="{{'data:image/png;base64,'.base64_encode(file_get_contents(asset('storage/kopsurat/KOP2.png')))}}" width="100%" height="100%"/>
+    <img src="{{asset('storage/kopsurat/KOP2.png')}}" width="100%" height="100%"/>
 </header>
 <center>
     <h5>Pengesahan Daftar Barang Ruangan</h5>
     <br>
 </center>
-@foreach($datareferensidbr as $drd)
-<h6>DBR dengan ID {{$drd->iddbr}} ini, Berlokasi pada Gedung: {{$drd->gedung}},
-    Lantai: {{$drd->lantai}}, dan Ruangan: {{$drd->ruangan}}
+<h6>DBR dengan ID
 </h6>
-<h7 position="right">Waktu Cetak : {{$waktucetak}}</h7>
-@endforeach
+<h7 position="right">Waktu Cetak : </h7>
 <table>
     <thead>
     <tr>
@@ -65,16 +62,8 @@
     </thead>
     <tbody>
     <tr>
-        <td colspan="4"><img src="{{'data:image/svg+xml;base64,'.base64_encode(file_get_contents(asset('storage/qrbmn/DBR'.$iddbr.'.svg')))}}" /></td>
-        <td colspan="3"><img src="{{'data:image/svg+xml;base64,'.base64_encode(file_get_contents(asset('storage/qrunit/DBR'.$iddbr.'.svg')))}}" /></td>
-    </tr>
-    <tr>
-        <td colspan="4">{{$namapenandatangan}} S</td>
-        <td colspan="3">{{$penanggungjawab}}</td>
-    </tr>
-    <tr>
-        <td colspan="4">NIP: {{$nippenandatangan}}</td>
-        <td colspan="3">NIP: {{$nip}}</td>
+        <td colspan="4"><img src="{{ asset('storage/qrbmn/DBR1.svg')}}" /></td>
+        <td colspan="3"><img src="{{ asset('storage/qrunit/DBR1.svg')}}" /></td>
     </tr>
     </tbody>
     <tfoot>
@@ -82,7 +71,7 @@
         <td align="center" colspan="7">DBR ini dapat Didownload Seluruhnya pada</td>
     </tr>
     <tr>
-        <td align="center" colspan="7"><img src="{{'data:image/svg+xml;base64,'.base64_encode(file_get_contents(asset('storage/qrdbrfinal/DBR'.$iddbr.'.svg')))}}" /></td>
+        <td align="center" colspan="7"><img src="{{ asset('storage/qrdbrfinal/DBR1.svg')}}" /></td>
     </tr>
     </tfoot>
 </table>
@@ -94,7 +83,7 @@
         <td colspan="7" align="center"><h5> DAFTAR BARANG RUANGAN</h5></td>
     </tr>
     <tr>
-       <td colspan="7">Lampiran Daftar Barang Ruangan ID {{$iddbr}}</td>
+       <td colspan="7">Lampiran Daftar Barang Ruangan ID {{1}}</td>
     </tr>
     </thead>
     <thead>
@@ -109,21 +98,6 @@
     </tr>
     </thead>
     <tbody>
-    @php
-        $i=1
-    @endphp
-    @foreach($datadetildbr as $ddd)
-        <tr>
-            <td>{{ $i++ }}</td>
-            <td>{{$ddd->kd_brg}}</td>
-            <td>{{$ddd->uraianbarang}}</td>
-            <td>{{$ddd->no_aset}}</td>
-            <td>{{$ddd->tahunperolehan}}</td>
-            <td>{{$ddd->merek}}</td>
-            <td>{{$ddd->statusbarang}}</td>
-        </tr>
-
-    @endforeach
     </tbody>
 </table>
 </body>

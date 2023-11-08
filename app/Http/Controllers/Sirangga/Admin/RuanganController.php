@@ -207,6 +207,7 @@ class RuanganController extends Controller
             $idbagian = 0;
             $idbiro = 0;
             $iddeputi = 0;
+            $idgedung = 0;
             foreach ($dataruangan as $data){
                 $idgedung= $data->idgedung;
                 $idbagian = $data->idbagian;
@@ -216,17 +217,17 @@ class RuanganController extends Controller
             if ($idbagian != null){
                 $penanggungjawab = DB::table('pegawai')
                     ->where('eselon','=','III')
-                    ->where('idsatker','=',$idbagian)
+                    ->where('id_satker','=',$idbagian)
                     ->value('id');
             }else if ($idbagian == 0 and $idbiro != 0){
                 $penanggungjawab = DB::table('pegawai')
                     ->where('eselon','=','II')
-                    ->where('idsatker','=',$idbiro)
+                    ->where('id_satker','=',$idbiro)
                     ->value('id');
             }else if ($idbagian == 0 and $idbiro == 0 and $iddeputi != 0){
                 $penanggungjawab = DB::table('pegawai')
                     ->where('eselon','=','I')
-                    ->where('idsatker','=',$iddeputi)
+                    ->where('id_satker','=',$iddeputi)
                     ->value('id');
             }
             $datainsert = array(
@@ -243,7 +244,17 @@ class RuanganController extends Controller
                 'versike' => 1,
                 'dokumendbr' => null
             );
-            DB::table('dbrinduk')->insert($datainsert);
+
+            //cek dbrinduk apakah sdh ada ruangan tsb
+            $adadbr = DB::table('dbrinduk')->where('idruangan','=',$idruangan)->count();
+            if ($adadbr == 0){
+                DB::table('dbrinduk')->insert($datainsert);
+                //update status ruangan
+                $dataupdate = array(
+                    'dibuatdbr' => 2
+                );
+                DB::table('ruangan')->where('id','=',$idruangan)->update($dataupdate);
+            }
             return redirect()->to('lihatdbr/'.$idruangan)->with(['status' => 'DBR Berhasil Dibuat']);
         }
     }

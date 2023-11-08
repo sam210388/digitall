@@ -106,12 +106,10 @@ class AnggaranBagianController extends Controller
             $data = AnggaranBagianModel::where('tahunanggaran','=',$tahunanggaran);
             if ($status == 2) {
                 $data->where('kdsatker','=','001012')
-                    ->whereNull('idbagian')
-                    ->orWhere('idbagian','=',0);
+                    ->whereNull('idbagian');
             }else if($status == 3){
                 $data->where('kdsatker','=','001030')
-                    ->whereNull('idbagian')
-                    ->orWhere('idbagian','=',0);
+                    ->whereNull('idbagian');
             }
             return Datatables::of($data)
                 ->addIndexColumn()

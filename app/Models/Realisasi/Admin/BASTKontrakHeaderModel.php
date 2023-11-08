@@ -14,4 +14,6 @@ class BASTKontrakHeaderModel extends Model
     protected $guarded = [];
 
     protected $primaryKey = 'ID_BAST';
+
+    public $timestamps = false;
 }

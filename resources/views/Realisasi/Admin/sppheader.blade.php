@@ -113,7 +113,7 @@
                     {data: 'TGL_SP2D', name: 'TGL_SP2D'},
                     {data: 'URAIAN', name: 'URAIAN'},
                     {data: 'NILAI_SP2D', name: 'NILAI_SP2D'},
-                    {data: 'statusnilai', name: 'statusnilai'},
+                    {data: 'REKON_SP2D', name: 'REKON_SP2D'},
                     {
                         data: 'action',
                         name: 'action',

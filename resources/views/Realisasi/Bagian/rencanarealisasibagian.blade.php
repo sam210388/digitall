@@ -7,11 +7,6 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        @if(session('updateberhasil'))
-                            <div class="alert alert-success">
-                                {{session('updateberhasil')}}
-                            </div>
-                        @endif
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -63,11 +58,23 @@
                 </div>
                 <div class="card">
                     <div class="card-header">
+                        <h3 class="card-title">{{$judul}}</h3>
                         <div class="btn-group float-sm-right" role="group">
                             <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="exportrealisasiperpengenal"> Export</a>
-                            <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="updateunitkerja"> Update Unit</a>
                         </div>
-                        <h3 class="card-title">{{$judul}}</h3>
+                    </div>
+                    <div class="card-header">
+                        <div class="form-group">
+                            <label for="bulan" class="col-sm-6 control-label">Bulan</label>
+                            <div class="col-sm-12">
+                                <select class="form-control idbulan" name="idbulan" id="idbulan" style="width: 100%;">
+                                    <option value="">Pilih Bulan</option>
+                                    @foreach($databulan as $data)
+                                        <option value="{{ $data->id }}">{{ $data->bulan }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-body">
                         <table id="tabelrealisasiperpengenal" class="table table-bordered table-striped tabelrealisasiperpengenal">
@@ -76,11 +83,11 @@
                                 <th>No</th>
                                 <th>Satker</th>
                                 <th>Pengenal</th>
-                                <th>Biro</th>
-                                <th>Bagian</th>
                                 <th>Pagu Anggaran</th>
+                                <th>Rencana</th>
                                 <th>Realisasi</th>
-                                <th>Prosentase</th>
+                                <th>Prosentase Realisasi</th>
+                                <th>Prosentase GAP</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -90,11 +97,11 @@
                                 <th>No</th>
                                 <th>Satker</th>
                                 <th>Pengenal</th>
-                                <th>Biro</th>
-                                <th>Bagian</th>
                                 <th>Pagu Anggaran</th>
+                                <th>Rencana</th>
                                 <th>Realisasi</th>
-                                <th>Prosentase</th>
+                                <th>Prosentase Realisasi</th>
+                                <th>Prosentase GAP</th>
                             </tr>
                             </tfoot>
                         </table>
@@ -104,8 +111,34 @@
         </div>
     </div>
     <!-- /.content -->
+    <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/bs-custom-file-input/bs-custom-file-input.min.js')}}"></script>
     <script type="text/javascript">
+        function dapatkanidbulan(){
+            let idbulan = document.getElementById('idbulan').value;
+            if(idbulan === ""){
+                date = new Date();
+                nilaibulan = date.getMonth();
+                nilaibulan = nilaibulan+1;
+                return parseInt(nilaibulan);
+            }else{
+                nilaibulan = idbulan;
+                return parseInt(nilaibulan);
+            }
+        }
+
         $(function () {
+            bsCustomFileInput.init();
+            $('.idbulan').select2({
+                width: '100%',
+                theme: 'bootstrap4',
+
+            })
+
+            /*------------------------------------------
+            --------------------------------------------
+            Render DataTable
+            --------------------------------------------
+            --------------------------------------------*/
             // Setup - add a text input to each footer cell
             $('#tabelrealisasiperpengenal tfoot th').each( function (i) {
                 var title = $('#tabelrealisasiperpengenal thead th').eq( $(this).index() ).text();
@@ -113,33 +146,44 @@
                     {"width":"5%"},
                 );
             });
+
+            idbulan = dapatkanidbulan();
             var table = $('.tabelrealisasiperpengenal').DataTable({
+                destroy: true,
                 fixedColumn:true,
                 scrollX:"100%",
                 autoWidth:true,
                 processing: true,
-                serverSide: true,
+                serverSide: false,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('getrealisasipengenal')}}",
+                ajax:"{{route('getrencanarealisasibagian','')}}"+"/"+idbulan,
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'kodesatker', name: 'kodesatker'},
                     {data: 'pengenal', name: 'pengenal'},
-                    {data: 'biro', name: 'biro'},
-                    {data: 'bagian', name: 'bagian'},
                     {data: 'pagu', name: 'pagu'},
+                    {data: 'rencana', name: 'rencana'},
                     {data: 'realisasi', name: 'realisasi'},
-                    {data: 'prosentase', name: 'prosentase'},
+                    {data: 'prosentaserealisasi', name: 'prosentaserealisasi'},
+                    {data: 'gap', name: 'gap'},
                 ],
                 columnDefs: [
+                    {
+                        targets: 3,
+                        render: $.fn.dataTable.render.number('.', ',', 0, '')
+                    },
+                    {
+                        targets: 4,
+                        render: $.fn.dataTable.render.number('.', ',', 0, '')
+                    },
                     {
                         targets: 5,
                         render: $.fn.dataTable.render.number('.', ',', 0, '')
                     },
                     {
                         targets: 6,
-                        render: $.fn.dataTable.render.number('.', ',', 0, '')
+                        render: $.fn.dataTable.render.number('.', ',', 2, '')
                     },
                     {
                         targets: 7,
@@ -155,16 +199,76 @@
                     .column( $(this).data('index') )
                     .search( this.value )
                     .draw();
-            } );
-        });
+            });
 
-        $('#exportrealisasiperpengenal').click(function () {
-            window.location="{{URL::to('exportrealisasiperpengenal')}}";
-        });
+            $('#idbulan').on('change',function (){
+                let idbulan = dapatkanidbulan();
+                var table = $('#tabelrealisasiperpengenal').DataTable({
+                    destroy: true,
+                    fixedColumn:true,
+                    scrollX:"100%",
+                    autoWidth:true,
+                    processing: true,
+                    serverSide: false,
+                    dom: 'Bfrtip',
+                    buttons: ['copy','excel','pdf','csv','print'],
+                    ajax:"{{route('getrencanarealisasibagian','')}}"+"/"+idbulan,
+                    columns: [
+                        {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                        {data: 'kodesatker', name: 'kodesatker'},
+                        {data: 'pengenal', name: 'pengenal'},
+                        {data: 'pagu', name: 'pagu'},
+                        {data: 'rencana', name: 'rencana'},
+                        {data: 'realisasi', name: 'realisasi'},
+                        {data: 'prosentaserealisasi', name: 'prosentaserealisasi'},
+                        {data: 'gap', name: 'gap'},
+                    ],
+                    columnDefs: [
+                        {
+                            targets: 3,
+                            render: $.fn.dataTable.render.number('.', ',', 0, '')
+                        },
+                        {
+                            targets: 4,
+                            render: $.fn.dataTable.render.number('.', ',', 0, '')
+                        },
+                        {
+                            targets: 5,
+                            render: $.fn.dataTable.render.number('.', ',', 0, '')
+                        },
+                        {
+                            targets: 6,
+                            render: $.fn.dataTable.render.number('.', ',', 2, '')
+                        },
+                        {
+                            targets: 7,
+                            render: $.fn.dataTable.render.number('.', ',', 2, '')
+                        }
+                    ],
+                });
+                table.buttons().container()
+                    .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
+                // Filter event handler
+                $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
+                    table
+                        .column( $(this).data('index') )
+                        .search( this.value )
+                        .draw();
+                });
+            })
 
-        $('#updateunitkerja').click(function () {
-            window.location="{{URL::to('updatebagian')}}";
+            $('#exportrealisasiperpengenal').click(function (){
+                let idbulan = document.getElementById('idbulan').value;
+                if(idbulan === ""){
+                    date = new Date();
+                    nilaibulan = date.getMonth();
+                    nilaibulan = nilaibulan+1;
+                }else{
+                    nilaibulan = idbulan;
+                }
+                window.location="{{URL::to('exportrencanarealisasibagian')}}"+"/"+nilaibulan;
+            });
         });
-
     </script>
+
 @endsection

@@ -70,6 +70,11 @@ use App\Http\Controllers\Realisasi\Bagian\RealisasiBagianPerPengenal;
 use App\Http\Controllers\Realisasi\Bagian\DetilRealisasiBagian;
 use App\Http\Controllers\Realisasi\Admin\DetilRealisasi;
 use App\Http\Controllers\Realisasi\Biro\DetilRealisasiBiro;
+use App\Http\Controllers\Realisasi\Admin\AdminRealisasiPerBagianController;
+use App\Http\Controllers\Realisasi\Admin\RencanaRealisasiPengenal;
+use App\Http\Controllers\Sirangga\Admin\TestDBRController;
+use App\Http\Controllers\Realisasi\Bagian\RencanaRealisasiBagian;
+use App\Http\Controllers\Realisasi\Biro\RencanaRealisasiBiro;
 
 
 /*
@@ -201,8 +206,12 @@ Route::post('ambildatasubkomponen',[SubKomponenController::class,'ambildatasubko
 Route::get('refstatus',[RefstatusController::class,'refstatus'])->name('refstatus')->middleware('cekadminanggaran');
 Route::get('getlistrefstatus',[RefstatusController::class,'getListRefstatus'])->name('getlistrefstatus')->middleware('cekadminanggaran');
 Route::get('importrefstatus',[RefstatusController::class,'importrefstatus'])->name('importrefstatus')->middleware('cekadminanggaran');
+Route::get('updatestatusaktif',[RefstatusController::class,'updatestatusaktif'])->name('updatestatusaktif')->middleware('cekadminanggaran');
+
+
 //data anggaran
-Route::get('importanggaran/{kdsatker}/{kdstshistory}',[DataAngController::class,'importdataang'])->name('importanggaran')->middleware('cekadminanggaran');
+Route::get('importanggaran/{idrefstatus}',[DataAngController::class,'importdataang'])->name('importanggaran')->middleware('cekadminanggaran');
+Route::get('rekondataang/{idrefstatus}',[DataAngController::class,'rekondataang'])->name('rekondataang')->middleware('cekadminanggaran');
 Route::post('checkdataang',[DataAngController::class,'checkdata'])->name('checkdataang');
 Route::get('rekapanggaran/{idrefstatus}',[DataAngController::class,'rekapanggaran'])->name('rekapanggaran')->middleware('cekadminanggaran');
 Route::post('checkrekapanggaran',[DataAngController::class,'checkrekapanggaran'])->name('checkrekapanggaran');
@@ -277,9 +286,6 @@ Route::post('updaterealisasirincianbiro/{idrealisasi}',[RealisasiRincianIndikato
 Route::post('editrealisasirincianbiro',[RealisasiRincianIndikatorROBiroConctroller::class,'editrealisasirincian'])->name('editrealisasirincianbiro');
 Route::delete('deleterealisasirincianbiro/{idrealisasi}',[RealisasiRincianIndikatorROBiroConctroller::class,'deleterealisasi'])->name('deleterealisasirincianbiro');
 
-
-
-
 //JADWALTUTUP
 Route::resource('jadwaltutup',JadwalTutupController::class)->middleware('cekadmincaput');
 
@@ -309,8 +315,11 @@ Route::post('batalvalidasi',[MonitoringRincianIndikatorROConctroller::class,'bat
 
 //ADMIN REALISASI
 //REALISASI PER BIRO
+Route::get('updatebagian',[DataAngController::class,'updatebagian'])->name('updatebagian');
 Route::get('realisasiperbiro',[RealisasiPerBiroController::class,'index'])->name('realisasiperbiro');
 Route::get('getrealisasiperbiro',[RealisasiPerBiroController::class,'getrealisasiperbiro'])->name('getrealisasiperbiro');
+Route::get('exportrealisasiperbiro',[RealisasiPerBiroController::class,'exportrealisasiperbiro'])->name('exportrealisasiperbiro');
+
 Route::get('detilrealisasi',[DetilRealisasi::class,'index'])->name('detilrealisasi');
 Route::get('getdetilrealisasi',[DetilRealisasi::class,'getdetilrealisasi'])->name('getdetilrealisasi');
 Route::get('exportdetilrealisasi',[DetilRealisasi::class,'exportdetilrealisasi'])->name('exportdetilrealisasi');
@@ -318,10 +327,23 @@ Route::get('detilrealisasibiro',[DetilRealisasiBiro::class,'index'])->name('deti
 Route::get('getdetilrealisasibiro/{idbiro}',[DetilRealisasiBiro::class,'getdetilrealisasibiro'])->name('getdetilrealisasibiro');
 Route::get('exportdetilrealisasibiro/{idbiro}',[DetilRealisasiBiro::class,'exportdetilrealisasibiro'])->name('exportdetilrealisasibiro');
 
+Route::get('adminrealisasiperbagian',[AdminRealisasiPerBagianController::class,'index'])->name('adminrealisasiperbagian');
+Route::get('admingetrealisasiperbagian',[AdminRealisasiPerBagianController::class,'getrealisasiperbagian'])->name('admingetrealisasiperbagian');
+Route::get('adminrealisasibagianperpengenal/{idbagian}',[AdminRealisasiPerBagianController::class,'realisasibagianperpengenal'])->name('adminrealisasibagianperpengenal');
+Route::get('admingetrealisasibagianperpengenal/{idbagian}',[AdminRealisasiPerBagianController::class,'getrealisasibagianperpengenal'])->name('admingetrealisasibagianperpengenal');
+Route::get('exportrealisasiperbagian',[AdminRealisasiPerBagianController::class,'exportrealisasiperbagian'])->name('exportrealisasiperbagian');
+
 //REALISASI PER PENGENAL
 Route::get('realisasipengenal',[RealisasiPengenal::class,'index'])->name('realisasipengenal');
-Route::get('getrealisasiperpengenal',[RealisasiPengenal::class,'getrealisasiperpengenal'])->name('getrealisasiperpengenal');
+Route::get('getrealisasipengenal',[RealisasiPengenal::class,'getrealisasiperpengenal'])->name('getrealisasipengenal');
 Route::get('exportrealisasiperpengenal',[RealisasiPengenal::class,'exportrealisasiperpengenal'])->name('exportrealisasiperpengenal');
+
+Route::get('rencanarealisasipengenal',[RencanaRealisasiPengenal::class,'index'])->name('rencanarealisasipengenal');
+Route::get('getrencanarealisasipengenal/{idbulan}',[RencanaRealisasiPengenal::class,'getrencanarealisasipengenal'])->name('getrencanarealisasipengenal');
+Route::get('exportrencanarealisasipengenal/{idbulan}',[RencanaRealisasiPengenal::class,'exportrencanarealisasipengenal'])->name('exportrencanarealisasipengenal');
+Route::get('rekaprencana',[RencanaRealisasiPengenal::class,'rekaprencana'])->name('rekaprencana');
+
+
 
 //BIRO REALISASI
 //REALISASI PERBAGIAN
@@ -331,6 +353,10 @@ Route::get('realisasibagianperpengenal/{idbagian}',[RealisasiPerBagianController
 Route::get('getrealisasibagianperpengenal/{idbagian}',[RealisasiPerBagianController::class,'getrealisasibagianperpengenal'])->name('getrealisasibagianperpengenal');
 Route::get('exportrealisasibagianperpengenal/{idbagian}',[RealisasiPerBagianController::class,'exportrealisasibagianperpengenal'])->name('exportrealisasibagianperpengenal');
 
+//RENCANA REALISASI TINGKAT BIRO
+Route::get('rencanarealisasibiro',[RencanaRealisasiBiro::class,'index'])->name('rencanarealisasibiro');
+Route::get('getrencanarealisasibiro/{idbulan}',[RencanaRealisasiBiro::class,'getrencanarealisasibiro'])->name('getrencanarealisasibiro');
+Route::get('exportrencanarealisasibiro/{idbulan}',[RencanaRealisasiBiro::class,'exportrencanarealisasibiro'])->name('exportrencanarealisasibiro');
 
 //BAGIAN REALISASI
 Route::get('realisasiperpengenal',[RealisasiBagianPerPengenal::class,'index'])->name('realisasiperpengenal');
@@ -340,6 +366,10 @@ Route::get('detilrealisasibagian',[DetilRealisasiBagian::class,'index'])->name('
 Route::get('getdetilrealisasibagian/{idbagian}',[DetilRealisasiBagian::class,'getdetilrealisasibagian'])->name('getdetilrealisasibagian');
 Route::get('exportdetilrealisasi/{idbagian}',[DetilRealisasiBagian::class,'exportdetilrealisasi'])->name('exportdetilrealisasi');
 
+//RENCANA REALISASI PERBAGIAN
+Route::get('rencanarealisasibagian',[RencanaRealisasiBagian::class,'index'])->name('rencanarealisasibagian');
+Route::get('getrencanarealisasibagian/{idbulan}',[RencanaRealisasiBagian::class,'getrencanarealisasibagian'])->name('getrencanarealisasibagian');
+Route::get('exportrencanarealisasibagian/{idbulan}',[RencanaRealisasiBagian::class,'exportrencanarealisasibagian'])->name('exportrencanarealisasibagian');
 
 
 
@@ -375,6 +405,8 @@ Route::get('dbrinduk',[DBRController::class,'dbrinduk'])->name('dbrinduk')->midd
 Route::get('getdatadbr',[DBRController::class,'getDataBDR'])->name('getdatadbr')->middleware('cekadminsirangga');
 Route::post('updatepenanggungjawabdbr/{iddbr}',[DBRController::class,'updatepenanggungjawabdbr'])->name('updatepenanggungjawabdbr')->middleware('cekadminsirangga');
 Route::get('editdbr/{iddbr}',[DBRController::class,'editdbr'])->name('editdbr')->middleware('cekadminsirangga');
+Route::get('updatepenanggungjawab/{iddbr}',[DBRController::class,'updatepenanggungjawab'])->name('updatepenanggungjawab')->middleware('cekadminsirangga');
+Route::post('aksiupdatepenanggungjawab/{iddbr}',[DBRController::class,'aksiupdatepenanggungjawab'])->name('aksiupdatepenanggungjawab')->middleware('cekadminsirangga');
 Route::delete('deletedbr/{iddbr}',[DBRController::class,'deletedbr'])->name('deletedbr')->middleware('cekadminsirangga');
 Route::get('kirimdbrkeunit/{iddbr}',[DBRController::class,'kirimdbrkeunit'])->name('kirimdbrkeunit')->middleware('cekadminsirangga');
 Route::get('/perubahanfinal/{iddbr}',[DBRController::class,'perubahanfinal'])->name('perubahanfinal')->middleware('cekadminsirangga');
@@ -389,6 +421,7 @@ Route::get('exportdatabartender/{iddbr}',[DBRController::class,'databartenderexp
 Route::get('cekfisik/{iddbr}',[DBRController::class,'cekfisik'])->name('cekfisik');
 Route::get('ingatkanunit/{iddbr}',[DBRController::class,'ingatkanunit'])->name('ingatkanunit');
 Route::get('cetakdbr/{iddbr}',[DBRController::class,'cetakdbr'])->name('cetakdbr');
+Route::get('testdbr',[TestDBRController::class,'testdbr'])->name('testdbr');
 //Route::get('testanggal',[DBRController::class,'testanggal'])->name('testanggal');
 //Route::get('kirimperingatan',[DBRController::class,'aksikirimperingatankeunit'])->name('kirimperingatan');
 
@@ -419,7 +452,7 @@ Route::resource('monitoringimportbukubesar',BukuBesarController::class)->middlew
 Route::get('importgl/{id}',[BukuBesarController::class,'importbukubesar']);
 
 //KOMITMEN BAST KONTRAK
-Route::get('bastkontrakheader', [BASTKontrakHeaderController::class,'kontrakheader'])->name('bastkontrakheader');
+Route::get('bastkontrakheader', [BASTKontrakHeaderController::class,'bastkontrakheader'])->name('bastkontrakheader');
 Route::get('importbastkontrakheader',[BASTKontrakHeaderController::class,'importbastkontrakheader'])->name('importbastkontrakheader');
 Route::get('importcoabastkontrak',[BASTKontrakHeaderController::class,'importcoabastkontrak'])->name('importcoabastkontrak');
 

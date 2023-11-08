@@ -3,9 +3,6 @@
 namespace App\Http\Controllers\Realisasi\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Realisasi\Admin\SppPotonganController;
-use App\Jobs\ImportCOA;
-use App\Jobs\UpdateUnitId;
 use App\Libraries\BearerKey;
 use App\Libraries\TarikDataMonsakti;
 use Illuminate\Http\Request;
@@ -155,6 +152,47 @@ class SppPengeluaranController extends Controller
             //return redirect()->to('sppheader')->with(['status' => 'Gagal, Data Terlalu Besar']);
         }
 
+    }
+
+    public function updatestatussp2d($TA){
+        $tahunanggaran = $TA;
+
+        $dataspp = DB::table('sppheader')
+            ->where('THN_ANG','=',$tahunanggaran)
+            ->get();
+        foreach ($dataspp as $data){
+            $ID_SPP = $data->ID_SPP;
+            $NILAI_SP2D = $data->NILAI_SP2D;
+
+            //cek apakah ada datapengeluarannya
+            $adadata = DB::table('spppengeluaran')
+                ->where('ID_SPP','=',$ID_SPP)
+                ->count();
+            if ($adadata >0){
+                //cek apakah nilai Pengeluaran dan Nilai Potongan dah sama
+                $nilaipengeluaran = DB::table('spppengeluaran')
+                    ->where('ID_SPP','=',$ID_SPP)
+                    ->sum('NILAI_AKUN_PENGELUARAN');
+
+                $nilaipotongan = DB::table('spppotongan')
+                    ->where('ID_SPP','=',$ID_SPP)
+                    ->sum('NILAI_AKUN_POT');
+                if ($NILAI_SP2D == ($nilaipengeluaran - $nilaipotongan)){
+                    $dataupdate = array(
+                        'STATUS_PENGELUARAN' => 2,
+                        'STATUS_POTONGAN' => 2,
+                        'REKON_SP2d' => 'SAMA'
+                    );
+                }else{
+                    $dataupdate = array(
+                        'STATUS_PENGELUARAN' => 1,
+                        'STATUS_POTONGAN' => 1,
+                        'REKON_SP2d' => 'BEDA'
+                    );
+                }
+                DB::table('sppheader')->where('ID_SPP','=',$ID_SPP)->update($dataupdate);
+            }
+        }
     }
 
 }

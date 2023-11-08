@@ -229,6 +229,17 @@
                 })
             });
 
+            $('body').on('click', '.updatepenanggungjawab', function () {
+                var iddbr = $(this).data('id');
+                $.get("{{ route('updatepenanggungjawab','') }}" +'/' + iddbr, function (data) {
+                    $('#modelHeading').html("Update Penanggungjawab");
+                    $('#saveBtn').val("updatepenanggungjawab");
+                    $('#ajaxModel').modal('show');
+                    $('#iddbr').val(data[0]['iddbr']);
+                    $('#idpenanggungjawab').val(data[0]['idpenanggungjawab']).trigger('change');
+                })
+            });
+
             $('#saveBtn').click(function (e) {
                 e.preventDefault();
                 $(this).html('Sending..');
@@ -240,7 +251,7 @@
                 }
                 $.ajax({
                     data: fd,
-                    url: "{{ route('updatepenanggungjawabdbr','') }}"+'/'+id,
+                    url: saveBtn === "edit" ? "{{ route('updatepenanggungjawabdbr','') }}"+'/'+id:"{{ route('aksiupdatepenanggungjawab','') }}"+'/'+id,
                     type: "POST",
                     enctype: 'multipart/form-data',
                     contentType: false,

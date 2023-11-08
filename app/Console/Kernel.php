@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Jobs\DeleteDataAset;
 use App\Jobs\ImportAset;
 use App\Jobs\ImportCOA;
 use App\Jobs\ImportDataAng;
@@ -33,7 +34,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
         $TA = date('Y');
 
-        $schedule->job(new ImportRealisasiSemar($TA))->Hourly();
+        $schedule->job(new ImportRealisasiSemar($TA))->everyFourHours();
 
         $schedule->job(new RekapCashPlanTriwulan($TA))->monthlyOn(1,'00:01');
 
@@ -46,6 +47,7 @@ class Kernel extends ConsoleKernel
            ])->dispatch($TA);
         })->twiceDailyAt(7,15);
 
+        /*
         $schedule->call(function () use ($TA){
             ImportRefStatus::withChain([
                 new UpdateStatusImportRefStatus($TA),
@@ -55,15 +57,18 @@ class Kernel extends ConsoleKernel
                 new UpdateStatusImportRefStatus($TA)
             ])->dispatch($TA);
         })->weeklyOn(1,'01:00');
+        */
 
-        /*
         $schedule->call(function () use ($TA){
-            ImportAset::withChain([
+            DeleteDataAset::withChain([
+                new ImportAset($TA),
                 new RekapDataAset(),
                 new RekapDataBarangDBR()
             ])->dispatch($TA);
-        })->dailyAt('08:16');
-        */
+        })->dailyAt('19:21');
+
+
+        $schedule->job(new RekapDataBarangDBR())->dailyAt('20:54');
 
 
 

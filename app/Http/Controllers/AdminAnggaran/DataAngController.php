@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers\AdminAnggaran;
 
+use App\Jobs\DeleteDataAng;
+use App\Jobs\ImportDataAng;
+use App\Jobs\RekonDataAng;
+use App\Jobs\UpdateBagian;
 use App\Libraries\BearerKey;
 use App\Http\Controllers\Controller;
 use App\Libraries\TarikDataMonsakti;
@@ -9,6 +13,7 @@ use App\Models\AdminAnggaran\AnggaranBagianModel;
 use App\Models\AdminAnggaran\DataAngModel;
 use App\Models\AdminAnggaran\SummaryDipaModel;
 use App\Models\ReferensiUnit\BagianModel;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
@@ -34,25 +39,34 @@ class DataAngController extends Controller
         }
     }
 
-    function importdataang($kdsatker, $kd_sts_history){
-        $tahunanggaran = session('tahunanggaran');
-        $this->aksiimportdataang($kdsatker, $kd_sts_history, $tahunanggaran);
+
+    public function aksideleteanggaran($idrefstatus){
+        DataAngModel::where('idrefstatus',$idrefstatus)->delete();
     }
 
 
-    function aksiimportdataang($kdsatker, $kd_sts_history, $tahunanggaran){
+    function importdataang($idrefstatus){
+        $tahunanggaran = session('tahunanggaran');
+        Bus::chain([
+            new DeleteDataAng($idrefstatus),
+            new ImportDataAng($tahunanggaran, $idrefstatus),
+            new RekonDataAng($idrefstatus)
+        ])->dispatch();
+        return redirect()->to('refstatus')->with('prosesimport','Proses Import Berhasil, tunggu beberapa saat untuk melakukan pengecekan');
+    }
+
+    function aksiimportdataang($tahunanggaran, $idrefstatus){
+        $datarefstatus = DB::table('ref_status')->where('idrefstatus','=',$idrefstatus)->get();
+        $kdsatker = '';
+        $kd_sts_history = '';
+        foreach ($datarefstatus as $drs){
+            $kdsatker = $drs->kdsatker;
+            $kd_sts_history = $drs->kd_sts_history;
+        }
+
         $kodemodul = 'ANG';
         $tipedata = 'dataAng';
         $variable = [$kdsatker, $kd_sts_history];
-
-        //idrefstatus
-        $idrefstatus = DB::table('ref_status')
-            ->where('kd_sts_history','=',$kd_sts_history)
-            ->where('kdsatker','=',$kdsatker)
-            ->value('idrefstatus');
-
-        //hapus idrefstatus
-        DB::table('data_ang')->where('idrefstatus','='.$idrefstatus)->delete();
 
         //tarikdata
         $response = new TarikDataMonsakti();
@@ -191,6 +205,25 @@ class DataAngController extends Controller
             $tokenbaru = new BearerKey();
             $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
         }
+
+        //update statusimport
+        DB::table('ref_status')->where('idrefstatus','=',$idrefstatus)
+            ->update(['statusimport' => 2]);
+    }
+
+    public function rekondataang($idrefstatus){
+        $this->dispatch(new RekonDataAng($idrefstatus));
+        return redirect()->to('refstatus')->with('rekonberhasil','Proses Rekon Data Anggaran Sedang Berlangsung, Mohon Refresh Halaman Secara Berkala');
+    }
+
+    public function aksirekondataang($idrefstatus){
+        $jumlahpagudataang = DB::table('data_ang')
+            ->select([DB::raw('sum(total) as total')])
+            ->where('idrefstatus','=',$idrefstatus)
+            ->value('total');
+
+        DB::table('ref_status')->where('idrefstatus','=',$idrefstatus)
+            ->update(['pagu_dataang' => $jumlahpagudataang]);
     }
 
     public function rekapanggarannoredirect($idrefstatus, $tahunanggaran){
@@ -286,7 +319,60 @@ class DataAngController extends Controller
     public function rekapanggaran($idrefstatus){
         $tahunanggaran = session('tahunanggaran');
         $this->rekapanggarannoredirect($idrefstatus, $tahunanggaran);
-        return redirect()->to('refstatus')->with('rekapberhasil','Rekap Anggaran Bagian Berhasil');
+        return redirect()->to('refstatus')->with('rekapberhasil','Proses Update Unit Kerja ');
+    }
+
+    public function updatebagian(){
+        $tahunanggaran = session('tahunanggaran');
+        $this->dispatch(new UpdateBagian($tahunanggaran));
+        return redirect()->to('realisasipengenal')->with('updateberhasil','Update Unit Kerja Berhasil');
+    }
+
+
+    public function aksiupdatebagian($tahunanggaran){
+        $data = DB::table('laporanrealisasianggaranbac')->where('tahunanggaran','=',$tahunanggaran)->get();
+        foreach ($data as $d){
+            $kodesatker = $d->kodesatker;
+            $kodeprogram = $d->kodeprogram;
+            $kodekegiatan = $d->kodekegiatan;
+            $kodeoutput = $d->kodeoutput;
+            $kodesuboutput = $d->kodesuboutput;
+            $kodekomponen = $d->kodekomponen;
+            $kodesubkomponen = $d->kodesubkomponen;
+
+            if ($kodesatker == "001012"){
+                $pengenal = $kodeprogram.".".$kodekegiatan.".".$kodeoutput.".".$kodesuboutput.".".$kodekomponen.".".$kodesubkomponen;
+            }else{
+                $pengenal = $kodeprogram.".".$kodekegiatan.".".$kodeoutput.".".$kodesuboutput.".".$kodekomponen;
+            }
+
+            //ID Bagian dan Biro
+            $datapengenal = DB::table('anggaranbagian')->where('pengenal','=',$pengenal)->get();
+            foreach ($datapengenal as $dp){
+                $idbagian = $dp->idbagian;
+                $idbiro = $dp->idbiro;
+                $iddeputi = $dp->iddeputi;
+
+                //update
+                $where = array(
+                    'tahunanggaran' => $tahunanggaran,
+                    'kodesatker' => $kodesatker,
+                    'kodeprogram' => $kodeprogram,
+                    'kodekegiatan'=> $kodekegiatan,
+                    'kodeoutput' => $kodeoutput,
+                    'kodesuboutput' => $kodesuboutput,
+                    'kodekomponen' => $kodekomponen,
+                    'kodesubkomponen' => $kodesubkomponen
+                );
+
+                $dataupdate = array(
+                    'idbagian' => $idbagian,
+                    'idbiro' => $idbiro,
+                    'iddeputi' => $iddeputi
+                );
+                DB::table('laporanrealisasianggaranbac')->where($where)->update($dataupdate);
+            }
+        }
     }
 
 
