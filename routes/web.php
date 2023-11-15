@@ -75,6 +75,7 @@ use App\Http\Controllers\Realisasi\Admin\RencanaRealisasiPengenal;
 use App\Http\Controllers\Sirangga\Admin\TestDBRController;
 use App\Http\Controllers\Realisasi\Bagian\RencanaRealisasiBagian;
 use App\Http\Controllers\Realisasi\Biro\RencanaRealisasiBiro;
+use App\Http\Controllers\Sirangga\Admin\MonitoringPenghapusanBarangController;
 
 
 /*
@@ -432,6 +433,9 @@ Route::get('importtransaksiaset/{kodebarang}',[ListImportSaktiController::class,
 Route::get('barang',[BarangController::class,'barang'])->name('barang');
 Route::get('getdatabarang',[BarangController::class,'getdatabarang'])->name('getdatabarang');
 
+//penghapusan
+Route::get('penghapusanbarang',[MonitoringPenghapusanBarangController::class,'penghapusanbarang'])->name('penghapusanbarang')->middleware('cekadminsirangga');
+Route::get('getdatapenghapusanbarang',[MonitoringPenghapusanBarangController::class,'getdatapenghapusanbarang'])->name('getdatapenghapusanbarang')->middleware('cekadminsirangga');
 //DBR BAGIAN
 Route::get('dbrindukbagian',[DBRBagianController::class,'dbrindukbagian'])->name('dbrindukbagian');
 Route::get('lihatdbrbagian/{iddbr}',[DBRBagianController::class,'lihatdbrbagian'])->name('lihatdbrbagian');
