@@ -42,6 +42,9 @@
                             <thead>
                             <tr>
                                 <th>No</th>
+                                <th>Deputi</th>
+                                <th>Biro</th>
+                                <th>Bagian</th>
                                 <th>Rekomendasi</th>
                                 <th>Nilai</th>
                                 <th>Bukti</th>
@@ -55,6 +58,9 @@
                             <tfoot>
                             <tr>
                                 <th>No</th>
+                                <th>Deputi</th>
+                                <th>Biro</th>
+                                <th>Bagian</th>
                                 <th>Rekomendasi</th>
                                 <th>Nilai</th>
                                 <th>Bukti</th>
