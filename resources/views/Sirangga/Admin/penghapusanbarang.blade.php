@@ -88,6 +88,12 @@
                     window.location="{{URL::to('rekappenghapusanbarang')}}";
                 }
             });
+
+            $('#exportpenghapusanbarang').click(function () {
+                window.location="{{URL::to('exportpenghapusanbarang')}}";
+            });
+
+
             $('#tabelbarang tfoot th').each( function (i) {
                 var title = $('#tabelbarang thead th').eq( $(this).index() ).text();
                 $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(

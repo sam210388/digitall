@@ -39,7 +39,7 @@ class CardAnggaranRealisasii
             }else{
                 $prosentasesetjen = 0;
             }
-            $prosentasesetjen = ($sumrealisasisetjen/$sumanggaransetjen)*100;
+            //$prosentasesetjen = ($sumrealisasisetjen/$sumanggaransetjen)*100;
             $sumrealisasidewan = $anggarandewan->sum('rsd12');
             if ($sumanggarandewan > 0){
                 $prosentasedewan = ($sumrealisasidewan/$sumanggarandewan)*100;

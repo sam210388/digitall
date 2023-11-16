@@ -437,6 +437,7 @@ Route::get('getdatabarang',[BarangController::class,'getdatabarang'])->name('get
 Route::get('penghapusanbarang',[MonitoringPenghapusanBarangController::class,'penghapusanbarang'])->name('penghapusanbarang')->middleware('cekadminsirangga');
 Route::get('getdatapenghapusanbarang',[MonitoringPenghapusanBarangController::class,'getdatapenghapusanbarang'])->name('getdatapenghapusanbarang')->middleware('cekadminsirangga');
 Route::get('rekappenghapusanbarang',[MonitoringPenghapusanBarangController::class,'rekappenghapusanbarang'])->name('rekappenghapusanbarang')->middleware('cekadminsirangga');
+Route::get('exportpenghapusanbarang',[MonitoringPenghapusanBarangController::class,'exportpenghapusanbarang'])->name('exportpenghapusanbarang')->middleware('cekadminsirangga');
 
 //DBR BAGIAN
 Route::get('dbrindukbagian',[DBRBagianController::class,'dbrindukbagian'])->name('dbrindukbagian');

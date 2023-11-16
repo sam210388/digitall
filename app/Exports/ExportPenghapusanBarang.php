@@ -28,7 +28,7 @@ class ExportPenghapusanBarang implements FromQuery, WithHeadings
             ->select(['a.kdbrg','b.ur_sskel','a.nup','a.kondisi','a.nilaiaset','a.jns_aset','a.tgl_oleh'])
             ->leftJoin('t_brg as b','a.kdbrg','b.kd_brg')
             ->where('thn_ang','=',$tahunanggaran)
-            ->orderBy('a.pengenal');
+            ->orderBy('a.kdbrgs');
        //echo json_encode($data);
         return $data;
     }
