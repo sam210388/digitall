@@ -33,7 +33,11 @@
                 </div>
                 <div class="card">
                     <div class="card-header">
-                        <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="rekapbarang">Rekap Barang</a>
+                        <div class="btn-group float-sm-right" role="group">
+                            <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="rekapbarang">Rekap Barang</a>
+                            <a class="btn btn-primary float-sm-right" href="javascript:void(0)" id="exportpenghapusanbarang"> Export</a>
+                        </div>
+
                         <h3 class="card-title">{{$judul}}</h3>
                     </div>
                     <div class="card-body">
@@ -107,10 +111,10 @@
                 ajax:"{{route('getdatapenghapusanbarang')}}",
                 columns: [
                     {data: 'id', name: 'id'},
-                    {data: 'kd_brg', name: 'kd_brg'},
+                    {data: 'kdbrg', name: 'kdbrg'},
                     {data: 'ur_sskel', name: 'kodebarangrelation.ur_sskel'},
                     {data: 'nup', name: 'nup'},
-                    {data: 'merk_type', name: 'merk_type'},
+                    {data: 'merek_tipe', name: 'merek_tipe'},
                     {data: 'tgl_oleh', name: 'tgl_oleh'},
                     {data: 'tgl_buku', name: 'tgl_buku'},
                     {data: 'kondisi', name: 'kondisi'},

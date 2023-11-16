@@ -46,11 +46,11 @@ class MonitoringPenghapusanBarangController extends Controller
             $kode_kementerian = $DATA->kode_kementerian;
             $kdsatker = $DATA->kdsatker;
             $kduakpb = $DATA->kduakpb;
-            $kd_gol = $DATA->kd_gol;
-            $kd_bid = $DATA->kd_bid;
-            $kd_kel = $DATA->kd_kel;
-            $kd_skel = $DATA->kd_skel;
-            $kd_brg = $DATA->kd_brg;
+            $kd_gol = $DATA->kdgol;
+            $kd_bid = $DATA->kdbid;
+            $kd_kel = $DATA->kdkel;
+            $kd_skel = $DATA->kdskel;
+            $kd_brg = $DATA->kdbrg;
             $nup = $DATA->nup;
             $kondisi = $DATA->kondisi;
             $kdtrx = $DATA->kdtrx;
@@ -60,9 +60,9 @@ class MonitoringPenghapusanBarangController extends Controller
             $nilaiasetneraca = $DATA->nilaiasetneraca;
             $nilaiperubahan = $DATA->nilaiperubahan;
             $nilaiperubahanneraca = $DATA->nilaiperubahanneraca;
-            $sisamasamanfaat = $DATA->sisamanfaat;
+            $sisamasamanfaat = $DATA->sisamasamanfaat;
             $masamanfaat = $DATA->masamanfaat;
-            $nosppa = $DATA->nosppa;
+            $nosppa = $DATA->no_sppa;
             $status = $DATA->status;
             $kdsatkerasal = $DATA->kdsatkerasal;
             $kdregister = $DATA->kdregister;
@@ -70,7 +70,7 @@ class MonitoringPenghapusanBarangController extends Controller
             $no_dok = $DATA->no_dok;
             $jns_aset = $DATA->jns_aset;
             $periode = $DATA->periode;
-            $merek_tipe = $DATA->merk_type;
+            $merek_tipe = $DATA->merek_tipe;
             $catat = $DATA->catat;
             $thn_ang = $DATA->thn_ang;
             $created_date = $DATA->created_date;
@@ -78,6 +78,8 @@ class MonitoringPenghapusanBarangController extends Controller
             $tgl_buku = $DATA->tgl_buku;
             $tgl_oleh = $DATA->tgl_oleh;
             $tgl_awal_pakai = $DATA->tgl_awal_pakai;
+            $kode_bast_kuitansi = $DATA->kode_bast_kuitansi;
+            $no_bast_kuitansi = $DATA->no_bast_kuitansi;
 
             $data = array(
                 'kode_kementerian' => $kode_kementerian,
@@ -114,11 +116,17 @@ class MonitoringPenghapusanBarangController extends Controller
                 'created_by' => $created_by,
                 'tgl_buku' => $tgl_buku,
                 'tgl_oleh' => $tgl_oleh,
-                'tgl_awal_pakai' => $tgl_awal_pakai
+                'tgl_awal_pakai' => $tgl_awal_pakai,
+                'kode_bast_kuitansi' => $kode_bast_kuitansi,
+                'no_bast_kuitansi' => $no_bast_kuitansi
             );
-            PenghapusanBarangModel::updateOrCreate($data);
-            return redirect()->to('penghapusanbarang')->with('status','Rekap Penghapusan Barang Berhasil');
+            PenghapusanBarangModel::updateOrCreate([
+                'kduakpb' => $kduakpb,
+                'kdbrg' => $kd_brg,
+                'nup' => $nup
+            ],[$data]);
         }
+        return redirect()->to('penghapusanbarang')->with('status','Rekap Penghapusan Barang Berhasil');
     }
 
     function exportpenghapusanbarang(){
