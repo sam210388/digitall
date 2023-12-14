@@ -149,7 +149,7 @@
                                     text: 'Konfirmas Barang Berhasil',
                                     icon: 'success'
                                 })
-                                table.draw();
+                                table.draw(null,false);
                             }else{
                                 Swal.fire({
                                     title: 'Error!',
@@ -158,7 +158,7 @@
                                 })
                             }
                             $('#ajaxModel').modal('hide');
-                            tablebarang.draw();
+                            table.draw(null,false);
                         },
                         error: function (xhr, textStatus, errorThrown) {
                             if(xhr.responseJSON.errors){
@@ -203,7 +203,7 @@
                                     text: 'Konfirmasi Barang Berhasil',
                                     icon: 'success'
                                 })
-                                table.draw();
+                                table.draw(null, false);
                             }else{
                                 Swal.fire({
                                     title: 'Error!',
@@ -212,7 +212,7 @@
                                 })
                             }
                             $('#ajaxModel').modal('hide');
-                            tablebarang.draw();
+                            table.draw(null, false);
                         },
                         error: function (xhr, textStatus, errorThrown) {
                             if(xhr.responseJSON.errors){
@@ -256,7 +256,7 @@
                                     text: 'Konfirmasi Barang Berhasil',
                                     icon: 'success'
                                 })
-                                table.draw();
+                                table.draw(null, false);
                             }else{
                                 Swal.fire({
                                     title: 'Error!',
@@ -265,7 +265,7 @@
                                 })
                             }
                             $('#ajaxModel').modal('hide');
-                            tablebarang.draw();
+                            tabel.draw(null,false);
                         },
                         error: function (xhr, textStatus, errorThrown) {
                             if(xhr.responseJSON.errors){
@@ -309,7 +309,7 @@
                                     text: 'Konfirmasi Barang Berhasil',
                                     icon: 'success'
                                 })
-                                table.draw();
+                                table.draw(null, false);
                             }else{
                                 Swal.fire({
                                     title: 'Error!',
@@ -318,7 +318,7 @@
                                 })
                             }
                             $('#ajaxModel').modal('hide');
-                            tablebarang.draw();
+                            table.draw(null, false);
                         },
                         error: function (xhr, textStatus, errorThrown) {
                             if(xhr.responseJSON.errors){
@@ -346,7 +346,7 @@
 
             $('body').on('click', '.pengembalian', function () {
                 var iddetil = $(this).data('id');
-                if(confirm("Apakah Anda Yakin Bahwa Barang ini Mengalami Kerusakan Ringan/Sedang dan Dapat Dipergunakan Kembali dengan Perbaikan Ringan Hingga Menengah?")){
+                if(confirm("Apakah Anda Yakin Bahwa Barang ini Mengalami Kerusakan Berat dan Tidak Dapat Dipergunakan Kembali?")){
                     $.ajax({
                         url: "{{url('bagiankonfirmpengembalian')}}",
                         type: "POST",
@@ -371,7 +371,7 @@
                                 })
                             }
                             $('#ajaxModel').modal('hide');
-                            tablebarang.draw();
+                            table.draw();
                         },
                         error: function (xhr, textStatus, errorThrown) {
                             if(xhr.responseJSON.errors){

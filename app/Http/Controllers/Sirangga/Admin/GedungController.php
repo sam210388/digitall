@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Sirangga\Admin\AreaModel;
 use App\Models\Sirangga\Admin\GedungModel;
 use App\Models\Sirangga\Admin\SubAreaModel;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Yajra\DataTables\DataTables;
 
 class GedungController extends Controller
@@ -26,8 +29,10 @@ class GedungController extends Controller
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
-                    $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editgedung">Edit</a>';
+                    $btn = '<div class="btn-group" role="group">
+                    <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editgedung">Edit</a>';
                     $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deletegedung">Delete</a>';
+                    $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Cetak" class="btn btn-primary btn-sm cetakdbr">Cetak DBR</a>';
                     return $btn;
                 })
                 ->addColumn('idarea',function ($row){
@@ -55,17 +60,70 @@ class GedungController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
-        //
+
+    public function cetakdbrgedung($idgedung){
+        $datareferensidbr = DB::table('gedung as a')
+            ->select(['a.uraiangedung as gedung',
+                'b.uraianarea as area','c.uraiansubarea as subarea'])
+            ->leftJoin('area as b','b.id','=','a.idarea')
+            ->leftJoin('subarea as c','c.id','=','a.idsubarea')
+            ->where('a.id','=',$idgedung)
+            ->get();
+
+        //membuat qrcode
+        $penanggungjawab ="";
+        $nip = "";
+        $waktucetak = now();
+
+
+        $datalokasidbrfinal = getenv('APP_URL')."/".asset('storage')."/dbrfinaldigitall/DBRGedung".$idgedung.".pdf";
+        QrCode::generate($datalokasidbrfinal,asset('storage/qrdbrfinal/DBRGedung'.$idgedung.'.svg'));
+
+        //penandatangan
+        $namapenandatangan = "";
+        $nippenandatangan = "";
+        $jabatanpenandatangan = "";
+
+        $datapenandatangan = DB::table('penandatangan')
+            ->where('jenisdokumen','=','DBR')
+            ->where('status','=','Aktif')
+            ->get();
+        foreach ($datapenandatangan as $dp){
+            $namapenandatangan = $dp->namalengkap;
+            $nippenandatangan = $dp->nip;
+            $jabatanpenandatangan = $dp->jabatan;
+        }
+        $dataqrbmn = "Disiapkan Oleh: ".$namapenandatangan." Pada: ".$waktucetak;
+        QrCode::generate($dataqrbmn,asset('storage/qrbmn/DBRGedung'.$idgedung.'.svg'));
+
+        //data detildbr
+        $datadetildbr = DB::table('dbrinduk as a')
+            ->select(['a.iddbr as iddbr','c.uraianruangan as ruangan','a.statusdbr as statusdbr','a.terakhiredit as terakhiredit',
+                'b.idbarang as idbarang','b.kd_brg as kd_brg','b.no_aset as no_aset','b.uraianbarang as uraianbarang',
+                'b.tahunperolehan as tahunperolehan','b.merek as merek','b.statusbarang as statusbarang','b.terakhirperiksa as terakhirperiksa'])
+            ->join('detildbr as b','a.iddbr','=','b.iddbr')
+            ->join('ruangan as c','c.id','=','a.idruangan')
+            ->where('a.idgedung','=',$idgedung);
+        $listbarang = $datadetildbr->get();
+        $jumlahbarang = $datadetildbr->count();
+        $pdf = Pdf::loadView('laporan.sirangga.dbrgedung',[
+            'datareferensidbr' => $datareferensidbr,
+            'datadetildbr' => $listbarang,
+            'jumlahbarang' => $jumlahbarang,
+            'idgedung' => $idgedung,
+            'penanggungjawab' => $penanggungjawab,
+            'nip' => $nip,
+            'waktucetak' => $waktucetak,
+            'namapenandatangan' => $namapenandatangan,
+            'nippenandatangan' => $nippenandatangan,
+            'jabatanpenandatangan' => $jabatanpenandatangan
+        ])->setPaper('a4', 'landscape');
+
+        Storage::put('public/dbrfinaldigitall/DBRGedung'.$idgedung.'.pdf', $pdf->output());
+        return $pdf->stream('DBRGedung'.$idgedung.'.pdf');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function store(Request $request)
     {
         $validated = $request->validate([

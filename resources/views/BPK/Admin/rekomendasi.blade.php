@@ -74,36 +74,9 @@
                                         <form id="formrekomendasi" name="formrekomendasi" class="form-horizontal" enctype="multipart/form-data">
                                             <input type="hidden" name="idtemuan" id="idtemuan" value="{{$idtemuan ? $idtemuan:""}}">
                                             <input type="hidden" name="idrekomendasi" id="idrekomendasi">
-                                            <input type="hidden" name="idbiroawal" id="idbiroawal">
-                                            <input type="hidden" name="idbagianawal" id="idbagianawal">
                                             <input type="hidden" name="statusawal" id="statusawal">
                                             <input type="hidden" name="buktiawal" id="buktiawal">
                                             <input type="hidden" name="created_by_awal" id="created_by_awal">
-                                            <div class="form-group">
-                                                <label for="deputi" class="col-sm-6 control-label">Deputi</label>
-                                                <div class="col-sm-12">
-                                                <select class="form-control iddeputi" name="iddeputi" id="iddeputi" style="width: 100%;">
-                                                    <option value="">Pilih Deputi</option>
-                                                    @foreach($datadeputi as $data)
-                                                        <option value="{{ $data->id }}">{{ $data->uraiandeputi }}</option>
-                                                    @endforeach
-                                                </select>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="Biro" class="col-sm-6 control-label">Biro</label>
-                                                <div class="col-sm-12">
-                                                <select class="form-control idbiro" name="idbiro" id="idbiro" style="width: 100%;">
-                                                </select>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="Bagian" class="col-sm-6 control-label">Bagian</label>
-                                                <div class="col-sm-12">
-                                                <select class="form-control idbagian" name="idbagian" id="idbagian" style="width: 100%;">
-                                                </select>
-                                                </div>
-                                            </div>
                                             <div class="form-group">
                                                 <label for="rekomendasi" class="col-sm-6 control-label">Rekomendasi</label>
                                                 <div class="col-sm-12">
@@ -159,27 +132,6 @@
 
             })
 
-            $('.idbagian').select2({
-                width: '100%',
-                theme: 'bootstrap4',
-                dropdownParent: $('#ajaxModel')
-
-            })
-
-            $('.iddeputi').select2({
-                width: '100%',
-                theme: 'bootstrap4',
-                dropdownParent: $('#ajaxModel')
-
-            })
-
-            $('.idbiro').select2({
-                width: '100%',
-                theme: 'bootstrap4',
-                dropdownParent: $('#ajaxModel')
-
-            })
-
             $("input[data-bootstrap-switch]").each(function(){
                 $(this).bootstrapSwitch('state', $(this).prop('checked'));
             })
@@ -214,9 +166,6 @@
                 },
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                    {data: 'iddeputi', name: 'iddeputi'},
-                    {data: 'idbiro', name: 'idbiro'},
-                    {data: 'idbagian', name: 'idbagian'},
                     {data: 'rekomendasi', name: 'rekomendasi'},
                     {data: 'nilai', name: 'nilai'},
                     {data: 'bukti', name: 'bukti'},
@@ -272,9 +221,6 @@
                     $('#ajaxModel').modal('show');
                     $('#idrekomendasi').val(data.id);
                     $('#idtemuan').val(data.idtemuan);
-                    $('#iddeputi').val(data.iddeputi).trigger('change');
-                    $('#idbiroawal').val(data.idbiro);
-                    $('#idbagianawal').val(data.idbagian);
                     $('#buktiawal').val(data.bukti);
                     $('#nilai').val(data.nilai);
                     $('#rekomendasi').val(data.rekomendasi);
@@ -328,8 +274,6 @@
                                 icon: 'error'
                             })
                         }
-                        $('#iddeputi').val('').trigger('change');
-                        $('#idbiroawal').val('');
                         $('#formrekomendasi').trigger("reset");
                         $('#ajaxModel').modal('hide');
                         $('#saveBtn').html('Simpan Data');
@@ -504,59 +448,6 @@
             window.location="{{URL::to('lihattindaklanjutbagian')}}"+"/"+idrekomendasi;
         });
 
-        $('#iddeputi').on('change', function () {
-            var iddeputi = this.value;
-
-            $.ajax({
-                url: "{{url('ambildatabiro')}}",
-                type: "POST",
-                data: {
-                    iddeputi: iddeputi,
-                    _token: '{{csrf_token()}}'
-                },
-                dataType: 'json',
-                success: function (result) {
-                    var idbiro = document.getElementById('idbiroawal').value;
-                    $('#idbiro').html('<option value="">Pilih Biro</option>');
-                    $.each(result.biro, function (key, value) {
-                            if (idbiro == value.id) {
-                            $('select[name="idbiro"]').append('<option value="'+value.id+'" selected>'+value.uraianbiro+'</option>').trigger('change')
-                        }else{
-                            $("#idbiro").append('<option value="' + value.id + '">' + value.uraianbiro + '</option>');
-                        }
-
-                    });
-                }
-
-            });
-        });
-
-        $('#idbiro').on('change', function () {
-            var idbiro = this.value;
-
-            $.ajax({
-                url: "{{url('ambildatabagian')}}",
-                type: "POST",
-                data: {
-                    idbiro: idbiro,
-                    _token: '{{csrf_token()}}'
-                },
-                dataType: 'json',
-                success: function (result) {
-                    var idbagian = document.getElementById('idbagianawal').value;
-                    $('#idbagian').html('<option value="">Pilih Bagian</option>');
-                    $.each(result.bagian, function (key, value) {
-                        if (idbagian == value.id) {
-                            $('select[name="idbagian"]').append('<option value="'+value.id+'" selected>'+value.uraianbagian+'</option>').trigger('change')
-                        }else{
-                            $("#idbagian").append('<option value="' + value.id + '">' + value.uraianbagian + '</option>');
-                        }
-
-                    });
-                }
-
-            });
-        });
 
     </script>
 @endsection

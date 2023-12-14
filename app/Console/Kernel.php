@@ -15,7 +15,10 @@ use App\Jobs\RekapDataAset;
 use App\Jobs\RekapDataBarangDBR;
 use App\Jobs\RekapRealisasiHarian;
 use App\Jobs\UpdateStatusAktifAnggaran;
+use App\Jobs\UpdateStatusHapus;
+use App\Jobs\UpdateStatusHenti;
 use App\Jobs\UpdateStatusImportRefStatus;
+use App\Jobs\UpdateStatusUsul;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Jobs\ImportSppHeader;
@@ -45,7 +48,7 @@ class Kernel extends ConsoleKernel
                new ImportCOA($TA),
                new RekapRealisasiHarian($TA)
            ])->dispatch($TA);
-        })->twiceDailyAt(7,15);
+        })->twiceDailyAt(6,21);
 
         /*
         $schedule->call(function () use ($TA){
@@ -65,10 +68,18 @@ class Kernel extends ConsoleKernel
                 new RekapDataAset(),
                 new RekapDataBarangDBR()
             ])->dispatch($TA);
-        })->dailyAt('19:21');
+        })->dailyAt('21:07');
 
 
         $schedule->job(new RekapDataBarangDBR())->dailyAt('20:54');
+
+       $schedule->call(function (){
+          UpdateStatusHenti::withChain([
+              new UpdateStatusUsul(),
+              new UpdateStatusHapus()
+          ])->dispatch();
+       })->dailyAt('22:00');
+
 
 
 

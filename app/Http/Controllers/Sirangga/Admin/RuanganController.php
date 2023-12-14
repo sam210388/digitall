@@ -255,7 +255,9 @@ class RuanganController extends Controller
                 );
                 DB::table('ruangan')->where('id','=',$idruangan)->update($dataupdate);
             }
-            return redirect()->to('lihatdbr/'.$idruangan)->with(['status' => 'DBR Berhasil Dibuat']);
+            //dapatkan iddbr
+            $iddbr = DB::table('dbrinduk')->where('idruangan','=',$idruangan)->value('iddbr');
+            return redirect()->to('lihatdbr/'.$iddbr)->with(['status' => 'DBR Berhasil Dibuat']);
         }
     }
 }

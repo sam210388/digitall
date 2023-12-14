@@ -132,6 +132,27 @@ class ImportSaktiController extends Controller
                             'tgl_awal_pakai' => $tgl_awal_pakai
                         );
                         DB::table('mastersakti')->insert($data);
+
+                        //import
+                        if ($kdtrx == 401){
+                            //cek apakah dah ada
+                            $jumlah = DB::table('penghentianpenggunaan')->where('kdregister','=',$kdregister)->count();
+                            if ($jumlah == 0){
+                                DB::table('penghentianpenggunaan')->insert($data);
+                            }
+                        }else if ($kdtrx == 301){
+                            //cek apakah dah ada
+                            $jumlah = DB::table('penghapusanbarang')->where('kdregister','=',$kdregister)->count();
+                            if ($jumlah == 0){
+                                DB::table('penghapusanbarang')->insert($data);
+                            }
+                        }else if ($kdtrx == 911){
+                            //cek apakah dah ada
+                            $jumlah = DB::table('pengusulanpenghapusan')->where('kdregister','=',$kdregister)->count();
+                            if ($jumlah == 0){
+                                DB::table('pengusulanpenghapusan')->insert($data);
+                            }
+                        }
                     }
                 }
             }

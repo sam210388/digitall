@@ -75,6 +75,7 @@
                         <h3 class="card-title">{{$judul}}</h3>
                         <div class="btn-group float-sm-right" role="group">
                             <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="kembalikeruangan"> Kembali ke Ruangan</a>
+                            <a class="btn btn-primary float-sm-right" href="javascript:void(0)" id="exportdbrinduk"> Export</a>
                         </div>
                     </div>
                     <div class="card-body">
@@ -160,6 +161,10 @@
             $("input[data-bootstrap-switch]").each(function(){
                 $(this).bootstrapSwitch('state', $(this).prop('checked'));
             })
+
+            $('#exportdbrinduk').click(function () {
+                window.location="{{URL::to('exportdbrinduk')}}";
+            });
             /*------------------------------------------
             --------------------------------------------
             Render DataTable

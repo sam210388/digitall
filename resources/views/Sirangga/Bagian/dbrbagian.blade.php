@@ -197,14 +197,14 @@
                             if (data.status == "berhasil"){
                                 Swal.fire({
                                     title: 'Sukses',
-                                    text: 'Unit Kerja Berhasil Diingatkan',
+                                    text: 'Pengajuan Perubahan Berhasil Disampaikan ke Admin BMN',
                                     icon: 'success'
                                 })
                             }
                             else{
                                 Swal.fire({
                                     title: 'Error!',
-                                    text: 'Pengiriman Data Gagal',
+                                    text: 'Pengajuan Perubahan Gagal Disampaikan ke Admin BMN',
                                     icon: 'error'
                                 })
                             }

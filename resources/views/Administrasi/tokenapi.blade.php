@@ -144,7 +144,7 @@
             Click to Button
             --------------------------------------------
             --------------------------------------------*/
-            $('#tambahtokenapi').click(function () {
+            $('#tambahtoken').click(function () {
                 $('#saveBtn').val("tambah");
                 $('#idtokenapi').val('');
                 $('#formtokenapi').trigger("reset");
@@ -204,6 +204,7 @@
                                 text: 'Simpan Data Berhasil',
                                 icon: 'success'
                             })
+                            table.reload(null, false);
                         }else{
                             Swal.fire({
                                 title: 'Error!',
@@ -214,8 +215,9 @@
                         $('#formtokenapi').trigger("reset");
                         $('#ajaxModel').modal('hide');
                         $('#saveBtn').html('Simpan Data');
-                        table.draw();
+                        //table.draw();
                     },
+
                     error: function (xhr, textStatus, errorThrown) {
                         if(xhr.responseJSON.errors){
                             var errorsArr = [];

@@ -84,19 +84,9 @@ class PenyewaController extends Controller
 
         ObjekSewaModel::create(
             [
-                'idarea' => $idarea,
-                'idsubarea' => $idsubarea,
-                'idgedung' => $idgedung,
-                'kodebarang' => $kodebarang,
-                'noaset' => $noaset,
-                'uraian' => $uraian,
-                'luas' => $luas,
-                'luasterbilang' => $luasterbilang,
-                'foto' => $foto1,
-                'foto2' => $foto2,
-                'foto3' => $foto3,
-                'filepenetapanstatus' => $filepenetapanstatus,
-                'dokkepemilikan' => $dokkepemilikan
+                'namapenyewa' => $namapenyewa,
+                'kelembagaan' => $kelembagaan,
+
             ]);
 
         return response()->json(['status'=>'berhasil']);

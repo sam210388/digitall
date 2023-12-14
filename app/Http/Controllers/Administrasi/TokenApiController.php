@@ -53,13 +53,13 @@ class TokenApiController extends Controller
         $token = $request->get('token');
         $where = array(
             'tahunanggaran' => $tahunanggaran,
-            'kodemodul' => $kodemodul
+            'modul' => $kodemodul
         );
         $ada = DB::table('tokenapi')->where($where)->count();
         if ($ada == 0){
             DB::table('tokenapi')->insert([
                 'tahunanggaran' => $tahunanggaran,
-                'kodemodul' => $kodemodul,
+                'modul' => $kodemodul,
                 'token' => $token
             ]);
             return response()->json(['status'=>'berhasil']);
@@ -88,7 +88,7 @@ class TokenApiController extends Controller
         $token = $request->get('token');
         $where = array(
             'tahunanggaran' => $tahunanggaran,
-            'kodemodul' => $kodemodul
+            'modul' => $kodemodul
         );
         $ada = DB::table('tokenapi')->where($where)->count();
         if ($ada > 1){
@@ -96,7 +96,7 @@ class TokenApiController extends Controller
         }else{
             DB::table('tokenapi')->where('id','=',$id)->update([
                 'tahunanggaran' => $tahunanggaran,
-                'kodemodul' => $kodemodul,
+                'modul' => $kodemodul,
                 'token' => $token
             ]);
             return response()->json(['status'=>'berhasil']);

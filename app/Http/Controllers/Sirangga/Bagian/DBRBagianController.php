@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Sirangga\Admin\DBRController;
 use App\Libraries\KirimWhatsapp;
 use App\Models\Sirangga\Admin\DetilDBRModel;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\DataTables;
 
 class DBRBagianController extends Controller
@@ -39,8 +41,7 @@ class DBRBagianController extends Controller
             ->leftJoin('statusdbr as d','a.statusdbr','=','d.id')
             ->leftJoin('users as e','a.useredit','=','e.id')
             ->leftJoin('pegawai as f','a.idpenanggungjawab','=','f.id')
-            ->where('c.idbagian','=',$idbagian)
-            ->get();
+            ->where('c.idbagian','=',$idbagian);
         return Datatables::of($model)
             ->addColumn('statusdbr', function ($dbr) {
                 return $dbr->statusdbr;
@@ -58,10 +59,11 @@ class DBRBagianController extends Controller
                 return $dbr->useredit ?? 'User Belum Ditetapkan';
             })
             ->addColumn('dokumendbr',function ($row){
-                if ($row->dokumendbr != null or $row->dokumendbr != ""){
-                    $linkdokumendbr = '<a href="'.env('APP_URL')."/".asset('storage')."/dbrfinal/".$row->dokumendbr.'" >Download DBR</a>';
+                //$datalokasidbrfinal = getenv('APP_URL')."/".asset('storage')."/dbrfinaldigitall/DBRRuangan".$row->iddbr.".pdf";
+                if (Storage::disk('public')->missing('/dbrfinaldigitall/DBRRuangan'.$row->iddbr.'.pdf')){
+                    $linkdokumendbr = "File Tidak Ada";
                 }else{
-                    $linkdokumendbr = "";
+                    $linkdokumendbr = '<a href="'.env('APP_URL')."/".asset('storage')."/dbrfinaldigitall/DBRRuangan".$row->iddbr.'.pdf" >Download DBR</a>';
                 }
                 return $linkdokumendbr;
             })
@@ -86,8 +88,12 @@ class DBRBagianController extends Controller
             ->toJson();
     }
 
-
     public function setujuidbr($iddbr){
+        $penanggungjawab = DB::table('dbrinduk')->where('iddbr','=',$iddbr)->value('idpenanggungjawab');
+        $namapenanggungjawab = DB::table('pegawai')->where('id','=',$penanggungjawab)->value('nama');
+        $batasakhir = Carbon::now();
+        $uraianbatasakhir = $batasakhir->isoFormat('D MMMM Y');
+
         $adabarang = DB::table('detildbr')
             ->where('iddbr','=',$iddbr)
             ->where('statusbarang','=',"Tidak Ada")
@@ -96,49 +102,64 @@ class DBRBagianController extends Controller
             return response()->json(['status'=>'konfirmbarang']);
         }else{
             $dataupdate = array(
-                'statusdbr' => 4,
+                'statusdbr' => 3,
                 'usersetujutolakdbr' => Auth::id(),
                 'terakhiredit' => now(),
-                'tanggalpersetujuandbr' => now()
+                'tanggalpersetujuandbr' => now(),
+                'dokumendbr' => "DBRRuangan".$iddbr.".pdf"
             );
             DB::table('dbrinduk')->where('iddbr','=',$iddbr)->update($dataupdate);
 
             //cetak dan simpan DBR
             $cetakdbr = new DBRController();
             $cetakdbr = $cetakdbr->cetakdbr($iddbr);
-            
+
+            //kirim notif
+            $notif = new KirimWhatsapp();
+            $notif = $notif->persetujuandbr($namapenanggungjawab, $iddbr,$uraianbatasakhir);
+
             return response()->json(['status'=>'berhasil']);
         }
     }
 
     public function penolakandbr(Request $request, $iddbr){
+        $penanggungjawab = DB::table('dbrinduk')->where('iddbr','=',$iddbr)->value('idpenanggungjawab');
+        $namapenanggungjawab = DB::table('pegawai')->where('id','=',$penanggungjawab)->value('nama');
+        $batasakhir = Carbon::now();
+        $uraianbatasakhir = $batasakhir->isoFormat('D MMMM Y');
         $alasanpenolakan = $request->get('alasanpenolakan');
         $dataupdate = array(
             'statusdbr' => 1,
             'alasanpenolakan' => $alasanpenolakan,
-            'usersetujudbr' => Auth::id(),
+            'usersetujutolakdbr' => Auth::id(),
             'terakhiredit' => now(),
             'tanggalpersetujuandbr' => now()
         );
         DB::table('dbrinduk')->where('iddbr','=',$iddbr)->update($dataupdate);
+
+        //kirim notif
+        $notif = new KirimWhatsapp();
+        $notif = $notif->penolakandbr($namapenanggungjawab, $iddbr,$uraianbatasakhir);
+
         return response()->json(['status'=>'berhasil']);
     }
 
     public function laporperubahan(Request $request, $iddbr){
+        $penanggungjawab = DB::table('dbrinduk')->where('iddbr','=',$iddbr)->value('idpenanggungjawab');
+        $namapenanggungjawab = DB::table('pegawai')->where('id','=',$penanggungjawab)->value('nama');
+        $batasakhir = Carbon::now();
+        $uraianbatasakhir = $batasakhir->isoFormat('D MMMM Y');
         $dataupdate = array(
-            'statusdbr' => 5,
+            'statusdbr' => 1,
             'userperubahdbr' => Auth::id(),
             'tanggalperubahandbr' => now(),
         );
         DB::table('dbrinduk')->where('iddbr','=',$iddbr)->update($dataupdate);
 
-        //kirim notif ke admin
-        $pic = getenv("PIC_SIRANGGA");
-        $body = "Kami Mengajukan Perubahan DBR dengan ID ".$iddbr." pada Akun DigitAll. Mohon Konfirmasi dan Pengecekan Fisik Ruangan";
-
         //kirim notif
         $notif = new KirimWhatsapp();
-        $notif = $notif->whatsappNotification($pic, $body);
+        $notif = $notif->pengajuanperubahan($namapenanggungjawab, $iddbr,$uraianbatasakhir);
+
         return response()->json(['status'=>'berhasil']);
     }
 
@@ -166,12 +187,12 @@ class DBRBagianController extends Controller
                 if ($row->statusbarang == "Ada" and $versike == 1 ){
                     $btn = '<div class="btn-group" role="group">
                         <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="Konfirmasi" class="btn btn-danger btn-sm konfirmasitidakada">Tidak Ada</a>';
-                    $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="Pemeliharaan" class="btn btn-info btn-sm pemeliharaan">Pemeliharaan</a>';
+                    //$btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="Pemeliharaan" class="btn btn-info btn-sm pemeliharaan">Pemeliharaan</a>';
                     $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="Pengembalian" class="btn btn-danger btn-sm pengembalian">Pengembalian</a>';
                 }else if ($row->statusbarang == "Ada" and $versike > 1 ) {
                     $btn = '<div class="btn-group" role="group">
                         <a href="javascript:void(0)" data-toggle="tooltip"  data-id="' . $row->iddetil . '" data-original-title="Hilang" class="btn btn-danger btn-sm konfirmasihilang">Hilang</a>';
-                    $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="Pemeliharaan" class="btn btn-info btn-sm pemeliharaan">Pemeliharaan</a>';
+                    //$btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="Pemeliharaan" class="btn btn-info btn-sm pemeliharaan">Pemeliharaan</a>';
                     $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="Pengembalian" class="btn btn-danger btn-sm pengembalian">Pengembalian</a>';
                 } else{
                     $btn = '<div class="btn-group" role="group">
@@ -183,8 +204,6 @@ class DBRBagianController extends Controller
             ->rawColumns(['action'])
             ->toJson();
     }
-
-
 
     public function konfirmasibarangada(Request $request){
         $iddetil = $request->get('iddetil');

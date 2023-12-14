@@ -116,6 +116,13 @@
                 dropdownParent: $('#ajaxModel')
 
             })
+
+            $('body').on('click', '.cetakdbr', function () {
+                var idgedung = $(this).data("id");
+                window.location="{{URL::to('cetakdbrgedung')}}"+"/"+idgedung;
+            });
+
+
             $('.idsubarea').select2({
                 width: '100%',
                 theme: 'bootstrap4',

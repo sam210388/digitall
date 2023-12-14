@@ -76,6 +76,9 @@ use App\Http\Controllers\Sirangga\Admin\TestDBRController;
 use App\Http\Controllers\Realisasi\Bagian\RencanaRealisasiBagian;
 use App\Http\Controllers\Realisasi\Biro\RencanaRealisasiBiro;
 use App\Http\Controllers\Sirangga\Admin\MonitoringPenghapusanBarangController;
+use App\Http\Controllers\Sirangga\Admin\DetilDBRController;
+use App\Http\Controllers\Sirangga\Admin\KonfirmBarangController;
+use App\Http\Controllers\Sirangga\Admin\DetilDBRTidakNormalController;
 
 
 /*
@@ -422,9 +425,30 @@ Route::get('exportdatabartender/{iddbr}',[DBRController::class,'databartenderexp
 Route::get('cekfisik/{iddbr}',[DBRController::class,'cekfisik'])->name('cekfisik');
 Route::get('ingatkanunit/{iddbr}',[DBRController::class,'ingatkanunit'])->name('ingatkanunit');
 Route::get('cetakdbr/{iddbr}',[DBRController::class,'cetakdbr'])->name('cetakdbr');
+Route::get('cetakdbrgedung/{idgedung}',[GedungController::class,'cetakdbrgedung'])->name('cetakdbrgedung');
 Route::get('testdbr',[TestDBRController::class,'testdbr'])->name('testdbr');
+Route::get('exportdetildbr/{statusbarang}',[DetilDBRController::class,'exportdetildbr'])->name('exportdetildbr')->middleware('cekadminsirangga');
+Route::get('exportdatabarang/{statusbarang}',[BarangController::class,'exportdatabarang'])->name('exportdatabarang')->middleware('cekadminsirangga');
 //Route::get('testanggal',[DBRController::class,'testanggal'])->name('testanggal');
 //Route::get('kirimperingatan',[DBRController::class,'aksikirimperingatankeunit'])->name('kirimperingatan');
+
+//detil dbr admin
+Route::get('detildbr',[DetilDBRController::class,'detildbr'])->name('detildbr')->middleware('cekadminsirangga');
+Route::get('/getdatadetildbradmin',[DetilDBRController::class,'getDataDetilBDR'])->name('getdatadetildbradmin')->middleware('cekadminsirangga');
+
+//admin mengkonfirmasi barang yang dilaporkan hilang atau kembali
+Route::post('konfirmhilangkembali',[DetilDBRController::class,'konfirmhilangkembali'])->name('konfirmhilangkembali')->middleware('cekadminsirangga');
+Route::post('deletebarangterkonfirmasi',[KonfirmBarangController::class,'deletebarangterkonfirmasi'])->name('deletebarangterkonfirmasi')->middleware('cekadminsirangga');
+
+//untuk menampilkan kumpulam barang yang sudah terkonfirmasi oleh admin
+Route::get('barangterkonfirmasi',[KonfirmBarangController::class,'barangterkonfirmasi'])->name('barangterkonfirmasi')->middleware('cekadminsirangga');
+Route::get('getdatabarangterkonfirmasi',[KonfirmBarangController::class,'getdatabarangterkonfirmasi'])->name('getdatabarangterkonfirmasi')->middleware('cekadminsirangga');
+Route::get('exportbarangterkonfirmasi/{statusbarang}',[KonfirmBarangController::class,'exportbarangterkonfirmasi'])->name('exportbarangterkonfirmasi')->middleware('cekadminsirangga');
+
+//monitoring detil dbr tidak normal -> barang sdh dihentikan, hapus tp masih ada di DBR
+Route::get('detildbrtidaknormal',[DetilDBRTidakNormalController::class,'detildbr'])->name('detildbrtidaknormal')->middleware('cekadminsirangga');
+Route::get('getdetildbrtidaknormal',[DetilDBRTidakNormalController::class,'getDataDetilBDRTidakNormal'])->name('getdetildbrtidaknormal')->middleware('cekadminsirangga');
+
 
 
 //list import aset
@@ -438,6 +462,7 @@ Route::get('penghapusanbarang',[MonitoringPenghapusanBarangController::class,'pe
 Route::get('getdatapenghapusanbarang',[MonitoringPenghapusanBarangController::class,'getdatapenghapusanbarang'])->name('getdatapenghapusanbarang')->middleware('cekadminsirangga');
 Route::get('rekappenghapusanbarang',[MonitoringPenghapusanBarangController::class,'rekappenghapusanbarang'])->name('rekappenghapusanbarang')->middleware('cekadminsirangga');
 Route::get('exportpenghapusanbarang',[MonitoringPenghapusanBarangController::class,'exportpenghapusanbarang'])->name('exportpenghapusanbarang')->middleware('cekadminsirangga');
+Route::get('exportdbrinduk',[DBRController::class,'exportdbrinduk'])->name('exportdbrinduk')->middleware('cekadminsirangga');
 
 //DBR BAGIAN
 Route::get('dbrindukbagian',[DBRBagianController::class,'dbrindukbagian'])->name('dbrindukbagian');

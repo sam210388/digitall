@@ -59,21 +59,6 @@ class RekomendasiController extends Controller
                     }
                     return $btn;
                 })
-                ->addColumn('iddeputi',function ($row){
-                    $iddeputi = $row->iddeputi;
-                    $uraiandeputi = DB::table('deputi')->where('id','=',$iddeputi)->value('uraiandeputi');
-                    return $uraiandeputi;
-                })
-                ->addColumn('idbiro',function ($row){
-                    $idbiro = $row->idbiro;
-                    $uraianbiro = DB::table('biro')->where('id','=',$idbiro)->value('uraianbiro');
-                    return $uraianbiro;
-                })
-                ->addColumn('idbagian',function ($row){
-                    $idbagian = $row->idbagian;
-                    $uraianbiro = DB::table('bagian')->where('id','=',$idbagian)->value('uraianbagian');
-                    return $uraianbiro;
-                })
                 ->addColumn('status',function ($row){
                     $idstatus = $row->status;
                     $uraianstatus = DB::table('statustemuan')->where('id','=',$idstatus)->value('uraianstatus');
@@ -139,9 +124,6 @@ class RekomendasiController extends Controller
         RekomendasiModel::create(
             [
                 'idtemuan' => $idtemuan,
-                'iddeputi' => $request->get('iddeputi'),
-                'idbiro' => $request->get('idbiro'),
-                'idbagian' => $request->get('idbagian'),
                 'nilai' => $request->get('nilai'),
                 'rekomendasi' => $request->get('rekomendasi'),
                 'bukti' => $bukti,
@@ -211,9 +193,6 @@ class RekomendasiController extends Controller
         RekomendasiModel::where('id',$id)->update(
             [
                 'idtemuan' => $request->get('idtemuan'),
-                'iddeputi' => $request->get('iddeputi'),
-                'idbiro' => $request->get('idbiro'),
-                'idbagian' => $request->get('idbagian'),
                 'nilai' => $request->get('nilai'),
                 'rekomendasi' => $request->get('rekomendasi'),
                 'bukti' => $bukti,
