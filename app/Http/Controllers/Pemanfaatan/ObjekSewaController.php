@@ -131,7 +131,8 @@ class ObjekSewaController extends Controller
             'noaset' => 'required',
             'uraian' => 'required',
             'luas' => 'required',
-            'luasterbilang' => 'required'
+            'luasterbilang' => 'required',
+            'statusobjeksewa' => 'required'
         ]);
 
         $idarea = $request->get('idarea');
@@ -142,6 +143,7 @@ class ObjekSewaController extends Controller
         $uraian = $request->get('uraian');
         $luas = $request->get('luas');
         $luasterbilang = $request->get('luasterbilang');
+        $statusobjeksewa = $request->get('statusobjeksewa');
         if ($request->file('foto1') != ""){
             $foto1 = $request->file('foto1')->store('dokpemanfaatan/fotobmn','public');
         }
@@ -172,7 +174,8 @@ class ObjekSewaController extends Controller
                 'foto2' => $foto2,
                 'foto3' => $foto3,
                 'filepenetapanstatus' => $filepenetapanstatus,
-                'dokkepemilikan' => $dokkepemilikan
+                'dokkepemilikan' => $dokkepemilikan,
+                'statusobjeksewa' => $statusobjeksewa
             ]);
 
         return response()->json(['status'=>'berhasil']);
@@ -195,7 +198,8 @@ class ObjekSewaController extends Controller
             'noaset' => 'required',
             'uraian' => 'required',
             'luas' => 'required',
-            'luasterbilang' => 'required'
+            'luasterbilang' => 'required',
+            'statusobjeksewa' => 'required'
         ]);
 
         $foto1awal = $request->get('foto1awal');
@@ -211,6 +215,7 @@ class ObjekSewaController extends Controller
         $uraian = $request->get('uraian');
         $luas = $request->get('luas');
         $luasterbilang = $request->get('luasterbilang');
+        $statusobjeksewa = $request->get('statusobjeksewa');
 
         if ($request->file('foto1')){
             if (file_exists(storage_path('app/public/dokpemanfaatan/fotobmn').$foto1awal)){
@@ -276,7 +281,8 @@ class ObjekSewaController extends Controller
                 'foto2' => $foto2,
                 'foto3' => $foto3,
                 'filepenetapanstatus' => $filepenetapanstatus,
-                'dokkepemilikan' => $dokkepemilikan
+                'dokkepemilikan' => $dokkepemilikan,
+                'statusobjeksewa' => $statusobjeksewa
             ]);
 
         return response()->json(['status'=>'berhasil']);

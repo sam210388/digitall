@@ -61,7 +61,6 @@ class BearerKey
         foreach ($hasilasli as $ITEM) {
             $tokenbaru = $ITEM->TOKEN;
         }
-
         $this->simpantokenbaru($tahunanggaran, $kodemodul, $tokenbaru);
         return $tokenbaru;
     }

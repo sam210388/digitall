@@ -36,6 +36,7 @@
                         <h3 class="card-title">{{$judul}}</h3>
                         <div class="btn-group float-sm-right" role="group">
                             <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="rekapbarang">Rekap Barang</a>
+                            <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="updatemasamanfaat">Update Masa Manfaat</a>
                             <a class="btn btn-primary float-sm-right" href="javascript:void(0)" id="exportbarang">Export Barang</a>
                         </div>
                     </div>
@@ -173,6 +174,13 @@
                     window.location="{{URL::to('rekapbarang')}}";
                 }
             });
+            $('#updatemasamanfaat').click(function (e) {
+                if( confirm("Apakah Anda Yakin Mau Update Masa Manfaat Seluruh Barang?")){
+                    e.preventDefault();
+                    $(this).html('Importing..');
+                    window.location="{{URL::to('updatemasamanfaat')}}";
+                }
+            });
             $('#exportbarang').click(function (e) {
                 e.preventDefault();
                 $('#ajaxModel').modal('show');
@@ -233,7 +241,7 @@
                 .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
             // Filter event handler
             $( table.table().container() ).on( 'keypress', 'tfoot input', function (e) {
-                if (e.key == "Enter" || e.key == "Unidentified"){
+                if (e.key === "Enter" || e.key === "Unidentified" || e.keycode === 229){
                     table
                         .column( $(this).data('index') )
                         .search( this.value )

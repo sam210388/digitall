@@ -28,6 +28,10 @@
   <link rel="stylesheet" href="{{env('APP_URL')."/".asset('AdminLTE/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css')}}">
   <link rel="stylesheet" href="{{env('APP_URL')."/".asset('AdminLTE/plugins/select2/css/select2.min.css')}}">
   <link rel="stylesheet" href="{{env('APP_URL')."/".asset('AdminLTE/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css')}}">
+  <link rel="stylesheet" href="{{env('APP_URL')."/".asset('AdminLTE/plugins/daterangepicker/daterangepicker.css')}}">
+
+  <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/jquery-numeric/jquery.numeric.js')}}"></script>
+  <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/jquery-numeric/jquery.numeric.min.js')}}"></script>
   <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/datatables/jquery.dataTables.min.js')}}"></script>
   <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js')}}"></script>
   <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/datatables-responsive/js/dataTables.responsive.min.js')}}"></script>
@@ -44,13 +48,11 @@
   <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/bootstrap-switch/js/bootstrap-switch.min.js')}}"></script>
   <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/select2/js/select2.full.min.js')}}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+  <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/moment/moment.min.js')}}"></script>
+  <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/daterangepicker/daterangepicker.js')}}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/autonumeric/4.10.4/autoNumeric.js" integrity="sha512-uHhJD1WOK5O11pTjFZzz8QG6P5WrF6vZFCvDQSVNAyBGPNVQ1HYpBb84r+aH+lPXr1DDlynlf5s/uWQgotBsXQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/autonumeric/4.10.4/autoNumeric.min.js" integrity="sha512-oy12ZbZubVh9o88NpH8ypywObq7ZM6dLo4pX0dIWeNfXEhJk8e23NZ2H/163ddnUOLIsW7lybYlOgf708Y8vxA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet" type="text/css" />
 
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.standalone.min.css" rel="stylesheet" type="text/css" />
-
-
-
-
-
-

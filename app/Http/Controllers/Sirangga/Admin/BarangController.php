@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Sirangga\Admin;
 
 use App\Exports\ExportDataBarang;
-use App\Exports\ExportDetilDBR;
 use App\Http\Controllers\Controller;
+use App\Jobs\UpdateSisaMasaManfaat;
 use App\Models\Sirangga\Admin\BarangModel;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\DataTables;
@@ -18,6 +18,37 @@ class BarangController extends Controller
     public function __construct()
     {
         $this->middleware(['auth']);
+    }
+
+    function updatemasamanfaat(){
+        $this->dispatch(new UpdateSisaMasaManfaat());
+        return redirect()->to('barang')->with('status','Update Sisa Masa Manfaat Sedang Berjalan. Harap Tunggu Beberapa Saat');
+    }
+
+    function aksiupdatesisamanfaat(){
+        $barang = DB::table('barang')->get();
+        foreach ($barang as $b){
+            $tglperolehan = $b->tgl_perlh;
+            $idbarang = $b->id;
+
+            $tglperolehan = new \DateTime($tglperolehan);
+            $tahunskrg = new \DateTime('now');
+
+            $selisihhari = $tglperolehan->diff($tahunskrg);
+            $selisihtahun = $selisihhari->y;
+
+            $masamanfaat = $b->masamanfaat;
+            $sisamasamanfaat = $masamanfaat - $selisihtahun;
+
+            if ($sisamasamanfaat < 0){
+                $sisaumur = 0;
+            }else{
+                $sisaumur = $sisamasamanfaat;
+            }
+            DB::table('barang')->where('id','=',$idbarang)->update([
+                'sisamasamanfaat' => $sisaumur
+            ]);
+        }
     }
 
     public function dapatkandataaset(Request $request){

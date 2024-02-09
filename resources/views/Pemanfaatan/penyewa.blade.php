@@ -79,6 +79,17 @@
                                             <input type="hidden" name="filesiupawal" id="filesiupawal">
                                             <input type="hidden" name="idpenyewa" id="idpenyewa">
                                             <div class="form-group">
+                                                <label for="statuspenyewa" class="col-sm-6 control-label">User Penyewa</label>
+                                                <div class="col-sm-12">
+                                                    <select class="form-control userpenyewa" name="userpenyewa" id="userpenyewa" style="width: 100%;">
+                                                        <option value="">Pilih User Penyewa</option>
+                                                        @foreach($user as $data)
+                                                            <option value="{{ $data->id }}">{{ $data->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
                                                 <label for="namapenyewa" class="col-sm-6 control-label">Nama Penyewa</label>
                                                 <div class="col-sm-12">
                                                     <input type="text" class="form-control" id="namapenyewa" name="namapenyewa" placeholder="Masukan Nama Penyewa" value="" maxlength="500" required="">
@@ -111,13 +122,13 @@
                                             <div class="form-group">
                                                 <label for="email" class="col-sm-6 control-label">Email</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control" id="email" name="email" placeholder="Masukan Email Valid" value="" maxlength="500" required="">
+                                                    <input type="email" class="form-control" id="email" name="email" placeholder="Masukan Email Valid" value="" maxlength="500" required="">
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="telepon" class="col-sm-6 control-label">Telepon</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control" id="telepon" name="telepon" placeholder="Masukan Telepon Valid" value="" maxlength="500" required="">
+                                                    <input type="tel" class="form-control" id="telepon" name="telepon" placeholder="Masukan Telepon Valid" value="" maxlength="500" required="">
                                                 </div>
                                             </div>
                                             <div class="form-group">
@@ -137,6 +148,11 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="form-group" id="linkfilenpwp" aria-hidden="true">
+                                                <div class="col-sm-12">
+                                                    <a href="#" id="aktuallihatnpwp">Lihat NPWP</a>
+                                                </div>
+                                            </div>
                                             <div class="form-group">
                                                 <label for="luas" class="col-sm-6 control-label">Nomor SIUP</label>
                                                 <div class="col-sm-12">
@@ -152,6 +168,20 @@
                                                             <label class="custom-file-label" for="exampleInputFile">Choose file</label>
                                                         </div>
                                                     </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group" id="linkfilesiup" aria-hidden="true">
+                                                <div class="col-sm-12">
+                                                    <a href="#" id="aktuallihatsiup">Lihat SIUP</a>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="statuspenyewa" class="col-sm-6 control-label">Status Penyewa</label>
+                                                <div class="col-sm-12">
+                                                    <select class="form-control statuspenyewa" name="statuspenyewa" id="statuspenyewa" style="width: 100%;">
+                                                        <option value="Inaktif">Inaktif</option>
+                                                        <option value="Aktif">Aktif</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                             <div class="col-sm-offset-2 col-sm-10">
@@ -173,6 +203,16 @@
     <script type="text/javascript">
         $(function () {
             bsCustomFileInput.init();
+            $('.statuspenyewa').select2({
+                width: '100%',
+                theme: 'bootstrap4',
+
+            })
+            $('.userpenyewa').select2({
+                width: '100%',
+                theme: 'bootstrap4',
+
+            })
             /*------------------------------------------
             --------------------------------------------
             Render DataTable
@@ -242,18 +282,28 @@
             Click to Edit Button
             --------------------------------------------
             --------------------------------------------*/
-            $('body').on('click', '.editgedung', function () {
+            $('body').on('click', '.editpenyewa', function () {
                 var id = $(this).data('id');
                 $.get("{{ route('penyewa.index') }}" +'/' + id +'/edit', function (data) {
                     $('#modelHeading').html("Edit Gedung");
                     $('#saveBtn').val("edit");
                     $('#ajaxModel').modal('show');
-                    $('#idgedung').val(data.id);
-                    $('#idsubareaawal').val(data.idsubarea);
-                    $('#idarea').val(data.idarea).trigger('change');
-                    $('#idsubarea').val(data.idsubarea).trigger('change');
-                    $('#kodegedung').val(data.kodegedung);
-                    $('#uraiangedung').val(data.uraiangedung);
+                    $('#idpenyewa').val(data.id);
+                    $('#filenpwpawal').val(data.filenpwp);
+                    $('#filesiupawal').val(data.filesiup);
+                    $('#namapenyewa').val(data.namapenyewa);
+                    $('#kelembagaan').val(data.kelembagaan);
+                    $('#jenisusaha').val(data.jenisusaha);
+                    $('#alamat').val(data.alamat);
+                    $('#kedudukan').val(data.kedudukan);
+                    $('#email').val(data.email);
+                    $('#telepon').val(data.telepon);
+                    $('#nomornpwp').val(data.nomornpwp);
+                    $('#nomorsiup').val(data.nomorsiup);
+                    $('#status').val(data.status).trigger('change');
+                    $('#userpenyewa').val(data.userpenyewa).trigger('change');
+                    document.getElementById('aktuallihatnpwp').href = "{{env('APP_URL')."/".asset('storage/dokpemanfaatan/npwp')}}"+"/"+data.filenpwp
+                    document.getElementById('aktuallihatsiup').href = "{{env('APP_URL')."/".asset('storage/dokpemanfaatan/siup')}}"+"/"+data.filesiup
                 })
             });
 
@@ -265,10 +315,10 @@
             $('#saveBtn').click(function (e) {
                 e.preventDefault();
                 $(this).html('Sending..');
-                let form = document.getElementById('formgedung');
+                let form = document.getElementById('formpenyewa');
                 let fd = new FormData(form);
                 let saveBtn = document.getElementById('saveBtn').value;
-                var id = document.getElementById('idgedung').value;
+                var idpenyewa = document.getElementById('idpenyewa').value;
                 fd.append('saveBtn',saveBtn)
                 if(saveBtn == "edit"){
                     fd.append('_method','PUT')
@@ -298,7 +348,7 @@
                                 icon: 'error'
                             })
                         }
-                        $('#formgedung').trigger("reset");
+                        $('#formpenyewa').trigger("reset");
                         $('#ajaxModel').modal('hide');
                         $('#saveBtn').html('Simpan Data');
                         table.draw();
@@ -333,13 +383,13 @@
             Delete Product Code
             --------------------------------------------
             --------------------------------------------*/
-            $('body').on('click', '.deletegedung', function () {
+            $('body').on('click', '.deletepenyewa', function () {
 
-                var idgedung = $(this).data("id");
+                var idpenanggungjawabsewa = $(this).data("id");
                 if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
                     $.ajax({
                         type: "DELETE",
-                        url: "{{ route('penyewa.destroy','') }}"+'/'+idgedung,
+                        url: "{{ route('penanggungjawabsewa.destroy','') }}"+'/'+idpenanggungjawabsewa,
                         success: function (data) {
                             if (data.status == "berhasil"){
                                 Swal.fire({
@@ -381,85 +431,6 @@
                     });
                 }
             });
-
-            $('#idarea').on('change', function () {
-                var idarea = this.value;
-                $.ajax({
-                    url: "{{url('ambildatasubarea')}}",
-                    type: "POST",
-                    data: {
-                        idarea: idarea,
-                        _token: '{{csrf_token()}}'
-                    },
-                    dataType: 'json',
-                    success: function (result) {
-                        var idsubarea = document.getElementById('idsubareaawal').value;
-                        $('#idsubarea').html('<option value="">Pilih Sub Area</option>');
-                        $.each(result.subarea, function (key, value) {
-                            if (idsubarea == value.id) {
-                                $('select[name="idsubarea"]').append('<option value="'+value.id+'" selected>'+value.uraiansubarea+'</option>').trigger('change')
-                            }else{
-                                $("#idsubarea").append('<option value="' + value.id + '">' + value.uraiansubarea + '</option>');
-                            }
-
-                        });
-                    }
-
-                });
-            });
-
-            $('#idsubarea').on('change', function () {
-                var idsubarea = this.value;
-                $.ajax({
-                    url: "{{url('ambildatagedung')}}",
-                    type: "POST",
-                    data: {
-                        idsubarea: idsubarea,
-                        _token: '{{csrf_token()}}'
-                    },
-                    dataType: 'json',
-                    success: function (result) {
-                        var idgedung = document.getElementById('idgedungawal').value;
-                        $('#idgedung').html('<option value="">Pilih Gedung</option>');
-                        $.each(result.gedung, function (key, value) {
-                            if (idsubarea == value.id) {
-                                $('select[name="idgedung"]').append('<option value="'+value.id+'" selected>'+value.uraiangedung+'</option>').trigger('change')
-                            }else{
-                                $("#idgedung").append('<option value="' + value.id + '">' + value.uraiangedung + '</option>');
-                            }
-
-                        });
-                    }
-
-                });
-            });
-
-            $('#kodebarang').on('change', function () {
-                var kodebarang = this.value;
-                $.ajax({
-                    url: "{{url('dapatkandataaset')}}",
-                    type: "POST",
-                    data: {
-                        kodebarang: kodebarang,
-                        _token: '{{csrf_token()}}'
-                    },
-                    dataType: 'json',
-                    success: function (result) {
-                        var noaset = document.getElementById('noasetawal').value;
-                        $('#noaset').html('<option value="">Pilih NUP</option>');
-                        $.each(result.barang, function (key, value) {
-                            if (noaset == value.no_aset) {
-                                $('select[name="noaset"]').append('<option value="'+value.no_aset+'" selected>'+value.no_aset+'</option>').trigger('change')
-                            }else{
-                                $("#noaset").append('<option value="' + value.no_aset + '">' + value.no_aset + '</option>');
-                            }
-
-                        });
-                    }
-
-                });
-            });
-
         });
 
     </script>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\GL;
 
+use App\Exports\ExportGL;
 use App\Http\Controllers\Controller;
 use App\Jobs\ImportBukuBesar;
 use App\Libraries\BearerKey;
@@ -11,6 +12,7 @@ use App\Models\GL\MonitoringImportBukuBesarModel;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\DataTables;
 
 class BukuBesarController extends Controller
@@ -61,6 +63,10 @@ class BukuBesarController extends Controller
         $tipedata = 'bukuBesar';
         $variabel = [$kdsatker, $periode];
 
+        //reset api
+        $resetapi = new BearerKey();
+        $resetapi = $resetapi->resetapi($tahunanggaran, $kodemodul, $tipedata);
+
         //tarikdata
         $response = new TarikDataMonsakti();
         $response = $response->prosedurlengkap($tahunanggaran, $kodemodul, $tipedata, $variabel);
@@ -77,10 +83,7 @@ class BukuBesarController extends Controller
                     }
                     $token = new BearerKey();
                     $token->simpantokenbaru($tahunanggaran, $kodemodul, $tokenresponse);
-                }
-            }
-            foreach ($hasilasli as $item => $value) {
-                if ($item != "TOKEN") {
+                }else{
                     foreach ($value as $DATA) {
                         $KDBAES1 = $DATA->KDBAES1;
                         $KDKANWIL = $DATA->KDKANWIL;
@@ -222,16 +225,7 @@ class BukuBesarController extends Controller
                     }
                 }
             }
-        }else if ($response == "Expired"){
-            $tokenbaru = new BearerKey();
-            $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
-            //return redirect()->to('sppheader')->with(['status' => 'Token Expired']);
-        }else{
-            $tokenbaru = new BearerKey();
-            $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
-            //return redirect()->to('sppheader')->with(['status' => 'Gagal, Data Terlalu Besar']);
         }
-
     }
 
     public function store(Request $request)
@@ -323,5 +317,11 @@ class BukuBesarController extends Controller
     {
         MonitoringImportBukuBesarModel::find($id)->delete();
         return response()->json(['status'=>'berhasil']);
+    }
+
+    function exportpenghapusanbarang($kdsatker){
+        $tahunanggaran = session('tahunanggaran');
+        //Excel::download(new UsersExport, 'users.xlsx');
+        return Excel::download(new ExportGL($tahunanggaran, $kdsatker),'GL'.$tahunanggaran.$kdsatker.'xlsx');
     }
 }

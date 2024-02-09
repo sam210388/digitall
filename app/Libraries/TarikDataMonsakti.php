@@ -42,7 +42,14 @@ class TarikDataMonsakti
 
     function cekresponse($response){
         //cek response
-        $diolah = substr(json_encode($response),0,50);
+        $diolah = json_decode($response, true);
+        if ($diolah[0][0]['TOKEN'] != null){
+            return $response;
+        }else{
+            return "Gagal Karena:".$response;
+        }
+        /*
+        $diolah = substr(json_encode($response, true),0,50);
         if (str_contains($diolah, "Expired")){
             return "Expired";
 
@@ -53,6 +60,7 @@ class TarikDataMonsakti
         }else{
             return $response;
         }
+        */
     }
 
     function prosedurlengkap($tahunanggaran, $kodemodul, $tipedata, $variable = null){

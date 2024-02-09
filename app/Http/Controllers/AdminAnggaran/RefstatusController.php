@@ -2,20 +2,13 @@
 
 namespace App\Http\Controllers\AdminAnggaran;
 
-use App\Jobs\ImportDataAng;
 use App\Jobs\ImportRefStatus;
-use App\Jobs\RekapAnggaran;
-use App\Jobs\SummaryDipa;
-use App\Jobs\UpdateIDKinerjaAnggaranBagian;
 use App\Jobs\UpdateStatusAktifAnggaran;
-use App\Jobs\UpdateStatusImportRefStatus;
-use App\Jobs\UpdateUnitAnggaran;
 use App\Libraries\BearerKey;
 use App\Http\Controllers\Controller;
 use App\Libraries\TarikDataMonsakti;
 use App\Models\AdminAnggaran\RefStatusModel;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 
 class RefstatusController extends Controller
@@ -71,7 +64,10 @@ class RefstatusController extends Controller
 
     function importrefstatus(){
         $tahunanggaran = session('tahunanggaran');
+        //$this->dispatch(new ImportRefStatus($tahunanggaran));
+        $this->aksiimportrefstatus($tahunanggaran);
 
+        /*
         ImportRefStatus::withChain([
             new UpdateStatusImportRefStatus($tahunanggaran),
             new ImportDataAng($tahunanggaran),
@@ -79,12 +75,18 @@ class RefstatusController extends Controller
             new UpdateStatusAktifAnggaran($tahunanggaran),
             new UpdateStatusImportRefStatus($tahunanggaran)
         ])->dispatch($tahunanggaran);
-        return redirect()->to('refstatus')->with('status','Import Ref Status dari SAKTI Berhasil');
+        */
+        //return redirect()->to('refstatus')->with('status','Import Ref Status dari SAKTI Berhasil');
     }
 
     function aksiimportrefstatus($tahunanggaran){
         $kodemodul = 'ANG';
         $tipedata = 'refSts';
+
+        //reset api dlu
+        //reset api
+        $resetapi = new BearerKey();
+        $resetapi = $resetapi->resetapi($tahunanggaran, $kodemodul, $tipedata);
 
         $response = new TarikDataMonsakti();
         $response = $response->prosedurlengkap($tahunanggaran, $kodemodul, $tipedata);
@@ -101,10 +103,7 @@ class RefstatusController extends Controller
                     }
                     $token = new BearerKey();
                     $token->simpantokenbaru($tahunanggaran, $kodemodul, $tokenresponse);
-                }
-            }
-            foreach ($hasilasli as $item => $value) {
-                if ($item != "TOKEN") {
+                }else{
                     foreach ($value as $DATA) {
                         $ID = $DATA->ID;
                         $KODE_KEMENTERIAN = $DATA->KODE_KEMENTERIAN;
@@ -150,12 +149,6 @@ class RefstatusController extends Controller
                     }
                 }
             }
-        }else if ($response == "Expired"){
-                $tokenbaru = new BearerKey();
-                $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
-        }else{
-            $tokenbaru = new BearerKey();
-            $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
         }
     }
 }

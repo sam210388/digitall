@@ -10,6 +10,7 @@ use App\Jobs\UpdateUnitId;
 use App\Libraries\BearerKey;
 use App\Libraries\TarikDataMonsakti;
 use App\Models\Realisasi\Admin\SppHeaderModel;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
@@ -47,41 +48,38 @@ class SppHeaderController extends Controller
 
     function importsppheader(){
         $tahunanggaran = session('tahunanggaran');
-        /*
-        $kodemodul = 'PEM';
-        $tipedata = 'sppHeader';
-        $tokenbaru = new BearerKey();
-        $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
-        */
-
 
         ImportSppHeader::withChain([
-            new ImportCOA($tahunanggaran),
             new UpdateStatusPengeluaran($tahunanggaran),
+            new ImportCOA($tahunanggaran),
             new UpdateUnitId($tahunanggaran)
         ])->dispatch($tahunanggaran);
 
-        /*
-        ImportSppHeader::withChain([
-            new UpdateStatusPengeluaran($tahunanggaran)
-        ])->dispatch($tahunanggaran);
-        */
+        //$this->dispatch(new ImportSppHeader($tahunanggaran));
+        //$this->dispatch(new UpdateStatusPengeluaran($tahunanggaran));
         return redirect()->to('sppheader')->with('status','Proses Import SPP Header dari SAKTI Berhasil Dijalankan');
     }
 
     function aksiimportsppheader($tahunanggaran){
+        //DELETE SPPHEADER TAHUN BERJALAN
+        DB::table('sppheader')->where('THN_ANG','=',$tahunanggaran)->delete();
+
         $kodemodul = 'PEM';
         $tipedata = 'sppHeader';
+
+        //reset api
+        $resetapi = new BearerKey();
+        $resetapi = $resetapi->resetapi($tahunanggaran, $kodemodul, $tipedata);
 
         //tarikdata
         $response = new TarikDataMonsakti();
         $response = $response->prosedurlengkap($tahunanggaran, $kodemodul, $tipedata);
         //echo json_encode($response);
 
+
         if ($response != "Gagal" or $response != "Expired"){
             $hasilasli = json_decode($response);
             //echo json_encode($hasilasli);
-
             foreach ($hasilasli as $item => $value) {
                 if ($item == "TOKEN") {
                     foreach ($value as $data) {
@@ -89,10 +87,7 @@ class SppHeaderController extends Controller
                     }
                     $token = new BearerKey();
                     $token->simpantokenbaru($tahunanggaran, $kodemodul, $tokenresponse);
-                }
-            }
-            foreach ($hasilasli as $item => $value) {
-                if ($item != "TOKEN") {
+                }else{
                     foreach ($value as $DATA) {
                         $KODE_KEMENTERIAN = $DATA->KODE_KEMENTERIAN;
                         $KDSATKER = $DATA->KDSATKER;
@@ -168,8 +163,10 @@ class SppHeaderController extends Controller
                         $NO_NOD = $DATA->NO_NOD;
                         $AMOUNT_NOD = $DATA->AMOUNT_NOD;
                         $KURS_NOD = $DATA->KURS_NOD;
-                        $TGL_NOD = new \DateTime($DATA->TGL_NOD);
-                        $TGL_NOD = $TGL_NOD ->format('Y-m-d');
+                        //$TGL_NOD = strtotime($DATA->TGL_NOD);
+                        //$TGL_NOD = new \DateTime($DATA->TGL_NOD);
+                        //$TGL_NOD = $TGL_NOD ->format('Y-m-d');
+                        $TGL_NOD = $DATA->TGL_NOD;
                         $NO_WA = $DATA->NO_WA;
                         $TGL_WA = new \DateTime($DATA->TGL_WA);
                         $TGL_WA = $TGL_WA ->format('Y-m-d');
@@ -262,21 +259,14 @@ class SppHeaderController extends Controller
                             'SALDO_AWAL' => $SALDO_AWAL,
                             'BELANJA' => $BELANJA,
                             'PENDAPATAN' => $PENDAPATAN,
-                            'SALDO_AKHIR' => $SALDO_AKHIR
+                            'SALDO_AKHIR' => $SALDO_AKHIR,
+                            'REKON_SP2D' => "BEDA"
                         );
-                        SppHeaderModel::updateOrCreate(['ID_SPP' => $ID_SPP],$data);
+                        SppHeaderModel::insert($data);
                         //$this->updatestatusspp($ID_SPP);
                     }
                 }
             }
-        }else if ($response == "Expired"){
-            $tokenbaru = new BearerKey();
-            $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
-            //return redirect()->to('sppheader')->with(['status' => 'Token Expired']);
-        }else{
-            $tokenbaru = new BearerKey();
-            $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
-            //return redirect()->to('sppheader')->with(['status' => 'Gagal, Data Terlalu Besar']);
         }
     }
 

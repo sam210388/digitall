@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Pemanfaatan;
 
 use App\Http\Controllers\Controller;
-use App\Models\Pemanfaatan\ObjekSewaModel;
 use App\Models\Pemanfaatan\PenyewaModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -13,15 +12,17 @@ use Yajra\DataTables\DataTables;
 class PenyewaController extends Controller
 {
     public function index(){
-        $judul = 'Daftar Penyewa';
+        $judul = 'Data Referensi Penyewa';
+        $user = DB::table('users')->get();
         return view('Pemanfaatan.penyewa',[
-            "judul"=>$judul
+            "judul"=>$judul,
+            "user" => $user
         ]);
     }
 
     public function getDataPenyewa()
     {
-        $model = PenyewaModel::all();
+        $model = PenyewaModel::select(['penyewa.*']);
         return Datatables::eloquent($model)
             ->addColumn('filenpwp',function ($row){
                 $linkbukti = '<a href="'.env('APP_URL')."/".asset('storage/dokpemanfaatan/npwp')."/".$row->filenpwp.'" >Download</a>';
@@ -33,8 +34,8 @@ class PenyewaController extends Controller
             })
             ->addColumn('action', function($row){
                     $btn = '<div class="btn-group" role="group">
-                            <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-info btn-sm editobjeksewa">Edit</a>';
-                    $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm editobjeksewa">Delete</a>';
+                            <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-info btn-sm editpenyewa">Edit</a>';
+                    $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deletepenyewa">Delete</a>';
                     return $btn;
             })
             ->rawColumns(['action','filenpwp','filesiup'])
@@ -46,6 +47,7 @@ class PenyewaController extends Controller
     {
         $validated = $request->validate([
             'namapenyewa' => 'required',
+            'userpenyewa' => 'required',
             'kelembagaan' => 'required',
             'jenisusaha' => 'required',
             'alamat' => 'required',
@@ -55,38 +57,48 @@ class PenyewaController extends Controller
             'nomornpwp' => 'required',
             'filenpwp' => 'required',
             'nomorsiup' => 'required',
-            'filesiup' => 'required'
+            'filesiup' => 'required',
+            'statuspenyewa' => 'required'
         ]);
 
         $namapenyewa = $request->get('namapenyewa');
+        $userpenyewa = $request->get('userpenyewa');
         $kelembagaan = $request->get('kelembagaan');
-        $idgedung = $request->get('idgedung');
-        $kodebarang = $request->get('kodebarang');
-        $noaset = $request->get('noaset');
-        $uraian = $request->get('uraian');
-        $luas = $request->get('luas');
-        $luasterbilang = $request->get('luasterbilang');
-        if ($request->file('foto1') != ""){
-            $foto1 = $request->file('foto1')->store('dokpemanfaatan/fotobmn','public');
-        }
-        if ($request->file('foto2') != ""){
-            $foto2 = $request->file('foto2')->store('dokpemanfaatan/fotobmn','public');
-        }
-        if ($request->file('foto3') != ""){
-            $foto3 = $request->file('foto3')->store('dokpemanfaatan/fotobmn','public');
-        }
-        if ($request->file('filepenetapanstatus') != ""){
-            $filepenetapanstatus = $request->file('filepenetapanstatus')->store('dokpemanfaatan/filepsp','public');
-        }
-        if ($request->file('dokkepemilikan') != ""){
-            $dokkepemilikan = $request->file('dokkepemilikan')->store('dokpemanfaatan/kepemilikan','public');
-        }
+        $jenisusaha = $request->get('jenisusaha');
+        $alamat = $request->get('alamat');
+        $kedudukan = $request->get('kedudukan');
+        $email = $request->get('email');
+        $telepon = $request->get('telepon');
+        $nomornpwp = $request->get('nomornpwp');
+        $nomorsiup = $request->get('nomorsiup');
+        $statuspenyewa = $request->get('statuspenyewa');
 
-        ObjekSewaModel::create(
+        if ($request->file('filenpwp') != ""){
+            $filenpwp = $request->file('filenpwp')->storeAs('public/dokpemanfaatan/npwp',$request->file('filenpwp'));
+        }
+        if ($request->file('filesiup') != ""){
+            $filesiup = $request->file('filesiup')->storeAs('public/dokpemanfaatan/siup',$request->file('filesiup'));
+        }
+        //cek apakah sudah ada
+
+        PenyewaModel::UpdateOrCreate(
+            [
+                'nomornpwp' => $nomornpwp
+            ],
             [
                 'namapenyewa' => $namapenyewa,
+                'userpenyewa' => $userpenyewa,
                 'kelembagaan' => $kelembagaan,
-
+                'jenisusaha' => $jenisusaha,
+                'alamat' => $alamat,
+                'kedudukan' => $kedudukan,
+                'email' => $email,
+                'telepon' => $telepon,
+                'nomornpwp' => $nomornpwp,
+                'filenpwp' => $filenpwp,
+                'nomorsiup' => $nomorsiup,
+                'filesiup' => $filesiup,
+                'statuspenyewa' => $statuspenyewa
             ]);
 
         return response()->json(['status'=>'berhasil']);
@@ -95,116 +107,86 @@ class PenyewaController extends Controller
 
     public function edit($id)
     {
-        $menu = ObjekSewaModel::find($id);
+        $menu = PenyewaModel::find($id);
         return response()->json($menu);
     }
 
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'idarea' => 'required',
-            'idsubarea' => 'required',
-            'idgedung' => 'required',
-            'kodebarang' => 'required',
-            'noaset' => 'required',
-            'uraian' => 'required',
-            'luas' => 'required',
-            'luasterbilang' => 'required'
+            'namapenyewa' => 'required',
+            'userpenyewa' => 'required',
+            'kelembagaan' => 'required',
+            'jenisusaha' => 'required',
+            'alamat' => 'required',
+            'kedudukan' => 'required',
+            'email' => 'required|email',
+            'telepon' => 'required',
+            'nomornpwp' => 'required',
+            'filenpwp' => 'required',
+            'nomorsiup' => 'required',
+            'filesiup' => 'required',
+            'statuspenyewa' => 'required'
         ]);
 
-        $foto1awal = $request->get('foto1awal');
-        $foto2awal = $request->get('foto2awal');
-        $foto3awal = $request->get('foto3awal');
-        $filepenetapanstatusawal = $request->get('filepenetapanstatusawal');
-        $dokkepemilikanawal = $request->get('dokkepemilikanawal');
-        $idarea = $request->get('idarea');
-        $idsubarea = $request->get('idsubarea');
-        $idgedung = $request->get('idgedung');
-        $kodebarang = $request->get('kodebarang');
-        $noaset = $request->get('noaset');
-        $uraian = $request->get('uraian');
-        $luas = $request->get('luas');
-        $luasterbilang = $request->get('luasterbilang');
+        $filenpwpawal = $request->get('filenpwpawal');
+        $userpenyewa = $request->get('userpenyewa');
+        $filesiupawal = $request->get('filesiupawal');
+        $namapenyewa = $request->get('namapenyewa');
+        $kelembagaan = $request->get('kelembagaan');
+        $jenisusaha = $request->get('jenisusaha');
+        $alamat = $request->get('alamat');
+        $kedudukan = $request->get('kedudukan');
+        $email = $request->get('email');
+        $telepon = $request->get('telepon');
+        $nomornpwp = $request->get('nomornpwp');
+        $nomorsiup = $request->get('nomorsiup');
+        $statuspenyewa = $request->get('statuspenyewa');
 
-        if ($request->file('foto1')){
-            if (file_exists(storage_path('app/public/dokpemanfaatan/fotobmn').$foto1awal)){
-                Storage::delete('public/dokpemanfaatan/fotobmn/'.$foto1awal);
-            }
-            $foto1 = $request->file('foto1')->store(
-                'dokpemanfaatan/fotobmn','public');
+        if ($request->file('filenpwp') != ""){
+            Storage::delete('public/dokpemanfaatan/npwp/'.$filenpwpawal);
+            $filenpwp = $request->file('filenpwp')->storeAs('public/dokpemanfaatan/npwp',$request->file('filenpwp'));
         }else{
-            $foto1 = $foto1awal;
+            $filenpwp = $filenpwpawal;
         }
 
-        if ($request->file('foto2')){
-            if (file_exists(storage_path('app/public/dokpemanfaatan/fotobmn').$foto2awal)){
-                Storage::delete('public/dokpemanfaatan/fotobmn/'.$foto2awal);
-            }
-            $foto2 = $request->file('foto2')->store(
-                'dokpemanfaatan/fotobmn','public');
+        if ($request->file('filesiup') != ""){
+            Storage::delete('public/dokpemanfaatan/siup/'.$filesiupawal);
+            $filesiup = $request->file('filesiup')->storeAs('public/dokpemanfaatan/siup',$request->file('filesiup'));
         }else{
-            $foto2 = $foto2awal;
+            $filesiup = $filesiupawal;
         }
 
-        if ($request->file('foto3')){
-            if (file_exists(storage_path('app/public/dokpemanfaatan/fotobmn').$foto3awal)){
-                Storage::delete('public/dokpemanfaatan/fotobmn/'.$foto3awal);
-            }
-            $foto3 = $request->file('foto3')->store(
-                'dokpemanfaatan/fotobmn','public');
-        }else{
-            $foto3 = $foto3awal;
-        }
 
-        if ($request->file('filepenetapanstatus')){
-            if (file_exists(storage_path('app/public/dokpemanfaatan/filepsp').$filepenetapanstatusawal)){
-                Storage::delete('public/dokpemanfaatan/filepsp/'.$filepenetapanstatusawal);
-            }
-            $filepenetapanstatus = $request->file('filepenetapanstatus')->store(
-                'dokpemanfaatan/filepsp','public');
-        }else{
-            $filepenetapanstatus = $filepenetapanstatusawal;
-        }
-
-        if ($request->file('dokkepemilikan')){
-            if (file_exists(storage_path('app/public/dokpemanfaatan/kepemilikan').$dokkepemilikanawal)){
-                Storage::delete('public/dokpemanfaatan/kepemilikan/'.$dokkepemilikanawal);
-            }
-            $dokkepemilikan = $request->file('dokkepemilikan')->store(
-                'dokpemanfaatan/kepemilikan','public');
-        }else{
-            $dokkepemilikan = $dokkepemilikanawal;
-        }
-
-        ObjekSewaModel::where('id',$id)->update(
+        PenyewaModel::UpdateOrCreate(
             [
-                'idarea' => $idarea,
-                'idsubarea' => $idsubarea,
-                'idgedung' => $idgedung,
-                'kodebarang' => $kodebarang,
-                'noaset' => $noaset,
-                'uraian' => $uraian,
-                'luas' => $luas,
-                'luasterbilang' => $luasterbilang,
-                'foto' => $foto1,
-                'foto2' => $foto2,
-                'foto3' => $foto3,
-                'filepenetapanstatus' => $filepenetapanstatus,
-                'dokkepemilikan' => $dokkepemilikan
+                'nomornpwp' => $nomornpwp
+            ],
+            [
+                'namapenyewa' => $namapenyewa,
+                'userpenyewa' => $userpenyewa,
+                'kelembagaan' => $kelembagaan,
+                'jenisusaha' => $jenisusaha,
+                'alamat' => $alamat,
+                'kedudukan' => $kedudukan,
+                'email' => $email,
+                'telepon' => $telepon,
+                'nomornpwp' => $nomornpwp,
+                'filenpwp' => $filenpwp,
+                'nomorsiup' => $nomorsiup,
+                'filesiup' => $filesiup,
+                'statuspenyewa' => $statuspenyewa
             ]);
-
         return response()->json(['status'=>'berhasil']);
     }
 
 
     public function destroy($id)
     {
-        //TODO
-        //pastikan objek yang sudah ada perjanjian tidak bisa didelete
-
-        $status = DB::table('rekomendasi')->where('id','=',$id)->value('status');
-        if ($status == 1){
-            ObjekSewaModel::find($id)->delete();
+        //pastikan penyewa yang sudah melakukan transaksi tidak dapat didelete
+        $status = DB::table('transaksisewa')->where('idpenyewa','=',$id)->count();
+        if ($status > 0){
+            PenyewaModel::find($id)->delete();
             return response()->json(['status'=>'berhasil']);
         }else{
             return response()->json(['status'=>'gagal']);

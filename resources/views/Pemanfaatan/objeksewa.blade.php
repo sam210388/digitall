@@ -46,6 +46,7 @@
                                 <th>Foto 3</th>
                                 <th>File PSP</th>
                                 <th>Dok Kepemilikan</th>
+                                <th>Status Objek</th>
                                 <th>Action</th>
                             </tr>
                             </thead>
@@ -67,6 +68,7 @@
                                 <th>Foto 3</th>
                                 <th>File PSP</th>
                                 <th>Dok Kepemilikan</th>
+                                <th>Status Objek</th>
                                 <th>Action</th>
                             </tr>
                             </tfoot>
@@ -78,7 +80,7 @@
                                         <h4 class="modal-title" id="modelHeading"></h4>
                                     </div>
                                     <div class="modal-body">
-                                        <form id="formobjeksewa" name="formobjeksewa" class="form-horizontal">
+                                        <form id="formobjeksewa" name="formobjeksewa" class="form-horizontal" enctype="multipart/form-data">
                                             <input type="hidden" name="idobjeksewa" id="idobjeksewa">
                                             <input type="hidden" name="idsubareaawal" id="idsubareaawal">
                                             <input type="hidden" name="idgedungawal" id="idgedungawal">
@@ -231,6 +233,15 @@
                                                     <a href="#" id="aktuallinkdokkepemilikan">Lihat Bukti</a>
                                                 </div>
                                             </div>
+                                            <div class="form-group">
+                                                <label for="statusobjek" class="col-sm-6 control-label">Status Objek</label>
+                                                <div class="col-sm-12">
+                                                    <select class="form-control statusobjek" name="statusobjek" id="statusobjek" style="width: 100%;">
+                                                        <option value="Privat">Privat</option>
+                                                        <option value="Publik">Publik</option>
+                                                    </select>
+                                                </div>
+                                            </div>
                                             <div class="col-sm-offset-2 col-sm-10">
                                                 <button type="submit" class="btn btn-primary" id="saveBtn" value="create">Simpan Data
                                                 </button>
@@ -316,6 +327,7 @@
                     {data: 'foto3', name: 'foto3'},
                     {data: 'filepenetapanstatus', name: 'filepenetapanstatus'},
                     {data: 'dokkepemilikan', name: 'dokkepemilikan'},
+                    {data: 'statusobjeksewa', name: 'statusobjeksewa'},
                     {
                         data: 'action',
                         name: 'action',
@@ -376,6 +388,7 @@
                     $('#idgedungawal').val(data.idgedung);
                     $('#kodebarangawal').val(data.kodebarang);
                     $('#noasetawal').val(data.noaset);
+                    $('#statusobjek').val(data.statusobjeksewa).trigger('change');
                     document.getElementById('aktuallihatfoto1').src = "{{env('APP_URL')."/".asset('storage/dokpemanfaatan/fotobmn')}}"+"/"+data.foto
                     document.getElementById('aktuallihatfoto2').src = "{{env('APP_URL')."/".asset('storage/dokpemanfaatan/fotobmn')}}"+"/"+data.foto2
                     document.getElementById('aktuallihatfoto3').src = "{{env('APP_URL')."/".asset('storage/dokpemanfaatan/fotobmn')}}"+"/"+data.foto3

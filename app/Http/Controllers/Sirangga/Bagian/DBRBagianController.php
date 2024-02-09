@@ -68,21 +68,20 @@ class DBRBagianController extends Controller
                 return $linkdokumendbr;
             })
             ->addColumn('action', function($row){
-                $jumlahdetil = DB::table('detildbr')->where('iddbr','=',$row->iddbr)->count();
+                //$jumlahdetil = DB::table('detildbr')->where('iddbr','=',$row->iddbr)->count();
                 if($row->statusdbr == "Diajukan Ke Unit"){
                     $btn = '<div class="btn-group" role="group">
                             <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddbr.'" data-original-title="setujudbr" class="edit btn btn-primary btn-sm setujuidbr">Setuju DBR</a>';
                     $btn = $btn . '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="' .$row->iddbr.'" data-original-title="tolakdbr" class="edit btn btn-danger btn-sm tolakdbr">Tolak DBR</a>';
                     $btn = $btn . '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="' .$row->iddbr.'" data-original-title="lihatdbr" class="edit btn btn-info btn-sm lihatdbr">Lihat DBR</a>';
-                    return $btn;
                 }else if ($row->statusdbr == "Final"){
                     $btn = '<div class="btn-group" role="group">
                             <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddbr.'" data-original-title="laporpenambahan" class="edit btn btn-primary btn-sm laporpenambahan">Lapor Perubahan</a>';
                     $btn = $btn . '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="' .$row->iddbr.'" data-original-title="lihatdbr" class="edit btn btn-info btn-sm lihatdbr">Lihat DBR</a>';
-                    return $btn;
                 }else{
-                    return $btn = "";
+                    $btn = "";
                 }
+                return $btn;
             })
             ->rawColumns(['action','dokumendbr'])
             ->toJson();

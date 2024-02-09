@@ -91,7 +91,11 @@ class IndikatorRoController extends Controller
                     );
 
                     $indeks = $tahunanggaran.$kodesatker.$kodekegiatan.$kodeoutput.$kodesuboutput.$kodekomponen;
-                    DB::table('indikatorro')->where('indeks','=',$indeks)->update($data);
+                    //hapus dlu data lama
+                    DB::table('indikatorro')->where('indeks','=',$indeks)->delete();
+
+                    //insert data baru
+                    DB::table('indikatorro')->insert($data);
                 }
                 $statusimport = $statusimport.$satker." RO Berhasil Diimport ";
             }

@@ -127,8 +127,8 @@
                                             <input type="hidden" name="idrekomendasi" id="idrekomendasi" value="{{$idrekomendasi}}">
                                             <input type="hidden" name="filelama" id="filelama">
                                             <div class="form-group">
-                                                <label for="TanggalDokumen" class="col-sm-6 control-label">Tanggal Dokumen</label>
                                                 <div class="col-sm-12">
+                                                <label for="TanggalDokumen" class="col-sm-6 control-label">Tanggal Dokumen</label>
                                                     <div class="input-group mb-3">
                                                         <input type="text" class="form-control tanggaldokumen" id="tanggaldokumen" name="tanggaldokumen">
                                                         <div class="input-group-append">

@@ -74,5 +74,10 @@ class Kernel extends HttpKernel
         'cekoperatorbiro' => \App\Http\Middleware\CekOperatorBiro::class,
         'cekadminsirangga' => \App\Http\Middleware\CekAdminOrAdminSirangga::class,
         'cekadminadministrasi' => \App\Http\Middleware\CekAdminAdministrasi::class,
+        'cekppk' => \App\Http\Middleware\CekPPK::class,
+        'cekppspm' => \App\Http\Middleware\CekPPSPM::class,
+        'cekbendahara' => \App\Http\Middleware\CekBendahara::class,
+        'cekkasir' => \App\Http\Middleware\CekKasir::class,
+        'cekadminikpa' => \App\Http\Middleware\CekAdminIKPA::class,
     ];
 }

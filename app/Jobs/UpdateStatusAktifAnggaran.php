@@ -33,6 +33,7 @@ class UpdateStatusAktifAnggaran implements ShouldQueue
     public function handle()
     {
         $tahunanggaran = $this->tahunanggaran;
+        //rubah semua status data anggaran menjadi 1
         DB::table('data_ang')
             ->where('tahunanggaran','=',$tahunanggaran)
             ->update([
@@ -45,15 +46,26 @@ class UpdateStatusAktifAnggaran implements ShouldQueue
             ->orderBy('periode','asc')
             ->pluck('tanggaltutup');
         //echo $tanggaltutup3 = $datatanggaltutup[3];
+
         foreach ($satker as $item) {
             $kdsatker = $item;
+
+            //menentukan data anggaran aktif terakhir
             $idrefstatusterakhir = DB::table('ref_status')
                 ->where([
                     ['kdsatker', '=', $kdsatker],
                     ['tahunanggaran', '=', $tahunanggaran],
                     ['kd_sts_history', 'LIKE', 'B%']
-                ])->max('idrefstatus');
+                ])
+                ->orWhere([
+                    ['kdsatker', '=', $kdsatker],
+                    ['kd_sts_history','LIKE','C%'],
+                    ['tahunanggaran','=',$tahunanggaran],
+                    ['flag_update_coa','=',1]
+                ])
+                ->max('idrefstatus');
             DB::table('data_ang')->where('idrefstatus', '=', $idrefstatusterakhir)->update(['active' => 2]);
+
 
             for($i=0; $i<4;$i++){
                 $tanggaltutup = $datatanggaltutup[$i];

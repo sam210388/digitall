@@ -83,7 +83,7 @@
                                                     </div>
                                                     <div class="form-check form-check-inline">
                                                         <input class="form-check-input" type="radio" name="pnsppnpn" id="ppnpn" value="ppnpn">
-                                                        <label class="form-check-label" for="inlineRadio2">PPNPN</label>
+                                                        <label class="form-check-label" for="inlineRadio2">PPNPN/Lainnya</label>
                                                     </div>
                                                 </div>
                                             </div>
@@ -182,8 +182,7 @@
                                             </div>
 
                                             <div class="col-sm-offset-2 col-sm-10">
-                                                <button type="submit" class="btn btn-primary" id="saveBtn" name="saveBtn" value="create">Simpan Data
-                                                </button>
+                                                <button type="submit" class="btn btn-primary" id="saveBtn" name="saveBtn" value="create">Simpan Data</button>
                                             </div>
                                         </form>
                                     </div>

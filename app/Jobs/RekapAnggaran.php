@@ -33,18 +33,13 @@ class RekapAnggaran implements ShouldQueue
     public function handle()
     {
         $tahunanggaran = $this->tahunanggaran;
-        $datarefstatus = DB::table('ref_status')
-            ->where([
-                ['tahunanggaran','=',$tahunanggaran],
-                ['kd_sts_history','LIKE','B%'],
-            ])
-            ->orWhere([
-                ['tahunanggaran','=',$tahunanggaran],
-                ['kd_sts_history','LIKE','C%'],
-                ['flag_update_coa','=',1],
-            ])
+        $dataanggaran = DB::table('data_ang')
+            ->select('idrefstatus')
+            ->where('active','=',2)
+            ->where('tahunanggaran','=',$tahunanggaran)
+            ->distinct()
             ->get();
-        foreach ($datarefstatus as $data){
+        foreach ($dataanggaran as $data){
             $idrefstatus = $data->idrefstatus;
             $rekapanggaran = new DataAngController();
             $rekapanggaran = $rekapanggaran->rekapanggarannoredirect($idrefstatus, $tahunanggaran);

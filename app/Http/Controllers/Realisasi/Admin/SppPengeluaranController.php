@@ -56,8 +56,9 @@ class SppPengeluaranController extends Controller
         $tipedata = 'sppPengeluaran';
         $variabel = [$ID_SPP];
 
-        //$tokenbaru = new BearerKey();
-        //$tokenbaru->resetapi($TA, $kodemodul, $tipedata);
+        //reset dlu tokennya
+        $tokenbaru = new BearerKey();
+        $tokenbaru->resetapi($TA, $kodemodul, $tipedata);
 
 
         //tarikdata
@@ -65,10 +66,8 @@ class SppPengeluaranController extends Controller
         $response = $response->prosedurlengkap($TA, $kodemodul, $tipedata, $variabel);
         //echo json_encode($response);
 
-
         if ($response != "Gagal" or $response != "Expired"){
             $hasilasli = json_decode($response);
-
             foreach ($hasilasli as $item => $value) {
                 if ($item == "TOKEN") {
                     foreach ($value as $data) {
@@ -76,10 +75,7 @@ class SppPengeluaranController extends Controller
                     }
                     $token = new BearerKey();
                     $token->simpantokenbaru($TA, $kodemodul, $tokenresponse);
-                }
-            }
-            foreach ($hasilasli as $item => $value) {
-                if ($item != "TOKEN") {
+                }else{
                     foreach ($value as $DATA) {
                         $KODE_KEMENTERIAN = $DATA->KODE_KEMENTERIAN;
                         $KDSATKER = $DATA->KDSATKER;
@@ -108,6 +104,18 @@ class SppPengeluaranController extends Controller
                         $tanggalsp2d = DB::table('sppheader')->where('ID_SPP','=',$ID_SPP)->value('TGL_SP2D');
                         $bulan = new \DateTime($tanggalsp2d);
                         $bulan = $bulan->format('n');
+                        $datasppheader = DB::table('sppheader')->where('ID_SPP','=',$ID_SPP)->get();
+                        foreach ($datasppheader as $d){
+                            $NO_SP2D = $d->NO_SP2D;
+                            $STS_DATA = $d->STS_DATA;
+                            if ($NO_SP2D != null){
+                                $statuspengeluaran = "SP2D";
+                            }else if (in_array(substr($STS_DATA,13,2),['01','02','03'])){
+                                $statuspengeluaran = "NONKAS";
+                            }else{
+                                $statuspengeluaran = "AKRUAL";
+                            }
+                        }
                         $data = array(
                             'KODE_KEMENTERIAN' => $KODE_KEMENTERIAN,
                             'KDSATKER' => $KDSATKER,
@@ -138,20 +146,15 @@ class SppPengeluaranController extends Controller
                             'idkro' => null,
                             'bulansp2d' => $bulan,
                             'tahunanggaran' => $TA,
-                            'pengenal' => $TA.'.'.$KDSATKER.'.'.$KODE_PROGRAM.'.'.$KODE_KEGIATAN.'.'.$KODE_OUTPUT.'.'.$KODE_SUBOUTPUT.'.'.$KODE_KOMPONEN.'.'.substr($KODE_SUBKOMPONEN,1,1).'.'.$KODE_AKUN
+                            'pengenal' => $TA.'.'.$KDSATKER.'.'.$KODE_PROGRAM.'.'.$KODE_KEGIATAN.'.'.$KODE_OUTPUT.'.'.$KODE_SUBOUTPUT.'.'.$KODE_KOMPONEN.'.'.substr($KODE_SUBKOMPONEN,1,1).'.'.$KODE_AKUN,
+                            'statuspengeluaran' => $statuspengeluaran
                         );
                         DB::table('spppengeluaran')->insert($data);
+                        $this->updatestatusspp($ID_SPP);
                     }
                 }
             }
-        }else if ($response == "Expired"){
-            $tokenbaru = new BearerKey();
-            $tokenbaru->resetapi($TA, $kodemodul, $tipedata);
-            //return redirect()->to('sppheader')->with(['status' => 'Token Expired']);
-        }else{
-            //return redirect()->to('sppheader')->with(['status' => 'Gagal, Data Terlalu Besar']);
         }
-
     }
 
     public function updatestatussp2d($TA){
@@ -193,6 +196,39 @@ class SppPengeluaranController extends Controller
                 DB::table('sppheader')->where('ID_SPP','=',$ID_SPP)->update($dataupdate);
             }
         }
+    }
+
+    public function updatestatusspp($ID_SPP){
+        //cek apakah nilai Pengeluaran dan Nilai Potongan dah sama
+        $NILAI_SP2D = DB::table('sppheader')->where('ID_SPP','=',$ID_SPP)->value('NILAI_SP2D');
+        if (is_int($NILAI_SP2D)){
+            $NILAI_SP2DANGKA = $NILAI_SP2D;
+        }else{
+            $NILAI_SP2DANGKA = explode(".",$NILAI_SP2D);
+            $NILAI_SP2DANGKA = $NILAI_SP2DANGKA[0];
+        }
+
+        $nilaipengeluaran = DB::table('spppengeluaran')
+            ->where('ID_SPP','=',$ID_SPP)
+            ->sum('NILAI_AKUN_PENGELUARAN');
+
+        $nilaipotongan = DB::table('spppotongan')
+            ->where('ID_SPP','=',$ID_SPP)
+            ->sum('NILAI_AKUN_POT');
+        if ($NILAI_SP2DANGKA == ($nilaipengeluaran - $nilaipotongan)){
+            $dataupdate = array(
+                'STATUS_PENGELUARAN' => 2,
+                'STATUS_POTONGAN' => 2,
+                'REKON_SP2d' => 'SAMA'
+            );
+        }else{
+            $dataupdate = array(
+                'STATUS_PENGELUARAN' => 1,
+                'STATUS_POTONGAN' => 1,
+                'REKON_SP2d' => 'BEDA'
+            );
+        }
+        DB::table('sppheader')->where('ID_SPP','=',$ID_SPP)->update($dataupdate);
     }
 
 }

@@ -47,31 +47,39 @@ class DataAngController extends Controller
 
     function importdataang($idrefstatus){
         $tahunanggaran = session('tahunanggaran');
+        //$this->aksiimportdataang($tahunanggaran, $idrefstatus);
+
         Bus::chain([
             new DeleteDataAng($idrefstatus),
             new ImportDataAng($tahunanggaran, $idrefstatus),
             new RekonDataAng($idrefstatus)
         ])->dispatch();
         return redirect()->to('refstatus')->with('prosesimport','Proses Import Berhasil, tunggu beberapa saat untuk melakukan pengecekan');
+
     }
 
     function aksiimportdataang($tahunanggaran, $idrefstatus){
-        $datarefstatus = DB::table('ref_status')->where('idrefstatus','=',$idrefstatus)->get();
-        $kdsatker = '';
-        $kd_sts_history = '';
-        foreach ($datarefstatus as $drs){
-            $kdsatker = $drs->kdsatker;
-            $kd_sts_history = $drs->kd_sts_history;
-        }
-
+        //reset api dlu
+        //mulai lakukan penarikan
         $kodemodul = 'ANG';
         $tipedata = 'dataAng';
+
+        //reset api
+        $resetapi = new BearerKey();
+        $resetapi = $resetapi->resetapi($tahunanggaran, $kodemodul, $tipedata);
+
+        //mulai tarik data
+        $kdsatker = DB::table('ref_status')->where('idrefstatus','=',$idrefstatus)->value('kdsatker');
+        $kd_sts_history = DB::table('ref_status')->where('idrefstatus','=',$idrefstatus)->value('kd_sts_history');
         $variable = [$kdsatker, $kd_sts_history];
+        //echo $kd_sts_history." ".$kdsatker;
+
 
         //tarikdata
         $response = new TarikDataMonsakti();
         $response = $response->prosedurlengkap($tahunanggaran, $kodemodul, $tipedata, $variable);
         //echo json_encode($response);
+
 
         if ($response != "Gagal" or $response != "Expired"){
             $hasilasli = json_decode($response);
@@ -84,10 +92,7 @@ class DataAngController extends Controller
                     }
                     $token = new BearerKey();
                     $token->simpantokenbaru($tahunanggaran, $kodemodul, $tokenresponse);
-                }
-            }
-            foreach ($hasilasli as $item => $value) {
-                if ($item != "TOKEN") {
+                }else{
                     foreach ($value as $DATA) {
                         $KDSATKER = $DATA->KDSATKER;
                         $KODE_PROGRAM = $DATA->KODE_PROGRAM;
@@ -198,14 +203,8 @@ class DataAngController extends Controller
                     }
                 }
             }
-        }else if ($response == "Expired"){
-            $tokenbaru = new BearerKey();
-            $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
-        }else{
-            $tokenbaru = new BearerKey();
-            $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
-        }
 
+        }
         //update statusimport
         DB::table('ref_status')->where('idrefstatus','=',$idrefstatus)
             ->update(['statusimport' => 2]);
@@ -220,6 +219,8 @@ class DataAngController extends Controller
         $jumlahpagudataang = DB::table('data_ang')
             ->select([DB::raw('sum(total) as total')])
             ->where('idrefstatus','=',$idrefstatus)
+            ->where('header1','=',0)
+            ->where('header2','=',0)
             ->value('total');
 
         DB::table('ref_status')->where('idrefstatus','=',$idrefstatus)
@@ -304,6 +305,7 @@ class DataAngController extends Controller
                     'kodeakun' => $kodeakun,
                     'jenisbelanja' => $jenisbelanja,
                     'pengenal' => $pengenalrealisasianggaran,
+                    'statuspengenal' => 2,
                     'idbagian' => $idbagian,
                     'idbiro' => $idbiro,
                     'iddeputi' => $iddeputi,
@@ -312,6 +314,10 @@ class DataAngController extends Controller
                     'idkro' => $idkro
                 );
                 DB::table('laporanrealisasianggaranbac')->insert($datarealisasianggaran);
+            }else{
+                DB::table('laporanrealisasianggaranbac')->where('pengenal','=',$pengenalrealisasianggaran)->update([
+                    'statuspengenal' => 2
+                ]);
             }
         }
     }
@@ -374,6 +380,8 @@ class DataAngController extends Controller
             }
         }
     }
+
+
 
 
 }

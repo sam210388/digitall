@@ -2,6 +2,21 @@
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
     </IfModule>
+    
+#   <Files .env>
+#        order allow,deny
+#        Deny from all
+#    </Files>
+
+#    <Files .env.example>
+#        order allow,deny
+#        Deny from all
+#    </Files>
+
+#    <Directory ~ "\.git">
+#        Order allow,deny
+#        Deny from all
+#    </Directory>
 
     RewriteEngine On
 
@@ -18,4 +33,14 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+
+## Added Baim 02022024 Upload Size
+
+    php_value upload_max_filesize 512M
+    php_value post_max_size 512M
+    php_value memory_limit 512M
+    php_value max_execution_time -1
+    php_value max_input_time -1
+
 </IfModule>
+

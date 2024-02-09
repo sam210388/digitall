@@ -65,8 +65,8 @@
     </thead>
     <tbody>
     <tr>
-        <td colspan="4"><img src="{{'data:image/svg+xml;base64,'.base64_encode(file_get_contents(asset('storage/qrbmn/DBR'.$iddbr.'.svg')))}}" /></td>
-        <td colspan="3"><img src="{{'data:image/svg+xml;base64,'.base64_encode(file_get_contents(asset('storage/qrunit/DBR'.$iddbr.'.svg')))}}" /></td>
+        <td colspan="4"><img src="{{'data:image/svg+xml;base64,'.base64_encode(file_get_contents(asset('storage/qrbmn/DBR'.$iddbr.'VersiKe'.$versike.'.svg')))}}" /></td>
+        <td colspan="3"><img src="{{'data:image/svg+xml;base64,'.base64_encode(file_get_contents(asset('storage/qrunit/DBR'.$iddbr.'VersiKe'.$versike.'.svg')))}}" /></td>
     </tr>
     <tr>
         <td colspan="4">{{$namapenandatangan}} S</td>
@@ -82,7 +82,7 @@
         <td align="center" colspan="7">DBR ini dapat Didownload Seluruhnya pada</td>
     </tr>
     <tr>
-        <td align="center" colspan="7"><img src="{{'data:image/svg+xml;base64,'.base64_encode(file_get_contents(asset('storage/qrdbrfinal/DBR'.$iddbr.'.svg')))}}" /></td>
+        <td align="center" colspan="7"><img src="{{'data:image/svg+xml;base64,'.base64_encode(file_get_contents(asset('storage/qrdbrfinal/DBR'.$iddbr.'Versike'.$versike.'.svg')))}}" /></td>
     </tr>
     </tfoot>
 </table>

@@ -72,10 +72,10 @@ class DBRController extends Controller
             })
             ->addColumn('dokumendbr',function ($row){
                 //$datalokasidbrfinal = getenv('APP_URL')."/".asset('storage')."/dbrfinaldigitall/DBRRuangan".$row->iddbr.".pdf";
-                if (Storage::disk('public')->missing('/dbrfinaldigitall/DBRRuangan'.$row->iddbr.'.pdf')){
+                if (Storage::disk('public')->missing('/dbrfinaldigitall/DBRRuangan'.$row->iddbr."VersiKe".$row->versike.'.pdf')){
                     $linkdokumendbr = "File Tidak Ada";
                 }else{
-                    $linkdokumendbr = '<a href="'.env('APP_URL')."/".asset('storage')."/dbrfinaldigitall/DBRRuangan".$row->iddbr.'.pdf" >Download DBR</a>';
+                    $linkdokumendbr = '<a href="'.env('APP_URL')."/".asset('storage')."/dbrfinaldigitall/DBRRuangan".$row->iddbr."VersiKe".$row->versike.'.pdf" >Download DBR</a>';
                 }
                 return $linkdokumendbr;
             })

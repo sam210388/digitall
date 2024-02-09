@@ -8,8 +8,6 @@ use App\Jobs\RekapDataAset;
 use App\Libraries\BearerKey;
 use App\Libraries\TarikDataMonsakti;
 use App\Models\Sirangga\Admin\BarangModel;
-use App\Models\Sirangga\Admin\MasterSaktiModel;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ImportSaktiController extends Controller
@@ -42,10 +40,7 @@ class ImportSaktiController extends Controller
                     }
                     $token = new BearerKey();
                     $token->simpantokenbaru($TA, $kodemodul, $tokenresponse);
-                }
-            }
-            foreach ($hasilasli as $item => $value) {
-                if ($item != "TOKEN") {
+                }else{
                     foreach ($value as $DATA) {
                         $kode_kementerian = $DATA->KODE_KEMENTERIAN;
                         $kdsatker = $DATA->KDSATKER;
@@ -156,9 +151,6 @@ class ImportSaktiController extends Controller
                     }
                 }
             }
-        }else if ($response == "Expired" or $response == "Gagal"){
-            $tokenbaru = new BearerKey();
-            $tokenbaru->resetapi($TA, $kodemodul, $tipedata);
         }
     }
 

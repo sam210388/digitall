@@ -33,14 +33,51 @@ class RekapAnggaranMingguan implements ShouldQueue
     public function handle()
     {
         $tahunanggaran = $this->tahunanggaran;
+        //jadiin semua anggaran dan rencana 0 dlu
+        $dataupdatenol = array(
+            'paguanggaran' => 0,
+            'pok1' => 0,
+            'pok2' => 0,
+            'pok3' => 0,
+            'pok4' => 0,
+            'pok5' => 0,
+            'pok6' => 0,
+            'pok7' => 0,
+            'pok8' => 0,
+            'pok9' => 0,
+            'pok10' => 0,
+            'pok11' => 0,
+            'pok12' => 0,
+            'poksd1' => 0,
+            'poksd2' => 0,
+            'poksd3' => 0,
+            'poksd4' => 0,
+            'poksd5' => 0,
+            'poksd6' => 0,
+            'poksd7' => 0,
+            'poksd8' => 0,
+            'poksd9' => 0,
+            'poksd10' => 0,
+            'poksd11' => 0,
+            'poksd12' => 0
+        );
+        DB::table('laporanrealisasianggaranbac')
+            ->where('tahunanggaran','=',$tahunanggaran)
+            ->update($dataupdatenol);
+
+        //mulai update datanya
         $satker = array('001012','001030');
         foreach ($satker as $sat) {
             $kdsatker = $sat;
-            $idrefstatus = DB::table('refstatuscashplan')
+            $dataidrefstatus = DB::table('data_ang')
+                ->select(['idrefstatus'])
                 ->where('tahunanggaran', '=', $tahunanggaran)
-                ->where('kodesatker', '=', $kdsatker)
-                ->where('triwulan','=',4)
-                ->value('idrefstatus');
+                ->where('kdsatker', '=', $kdsatker)
+                ->where('active','=',2)
+                ->first();
+            $idrefstatus = $dataidrefstatus->idrefstatus;
+            //echo $idrefstatus;
+
             $dataanggaran = DB::table('laporanrealisasianggaranbac as a')
                 ->select(['a.pengenal as pengenal',
                     DB::raw('sum(b.total) as paguanggaran,
@@ -76,11 +113,13 @@ class RekapAnggaranMingguan implements ShouldQueue
                     $join->on('b.header2', '=', DB::raw(0));
                     $join->on('b.idrefstatus', '=', DB::raw($idrefstatus));
                 })
-                ->where('a.kodesatker', '=', $kdsatker)
+                ->where('a.kodesatker','=',$kdsatker)
+                ->where('a.tahunanggaran','=',$tahunanggaran)
                 ->groupBy('a.pengenal')
                 ->get();
 
             //echo $dataanggaran;
+
             foreach ($dataanggaran as $da) {
                 $pengenal = $da->pengenal;
                 $paguanggaran = $da->paguanggaran;
@@ -141,6 +180,7 @@ class RekapAnggaranMingguan implements ShouldQueue
                 );
                 DB::table('laporanrealisasianggaranbac')->where($datawhere)->update($dataupdate);
             }
+
         }
     }
 

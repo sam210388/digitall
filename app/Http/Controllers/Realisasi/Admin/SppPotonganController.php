@@ -28,6 +28,10 @@ class SppPotonganController extends Controller
         $tipedata = 'sppPotongan';
         $variabel = [$ID_SPP];
 
+        //reset dlu tokennya
+        $tokenbaru = new BearerKey();
+        $tokenbaru->resetapi($TA, $kodemodul, $tipedata);
+
         //tarikdata
         $response = new TarikDataMonsakti();
         $response = $response->prosedurlengkap($TA, $kodemodul, $tipedata, $variabel);
@@ -44,10 +48,7 @@ class SppPotonganController extends Controller
                     }
                     $token = new BearerKey();
                     $token->simpantokenbaru($TA, $kodemodul, $tokenresponse);
-                }
-            }
-            foreach ($hasilasli as $item => $value) {
-                if ($item != "TOKEN") {
+                }else{
                     foreach ($value as $DATA) {
                         $KODE_KEMENTERIAN = $DATA->KODE_KEMENTERIAN;
                         $KDSATKER = $DATA->KDSATKER;
@@ -108,12 +109,6 @@ class SppPotonganController extends Controller
                     }
                 }
             }
-        }else if ($response == "Expired"){
-            $tokenbaru = new BearerKey();
-            $tokenbaru->resetapi($TA, $kodemodul, $tipedata);
-            //return redirect()->to('sppheader')->with(['status' => 'Token Expired']);
-        }else{
-            //return redirect()->to('sppheader')->with(['status' => 'Gagal, Data Terlalu Besar']);
         }
     }
 

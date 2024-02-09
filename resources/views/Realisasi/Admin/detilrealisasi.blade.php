@@ -58,7 +58,10 @@
                 </div>
                 <div class="card">
                     <div class="card-header">
-                        <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="exportrealisasibagianperpengenal"> Export</a>
+                        <div class="btn-group float-sm-right">
+                            <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="exportrealisasibagianperpengenal"> Export</a>
+                            <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="updateposisianggaran"> Update Anggaran</a>
+                        </div>
                         <h3 class="card-title">{{$judul}}</h3>
                     </div>
                     <div class="card-body">
@@ -119,16 +122,16 @@
                 buttons: ['copy','excel','pdf','csv','print'],
                 ajax:"{{route('getdetilrealisasi','')}}",
                 columns: [
-                    {data: 'kdsatker', name: 'kdsatker'},
-                    {data: 'biro', name: 'biro'},
-                    {data: 'bagian', name: 'bagian'},
-                    {data: 'pengenal', name: 'pengenal'},
-                    {data: 'nilai', name: 'nilai'},
-                    {data: 'no_spm', name: 'no_spm'},
-                    {data: 'tgl_spm', name: 'tgl_spm'},
-                    {data: 'no_sp2d', name: 'no_sp2d'},
-                    {data: 'tgl_sp2d', name: 'tgl_sp2d'},
-                    {data: 'uraian', name: 'uraian'},
+                    {data: 'kdsatker', name: 'a.kdsatker'},
+                    {data: 'biro', name: 'c.uraianbiro'},
+                    {data: 'bagian', name: 'd.uraianbagian'},
+                    {data: 'pengenal', name: 'a.pengenal'},
+                    {data: 'nilai', name: 'a.NILAI_AKUN_PENGELUARAN'},
+                    {data: 'no_spm', name: 'b.NO_SPM'},
+                    {data: 'tgl_spm', name: 'b.TGL_SPM'},
+                    {data: 'no_sp2d', name: 'b.NO_SP2D'},
+                    {data: 'tgl_sp2d', name: 'b.TGL_SP2D'},
+                    {data: 'uraian', name: 'b.URAIAN'},
                 ],
                 columnDefs: [
                     {
@@ -150,6 +153,14 @@
 
         $('#exportrealisasibagianperpengenal').click(function () {
             window.location="{{URL::to('exportdetilrealisasi')}}";
+        });
+
+        $('#updateposisianggaran').click(function (e) {
+            if( confirm("Apakah Anda Yakin Mau Update Anggaran Untuk Seluruh Pengenal ?")){
+                e.preventDefault();
+                $(this).html('Importing..');
+                window.location="{{URL::to('updateanggaranpengenal')}}";
+            }
         });
 
     </script>
