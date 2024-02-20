@@ -11,14 +11,9 @@ use App\Models\ReferensiUnit\DeputiModel;
 
 class BiroController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(['auth']);
-    }
 
     public function index(Request $request)
     {
-        $this->authorize('view',BiroModel::class);
         $judul = 'List Biro';
         $datadeputi = DeputiModel::all();
         if ($request->ajax()) {
@@ -26,7 +21,8 @@ class BiroController extends Controller
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
-                    $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editbiro">Edit</a>';
+                    $btn = '<div class="btn-group" role="group">
+                    <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editbiro">Edit</a>';
                     $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deletebiro">Delete</a>';
                     return $btn;
                 })
@@ -53,7 +49,6 @@ class BiroController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('create',BiroModel::class);
         if ($request->get('status') == null){
             $status = "off";
         }else{
@@ -94,7 +89,6 @@ class BiroController extends Controller
      */
     public function edit($id)
     {
-        $this->authorize('update',BiroModel::class);
         $menu = biroModel::find($id);
         return response()->json($menu);
     }
@@ -108,7 +102,6 @@ class BiroController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->authorize('update',BiroModel::class);
         if ($request->get('status') == null){
             $status = "off";
         }else{
@@ -138,7 +131,6 @@ class BiroController extends Controller
      */
     public function destroy($id)
     {
-        $this->authorize('delete',BiroModel::class);
         $dipakai = DB::table('bagian')->where('idbiro','=',$id)->count();
         if ($dipakai == 0){
             BiroModel::find($id)->delete();

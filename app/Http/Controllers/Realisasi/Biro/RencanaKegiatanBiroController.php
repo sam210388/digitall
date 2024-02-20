@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Realisasi\Bagian;
+namespace App\Http\Controllers\Realisasi\Biro;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pemanfaatan\PenanggungjawabSewaModel;
@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\DataTables;
 
-class RencanaKegiatanBagianController extends Controller
+class RencanaKegiatanBiroController extends Controller
 {
     public function __construct()
     {
@@ -23,41 +23,27 @@ class RencanaKegiatanBagianController extends Controller
 
     public function index(){
         $judul = 'Data Rencana Kegiatan';
-        $idbagian = Auth::user()->idbagian;
-        $datapengenal = DB::table('laporanrealisasianggaranbac')->where('idbagian','=',$idbagian)->get();
-        return view('Realisasi.Bagian.rencanakegiatanbagian',[
+        $idbiro = Auth::user()->idbiro;
+        $datapengenal = DB::table('laporanrealisasianggaranbac')->where('idbiro','=',$idbiro)->get();
+        $databagian = DB::table('bagian')->where('idbiro','=',$idbiro)->get();
+        return view('Realisasi.Biro.rencanakegiatanbiro',[
             "judul"=>$judul,
-            "datapengenal" => $datapengenal
+            "datapengenal" => $datapengenal,
+            "databagian" => $databagian
         ]);
     }
 
-
-    public function pengajuanrencanakeppk($id){
-        $ada = DB::table('rencanakegiatan')->where('id','=',$id)->count();
-        if ($ada >0){
-            //cek apakah total kebutuhan sudah terisi
-            $totalkebutuhan = DB::table('rencanakegiatan')->where('id','=',$id)->value('totalkebutuhan');
-            if ($totalkebutuhan > 0){
-                DB::table('rencanakegiatan')->where('id','=',$id)->update([
-                    'statusrencana' => "Diajukan ke PPK",
-                ]);
-                return response()->json(['status'=>'berhasil']);
-            }else{
-                return response()->json(['status'=>'gagal']);
-            }
-        }else{
-            return response()->json(['status'=>'gagal']);
-        }
-    }
-
-    public function getdatarencanakegiatanbagian()
+    public function getdatarencanakegiatanbagian($idbagian=null)
     {
         $tahunanggaran = session('tahunanggaran');
-        $idbagian = Auth::user()->idbagian;
+        $idbiro = Auth::user()->idbiro;
         $model = RencanaKegiatanModel::with('bagianpengajuanrelation')
-            ->where('tahunanggaran','=',$tahunanggaran)
-            ->where('idbagian','=',$idbagian)
-            ->select('rencanakegiatan.*');
+            ->select('rencanakegiatan.*')
+            ->where('idbiro','=',$idbiro)
+            ->where('tahunanggaran','=',$tahunanggaran);
+        if ($idbagian != null){
+            $model->where('idbagian','=',$idbagian);
+        }
         return Datatables::eloquent($model)
             ->addColumn('bagian', function (RencanaKegiatanModel $id) {
                 return $id->idbagian ? $id->bagianpengajuanrelation->uraianbagian:"";
@@ -109,8 +95,6 @@ class RencanaKegiatanBagianController extends Controller
         $uraiankegiatanrinci = $request->get('uraiankegiatanrinci');
         $paguanggaran = $request->get('paguanggaran');
         $totalrencana = $request->get('totalrencana');
-        $paguanggaran = $this->formatulang($paguanggaran);
-        $totalrencana = $this->formatulang($totalrencana);
         $januari = $request->get('januari');
         $januari = $this->formatulang($januari);
         $februari = $request->get('februari');
@@ -125,7 +109,7 @@ class RencanaKegiatanBagianController extends Controller
         $juni = $this->formatulang($juni);
         $juli = $request->get('juli');
         $juli = $this->formatulang($juli);
-        $agustus = $request->get('agustus');
+        $agustus = $request->get('agutus');
         $agustus = $this->formatulang($agustus);
         $september = $request->get('september');
         $september = $this->formatulang($september);

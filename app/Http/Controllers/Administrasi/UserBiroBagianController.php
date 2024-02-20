@@ -21,33 +21,36 @@ class UserBiroBagianController extends Controller
         $judul = 'Update Unit Kerja User';
         $deputi = DeputiModel::all();
         if ($request->ajax()) {
-            $data = AdministrasiUserModel::latest()->get();
+            $data = AdministrasiUserModel::with('bagianrelation')
+                    ->with('deputirelation')
+                    ->with('birorelation')
+                    ->where('id','!=',1)
+                    ->get();
             return Datatables::of($data)
                 ->addIndexColumn()
-                ->addColumn('iddeputi', function($row){
-                    if ($row->iddeputi != 0){
-                        $uraiandeputi = DB::table('deputi')->where('id','=',$row->iddeputi)->value('uraiandeputi');
-                    }else{
-                        $uraiandeputi = 0;
-                    }
-                    return $uraiandeputi;
+                ->addColumn('iddeputi', function (AdministrasiUserModel $id) {
+                    return $id->iddeputi ? $id->deputirelation->uraiandeputi:"";
                 })
-                ->addColumn('idbiro', function($row){
-                    if ($row->idbiro != 0){
-                        $uraianbiro = DB::table('biro')->where('id','=',$row->idbiro)->value('uraianbiro');
+                ->addColumn('idbiro', function ($id) {
+                    $uraianbiro = DB::table('biro')->where('id','=',$id->idbiro)->value('uraianbiro');
+                    if ($uraianbiro){
+                        $idbiro = $uraianbiro;
                     }else{
-                        $uraianbiro = 0;
+                        $idbiro = $id->idbiro;
                     }
-                    return $uraianbiro;
+                    return $idbiro;
                 })
-                ->addColumn('idbagian', function($row){
-                    if ($row->idbagian != 0){
-                        $uraianbagian = DB::table('bagian')->where('id','=',$row->idbagian)->value('uraianbagian');
+                ->addColumn('idbagian', function ($id) {
+                    $uraianbagian = DB::table('bagian')->where('id','=',$id->idbagian)->value('uraianbagian');
+                    if ($uraianbagian){
+                        $idbagian = $uraianbagian;
                     }else{
-                        $uraianbagian = 0;
+                        $idbagian = $id->idbagian;
                     }
-                    return $uraianbagian;
+                    return $idbagian;
                 })
+
+
                 ->addColumn('action', function($row){
                     $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm edituser">Edit</a>';
                     return $btn;

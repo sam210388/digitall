@@ -5,11 +5,15 @@ namespace App\Console;
 use App\Jobs\DeleteDataAset;
 use App\Jobs\HapusAnggaranInaktif;
 use App\Jobs\HitungIkpaDeviasiBagian;
+use App\Jobs\HitungIkpaPenyelesaianBagian;
 use App\Jobs\HitungIkpaPenyerapanBagian;
 use App\Jobs\ImportAset;
 use App\Jobs\ImportCOA;
 use App\Jobs\ImportDataAng;
 use App\Jobs\ImportDataAngSeluruh;
+use App\Jobs\ImportKontrakCOA;
+use App\Jobs\ImportKontrakHeader;
+use App\Jobs\ImportRealisasiSakti;
 use App\Jobs\ImportRealisasiSemar;
 use App\Jobs\ImportRefStatus;
 use App\Jobs\RekapAnggaran;
@@ -18,6 +22,7 @@ use App\Jobs\RekapCashPlanIKPABulanan;
 use App\Jobs\RekapCashPlanTriwulan;
 use App\Jobs\RekapDataAset;
 use App\Jobs\RekapDataBarangDBR;
+use App\Jobs\RekapKegiatanMingguan;
 use App\Jobs\RekapRealisasiHarian;
 use App\Jobs\RekonDataAngSeluruh;
 use App\Jobs\UpdateIndetitasKinerja;
@@ -50,15 +55,25 @@ class Kernel extends ConsoleKernel
         //$schedule->job(new RekapAnggaranMingguan($TA))->weeklyOn(1,'05:00');
         $schedule->job(new RekapAnggaranMingguan($TA))->dailyAt('02:25');
 
+        //$schedule->job(new RekapKegiatanMingguan($TA))->dailyAt('10:55');
+
         $schedule->job(new UpdateUnitId($TA))->dailyAt('18:06');
 
         $schedule->job(new UpdateIndetitasKinerja($TA))->dailyAt('02:07');
 
         $schedule->job(new HitungIkpaPenyerapanBagian($TA))->dailyAt('08:03');
 
+        $schedule->job(new ImportKontrakHeader(2023))->dailyAt('15:45');
+
+        $schedule->job(new ImportKontrakCOA('001012',2023))->dailyAt('17:55');
+
+        $schedule->job(new HitungIkpaPenyelesaianBagian(2023))->dailyAt('19:09');
+
         $schedule->job(new HitungIkpaDeviasiBagian($TA))->dailyAt('08:04');
 
         $schedule->job(new ImportRealisasiSemar($TA))->everyFourHours();
+
+
 
         //$schedule->job(new RekapCashPlanTriwulan($TA))->monthlyOn(1,'00:01');
         $schedule->job(new RekapCashPlanTriwulan($TA))->dailyAt('04:40');
@@ -66,7 +81,7 @@ class Kernel extends ConsoleKernel
         $schedule->job(new RekapCashPlanIKPABulanan($TA))->dailyAt('15:16');
 
         //$schedule->job(new RekonDataAngSeluruh($TA))->dailyAt('23:46');
-        $schedule->job(new RekapRealisasiHarian($TA))->dailyAt('04:45');
+        //$schedule->job(new RekapRealisasiHarian($TA))->dailyAt('04:45');
 
         $schedule->job(new ImportCOA($TA))->dailyAt('05:00');
 
@@ -74,6 +89,7 @@ class Kernel extends ConsoleKernel
            ImportSppHeader::withChain([
                new UpdateStatusPengeluaran($TA),
                new ImportCOA($TA),
+               new ImportRealisasiSakti($TA),
                new RekapRealisasiHarian($TA)
            ])->dispatch($TA);
         })->dailyAt('04:30');
@@ -88,7 +104,7 @@ class Kernel extends ConsoleKernel
                 new HapusAnggaranInaktif($TA),
                 new RekonDataAngSeluruh($TA)
             ])->dispatch($TA);
-        })->dailyAt('18:17');
+        })->dailyAt('10:50');
 
 
         $schedule->call(function () use ($TA){

@@ -30,10 +30,10 @@ class KontrakHeaderController extends Controller
         ]);
     }
 
-    function importsppheader(){
+    function importkontrakheader(){
         $tahunanggaran = session('tahunanggaran');
-
         $this->dispatch(new ImportKontrakHeader($tahunanggaran));
+
         return redirect()->to('kontrakheader')->with('status','Import Kontrak Header dari SAKTI Berhasil');
     }
 

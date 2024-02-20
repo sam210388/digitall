@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fa500e78eddbc0aae7173dcfda3eeb01",
+    "content-hash": "f8f985e7c07b94589088474af08219fd",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -252,6 +252,73 @@
                 }
             ],
             "time": "2021-08-15T20:50:18+00:00"
+        },
+        {
+            "name": "cesargb/laravel-magiclink",
+            "version": "v2.9.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cesargb/laravel-magiclink.git",
+                "reference": "d57cc9346432e58cf6c54923f71d904f697b3d8e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cesargb/laravel-magiclink/zipball/d57cc9346432e58cf6c54923f71d904f697b3d8e",
+                "reference": "d57cc9346432e58cf6c54923f71d904f697b3d8e",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/auth": "^6.0|^8.0",
+                "illuminate/container": "^6.0|^8.0",
+                "illuminate/contracts": "^6.0|^8.0",
+                "illuminate/database": "^6.0|^8.0",
+                "opis/closure": "^3.1",
+                "php": "^7.3 || ^8.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^4.0|^6.0",
+                "phpunit/phpunit": "^7.0|^9.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "MagicLink\\MagicLinkServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "MagicLink\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Cesar Garcia",
+                    "email": "cesargb@gmail.com",
+                    "homepage": "https://github.com/cesargb",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Create secure link for access to private data or login in Laravel without password",
+            "homepage": "https://github.com/cesargb/laravel-magiclink",
+            "keywords": [
+                "auth",
+                "download",
+                "file",
+                "laravel",
+                "link",
+                "login"
+            ],
+            "support": {
+                "issues": "https://github.com/cesargb/laravel-magiclink/issues",
+                "source": "https://github.com/cesargb/laravel-magiclink/tree/v2.9.2"
+            },
+            "time": "2021-09-28T19:32:53+00:00"
         },
         {
             "name": "composer/semver",

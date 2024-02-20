@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Models\ReferensiUnit;
+namespace App\Models\Realisasi\Admin;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class BiroModel extends Model
+class KontrakCOAModel extends Model
 {
     use HasFactory;
 
-    protected $table = 'biro';
+    protected $table = 'kontrakcoa';
 
     protected $guarded = [];
 
-
+    //protected $primaryKey = 'ID_KONTRAK';
 }

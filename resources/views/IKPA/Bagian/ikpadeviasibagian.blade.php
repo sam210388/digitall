@@ -118,7 +118,7 @@
                 serverSide: true,
                 dom: 'lf<"floatright"B>rtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('getdatadeviasibagian','')}}",
+                ajax:"{{route('getdatadeviasibagian')}}",
                 columns: [
                     {data: 'kdsatker', name: 'kdsatker'},
                     {data: 'biro', name: 'birorelation.uraianbiro'},

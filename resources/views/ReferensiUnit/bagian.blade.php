@@ -75,22 +75,27 @@
                                             <input type="hidden" name="idbagianawal" id="idbagianawal">
                                             <div class="form-group">
                                                 <label for="deputi" class="col-sm-6 control-label">Deputi</label>
+                                                <div class="col-sm-12">
                                                 <select class="form-control iddeputi" name="iddeputi" id="iddeputi" style="width: 100%;">
                                                     <option value="">Pilih Deputi</option>
                                                     @foreach($datadeputi as $data)
                                                         <option value="{{ $data->id }}">{{ $data->uraiandeputi }}</option>
                                                     @endforeach
                                                 </select>
+                                                </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="Biro" class="col-sm-6 control-label">Biro</label>
+                                                <div class="col-sm-12">
                                                 <select class="form-control idbiro" name="idbiro" id="idbiro" style="width: 100%;">
                                                 </select>
+                                                </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="Biro" class="col-sm-6 control-label">ID Bagian</label>
-                                                <select class="form-control idbagian" name="idbagian" id="idbagian" style="width: 100%;">
-                                                </select>
+                                                <div class="col-sm-12">
+                                                    <input type="text" class="form-control" id="idbagian" name="idbagian" placeholder="Masukan ID Bagian" value="" maxlength="100" required="">
+                                                </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="Uraian bagian" class="col-sm-6 control-label">Uraian bagian</label>
@@ -381,31 +386,7 @@
             });
         });
 
-        $('#idbiro').on('change', function () {
-            var idbiro = this.value;
-            $.ajax({
-                url: "{{url('ambildatabagian')}}",
-                type: "POST",
-                data: {
-                    idbiro: idbiro,
-                    _token: '{{csrf_token()}}'
-                },
-                dataType: 'json',
-                success: function (result) {
-                    var idbagianawal = document.getElementById('idbagianawal').value;
-                    $('#idbagian').html('<option value="">Pilih Bagian</option>');
-                    $.each(result.bagian, function (key, value) {
-                        if (idbagianawal == value.id) {
-                            $('select[name="idbagian"]').append('<option value="'+value.id+'" selected>'+value.uraianbagian+'</option>').trigger('change')
-                        }else{
-                            $("#idbagian").append('<option value="' + value.id + '">' + value.uraianbagian + '</option>');
-                        }
 
-                    });
-                }
-
-            });
-        });
 
         $('#importunit').click(function (e) {
             if( confirm("Apakah Anda Yakin Mau Import Unit Kerja dari SIAP?")){

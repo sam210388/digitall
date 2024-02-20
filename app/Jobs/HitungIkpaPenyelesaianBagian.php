@@ -2,19 +2,18 @@
 
 namespace App\Jobs;
 
-use App\Http\Controllers\Realisasi\Admin\KontrakCOAController;
-
+use App\Http\Controllers\IKPA\Admin\IKPADeviasiController;
+use App\Http\Controllers\IKPA\Admin\IKPAPenyelesaianTagihanController;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class ImportKontrakCOA implements ShouldQueue
+class HitungIkpaPenyelesaianBagian implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $kodesatker;
     protected $tahunanggaran;
 
     /**
@@ -22,9 +21,8 @@ class ImportKontrakCOA implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($kodesatker, $tahunanggaran)
+    public function __construct($tahunanggaran)
     {
-        $this->$kodesatker = $kodesatker;
         $this->tahunanggaran = $tahunanggaran;
     }
 
@@ -35,10 +33,8 @@ class ImportKontrakCOA implements ShouldQueue
      */
     public function handle()
     {
-        $kodesatker = $this->kodesatker;
         $tahunanggaran = $this->tahunanggaran;
-        $importkontrakcoa = new KontrakCOAController();
-        $importkontrakcoa = $importkontrakcoa->aksiimportkontrakcoa($kodesatker, $tahunanggaran);
-
+        $sppheader = new IKPAPenyelesaianTagihanController();
+        $sppheader = $sppheader->aksiperhitunganpenyelesaianbagian($tahunanggaran);
     }
 }

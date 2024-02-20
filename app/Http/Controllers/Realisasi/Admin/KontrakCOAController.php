@@ -7,6 +7,7 @@ use App\Jobs\ImportKontrakCOA;
 use App\Jobs\ImportKontrakHeader;
 use App\Libraries\BearerKey;
 use App\Libraries\TarikDataMonsakti;
+use App\Models\Realisasi\Admin\KontrakCOAModel;
 use App\Models\Realisasi\Admin\KontrakHeaderModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -44,6 +45,10 @@ class KontrakCOAController extends Controller
         $tipedata = 'kontrakCOA';
         $variabel = [$kodesatker];
 
+        //reset api
+        $resetapi = new BearerKey();
+        $resetapi = $resetapi->resetapi($tahunanggaran, $kodemodul, $tipedata);
+
         //tarikdata
         $response = new TarikDataMonsakti();
         $response = $response->prosedurlengkap($tahunanggaran, $kodemodul, $tipedata, $variabel);
@@ -52,7 +57,6 @@ class KontrakCOAController extends Controller
         if ($response != "Gagal" or $response != "Expired"){
             $hasilasli = json_decode($response);
             //echo json_encode($hasilasli);
-
             foreach ($hasilasli as $item => $value) {
                 if ($item == "TOKEN") {
                     foreach ($value as $data) {
@@ -60,10 +64,7 @@ class KontrakCOAController extends Controller
                     }
                     $token = new BearerKey();
                     $token->simpantokenbaru($tahunanggaran, $kodemodul, $tokenresponse);
-                }
-            }
-            foreach ($hasilasli as $item => $value) {
-                if ($item != "TOKEN") {
+                }else{
                     foreach ($value as $DATA) {
                         $ID_KONTRAK = $DATA->ID_KONTRAK;
                         $ID_LINE_KONTRAK = $DATA->ID_LINE_KONTRAK;
@@ -98,7 +99,7 @@ class KontrakCOAController extends Controller
                             'KODE_COA' => $KODE_COA,
                             'VOL_SUBOUTPUT' => $VOL_SUBOUTPUT
                         );
-                        KontrakHeaderModel::updateOrCreate(
+                        KontrakCOAModel::updateOrCreate(
                             [
                                 'ID_KONTRAK' => $ID_KONTRAK,
                                 'ID_LINE_KONTRAK' => $ID_LINE_KONTRAK,
@@ -109,14 +110,6 @@ class KontrakCOAController extends Controller
                     }
                 }
             }
-        }else if ($response == "Expired"){
-            $tokenbaru = new BearerKey();
-            $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
-            //return redirect()->to('sppheader')->with(['status' => 'Token Expired']);
-        }else{
-            $tokenbaru = new BearerKey();
-            $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
-            //return redirect()->to('sppheader')->with(['status' => 'Gagal, Data Terlalu Besar']);
         }
     }
 

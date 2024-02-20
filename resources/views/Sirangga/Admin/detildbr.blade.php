@@ -69,6 +69,17 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-12 col-sm-6">
+                            <div class="info-box">
+                                <span class="info-box-icon bg-info elevation-1"><i class="fas fa-cog"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Barang Tidak Ada</span>
+                                    <span class="info-box-number">
+                                 {{$barangtidakada}}
+                            </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-body">
                         <table id="tabeldetildbr" class="table table-bordered table-striped tabeldetildbr">
@@ -205,6 +216,60 @@
             $('body').on('click', '.konfirmhilangkembali', function () {
                 var iddetil = $(this).data('id');
                 if(confirm("Apakah Anda Yakin Bahwa Barang ini Benar Benar Tidak Ada Atau Sudah Anda Ambil Dari Unit Kerja?")){
+                    $.ajax({
+                        url: "{{url('konfirmhilangkembali')}}",
+                        type: "POST",
+                        data: {
+                            iddetil: iddetil,
+                            _token: '{{csrf_token()}}'
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.status == "berhasil"){
+                                Swal.fire({
+                                    title: 'Sukses',
+                                    text: 'Konfirmasi Barang Berhasil',
+                                    icon: 'success'
+                                })
+                                table.draw();
+                            }else{
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Konfirmasi Barang Gagal',
+                                    icon: 'error'
+                                })
+                            }
+                            $('#ajaxModel').modal('hide');
+                            table.draw(null, false);
+                        },
+                        error: function (xhr, textStatus, errorThrown) {
+                            if(xhr.responseJSON.errors){
+                                var errorsArr = [];
+                                $.each(xhr.responseJSON.errors, function(key,value) {
+                                    errorsArr.push(value);
+                                });
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: errorsArr,
+                                    icon: 'error'
+                                })
+                            }else{
+                                var jsonValue = jQuery.parseJSON(xhr.responseText);
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: jsonValue.message,
+                                    icon: 'error'
+                                })
+                            }
+                        },
+                    });
+                }
+
+            });
+
+            $('body').on('click', '.konfirmtidakada', function () {
+                var iddetil = $(this).data('id');
+                if(confirm("Apakah Anda Yakin Bahwa Barang ini Benar Benar Tidak Ada?")){
                     $.ajax({
                         url: "{{url('konfirmhilangkembali')}}",
                         type: "POST",

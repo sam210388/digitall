@@ -13,5 +13,5 @@ class KontrakHeaderModel extends Model
 
     protected $guarded = [];
 
-    protected $primaryKey = 'ID_KONTRAK';
+    //protected $primaryKey = 'ID_KONTRAK';
 }

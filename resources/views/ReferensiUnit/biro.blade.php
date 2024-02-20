@@ -62,12 +62,14 @@
                                             <input type="hidden" name="idbiro" id="idbiro">
                                             <div class="form-group">
                                                 <label for="Menu" class="col-sm-6 control-label">Deputi</label>
+                                                <div class="col-sm-12">
                                                 <select class="form-control iddeputi" name="iddeputi" id="iddeputi" style="width: 100%;">
                                                     <option value="">Pilih Deputi</option>
                                                     @foreach($datadeputi as $data)
                                                         <option value="{{ $data->id }}">{{ $data->uraiandeputi }}</option>
                                                     @endforeach
                                                 </select>
+                                                </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="Uraian biro" class="col-sm-6 control-label">Uraian Biro</label>
@@ -77,7 +79,9 @@
                                             </div>
                                             <div class="form-group">
                                                 <label for="Status biro" class="col-sm-6 control-label">Status</label>
+                                                <div class="col-sm-12">
                                                 <input type="checkbox" name="status" id="status" data-bootstrap-switch data-on="on" data-off="off" data-off-color="danger" data-on-color="success">
+                                                </div>
                                             </div>
                                             <div class="col-sm-offset-2 col-sm-10">
                                                 <button type="submit" class="btn btn-primary" id="saveBtn" value="create">Simpan Data

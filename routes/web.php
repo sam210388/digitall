@@ -105,6 +105,11 @@ use App\Http\Controllers\Realisasi\Bagian\RencanaKegiatanBagianDetilController;
 use App\Http\Controllers\Realisasi\Bagian\Monitoringrencanakegiatan;
 use App\Http\Controllers\Administrasi\PPKSatkerController;
 use App\Http\Controllers\Administrasi\KewenanganPPKController;
+use App\Http\Controllers\Realisasi\Admin\RencanaKegiatanController;
+use App\Http\Controllers\Realisasi\Biro\RencanaKegiatanBiroController;
+use App\Http\Controllers\IKPA\Bagian\IKPAPenyelesaianTagihanBagianController;
+use App\Http\Controllers\Realisasi\Admin\KontrakHeaderController;
+use App\Http\Controllers\Realisasi\Admin\KontrakCOAController;
 
 
 
@@ -156,8 +161,8 @@ Route::post('ambildatapegawai',[PegawaiController::class,'ambildatapegawai'])->n
 
 
 //REFERENSI UNIT KERJA
-Route::resource('deputi',DeputiController::class);
-Route::resource('biro',BiroController::class);
+Route::resource('deputi',DeputiController::class)->middleware('cekadmin');
+Route::resource('biro',BiroController::class)->middleware('cekadmin');
 Route::post('/ambildatabiro',[BagianController::class,'dapatkandatabiro'])->name('ambildatabiro');
 Route::post('/ambildatabagian',[BagianController::class,'dapatkandatabagian'])->name('ambildatabagian');
 Route::resource('bagian',BagianController::class);
@@ -529,6 +534,9 @@ Route::get('bastkontrakheader', [BASTKontrakHeaderController::class,'bastkontrak
 Route::get('importbastkontrakheader',[BASTKontrakHeaderController::class,'importbastkontrakheader'])->name('importbastkontrakheader');
 Route::get('importcoabastkontrak',[BASTKontrakHeaderController::class,'importcoabastkontrak'])->name('importcoabastkontrak');
 
+//MODUL KOMITMEN KONTRAK
+Route::get('kontrakheader', [KontrakHeaderController::class,'kontrakheader'])->name('kontrakheader');
+Route::get('importkontrakheader',[KontrakHeaderController::class,'importkontrakheader'])->name('importkontrakheader');
 
 //MODUL PEMANFAATAN
 Route::resource('objeksewa',ObjekSewaController::class)->middleware('auth');
@@ -610,7 +618,7 @@ Route::get('ikpadeviasi',[IKPADeviasiController::class,'index'])->name('ikpadevi
 Route::get('getdatadeviasi/{idbagian}',[IKPADeviasiController::class,'getdataikpadeviasi'])->name('getdatadeviasi')->middleware('cekadminikpa');
 
 Route::get('ikpadeviasibagian',[IKPADeviasiBagianController::class,'index'])->name('ikpadeviasibagian')->middleware('cekoperatorbagian');
-Route::get('getdatadeviasibagian/{idbagian}',[IKPADeviasiBagianController::class,'getdataikpadeviasi'])->name('getdatadeviasibagian')->middleware('cekoperatorbagian');
+Route::get('getdatadeviasibagian',[IKPADeviasiBagianController::class,'getdataikpadeviasi'])->name('getdatadeviasibagian')->middleware('cekoperatorbagian');
 
 Route::get('ikpadeviasibiro',[IKPADeviasiBiroController::class,'index'])->name('ikpadeviasibiro')->middleware('cekoperatorbiro');
 Route::get('getdatadeviasibiro/{idbagian}',[IKPADeviasiBiroController::class,'getdataikpadeviasi'])->name('getdatadeviasibiro')->middleware('cekoperatorbiro');
@@ -621,22 +629,39 @@ Route::get('detilpenyelesaiantagihan',[DetilPenyelesaianController::class,'index
 Route::get('getdetilpenyelesaian',[DetilPenyelesaianController::class,'getdetilpenyelesaian'])->name('getdetilpenyelesaian')->middleware('cekadminikpa');
 Route::post('importdetilpenyelesaian',[DetilPenyelesaianController::class,'importdata'])->name('importdetilpenyelesaian')->middleware('cekadminikpa');
 
-//MODUL RENCANA KAS
+//BAGIAN
+Route::get('ikpapenyelesaianbagian',[IKPAPenyelesaianTagihanBagianController::class,'index'])->name('ikpapenyelesaianbagian')->middleware('cekoperatorbagian');
+Route::get('getdataikpapenyelesaianbagian',[IKPAPenyelesaianTagihanBagianController::class,'getdataikpapenyelesaian'])->name('getdataikpapenyelesaianbagian')->middleware('cekoperatorbagian');
+
+
+
+
+
+//MODUL RENCANA KAS ADMIN
+Route::get('rencanakegiatan',[RencanaKegiatanController::class,'index'])->name('rencanakegiatan')->middleware('cekadmin');
+Route::get('getdatarencanakegiatan/{idbagian?}',[RencanaKegiatanController::class,'getdatarencana'])->name('getdatarencanakegiatan')->middleware('cekadmin');
+Route::get('lihatrencanakegiatan/{idrencana}',[RencanaKegiatanController::class,'edit'])->name('lihatrencanakegiatan')->middleware('cekadmin');
+Route::get('exportrencanapenarikan',[RencanaKegiatanController::class,'exportrencanapenarikan'])->name('exportrencanapenarikan')->middleware('cekadmin');
+Route::get('tutupperioderencana',[RencanaKegiatanController::class,'tutupperioderencana'])->name('tutupperioderencana')->middleware('cekadmin');
+Route::get('bukaperioderencana',[RencanaKegiatanController::class,'bukaperioderencana'])->name('bukaperioderencana')->middleware('cekadmin');
+
+//MODUL RENCANA KAS BAGIAN
 Route::resource('rencanakegiatanbagian',RencanaKegiatanBagianController::class)->middleware('cekoperatorbagian');
 Route::get('getdatarencanakegiatanbagian',[RencanaKegiatanBagianController::class,'getdatarencanakegiatanbagian'])->name('getdatarencanakegiatanbagian')->middleware('cekoperatorbagian');
 Route::get('ajukanrencanakeppk/{id}',[RencanaKegiatanBagianController::class,'pengajuanrencanakeppk'])->name('ajukanrencanakeppk')->middleware('cekoperatorbagian');
-
-
 Route::resource('rencanakegiatanbagiandetil',RencanaKegiatanBagianDetilController::class)->middleware('cekoperatorbagian')->except(['index','edit']);
 Route::get('rencanakegiatanbagiandetil/{idrencanakegiatan}',[RencanaKegiatanBagianDetilController::class,'index'])->middleware('cekoperatorbagian');
 Route::get('editrencanakegiatanbagiandetil/{idrencanakegiatan}',[RencanaKegiatanBagianDetilController::class,'edit'])->name('editrencanakegiatanbagiandetil')->middleware('cekoperatorbagian');
 Route::get('getrencanakegiatanbagiandetil/{idrencanakegiatan}',[RencanaKegiatanBagianDetilController::class,'getrencanakegiatanbagiandetil'])->name('getrencanakegiatanbagiandetil')->middleware('cekoperatorbagian');
 Route::post('ambildatapengenal',[RencanaKegiatanBagianDetilController::class,'ambildatapengenal'])->name('ambildatapengenal');
-
 Route::get('monitoringrencanakegiatan',[Monitoringrencanakegiatan::class,'index'])->name('monitoringrencanakegiatan')->middleware('cekoperatorbagian');
 Route::get('getmonitoringrencanakegiatan/{idbagian}',[Monitoringrencanakegiatan::class,'getmonitoringrencanakegiatan'])->name('getmonitoringrencanakegiatan')->middleware('cekoperatorbagian');
 
+// rencana kegiatan biro
+Route::resource('rencanakegiatanbiro',RencanaKegiatanBiroController::class)->middleware('cekoperatorbiro');
+Route::get('getdatarencanakegiatanbiro/{idbagian?}',[RencanaKegiatanBiroController::class,'getdatarencanakegiatanbagian'])->name('getdatarencanakegiatanbiro')->middleware('cekoperatorbiro');
 
 //admin realisasi untuk referensi PPK
 Route::resource('ppksatker',PPKSatkerController::class)->middleware('cekadmin');
 Route::resource('kewenanganppk',KewenanganPPKController::class)->middleware('cekadmin');
+Route::post('ambillistppk',[KewenanganPPKController::class,'ambillistppk'])->name('ambillistppk')->middleware('cekadmin');

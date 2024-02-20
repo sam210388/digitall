@@ -76,17 +76,20 @@ class AnggaranBagianController extends Controller
 
     public function index(Request $request)
     {
+        $tahunanggaran = session('tahunanggaran');
         $judul = 'Anggaran Bagian';
         $datadeputi = DB::table('deputi')->get();
         $databiro = DB::table('biro')->get();
         $databagian = DB::table('bagian')->get();
         $anggaransetjenkosong = DB::table('anggaranbagian')
             ->where('kdsatker','=','001012')
+            ->where('tahunanggaran','=',$tahunanggaran)
             ->whereNull('idbagian')
             ->orWhere('idbagian','=',0)
             ->count();
         $anggarandewankosong = DB::table('anggaranbagian')
             ->where('kdsatker','=','001030')
+            ->where('tahunanggaran','=',$tahunanggaran)
             ->whereNull('idbagian')
             ->orWhere('idbagian','=',0)
             ->count();

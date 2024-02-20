@@ -151,9 +151,9 @@
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'name', name: 'name'},
-                    {data: 'iddeputi', name: 'iddeputi'},
-                    {data: 'idbiro', name: 'idbiro'},
-                    {data: 'idbagian', name: 'idbagian'},
+                    {data: 'iddeputi', name: 'deputirelation.uraiandeputi'},
+                    {data: 'idbiro', name: 'birorelation.uraianbiro'},
+                    {data: 'idbagian', name: 'bagianrelation.uraianbagian'},
                     {
                         data: 'action',
                         name: 'action',
@@ -239,7 +239,7 @@
                         $('#formuserbagian').trigger("reset");
                         $('#ajaxModel').modal('hide');
                         $('#saveBtn').html('Simpan Data');
-                        table.draw();
+                        table.draw(null,false);
                     },
                     error: function (xhr, textStatus, errorThrown) {
                         if(xhr.responseJSON.errors){

@@ -28,6 +28,18 @@
                         <!-- <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="tambahtransaksi"> Tambah Data</a> -->
                         <h3 class="card-title">{{$judul}}</h3>
                     </div>
+                    <div class="card-header">
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <select class="form-control idbagian" name="idbagian" id="idbagian" style="width: 100%;">
+                                    <option value="">Pilih Bagian</option>
+                                    @foreach($databagian as $data)
+                                        <option value="{{ $data->id }}">{{ $data->uraianbagian }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                     <div class="card-body">
                         <table id="tabelkasbon" class="table table-bordered table-striped tabelkasbon">
                             <thead>
@@ -261,6 +273,7 @@
             inputElement.value = formatNumber(inputElement.value);
         }
 
+        // Fungsi untuk melakukan pengecekan total rencana
         function cektotalrencana() {
             let paguanggaran = parseInt(document.getElementById('paguanggaran').value.replace(/\D/g, '')); // Parse value ke integer dan hapus non-digit
             let totalrencana = 0;
@@ -343,7 +356,6 @@
             }
         }
 
-
         // Menambahkan event listener untuk setiap input bulan
         document.querySelectorAll('.inputFormat').forEach(input => {
             input.addEventListener('input', function() {
@@ -366,10 +378,21 @@
 
                 // Memformat angka dengan separator ribuan
                 var formattedNumber = numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
                 return formattedNumber;
             }
 
             $('.kdsatker').select2({
+                width: '100%',
+                theme: 'bootstrap4',
+            })
+
+            $('.idbagian').select2({
+                width: '100%',
+                theme: 'bootstrap4',
+            })
+
+            $('.pengenal').select2({
                 width: '100%',
                 theme: 'bootstrap4',
             })
@@ -393,13 +416,13 @@
                 autoWidth:true,
                 processing: true,
                 serverSide: true,
-                ajax:"{{route('getdatarencanakegiatanbagian')}}",
+                ajax:"{{route('getdatarencanakegiatanbiro')}}",
                 columns: [
                     {data:'id',name:'id'},
                     {data: 'tahunanggaran',name:'tahunanggaran'},
                     {data: 'kdsatker', name: 'kdsatker'},
                     {data: 'bagian', name:'bagianpengajuanrelation.uraianbagian'},
-                    {data: 'pengenal', name:'pengenal'},
+                    {data: 'pengenal', name: 'pengenal'},
                     {data: 'uraiankegiatanpok', name: 'uraiankegiatanpok'},
                     {data: 'uraiankegiatanbagian', name: 'uraiankegiatanbagian'},
                     {data: 'paguanggaran', name: 'paguanggaran'},
@@ -501,7 +524,7 @@
             --------------------------------------------*/
             $('body').on('click', '.edittransaksi', function () {
                 var id = $(this).data('id');
-                $.get("{{ route('rencanakegiatanbagian.index') }}" +'/' + id +'/edit', function (data) {
+                $.get("{{ route('rencanakegiatanbiro.index') }}" +'/' + id +'/edit', function (data) {
                     $('#modelHeading').html("Edit Rencana");
                     $('#saveBtn').val("edit");
                     $('#ajaxModel').modal('show');
@@ -529,13 +552,6 @@
                 })
             });
 
-
-
-            /*------------------------------------------
-            --------------------------------------------
-            Create Product Code
-            --------------------------------------------
-            --------------------------------------------*/
             $('#saveBtn').click(function (e) {
                 e.preventDefault();
                 $(this).html('Sending..');
@@ -553,7 +569,7 @@
 
                 $.ajax({
                     data: fd,
-                    url: saveBtn === "tambah" ? "{{route('rencanakegiatanbagian.store')}}":"{{route('rencanakegiatanbagian.update','')}}"+'/'+id,
+                    url: saveBtn === "tambah" ? "{{route('rencanakegiatanbiro.store')}}":"{{route('rencanakegiatanbiro.update','')}}"+'/'+id,
                     type: "POST",
                     dataType: 'json',
                     contentType: false,
@@ -575,7 +591,7 @@
                         $('#formrencanakegiatanbagian').trigger("reset");
                         $('#ajaxModel').modal('hide');
                         $('#saveBtn').html('Simpan Data');
-                        table.ajax.reload(null, false);
+                        table.draw();
                     },
                     error: function (xhr, textStatus, errorThrown) {
                         if(xhr.responseJSON.errors){
@@ -602,6 +618,12 @@
                 });
             });
 
+            $('#idbagian').on('change',function (){
+                let idbagian = document.getElementById('idbagian').value;
+                var table = $('.tabelkasbon').DataTable();
+                table.ajax.url("{{route('getdatarencanakegiatanbiro','')}}"+"/"+idbagian).load();
+            });
+
             /*------------------------------------------
             --------------------------------------------
             Delete Product Code
@@ -612,7 +634,7 @@
                 if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
                     $.ajax({
                         type: "DELETE",
-                        url: "{{ route('rencanakegiatanbagian.destroy','') }}"+'/'+id,
+                        url: "{{ route('rencanakegiatanbiro.destroy','') }}"+'/'+id,
                         success: function (data) {
                             if (data.status == "berhasil"){
                                 Swal.fire({

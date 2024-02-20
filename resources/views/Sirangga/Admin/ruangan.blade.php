@@ -77,8 +77,8 @@
                                             <div class="form-group">
                                                 <label for="Area" class="col-sm-6 control-label">Area</label>
                                                 <div class="col-sm-12">
-                                                    <select class="form-control idarea" name="idarea" id="idarea" style="width: 100%;">
-                                                        <option>Pilih Area</option>
+                                                    <select class="form-control idarea" name="idarea" id="idarea" style="width: 100%;" required>
+                                                        <option value="">Pilih Area</option>
                                                         @foreach($dataarea as $data)
                                                             <option value="{{ $data->id }}">{{ $data->uraianarea }}</option>
                                                         @endforeach
@@ -88,40 +88,40 @@
                                             <div class="form-group">
                                                 <label for="Subarea" class="col-sm-6 control-label">Sub Area</label>
                                                 <div class="col-sm-12">
-                                                    <select class="form-control idsubarea" name="idsubarea" id="idsubarea" style="width: 100%;">
+                                                    <select class="form-control idsubarea" name="idsubarea" id="idsubarea" style="width: 100%;" required>
                                                     </select>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="Gedung" class="col-sm-6 control-label">Gedung</label>
                                                 <div class="col-sm-12">
-                                                    <select class="form-control idgedung" name="idgedung" id="idgedung" style="width: 100%;">
+                                                    <select class="form-control idgedung" name="idgedung" id="idgedung" style="width: 100%;" required>
                                                     </select>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="Lantai" class="col-sm-6 control-label">Lantai</label>
                                                 <div class="col-sm-12">
-                                                    <select class="form-control idlantai" name="idlantai" id="idlantai" style="width: 100%;">
+                                                    <select class="form-control idlantai" name="idlantai" id="idlantai" style="width: 100%;" required>
                                                     </select>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="Kode ruangan" class="col-sm-6 control-label">Kode ruangan</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control" id="koderuangan" name="koderuangan" placeholder="Masukan Kode ruangan" value="" maxlength="4" required="">
+                                                    <input type="text" class="form-control" id="koderuangan" name="koderuangan" placeholder="Masukan Kode ruangan" value="" maxlength="4" required>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="Uraian ruangan" class="col-sm-6 control-label">Uraian ruangan</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control" id="uraianruangan" name="uraianruangan" placeholder="Masukan Uraian Sub Area" value="" maxlength="200" required="">
+                                                    <input type="text" class="form-control" id="uraianruangan" name="uraianruangan" placeholder="Masukan Uraian Sub Area" value="" maxlength="200" required>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="deputi" class="col-sm-6 control-label">Deputi</label>
                                                 <div class="col-sm-12">
-                                                    <select class="form-control iddeputi" name="iddeputi" id="iddeputi" style="width: 100%;">
+                                                    <select class="form-control iddeputi" name="iddeputi" id="iddeputi" style="width: 100%;" required>
                                                         <option value="">Pilih Deputi</option>
                                                         @foreach($datadeputi as $data)
                                                             <option value="{{ $data->id }}">{{ $data->uraiandeputi }}</option>
@@ -132,14 +132,14 @@
                                             <div class="form-group">
                                                 <label for="Biro" class="col-sm-6 control-label">Biro</label>
                                                 <div class="col-sm-12">
-                                                    <select class="form-control idbiro" name="idbiro" id="idbiro" style="width: 100%;">
+                                                    <select class="form-control idbiro" name="idbiro" id="idbiro" style="width: 100%;" required>
                                                     </select>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="Bagian" class="col-sm-6 control-label">Bagian</label>
                                                 <div class="col-sm-12">
-                                                    <select class="form-control idbagian" name="idbagian" id="idbagian" style="width: 100%;">
+                                                    <select class="form-control idbagian" name="idbagian" id="idbagian" style="width: 100%;" required>
                                                     </select>
                                                 </div>
                                             </div>
@@ -255,11 +255,21 @@
 
             $('#tambahruangan').click(function () {
                 $('#saveBtn').val("tambah");
-                $('#idarea').val('');
-                $('#idsubarea').val('');
-                $('#idgedung').val('');
-                $('#idlantai').val('');
-                $('#formruangan').trigger("reset");
+                $('#idsubareaawal').val("");
+                $('#idgedungawal').val("");
+                $('#idlantaiawal').val("");
+                $('#idruangan').val("");
+                $('#iddeputiawal').val("");
+                $('#idbiroawal').val("");
+                $('#idbagianawal').val("");
+                $('#idarea').val("").trigger('change');
+                $('#idsubarea').val("").trigger('change');
+                $('#idgedung').val("").trigger('change');
+                $('#idlantai').val("").trigger('change');
+                $('#iddeputi').val("").trigger('change');
+                $('#idbiro').val("").trigger('change');
+                $('#idbagian').val("").trigger('change');
+                $('#formruangan').trigger('reset');
                 $('#modelHeading').html("Tambah Ruangan");
                 $('#ajaxModel').modal('show');
             });

@@ -23,13 +23,15 @@ class DetilDBRController extends Controller
     public function detildbr(){
         $totalbarangterdata = DB::table('detildbr')->count();
         $baranghilang = DB::table('detildbr')->where('statusbarang','=',"Hilang")->count();
+        $barangtidakada = DB::table('detildbr')->where('statusbarang','=',"Tidak Ada")->count();
         $barangpengembalian = DB::table('detildbr')->where('statusbarang','=',"Pengembalian")->count();
         $judul = "Data Detil DBR";
         return view('Sirangga.Admin.detildbr',[
             "judul"=>$judul,
             "barangterdata" => $totalbarangterdata,
             "baranghilang" => $baranghilang,
-            "barangpengembalian" => $barangpengembalian
+            "barangpengembalian" => $barangpengembalian,
+            "barangtidakada" => $barangtidakada
         ]);
     }
 
@@ -46,6 +48,11 @@ class DetilDBRController extends Controller
                 if ($row->statusbarang == "Hilang" || $row->statusbarang == "Pengembalian"){
                     $btn = '<div class="btn-group" role="group">
                             <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="KonfirmPengembalian" class="edit btn btn-info btn-sm konfirmhilangkembali">Konfirm Hilang/Kembali</a>';
+                }else if ($row->statusbarang == "Tidak Ada"){
+                    $btn = '<div class="btn-group" role="group">
+                            <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="KonfirmPengembalian" class="edit btn btn-info btn-sm konfirmhilangkembali">Konfirm Hilang/Kembali</a>';
+                    $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="Tidak Ada" class="btn btn-info btn-sm konfirmtidakada">Tidak Ada</a>';
+
                 }else{
                     $btn = "";
                 }
@@ -125,6 +132,33 @@ class DetilDBRController extends Controller
             'useredit' => Auth::id(),
             'terakhiredit' => now()
         ]);
+        return response()->json(['status'=>'berhasil', with(['iddetil' => $iddetil])]);
+    }
+
+    public function konfirmtidakada(Request $request){
+        $iddetil = $request->get('iddetil');
+        $iddbr = DB::table('detildbr')->where('iddetil','=',$iddetil)->value('iddbr');
+        $idbarang = DB::table('detildbr')->where('iddetil','=',$iddetil)->value('idbarang');
+
+        //insertkan datanya di Barang terkonfirmasi hilang atau kembali
+        //cek dlu apakah ada barangnya
+        $adabarang = DB::table('konfirmhilangkembali')->where('iddetil','=',$iddetil)->count();
+        if ($adabarang == 0){
+            //hapus data detil
+            DB::table('detildbr')->where('iddetil','=',$iddetil)->delete();
+
+            //update status barang menjadi belum dbr
+            DB::table('barang')->where('id','=',$idbarang)->update([
+                'statusdbr' => 1
+            ]);
+
+            //ubah DBR menjadi berstatus draft
+            DB::table('dbrinduk')->where('iddbr','=',$iddbr)->update([
+                'statusdbr' => 1,
+                'useredit' => Auth::id(),
+                'terakhiredit' => now()
+            ]);
+        }
         return response()->json(['status'=>'berhasil', with(['iddetil' => $iddetil])]);
     }
 }

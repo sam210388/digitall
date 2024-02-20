@@ -306,15 +306,18 @@ class DBRController extends Controller
             DB::table('dbrinduk')->where('iddbr','=',$iddbr)->update($dataupdate);
 
             //kirim notif
-            $notif = new KirimWhatsapp();
-            $notif = $notif->kirimdbr($phonepenanggungjawab, $namapenanggungjawab, $iddbr,$uraianbatasakhir);
+            //$notif = new KirimWhatsapp();
+            //$notif = $notif->kirimdbr($phonepenanggungjawab, $namapenanggungjawab, $iddbr,$uraianbatasakhir);
 
+            return response()->json(['status'=>'berhasil']);
+            /*
             if($notif == "Sukses"){
                 return response()->json(['status'=>'berhasil']);
                 //echo json_encode($notif);
             }else{
                 return response()->json(['status'=>'gagal']);
             }
+            */
         }
     }
 

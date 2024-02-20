@@ -2,15 +2,14 @@
 
 namespace App\Models\Administrasi;
 
-use App\Models\ReferensiUnit\BiroModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class KewenanganPPKModel extends Model
+class PenetapanPPKModel extends Model
 {
     use HasFactory;
 
-    protected $table = 'kewenanganppk';
+    protected $table = 'penetapanppk';
 
     protected $guarded = [];
 
@@ -18,8 +17,5 @@ class KewenanganPPKModel extends Model
 
     public function ppkrelation(){
         return $this->hasOne(PPKSatkerModel::class,'id','idppk');
-    }
-    public function birorelation(){
-        return $this->hasOne(BiroModel::class,'id','idbiro');
     }
 }

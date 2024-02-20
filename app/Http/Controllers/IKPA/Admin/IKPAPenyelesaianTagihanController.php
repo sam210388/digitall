@@ -79,8 +79,11 @@ class IKPAPenyelesaianTagihanController extends Controller
                         ->where('periode','<=',$i)
                         ->count();
                     $total = $tepatwaktuakumulatif + $terlambat;
-                    $persen = ($tepatwaktuakumulatif/$total)*100;
-
+                    if ($total > 0){
+                        $persen = ($tepatwaktuakumulatif/$total)*100;
+                    }else{
+                        $persen = 100;
+                    }
                     $datainsert = array(
                         'tahunanggaran' => $tahunanggaran,
                         'kdsatker' => $kodesatker,

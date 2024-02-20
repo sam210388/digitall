@@ -5,14 +5,16 @@ namespace App\Http\Controllers\Administrasi;
 use App\Http\Controllers\Controller;
 use App\Models\Administrasi\KewenanganPPKModel;
 use App\Models\Administrasi\MenuModel;
+use App\Models\Administrasi\PenetapanPPKModel;
 use App\Models\Administrasi\PPKSatkerModel;
 use App\Models\Administrasi\SubMenuModel;
 use App\Models\ReferensiUnit\BiroModel;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 
-class KewenanganPPKController extends Controller
+class PenetapanPPKController extends Controller
 {
     public function __construct()
     {
@@ -21,49 +23,33 @@ class KewenanganPPKController extends Controller
 
     public function index(Request $request)
     {
-        $judul = 'Data Kewenangan PPK';
+        $judul = 'Data PPK';
         $datappk = PPKSatkerModel::all();
-        $databiro = BiroModel::where('status','=','on')->get();
+        $datauser = User::all();
         $tahunanggaran = session('tahunanggaran');
         if ($request->ajax()) {
-            $data = KewenanganPPKModel::with('ppkrelation')
-                ->with('birorelation')
+            $data = PenetapanPPKModel::with('ppkrelation')
                 ->where('tahunanggaran','=',$tahunanggaran)->get();
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
-
                     $btn = '<div class="btn-group" role="group">
                             <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm edit">Edit</a>';
                     $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm delete">Delete</a>';
-
                     return $btn;
                 })
                 ->addColumn('ppk',function(KewenanganPPKModel $row){
                     return $row->idppk?$row->ppkrelation->uraianppk:"";
                 })
-                ->addColumn('biro',function(KewenanganPPKModel $row){
-                    return $row->idbiro?$row->birorelation->uraianbiro:"";
-                })
                 ->rawColumns(['action'])
                 ->make(true);
         }
 
-        return view('Administrasi.kewenanganppk',[
+        return view('Administrasi.penetapanppk',[
             "judul"=>$judul,
             "datappk" => $datappk,
-            "databiro" => $databiro
-
+            "datauser" => $datauser
         ]);
-    }
-
-    public function ambillistppk(Request $request){
-        $kodesatker = $request->get('kodesatker');
-        $data['ppk'] = DB::table('ppksatker as a')
-            ->where('a.kodesatker','=',$kodesatker)
-            ->where('status','=','on')
-            ->get(['id','uraianppk']);
-        return response()->json($data);
     }
 
     /**
@@ -76,16 +62,14 @@ class KewenanganPPKController extends Controller
     {
         $validated = $request->validate([
             'idppk' => 'required',
-            'idbiro' => 'required',
-            'kodesatker' => 'required'
+            'iduser' => 'required',
         ]);
         $tahunanggaran = session('tahunanggaran');
-        KewenanganPPKModel::create(
+        PenetapanPPKModel::create(
             [
                 'tahunanggaran' =>$tahunanggaran,
-                'kodesatker' => $request->get('kodesatker'),
                 'idppk' => $request->get('idppk'),
-                'idbiro' => $request->get('idbiro')
+                'iduser' => $request->get('iduser')
             ]);
 
         return response()->json(['status'=>'berhasil']);
@@ -110,7 +94,7 @@ class KewenanganPPKController extends Controller
      */
     public function edit($id)
     {
-        $menu = KewenanganPPKModel::find($id);
+        $menu = PenetapanPPKModel::find($id);
         return response()->json($menu);
     }
 
@@ -125,16 +109,14 @@ class KewenanganPPKController extends Controller
     {
         $validated = $request->validate([
             'idppk' => 'required',
-            'idbiro' => 'required',
-            'kodesatker' => 'required'
+            'iduser' => 'required',
         ]);
         $tahunanggaran = session('tahunanggaran');
-        KewenanganPPKModel::where('id','=',$id)->update(
+        PenetapanPPKModel::where('id','=',$id)->update(
             [
                 'tahunanggaran' =>$tahunanggaran,
-                'kodesatker' => $request->get('kodesatker'),
                 'idppk' => $request->get('idppk'),
-                'idbiro' => $request->get('idbiro')
+                'iduser' => $request->get('iduser')
             ]);
 
         return response()->json(['status'=>'berhasil']);
@@ -148,7 +130,7 @@ class KewenanganPPKController extends Controller
      */
     public function destroy($id)
     {
-        KewenanganPPKModel::find($id)->delete();
+        PenetapanPPKModel::find($id)->delete();
         return response()->json(['status'=>'berhasil']);
     }
 }

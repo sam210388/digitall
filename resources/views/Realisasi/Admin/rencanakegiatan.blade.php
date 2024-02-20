@@ -7,6 +7,11 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
+                        @if(session('status'))
+                            <div class="alert alert-success">
+                                {{session('status')}}
+                            </div>
+                        @endif
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -25,8 +30,22 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <!-- <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="tambahtransaksi"> Tambah Data</a> -->
                         <h3 class="card-title">{{$judul}}</h3>
+                        {!! $button !!}
+                    </div>
+                    </div>
+
+                    <div class="card-header">
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <select class="form-control idbagian" name="idbagian" id="idbagian" style="width: 100%;">
+                                    <option value="">Pilih Bagian</option>
+                                    @foreach($databagian as $data)
+                                        <option value="{{ $data->id }}">{{ $data->uraianbagian }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-body">
                         <table id="tabelkasbon" class="table table-bordered table-striped tabelkasbon">
@@ -96,7 +115,7 @@
                                     <div class="modal-body">
                                         <form id="formrencanakegiatanbagian" name="formkasbon" class="form-horizontal">
                                             <input type="hidden" name="id" id="id">
-                                            <input type="hidden" name="idbagian" id="idbagian">
+                                            <input type="hidden" name="idbagianawal" id="idbagianawal">
                                             <input type="hidden" name="pengenalawal" id="pengenalawal">
                                             <div class="form-group">
                                                 <label for="" class="col-sm-6 control-label">Satker</label>
@@ -123,7 +142,7 @@
                                                 <label for="uraiankegiatan" class="col-sm-6 control-label">Uraian Kegiatan POK</label>
                                                 <div class="col-sm-12">
                                                     <div class="input-group mb-3">
-                                                        <textarea class="form-control uraiankegiatanpok" id="uraiankegiatanpok" name="uraiankegiatanpok" placeholder="Uraian Kegiatan" value="" readonly></textarea>
+                                                        <textarea class="form-control uraiankegiatanpok" id="uraiankegiatanpok" name="uraiankegiatanpok" placeholder="Uraian Kegiatan" readonly></textarea>
                                                     </div>
                                                 </div>
                                             </div>
@@ -131,103 +150,97 @@
                                                 <label for="uraiankegiatan" class="col-sm-6 control-label">Uraian Kegiatan Rinci</label>
                                                 <div class="col-sm-12">
                                                     <div class="input-group mb-3">
-                                                        <textarea class="form-control" id="uraiankegiatanrinci" name="uraiankegiatanrinci" placeholder="Uraian Kegiatan Rinci" value="" required=""></textarea>
+                                                        <textarea class="form-control" id="uraiankegiatanrinci" name="uraiankegiatanrinci" placeholder="Uraian Kegiatan Rinci" required="" readonly></textarea>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="peruntukan" class="col-sm-6 control-label">Pagu Anggaran</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control inputFormat" id="paguanggaran" name="paguanggaran" placeholder="Pagu Anggaran" value="" maxlength="500" readonly>
+                                                    <input type="text" class="form-control paguanggaran" id="paguanggaran" name="paguanggaran" placeholder="Pagu Anggaran" value="" maxlength="500" readonly>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="peruntukan" class="col-sm-6 control-label">Total Rencana</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control inputFormat" id="totalrencana" name="totalrencana" placeholder="Total Rencana" value="" maxlength="500" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="peruntukan" class="col-sm-6 control-label">Selisih Harus Dialokasikan</label>
-                                                <div class="col-sm-12">
-                                                    <input type="text" class="form-control inputFormat" id="totalselisih" name="totalselisih" placeholder="Total Selisih" value="" maxlength="500" readonly>
+                                                    <input type="text" class="form-control totalrencana" id="totalrencana" name="totalrencana" placeholder="Total Rencana" value="" maxlength="500" readonly>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="peruntukan" class="col-sm-6 control-label">Januari</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control inputFormat" id="januari" name="januari" placeholder="Total Rencana januari" value="" maxlength="500">
+                                                    <input type="text" class="form-control januari" id="januari" name="januari" placeholder="Total Rencana januari" value="" maxlength="500" readonly>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="peruntukan" class="col-sm-6 control-label">Februari</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control inputFormat" id="februari" name="februari" placeholder="Total Rencana februari" value="" maxlength="500">
+                                                    <input type="text" class="form-control februari" id="februari" name="februari" placeholder="Total Rencana februari" value="" maxlength="500" readonly>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="peruntukan" class="col-sm-6 control-label">Maret</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control inputFormat" id="maret" name="maret" placeholder="Total Rencana maret" value="" maxlength="500">
+                                                    <input type="text" class="form-control maret" id="maret" name="maret" placeholder="Total Rencana maret" value="" maxlength="500" readonly>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="peruntukan" class="col-sm-6 control-label">April</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control inputFormat" id="april" name="april" placeholder="Total Rencana April" value="" maxlength="500">
+                                                    <input type="text" class="form-control april" id="april" name="april" placeholder="Total Rencana April" value="" maxlength="500" readonly>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="peruntukan" class="col-sm-6 control-label">Mei</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control inputFormat" id="mei" name="mei" placeholder="Total Rencana mei" value="" maxlength="500">
+                                                    <input type="text" class="form-control mei" id="mei" name="mei" placeholder="Total Rencana mei" value="" maxlength="500" readonly>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="peruntukan" class="col-sm-6 control-label">Juni</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control inputFormat" id="juni" name="juni" placeholder="Total Rencana Juni" value="" maxlength="500">
+                                                    <input type="text" class="form-control juni" id="juni" name="juni" placeholder="Total Rencana Juni" value="" maxlength="500" readonly>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="peruntukan" class="col-sm-6 control-label">Juli</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control inputFormat" id="juli" name="juli" placeholder="Total Rencana Juli" value="" maxlength="500">
+                                                    <input type="text" class="form-control juli" id="juli" name="juli" placeholder="Total Rencana Juli" value="" maxlength="500" readonly>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="peruntukan" class="col-sm-6 control-label">Agustus</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control inputFormat" id="agustus" name="agustus" placeholder="Total Rencana Agustus" value="" maxlength="500">
+                                                    <input type="text" class="form-control agustus" id="agustus" name="agustus" placeholder="Total Rencana Agustus" value="" maxlength="500" readonly>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="peruntukan" class="col-sm-6 control-label">September</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control inputFormat" id="september" name="september" placeholder="Total Rencana September" value="" maxlength="500">
+                                                    <input type="text" class="form-control september" id="september" name="september" placeholder="Total Rencana September" value="" maxlength="500" readonly>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="peruntukan" class="col-sm-6 control-label">Oktober</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control inputFormat" id="oktober" name="oktober" placeholder="Total Rencana Oktober" value="" maxlength="500">
+                                                    <input type="text" class="form-control oktober" id="oktober" name="oktober" placeholder="Total Rencana Oktober" value="" maxlength="500" readonly>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="peruntukan" class="col-sm-6 control-label">November</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control inputFormat" id="november" name="november" placeholder="Total Rencana November" value="" maxlength="500">
+                                                    <input type="text" class="form-control november" id="november" name="november" placeholder="Total Rencana November" value="" maxlength="500" readonly>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="peruntukan" class="col-sm-6 control-label">Desember</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control inputFormat" id="desember" name="desember" placeholder="Total Rencana Desember" value="" maxlength="500">
+                                                    <input type="text" class="form-control desember" id="desember" name="desember" placeholder="Total Rencana Desember" value="" maxlength="500" readonly>
                                                 </div>
                                             </div>
 
                                             <div class="col-sm-offset-2 col-sm-10">
-                                                <button type="submit" class="btn btn-primary saveBtn" id="saveBtn" value="create">Simpan</button>
+                                                <button class="btn btn-primary" id="saveBtn" value="create">Tutup</button>
                                             </div>
                                         </form>
                                     </div>
@@ -240,139 +253,36 @@
         </div>
     </div>
     <!-- /.content -->
-    <script>
-        function formatNumber(inputValue) {
-            // Pengecekan apakah inputValue adalah string
-            if (typeof inputValue !== 'string') {
-                return '';
-            }
-            // Menghilangkan karakter selain angka
-            var numericValue = inputValue.replace(/\D/g, '');
-
-            // Memformat angka dengan separator ribuan
-            var formattedNumber = numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-
-            return formattedNumber;
-        }
-
-
-        // Fungsi untuk memformat input dengan separator ribuan
-        function formatInputWithThousandSeparator(inputElement) {
-            inputElement.value = formatNumber(inputElement.value);
-        }
-
-        function cektotalrencana() {
-            let paguanggaran = parseInt(document.getElementById('paguanggaran').value.replace(/\D/g, '')); // Parse value ke integer dan hapus non-digit
-            let totalrencana = 0;
-            let inputs = document.querySelectorAll('.inputFormat');
-
-            // Objek untuk menyimpan nilai input bulan per bulan
-            let bulanInputs = {
-                januari: parseInt(document.getElementById('januari').value.replace(/\D/g, '')),
-                februari: parseInt(document.getElementById('februari').value.replace(/\D/g, '')),
-                maret: parseInt(document.getElementById('maret').value.replace(/\D/g, '')),
-                april: parseInt(document.getElementById('april').value.replace(/\D/g, '')),
-                mei: parseInt(document.getElementById('mei').value.replace(/\D/g, '')),
-                juni: parseInt(document.getElementById('juni').value.replace(/\D/g, '')),
-                juli: parseInt(document.getElementById('juli').value.replace(/\D/g, '')),
-                agustus: parseInt(document.getElementById('agustus').value.replace(/\D/g, '')),
-                september: parseInt(document.getElementById('september').value.replace(/\D/g, '')),
-                oktober: parseInt(document.getElementById('oktober').value.replace(/\D/g, '')),
-                november: parseInt(document.getElementById('november').value.replace(/\D/g, '')),
-                desember: parseInt(document.getElementById('desember').value.replace(/\D/g, ''))
-            };
-
-            // Menghitung total rencana
-            for (let bulan in bulanInputs) {
-                totalrencana += bulanInputs[bulan];
-            }
-
-            // Memeriksa apakah total rencana melebihi pagu anggaran
-            if (totalrencana > paguanggaran) {
-                // Jika melebihi, kurangi nilai input pada bulan Desember terlebih dahulu
-                let sisa = totalrencana - paguanggaran;
-                bulanInputs.desember -= sisa;
-
-                // Jika nilai input pada bulan Desember sudah mencapai 0, kurangi bulan-bulan sebelumnya
-                if (bulanInputs.desember < 0) {
-                    let kurangiBulan = Math.abs(bulanInputs.desember);
-                    bulanInputs.desember = 0;
-
-                    // Kurangi nilai bulan-bulan sebelumnya
-                    for (let bulan of ['november', 'oktober', 'september', 'agustus', 'juli', 'juni', 'mei', 'april', 'maret', 'februari']) {
-                        if (kurangiBulan <= 0) break;
-                        let kurangi = Math.min(kurangiBulan, bulanInputs[bulan]);
-                        bulanInputs[bulan] -= kurangi;
-                        kurangiBulan -= kurangi;
-                    }
-                }
-            }else{
-                let harusdialokasikan = paguanggaran - totalrencana;
-                console.log(harusdialokasikan);
-                //harusdialokasikan = harusdialokasikan.toString();
-                //harusdialokasikan = formatInputWithThousandSeparator(harusdialokasikan);
-                document.getElementById('totalselisih').value = harusdialokasikan;
-            }
-
-            // Menghitung total rencana kembali setelah koreksi
-            totalrencana = 0;
-            for (let bulan in bulanInputs) {
-                totalrencana += bulanInputs[bulan];
-            }
-
-            // Menetapkan kembali nilai input yang sudah dimodifikasi
-            for (let bulan in bulanInputs) {
-                document.getElementById(bulan).value = formatNumber(bulanInputs[bulan].toString());
-            }
-
-            // Memperbarui total rencana pada elemen totalrencana
-            document.getElementById('totalrencana').value = formatNumber(totalrencana.toString());
-
-            // Menghitung selisih antara total rencana dan pagu anggaran
-            let selisih = paguanggaran - totalrencana;
-
-            // Menampilkan nilai selisih di input field selisih
-            document.getElementById('totalselisih').value = formatNumber(selisih.toString());
-
-            // Menonaktifkan tombol simpan jika total rencana tidak sama dengan pagu anggaran
-            let tombolSimpan = document.getElementById('saveBtn');
-            if (totalrencana !== paguanggaran) {
-                tombolSimpan.disabled = true;
-            } else {
-                tombolSimpan.disabled = false;
-            }
-        }
-
-
-        // Menambahkan event listener untuk setiap input bulan
-        document.querySelectorAll('.inputFormat').forEach(input => {
-            input.addEventListener('input', function() {
-                formatInputWithThousandSeparator(input); // Memformat input dengan separator ribuan saat input berubah
-                cektotalrencana(); // Memeriksa total rencana setiap kali input berubah
-            });
-        });
-
-    </script>
 
     <script type="text/javascript">
         $(function () {
-            function formatNumber(inputValue) {
-                // Pengecekan apakah inputValue adalah string
-                if (typeof inputValue !== 'string') {
-                    return '';
-                }
-                // Menghilangkan karakter selain angka
-                var numericValue = inputValue.replace(/\D/g, '');
-
-                // Memformat angka dengan separator ribuan
-                var formattedNumber = numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                return formattedNumber;
-            }
-
             $('.kdsatker').select2({
                 width: '100%',
                 theme: 'bootstrap4',
             })
+
+            $('.idbagian').select2({
+                width: '100%',
+                theme: 'bootstrap4',
+            })
+
+            $('.pengenal').select2({
+                width: '100%',
+                theme: 'bootstrap4',
+            })
+
+            $('#exportrencana').click(function (){
+                window.location="{{URL::to('exportrencanapenarikan')}}";
+            });
+
+            $('#tutupperiode').click(function (){
+                window.location="{{URL::to('tutupperioderencana')}}";
+            });
+
+            $('#bukaperiode').click(function (){
+                window.location="{{URL::to('bukaperioderencana')}}";
+            });
+
 
 
             /*------------------------------------------
@@ -388,18 +298,19 @@
                 );
             });
             var table = $('.tabelkasbon').DataTable({
+                destroy: true,
                 fixedColumn:true,
                 scrollX:"100%",
                 autoWidth:true,
                 processing: true,
                 serverSide: true,
-                ajax:"{{route('getdatarencanakegiatanbagian')}}",
+                ajax:"{{route('getdatarencanakegiatan')}}",
                 columns: [
                     {data:'id',name:'id'},
                     {data: 'tahunanggaran',name:'tahunanggaran'},
                     {data: 'kdsatker', name: 'kdsatker'},
                     {data: 'bagian', name:'bagianpengajuanrelation.uraianbagian'},
-                    {data: 'pengenal', name:'pengenal'},
+                    {data: 'pengenal', name: 'pengenal'},
                     {data: 'uraiankegiatanpok', name: 'uraiankegiatanpok'},
                     {data: 'uraiankegiatanbagian', name: 'uraiankegiatanbagian'},
                     {data: 'paguanggaran', name: 'paguanggaran'},
@@ -493,6 +404,12 @@
                     .draw();
             } );
 
+            $('#idbagian').on('change',function (){
+                let idbagian = document.getElementById('idbagian').value;
+                var table = $('.tabelkasbon').DataTable();
+                table.ajax.url("{{route('getdatarencanakegiatan','')}}"+"/"+idbagian).load();
+            });
+
 
             /*------------------------------------------
             --------------------------------------------
@@ -501,8 +418,8 @@
             --------------------------------------------*/
             $('body').on('click', '.edittransaksi', function () {
                 var id = $(this).data('id');
-                $.get("{{ route('rencanakegiatanbagian.index') }}" +'/' + id +'/edit', function (data) {
-                    $('#modelHeading').html("Edit Rencana");
+                $.get("{{ route('lihatrencanakegiatan','') }}" +'/' + id, function (data) {
+                    $('#modelHeading').html("Lihat Rencana");
                     $('#saveBtn').val("edit");
                     $('#ajaxModel').modal('show');
                     $('#id').val(data.id);
@@ -512,20 +429,20 @@
                     $('#pengenalawal').val(data.pengenal);
                     $('#uraiankegiatanpok').val(data.uraiankegiatanpok);
                     $('#uraiankegiatanrinci').val(data.uraiankegiatanbagian);
-                    $('#paguanggaran').val(formatNumber(data.paguanggaran.toString()));
-                    $('#totalrencana').val(formatNumber(data.totalrencana.toString()));
-                    $('#januari').val(formatNumber(data.pok1.toString()));
-                    $('#februari').val(formatNumber(data.pok2.toString()));
-                    $('#maret').val(formatNumber(data.pok3.toString()));
-                    $('#april').val(formatNumber(data.pok4.toString()));
-                    $('#mei').val(formatNumber(data.pok5.toString()));
-                    $('#juni').val(formatNumber(data.pok6.toString()));
-                    $('#juli').val(formatNumber(data.pok7.toString()));
-                    $('#agustus').val(formatNumber(data.pok8.toString()));
-                    $('#september').val(formatNumber(data.pok9.toString()));
-                    $('#oktober').val(formatNumber(data.pok10.toString()));
-                    $('#november').val(formatNumber(data.pok11.toString()));
-                    $('#desember').val(formatNumber(data.pok12.toString()));
+                    $('#paguanggaran').val(data.paguanggaran);
+                    $('#totalrencana').val(data.totalrencana);
+                    $('#januari').val(data.pok1);
+                    $('#februari').val(data.pok2);
+                    $('#maret').val(data.pok3);
+                    $('#april').val(data.pok4);
+                    $('#mei').val(data.pok5);
+                    $('#juni').val(data.pok6);
+                    $('#juli').val(data.pok7);
+                    $('#agustus').val(data.pok8);
+                    $('#september').val(data.pok9);
+                    $('#oktober').val(data.pok10);
+                    $('#november').val(data.pok11);
+                    $('#desember').val(data.pok12);
                 })
             });
 
@@ -538,168 +455,9 @@
             --------------------------------------------*/
             $('#saveBtn').click(function (e) {
                 e.preventDefault();
-                $(this).html('Sending..');
-                let form = document.getElementById('formrencanakegiatanbagian');
-                let fd = new FormData(form);
-                let saveBtn = document.getElementById('saveBtn').value;
-                var id = document.getElementById('id').value;
-                fd.append('saveBtn',saveBtn)
-                if(saveBtn == "edit"){
-                    fd.append('_method','PUT')
-                }
-                for (var pair of fd.entries()) {
-                    console.log(pair[0]+ ', ' + pair[1]);
-                }
-
-                $.ajax({
-                    data: fd,
-                    url: saveBtn === "tambah" ? "{{route('rencanakegiatanbagian.store')}}":"{{route('rencanakegiatanbagian.update','')}}"+'/'+id,
-                    type: "POST",
-                    dataType: 'json',
-                    contentType: false,
-                    processData: false,
-                    success: function (data) {
-                        if (data.status == "berhasil"){
-                            Swal.fire({
-                                title: 'Sukses',
-                                text: 'Simpan Data Berhasil',
-                                icon: 'success'
-                            })
-                        }else{
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'Simpan Data Gagal',
-                                icon: 'error'
-                            })
-                        }
-                        $('#formrencanakegiatanbagian').trigger("reset");
-                        $('#ajaxModel').modal('hide');
-                        $('#saveBtn').html('Simpan Data');
-                        table.ajax.reload(null, false);
-                    },
-                    error: function (xhr, textStatus, errorThrown) {
-                        if(xhr.responseJSON.errors){
-                            var errorsArr = [];
-                            $.each(xhr.responseJSON.errors, function(key,value) {
-                                errorsArr.push(value);
-                            });
-                            Swal.fire({
-                                title: 'Error!',
-                                text: errorsArr,
-                                icon: 'error'
-                            })
-                        }else{
-                            var jsonValue = jQuery.parseJSON(xhr.responseText);
-                            Swal.fire({
-                                title: 'Error!',
-                                text: jsonValue.message,
-                                icon: 'error'
-                            })
-                        }
-
-                        $('#saveBtn').html('Simpan Data');
-                    },
-                });
-            });
-
-            /*------------------------------------------
-            --------------------------------------------
-            Delete Product Code
-            --------------------------------------------
-            --------------------------------------------*/
-            $('body').on('click', '.deletetransaksi', function () {
-                var id = $(this).data("id");
-                if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
-                    $.ajax({
-                        type: "DELETE",
-                        url: "{{ route('rencanakegiatanbagian.destroy','') }}"+'/'+id,
-                        success: function (data) {
-                            if (data.status == "berhasil"){
-                                Swal.fire({
-                                    title: 'Sukses',
-                                    text: 'Data Berhasil Dihapus',
-                                    icon: 'success'
-                                })
-                            }else{
-                                Swal.fire({
-                                    title: 'Error!',
-                                    text: 'Hapus Data Gagal',
-                                    icon: 'error'
-                                })
-                            }
-                            table.draw();
-                        },
-                        error: function (xhr, textStatus, errorThrown) {
-                            if(xhr.responseJSON.errors){
-                                var errorsArr = [];
-                                $.each(xhr.responseJSON.errors, function(key,value) {
-                                    errorsArr.push(value);
-                                });
-                                Swal.fire({
-                                    title: 'Error!',
-                                    text: errorsArr,
-                                    icon: 'error'
-                                })
-                            }else{
-                                var jsonValue = jQuery.parseJSON(xhr.responseText);
-                                Swal.fire({
-                                    title: 'Error!',
-                                    text: jsonValue.message,
-                                    icon: 'error'
-                                })
-                            }
-
-                            $('#saveBtn').html('Simpan Data');
-                        },
-                    });
-                }
-            });
-
-            $('body').on('click', '.ajukankeppk', function () {
-                var id = $(this).data("id");
-                if(confirm("Apakah Anda Yakin AKan Mengajukan Kasbon ini Ke PPK?")){
-                    $.ajax({
-                        type: "GET",
-                        url: "{{ route('ajukanrencanakeppk','') }}"+'/'+id,
-                        success: function (data) {
-                            if (data.status == "berhasil"){
-                                Swal.fire({
-                                    title: 'Sukses',
-                                    text: 'Data Berhasil Diajukan ke PPK',
-                                    icon: 'success'
-                                })
-                            }else{
-                                Swal.fire({
-                                    title: 'Error!',
-                                    text: 'Data Kasbon Gagal Diajukan ke PPK',
-                                    icon: 'error'
-                                })
-                            }
-                            table.draw();
-                        },
-                        error: function (xhr, textStatus, errorThrown) {
-                            if(xhr.responseJSON.errors){
-                                var errorsArr = [];
-                                $.each(xhr.responseJSON.errors, function(key,value) {
-                                    errorsArr.push(value);
-                                });
-                                Swal.fire({
-                                    title: 'Error!',
-                                    text: errorsArr,
-                                    icon: 'error'
-                                })
-                            }else{
-                                var jsonValue = jQuery.parseJSON(xhr.responseText);
-                                Swal.fire({
-                                    title: 'Error!',
-                                    text: jsonValue.message,
-                                    icon: 'error'
-                                })
-                            }
-                            $('#saveBtn').html('Simpan Data');
-                        },
-                    });
-                }
+                $('#formrencanakegiatanbagian').trigger("reset");
+                $('#ajaxModel').modal('hide');
+                $('#saveBtn').html('Tutup');
             });
         });
 
