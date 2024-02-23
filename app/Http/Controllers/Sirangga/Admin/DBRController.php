@@ -71,13 +71,19 @@ class DBRController extends Controller
                 return $dbr->userrelation->name ?? 'User Belum Ditetapkan';
             })
             ->addColumn('dokumendbr',function ($row){
+                if (Storage::disk('public')->missing('/pengesahandbrfinal/PengesahanDBRRuangan'.$row->iddbr."VersiKe".$row->versike.'.pdf')){
+                    $linkpengesahan = "File Tidak Ada";
+                }else{
+                    $linkpengesahan = '<a href="'.env('APP_URL')."/".asset('storage')."/pengesahandbrfinal/PengesahanDBRRuangan".$row->iddbr."VersiKe".$row->versike.'.pdf" >Download Pengesahan</a>';
+                }
+
                 //$datalokasidbrfinal = getenv('APP_URL')."/".asset('storage')."/dbrfinaldigitall/DBRRuangan".$row->iddbr.".pdf";
                 if (Storage::disk('public')->missing('/dbrfinaldigitall/DBRRuangan'.$row->iddbr."VersiKe".$row->versike.'.pdf')){
                     $linkdokumendbr = "File Tidak Ada";
                 }else{
                     $linkdokumendbr = '<a href="'.env('APP_URL')."/".asset('storage')."/dbrfinaldigitall/DBRRuangan".$row->iddbr."VersiKe".$row->versike.'.pdf" >Download DBR</a>';
                 }
-                return $linkdokumendbr;
+                return "Link Pengesahan: ".$linkpengesahan." Link DBR: ".$linkdokumendbr;
             })
             ->addColumn('action', function($row){
                 $jumlahdetil = DB::table('detildbr')->where('iddbr','=',$row->iddbr)->count();
@@ -184,9 +190,85 @@ class DBRController extends Controller
         ]);
 
         Storage::put('public/dbrfinaldigitall/DBRRuangan'.$iddbr."VersiKe".$versike.'.pdf', $pdf->output());
+        $this->cetakpengesahandbr($iddbr);
+        //Storage::put('public/pengesahandbrfinal/DBRRuangan'.$iddbr."VersiKe".$versike.'.pdf', $pdf->output());
         return $pdf->stream('DBRRuangan'.$iddbr."VersiKe".$versike.'.pdf');
     }
 
+    public function cetakpengesahandbr($iddbr){
+        $datareferensidbr = DB::table('dbrinduk as a')
+            ->select(['a.iddbr as iddbr','a.idpenanggungjawab as idpenanggungjawab','g.nama as penanggungjawab','g.nip as nip',
+                'a.tanggalpengajuanunit as tanggalpengajuanunit','a.tanggalpersetujuandbr as tanggalpersetujuandbr','a.versike as versike',
+                'b.uraianarea as area','c.uraiansubarea as subarea',
+                'd.uraiangedung as gedung','e.uraianlantai as lantai','f.uraianruangan as ruangan'])
+            ->leftJoin('ruangan as f','a.idruangan','=','f.id')
+            ->leftJoin('area as b','b.id','=','f.idarea')
+            ->leftJoin('subarea as c','c.id','=','f.idsubarea')
+            ->leftJoin('gedung as d','d.id','=','f.idgedung')
+            ->leftJoin('lantai as e','e.id','=','f.idlantai')
+            ->leftJoin('pegawai as g','g.id','=','a.idpenanggungjawab')
+            ->where('iddbr','=',$iddbr)
+            ->get();
+
+        //membuat qrcode
+        $penanggungjawab ="";
+        $nip = "";
+        $tanggalpersetujuandbr = "";
+        $tanggalpengajuanunit = "";
+        $waktucetak = now();
+        $waktucetak = $waktucetak->format('d F Y');
+        foreach ($datareferensidbr as $data){
+            $penanggungjawab = $data->penanggungjawab;
+            $tanggalpengajuanunit = $data->tanggalpengajuanunit;
+            $tanggalpersetujuandbr = $data->tanggalpersetujuandbr;
+            $nip = $data->nip;
+            $versike = $data->versike;
+            $dataqrunit = "Penanggungjawab: ".$penanggungjawab." Disetujui Pada: ".$tanggalpersetujuandbr;
+            QrCode::generate($dataqrunit,asset('storage/qrunit/DBR'.$iddbr."VersiKe".$versike.'.svg'));
+        }
+
+        $datalokasidbrfinal = getenv('APP_URL')."/".asset('storage')."/dbrfinaldigitall/DBRRuangan".$iddbr."VersiKe".$versike.".pdf";
+        QrCode::generate($datalokasidbrfinal,asset('storage/qrdbrfinal/DBR'.$iddbr.'VersiKe'.$versike.'.svg'));
+
+        //penandatangan
+        $namapenandatangan = "";
+        $nippenandatangan = "";
+        $jabatanpenandatangan = "";
+
+        $datapenandatangan = DB::table('penandatangan')
+            ->where('jenisdokumen','=','DBR')
+            ->where('status','=','Aktif')
+            ->get();
+        foreach ($datapenandatangan as $dp){
+            $namapenandatangan = $dp->namalengkap;
+            $nippenandatangan = $dp->nip;
+            $jabatanpenandatangan = $dp->jabatan;
+        }
+        $dataqrbmn = "Disiapkan Oleh: ".$namapenandatangan." Diajukan ke Unit Pada: ".$tanggalpengajuanunit;
+        QrCode::generate($dataqrbmn,asset('storage/qrbmn/DBR'.$iddbr."VersiKe".$versike.'.svg'));
+
+        //data detildbr
+        $datadetildbr = DB::table('detildbr')->where('iddbr','=',$iddbr);
+        $listbarang = $datadetildbr->get();
+        $jumlahbarang = $datadetildbr->count();
+        $pdf = Pdf::loadView('laporan.sirangga.pengesahandbrruangan',[
+            'datareferensidbr' => $datareferensidbr,
+            'datadetildbr' => $listbarang,
+            'jumlahbarang' => $jumlahbarang,
+            'iddbr' => $iddbr,
+            'penanggungjawab' => $penanggungjawab,
+            'nip' => $nip,
+            'waktucetak' => $waktucetak,
+            'namapenandatangan' => $namapenandatangan,
+            'nippenandatangan' => $nippenandatangan,
+            'jabatanpenandatangan' => $jabatanpenandatangan,
+            'versike' => $versike
+        ])->setPaper('a5');
+
+        //Storage::put('public/dbrfinaldigitall/DBRRuangan'.$iddbr."VersiKe".$versike.'.pdf', $pdf->output());
+        Storage::put('public/pengesahandbrfinal/PengesahanDBRRuangan'.$iddbr."VersiKe".$versike.'.pdf', $pdf->output());
+        //return $pdf->stream('DBRRuangan'.$iddbr."VersiKe".$versike.'.pdf');
+    }
 
     public function updatepenanggungjawabdbr(Request $request, $iddbr){
         $dataupdate = array(

@@ -15,15 +15,17 @@ class ImportKontrakHeader implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $tahunanggaran;
+    protected $kdsatker;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($tahunanggaran)
+    public function __construct($tahunanggaran, $kdsatker)
     {
         $this->tahunanggaran = $tahunanggaran;
+        $this->kdsatker = $kdsatker;
     }
 
     /**
@@ -34,8 +36,9 @@ class ImportKontrakHeader implements ShouldQueue
     public function handle()
     {
         $tahunanggaran = $this->tahunanggaran;
+        $kdsatker = $this->kdsatker;
         $importkontrakheader = new KontrakHeaderController();
-        $importkontrakheader = $importkontrakheader->aksiimportkontrakheader($tahunanggaran);
+        $importkontrakheader = $importkontrakheader->aksiimportkontrakheader($tahunanggaran, $kdsatker);
 
     }
 }

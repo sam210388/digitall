@@ -50,7 +50,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         //$TA = date('Y');
-        $TA='2024';
+        $TA='2023';
         //rekap anggaran
         //$schedule->job(new RekapAnggaranMingguan($TA))->weeklyOn(1,'05:00');
         $schedule->job(new RekapAnggaranMingguan($TA))->dailyAt('02:25');
@@ -63,9 +63,9 @@ class Kernel extends ConsoleKernel
 
         $schedule->job(new HitungIkpaPenyerapanBagian($TA))->dailyAt('08:03');
 
-        $schedule->job(new ImportKontrakHeader(2023))->dailyAt('15:45');
+        $schedule->job(new ImportKontrakHeader(2023,'001012'))->dailyAt('18:08');
 
-        $schedule->job(new ImportKontrakCOA('001012',2023))->dailyAt('17:55');
+        $schedule->job(new ImportKontrakCOA('001012',2023))->dailyAt('23:41');
 
         $schedule->job(new HitungIkpaPenyelesaianBagian(2023))->dailyAt('19:09');
 
@@ -113,7 +113,7 @@ class Kernel extends ConsoleKernel
                 new RekapDataAset(),
                 new RekapDataBarangDBR()
             ])->dispatch($TA);
-        })->dailyAt('21:39');
+        })->dailyAt('00:46');
 
 
         $schedule->job(new RekapDataBarangDBR())->dailyAt('20:54');

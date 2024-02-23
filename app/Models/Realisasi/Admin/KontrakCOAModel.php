@@ -13,5 +13,7 @@ class KontrakCOAModel extends Model
 
     protected $guarded = [];
 
+    public $timestamps = false;
+
     //protected $primaryKey = 'ID_KONTRAK';
 }

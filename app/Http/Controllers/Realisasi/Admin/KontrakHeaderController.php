@@ -7,6 +7,7 @@ use App\Jobs\ImportKontrakHeader;
 use App\Libraries\BearerKey;
 use App\Libraries\TarikDataMonsakti;
 use App\Models\Realisasi\Admin\KontrakHeaderModel;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
@@ -32,23 +33,32 @@ class KontrakHeaderController extends Controller
 
     function importkontrakheader(){
         $tahunanggaran = session('tahunanggaran');
-        $this->dispatch(new ImportKontrakHeader($tahunanggaran));
-
+        $datasatker = ['001012','001030'];
+        foreach ($datasatker as $data){
+            $kdsatker = $data;
+            $this->dispatch(new ImportKontrakHeader($tahunanggaran, $kdsatker));
+        }
         return redirect()->to('kontrakheader')->with('status','Import Kontrak Header dari SAKTI Berhasil');
     }
 
-    function aksiimportkontrakheader($tahunanggaran){
+    function aksiimportkontrakheader($tahunanggaran, $kdsatker){
         $kodemodul = 'KOM';
         $tipedata = 'kontrakHeader';
+        $variabel = [$kdsatker];
+
+        //reset api
+        $resetapi = new BearerKey();
+        $resetapi = $resetapi->resetapi($tahunanggaran, $kodemodul, $tipedata);
 
         //tarikdata
         $response = new TarikDataMonsakti();
-        $response = $response->prosedurlengkap($tahunanggaran, $kodemodul, $tipedata);
+        $response = $response->prosedurlengkap($tahunanggaran, $kodemodul, $tipedata, $variabel);
         //echo json_encode($response);
 
         if ($response != "Gagal" or $response != "Expired"){
             $hasilasli = json_decode($response);
             //echo json_encode($hasilasli);
+
 
             foreach ($hasilasli as $item => $value) {
                 if ($item == "TOKEN") {
@@ -57,22 +67,16 @@ class KontrakHeaderController extends Controller
                     }
                     $token = new BearerKey();
                     $token->simpantokenbaru($tahunanggaran, $kodemodul, $tokenresponse);
-                }
-            }
-            foreach ($hasilasli as $item => $value) {
-                if ($item != "TOKEN") {
+                }else{
                     foreach ($value as $DATA) {
                         $KODE_KEMENTERIAN = $DATA->KODE_KEMENTERIAN;
                         $KDSATKER = $DATA->KDSATKER;
                         $THN_ANG = $DATA->THN_ANG;
                         $ID_KONTRAK = $DATA->ID_KONTRAK;
                         $NO_KONTRAK = $DATA->NO_KONTRAK;
-                        $TANGGL_KONTRAK = new \DateTime($DATA->TANGGAL_KONTRAK);
-                        $TANGGL_KONTRAK = $TANGGL_KONTRAK->format('Y-m-d');
-                        $TANGGAL_MULAI_PELAKSANAAN = new \DateTime($DATA->TANGGAL_MULAI_PELAKSANAAN);
-                        $TANGGAL_MULAI_PELAKSANAAN = $TANGGAL_MULAI_PELAKSANAAN->format('Y-m-d');
-                        $TANGGAL_SELESAI_PELAKSANAAN = new \DateTime($DATA->TANGGAL_SELESAI_PELAKSANAAN);
-                        $TANGGAL_SELESAI_PELAKSANAAN = $TANGGAL_SELESAI_PELAKSANAAN->format('Y-m-d');
+                        $TANGGL_KONTRAK = $DATA->TANGGAL_KONTRAK;
+                        $TANGGAL_MULAI_PELAKSANAAN = $DATA->TANGGAL_MULAI_PELAKSANAAN;
+                        $TANGGAL_SELESAI_PELAKSANAAN = $DATA->TANGGAL_SELESAI_PELAKSANAAN;
                         $NILAI_KONTRAK = $DATA->NILAI_KONTRAK;
                         $MATA_UANG = $DATA->MATA_UANG;
                         $TIPE_KONTRAK = $DATA->TIPE_KONTRAK;
@@ -97,24 +101,19 @@ class KontrakHeaderController extends Controller
                             'TIPE_KONTRAK' => $TIPE_KONTRAK,
                             'NOMOR_CAN' => $NOMOR_CAN,
                             'JENIS_KONTRAK' => $JENIS_KONTRAK,
-                            'URAIAN _KONTRAK' => $URAIAN_KONTRAK,
+                            'URAIAN_KONTRAK' => $URAIAN_KONTRAK,
                             'ID_SUPPLIER' => $ID_SUPPLIER,
                             'NAMA_SUPPLIER' => $NAMA_SUPPLIER
-
                         );
-                        KontrakHeaderModel::updateOrCreate(['ID_KONTRAK' => $ID_KONTRAK],$data);
+                        $ada = DB::table('kontrakheader')->where('ID_KONTRAK','=',$ID_KONTRAK)->count();
+                        if ($ada > 0){
+                            DB::table('kontrakheader')->where('ID_KONTRAK','=',$ID_KONTRAK)->update($data);
+                        }else{
+                            DB::table('kontrakheader')->insert($data);
+                        }
                     }
                 }
             }
-        }else if ($response == "Expired"){
-            $tokenbaru = new BearerKey();
-            $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
-            //return redirect()->to('sppheader')->with(['status' => 'Token Expired']);
-        }else{
-            $tokenbaru = new BearerKey();
-            $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
-            //return redirect()->to('sppheader')->with(['status' => 'Gagal, Data Terlalu Besar']);
         }
     }
-
 }

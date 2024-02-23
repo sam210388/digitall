@@ -24,7 +24,7 @@ class ImportKontrakCOA implements ShouldQueue
      */
     public function __construct($kodesatker, $tahunanggaran)
     {
-        $this->$kodesatker = $kodesatker;
+        $this->kodesatker = $kodesatker;
         $this->tahunanggaran = $tahunanggaran;
     }
 

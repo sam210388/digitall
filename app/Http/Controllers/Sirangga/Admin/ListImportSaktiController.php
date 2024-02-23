@@ -102,7 +102,6 @@ class ListImportSaktiController extends Controller
         //$tokenbaru = new BearerKey();
         //$tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
 
-
         $datakodebarang = DB::table('listimportaset')
             ->where('kdbrg','=',$kodebarang)
             ->get();
@@ -116,7 +115,9 @@ class ListImportSaktiController extends Controller
             $variabel = [$kdsatker, $kdgol, $kdbid, $kdkel, $kdskel, $kdbrg];
             //echo json_encode($variabel);
 
-
+            //reset api
+            $resetapi = new BearerKey();
+            $resetapi = $resetapi->resetapi($tahunanggaran, $kodemodul, $tipedata);
 
             //tarikdata
             $response = new TarikDataMonsakti();
@@ -133,10 +134,7 @@ class ListImportSaktiController extends Controller
                         }
                         $token = new BearerKey();
                         $token->simpantokenbaru($tahunanggaran, $kodemodul, $tokenresponse);
-                    }
-                }
-                foreach ($hasilasli as $item => $value) {
-                    if ($item != "TOKEN") {
+                    }else{
                         foreach ($value as $DATA) {
                             $kode_kementerian = $DATA->KODE_KEMENTERIAN;
                             $kdsatker = $DATA->KDSATKER;
@@ -226,12 +224,8 @@ class ListImportSaktiController extends Controller
                         }
                     }
                 }
-            }else if ($response == "Expired" or $response == "Gagal"){
-                $tokenbaru = new BearerKey();
-                $tokenbaru->resetapi($tahunanggaran, $kodemodul, $tipedata);
             }
         }
-
     }
 
     public function importkdgol($TA){
