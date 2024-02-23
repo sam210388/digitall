@@ -4,6 +4,7 @@ namespace App\Http\Controllers\IKPA\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Imports\PenyelesaianTagihanImport;
+use App\Models\IKPA\Admin\DetilKontraktualModel;
 use App\Models\IKPA\Admin\DetilPenyelesaianTagihanModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -19,26 +20,26 @@ class DetilIKPAKontraktualController extends Controller
 
     public function index(){
         $judul = 'Detil IKPA Kontraktual';
-        return view('IKPA.Admin.detilpenyelesaiantagihan',[
+        return view('IKPA.Admin.detilikpakontraktual',[
             "judul"=>$judul
         ]);
     }
 
-    public function getdetilpenyelesaian(Request $request){
+    public function getdetilkontraktual(Request $request){
         $tahunanggaran = session('tahunanggaran');
         if ($request->ajax()) {
-            $data =DetilPenyelesaianTagihanModel::with('bagianrelation')
+            $data =DetilKontraktualModel::with('bagianrelation')
                 ->with('birorelation')
-                ->select(['detilpenyelesaiantagihanbagian.*'])
-                ->where('tahunanggaran','=',$tahunanggaran)
+                ->select(['ikpadetilkontraktual.*'])
+                ->where('THNANG','=',$tahunanggaran)
                 ->orderBy('kdsatker','asc')
                 ->orderBy('idbagian')
                 ->orderBy('periode','asc');
             return Datatables::of($data)
-                ->addColumn('bagian', function (DetilPenyelesaianTagihanModel $id) {
+                ->addColumn('bagian', function (DetilKontraktualModel $id) {
                     return $id->idbagian?$id->bagianrelation->uraianbagian:"";
                 })
-                ->addColumn('biro', function (DetilPenyelesaianTagihanModel $id) {
+                ->addColumn('biro', function (DetilKontraktualModel $id) {
                     return $id->idbiro? $id->birorelation->uraianbiro:"";
                 })
                 ->rawColumns(['bagian','biro'])
