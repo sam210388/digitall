@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Jobs\CetakDBRFinal;
 use App\Jobs\DeleteDataAset;
 use App\Jobs\HapusAnggaranInaktif;
 use App\Jobs\HitungIkpaDeviasiBagian;
@@ -50,7 +51,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         //$TA = date('Y');
-        $TA='2023';
+        $TA='2024';
         //rekap anggaran
         //$schedule->job(new RekapAnggaranMingguan($TA))->weeklyOn(1,'05:00');
         $schedule->job(new RekapAnggaranMingguan($TA))->dailyAt('02:25');
@@ -70,6 +71,8 @@ class Kernel extends ConsoleKernel
         $schedule->job(new HitungIkpaPenyelesaianBagian(2023))->dailyAt('19:09');
 
         $schedule->job(new HitungIkpaDeviasiBagian($TA))->dailyAt('08:04');
+
+        $schedule->job(new CetakDBRFinal())->dailyAt('16:01');
 
         $schedule->job(new ImportRealisasiSemar($TA))->everyFourHours();
 

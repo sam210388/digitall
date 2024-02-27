@@ -195,6 +195,81 @@ class DBRController extends Controller
         return $pdf->stream('DBRRuangan'.$iddbr."VersiKe".$versike.'.pdf');
     }
 
+    public function cetakdbrtanpareturn($iddbr){
+        $datareferensidbr = DB::table('dbrinduk as a')
+            ->select(['a.iddbr as iddbr','a.idpenanggungjawab as idpenanggungjawab','g.nama as penanggungjawab','g.nip as nip',
+                'a.tanggalpengajuanunit as tanggalpengajuanunit','a.tanggalpersetujuandbr as tanggalpersetujuandbr','a.versike as versike',
+                'b.uraianarea as area','c.uraiansubarea as subarea',
+                'd.uraiangedung as gedung','e.uraianlantai as lantai','f.uraianruangan as ruangan'])
+            ->leftJoin('ruangan as f','a.idruangan','=','f.id')
+            ->leftJoin('area as b','b.id','=','f.idarea')
+            ->leftJoin('subarea as c','c.id','=','f.idsubarea')
+            ->leftJoin('gedung as d','d.id','=','f.idgedung')
+            ->leftJoin('lantai as e','e.id','=','f.idlantai')
+            ->leftJoin('pegawai as g','g.id','=','a.idpenanggungjawab')
+            ->where('iddbr','=',$iddbr)
+            ->get();
+
+        //membuat qrcode
+        $penanggungjawab ="";
+        $nip = "";
+        $tanggalpersetujuandbr = "";
+        $tanggalpengajuanunit = "";
+        $waktucetak = now();
+        foreach ($datareferensidbr as $data){
+            $penanggungjawab = $data->penanggungjawab;
+            $tanggalpengajuanunit = $data->tanggalpengajuanunit;
+            $tanggalpersetujuandbr = $data->tanggalpersetujuandbr;
+            $nip = $data->nip;
+            $versike = $data->versike;
+            $dataqrunit = "Penanggungjawab: ".$penanggungjawab." Disetujui Pada: ".$tanggalpersetujuandbr;
+            QrCode::generate($dataqrunit,asset('storage/qrunit/DBR'.$iddbr."VersiKe".$versike.'.svg'));
+        }
+
+        $datalokasidbrfinal = getenv('APP_URL')."/".asset('storage')."/dbrfinaldigitall/DBRRuangan".$iddbr."VersiKe".$versike.".pdf";
+        QrCode::generate($datalokasidbrfinal,asset('storage/qrdbrfinal/DBR'.$iddbr.'VersiKe'.$versike.'.svg'));
+
+        //penandatangan
+        $namapenandatangan = "";
+        $nippenandatangan = "";
+        $jabatanpenandatangan = "";
+
+        $datapenandatangan = DB::table('penandatangan')
+            ->where('jenisdokumen','=','DBR')
+            ->where('status','=','Aktif')
+            ->get();
+        foreach ($datapenandatangan as $dp){
+            $namapenandatangan = $dp->namalengkap;
+            $nippenandatangan = $dp->nip;
+            $jabatanpenandatangan = $dp->jabatan;
+        }
+        $dataqrbmn = "Disiapkan Oleh: ".$namapenandatangan." Diajukan ke Unit Pada: ".$tanggalpengajuanunit;
+        QrCode::generate($dataqrbmn,asset('storage/qrbmn/DBR'.$iddbr."VersiKe".$versike.'.svg'));
+
+        //data detildbr
+        $datadetildbr = DB::table('detildbr')->where('iddbr','=',$iddbr);
+        $listbarang = $datadetildbr->get();
+        $jumlahbarang = $datadetildbr->count();
+        $pdf = Pdf::loadView('laporan.sirangga.dbrruangan',[
+            'datareferensidbr' => $datareferensidbr,
+            'datadetildbr' => $listbarang,
+            'jumlahbarang' => $jumlahbarang,
+            'iddbr' => $iddbr,
+            'penanggungjawab' => $penanggungjawab,
+            'nip' => $nip,
+            'waktucetak' => $waktucetak,
+            'namapenandatangan' => $namapenandatangan,
+            'nippenandatangan' => $nippenandatangan,
+            'jabatanpenandatangan' => $jabatanpenandatangan,
+            'versike' => $versike
+        ]);
+
+        Storage::put('public/dbrfinaldigitall/DBRRuangan'.$iddbr."VersiKe".$versike.'.pdf', $pdf->output());
+        $this->cetakpengesahandbr($iddbr);
+        //Storage::put('public/pengesahandbrfinal/DBRRuangan'.$iddbr."VersiKe".$versike.'.pdf', $pdf->output());
+        //return $pdf->stream('DBRRuangan'.$iddbr."VersiKe".$versike.'.pdf');
+    }
+
     public function cetakpengesahandbr($iddbr){
         $datareferensidbr = DB::table('dbrinduk as a')
             ->select(['a.iddbr as iddbr','a.idpenanggungjawab as idpenanggungjawab','g.nama as penanggungjawab','g.nip as nip',

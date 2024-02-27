@@ -63,7 +63,7 @@ class DetilKontraktualImport implements ToCollection
             $akum_nilai_ketepatan_waktu = $row[15];
             $akum_nilai_kontrak_dini = $row[16];
             $akum_nilai_akselerasi_53 = $row[17];
-            
+
             //dapatkan id bagian dari kontrak coa, dengan terlebih dahulu melookup kontrak coa
             $datakontrak = DB::table('kontrakheader as a')
             ->select(['b.idbagian as idbagian','b.idbiro as idbiro'])
@@ -74,32 +74,34 @@ class DetilKontraktualImport implements ToCollection
                 $idbagian = $item->idbagian;
                 $idbiro = $item->idbiro;
             }
-           
+
             //delete angka lama
-            DB::table('detilpenyelesaiantagihanbagian')->where('THNANG','=',$tahunanggaran)->delete();
+            DB::table('ikpadetilkontraktual')->where('tahunanggaran','=',$tahunanggaran)->delete();
 
            $datainsert = array(
                 'tahunanggaran' => $tahunanggaran,
-                'kdsatker' => $kdsatker,
-                'idbagian' => $idbagian,
-                'idbiro' => $idbiro,
-                'periode' => $periode,
-                'no_sp2d' => $no_sp2d,
-                'tgl_sp2d' => $tgl_sp2d,
-                'no_spm' => $no_spm,
-                'tgl_spm' => $tgl_spm,
-                'uraian' => $uraian,
-                'nilai_sp2d' => $nilai_sp2d,
-                'tgl_bast' => $tgl_bast,
-                'tgl_bap' => null,
-                'tgl_perhitungan' => $tgl_perhitungan,
-                'tgl_konversi_adk' => $tgl_konversi_adk,
-                'selisih_hari' => $selisih_hari,
-                'jumlah_hari_libur' => $jumlah_hari_libur,
-                'jumlah_hari_final' => $jumlah_hari_final,
-                'status' => $status
+                'kodesatker' => $kdsatker,
+                'namasatker' => $nama_satker,
+               'kodekppn' => $kode_kppn,
+               'no_kontrak' => $no_kontrak,
+               'jenisbelanja' => $jenis_belanja,
+               'nilai_kontrak' => $nilai_kontraktual,
+               'tanggal_kontrak' => $tanggal_kontrak,
+               'periode' => $periode,
+               'tanggal_masuk' => $tanggal_masuk,
+               'tanggal_penyelesaian' => $tanggal_penyelesaian,
+               'jumlah_hari' => $jumlah_hari,
+               'status' => $status,
+               'nilai_ketepatan_waktu' => $nilai_ketepatan_waktu,
+               'nilai_kontrak_dini' => $nilai_kontrak_dini,
+               'nilai_akselerasi_53' => $nilai_akselerasi_53,
+               'akum_nilai_ketepatan_waktu' => $akum_nilai_ketepatan_waktu,
+               'akum_nilai_kontrak_dini' => $akum_nilai_kontrak_dini,
+               'akum_nilai_akselerasi_53' => $akum_nilai_akselerasi_53,
+               'idbagian' => $idbagian,
+               'idbiro' => $idbiro
             );
-           DB::table('detilikpakontraktual')->insert($datainsert);
+           DB::table('ikpadetilkontraktual')->insert($datainsert);
         }
     }
 }

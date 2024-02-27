@@ -169,7 +169,7 @@
                     {data: 'useredit', name: 'a.useredit'},
                     {data: 'terakhiredit', name: 'a.terakhiredit'},
                     {data: 'versike', name: 'a.versike'},
-                    {data: 'dokumendbr', name: 'a.dokumendbr'},
+                    {data: 'dokumendbr', name: 'dokumendbr'},
                     {
                         data: 'action',
                         name: 'action',

@@ -42,7 +42,7 @@
                                 <th>Biro</th>
                                 <th>Bagian</th>
                                 <th>Periode</th>
-                                <th>No SP2D</th>
+                                <th>No Kontrak</th>
                                 <th>Tgl SP2D</th>
                                 <th>No SPM</th>
                                 <th>Tgl SPM</th>

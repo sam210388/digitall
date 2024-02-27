@@ -59,13 +59,19 @@ class DBRBagianController extends Controller
                 return $dbr->useredit ?? 'User Belum Ditetapkan';
             })
             ->addColumn('dokumendbr',function ($row){
+                if (Storage::disk('public')->missing('/pengesahandbrfinal/PengesahanDBRRuangan'.$row->iddbr."VersiKe".$row->versike.'.pdf')){
+                    $linkpengesahan = "File Tidak Ada";
+                }else{
+                    $linkpengesahan = '<a href="'.env('APP_URL')."/".asset('storage')."/pengesahandbrfinal/PengesahanDBRRuangan".$row->iddbr."VersiKe".$row->versike.'.pdf" >Download Pengesahan</a>';
+                }
+
                 //$datalokasidbrfinal = getenv('APP_URL')."/".asset('storage')."/dbrfinaldigitall/DBRRuangan".$row->iddbr.".pdf";
-                if (Storage::disk('public')->missing('/dbrfinaldigitall/DBRRuangan'.$row->iddbr.'.pdf')){
+                if (Storage::disk('public')->missing('/dbrfinaldigitall/DBRRuangan'.$row->iddbr."VersiKe".$row->versike.'.pdf')){
                     $linkdokumendbr = "File Tidak Ada";
                 }else{
-                    $linkdokumendbr = '<a href="'.env('APP_URL')."/".asset('storage')."/dbrfinaldigitall/DBRRuangan".$row->iddbr.'.pdf" >Download DBR</a>';
+                    $linkdokumendbr = '<a href="'.env('APP_URL')."/".asset('storage')."/dbrfinaldigitall/DBRRuangan".$row->iddbr."VersiKe".$row->versike.'.pdf" >Download DBR</a>';
                 }
-                return $linkdokumendbr;
+                return "Link Pengesahan: ".$linkpengesahan." Link DBR: ".$linkdokumendbr;
             })
             ->addColumn('action', function($row){
                 //$jumlahdetil = DB::table('detildbr')->where('iddbr','=',$row->iddbr)->count();
@@ -179,8 +185,6 @@ class DBRBagianController extends Controller
         $model = DetilDBRModel::where('iddbr','=',$iddbr);
         $versike = DB::table('dbrinduk')->where('iddbr','=',$iddbr)->value('versike');
         $statusdbr = DB::table('dbrinduk')->where('iddbr','=',$iddbr)->value('statusdbr');
-
-
         return Datatables::eloquent($model)
             ->addColumn('action', function($row) use ($versike, $statusdbr){
                 if ($row->statusbarang == "Ada" and $versike == 1 ){
@@ -195,14 +199,17 @@ class DBRBagianController extends Controller
                     $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="Pengembalian" class="btn btn-danger btn-sm pengembalian">Pengembalian</a>';
                 } else if($row->statusbarang == "Tidak Ada"){
                     $btn = "";
-                }else{
+                }else if($row->statusbarang == "Hilang" || $row->statusbarang == "Pengembalian"){
+                    $btn = "";
+                }
+                else{
                     $btn = '<div class="btn-group" role="group">
                         <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="Delete" class="btn btn-danger btn-sm konfirmasitidakada">Tidak Ada</a>';
                     $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="Konfirmasi" class="btn btn-success btn-sm konfirmasiada">Ada</a>';
                 }
                 return $btn;
             })
-            ->rawColumns(['action'])
+            ->rawColumns(['dokumendbr','action'])
             ->toJson();
     }
 

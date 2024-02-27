@@ -110,6 +110,7 @@ use App\Http\Controllers\Realisasi\Biro\RencanaKegiatanBiroController;
 use App\Http\Controllers\IKPA\Bagian\IKPAPenyelesaianTagihanBagianController;
 use App\Http\Controllers\Realisasi\Admin\KontrakHeaderController;
 use App\Http\Controllers\Realisasi\Admin\KontrakCOAController;
+use App\Http\Controllers\IKPA\Admin\DetilIKPAKontraktualController;
 
 
 
@@ -633,6 +634,7 @@ Route::post('importdetilpenyelesaian',[DetilPenyelesaianController::class,'impor
 Route::get('ikpapenyelesaianbagian',[IKPAPenyelesaianTagihanBagianController::class,'index'])->name('ikpapenyelesaianbagian')->middleware('cekoperatorbagian');
 Route::get('getdataikpapenyelesaianbagian',[IKPAPenyelesaianTagihanBagianController::class,'getdataikpapenyelesaian'])->name('getdataikpapenyelesaianbagian')->middleware('cekoperatorbagian');
 
+//IKPA MODUL KONTRAKTUAL
 
 
 

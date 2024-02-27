@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\IKPA\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Imports\DetilKontraktualImport;
 use App\Imports\PenyelesaianTagihanImport;
 use App\Models\IKPA\Admin\DetilKontraktualModel;
 use App\Models\IKPA\Admin\DetilPenyelesaianTagihanModel;
@@ -59,7 +60,7 @@ class DetilIKPAKontraktualController extends Controller
 
         //echo $path;
 
-        $import = Excel::import(new PenyelesaianTagihanImport(), storage_path('app/public/excel/'.$namafile));
+        $import = Excel::import(new DetilKontraktualImport(), storage_path('app/public/excel/'.$namafile));
 
         Storage::delete($path);
 

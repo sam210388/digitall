@@ -60,7 +60,7 @@
 </head>
 <body>
 <header>
-    <img src="{{'data:image/png;base64,'.base64_encode(file_get_contents(asset('storage/kopsurat/logosetjen.png')))}}">
+    <img src="{{'data:image/png;base64,'.base64_encode(file_get_contents(asset('storage/kopsurat/logosetjen.jpg')))}}">
 </header>
 
 @foreach($datareferensidbr as $drd)
