@@ -122,12 +122,11 @@
     <script type="text/javascript">
         $(function () {
             bsCustomFileInput.init();
-            // Setup - add a text input to each footer cell
-            $('#tabeldetildata tfoot th').each( function (i) {
+
+            // Setup - add a text input to each header cell
+            $('#tabeldetildata thead th').each( function (i) {
                 var title = $('#tabeldetildata thead th').eq( $(this).index() ).text();
-                $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
-                    {"width":"5%"},
-                );
+                $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' );
             });
 
             var table = $('.tabeldetildata').DataTable({
@@ -168,13 +167,14 @@
             });
             table.buttons().container()
                 .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
+
             // Filter event handler
-            $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
+            $( table.table().container() ).on( 'keyup', 'thead input', function () {
                 table
                     .column( $(this).data('index') )
                     .search( this.value )
                     .draw();
-            } );
+            });
 
             $('#tambahdata').click(function () {
                 $('#saveBtn').val("tambah");

@@ -197,9 +197,14 @@ class DBRBagianController extends Controller
                         <a href="javascript:void(0)" data-toggle="tooltip"  data-id="' . $row->iddetil . '" data-original-title="Hilang" class="btn btn-danger btn-sm konfirmasihilang">Hilang</a>';
                     //$btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="Pemeliharaan" class="btn btn-info btn-sm pemeliharaan">Pemeliharaan</a>';
                     $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="Pengembalian" class="btn btn-danger btn-sm pengembalian">Pengembalian</a>';
-                } else if($row->statusbarang == "Tidak Ada"){
+                } else if($row->statusbarang == "Tidak Ada" and $row->statusdbr == 1){
                     $btn = "";
-                }else if($row->statusbarang == "Hilang" || $row->statusbarang == "Pengembalian"){
+                }else if($row->statusbarang == "Tidak Ada" and $row->statusdbr == 2){
+                    $btn = '<div class="btn-group" role="group">
+                        <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="Delete" class="btn btn-danger btn-sm konfirmasitidakada">Tidak Ada</a>';
+                    $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->iddetil.'" data-original-title="Konfirmasi" class="btn btn-success btn-sm konfirmasiada">Ada</a>';
+                }
+                else if($row->statusbarang == "Hilang" || $row->statusbarang == "Pengembalian"){
                     $btn = "";
                 }
                 else{

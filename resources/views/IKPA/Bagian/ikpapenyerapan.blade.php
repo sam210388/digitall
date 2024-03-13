@@ -29,8 +29,6 @@
             <div class="container">
                 <div class="card">
                     <div class="card-header">
-                        <div class="btn-group float-sm-right">
-                        </div>
                         <h3 class="card-title">{{$judul}}</h3>
                     </div>
                     <div class="card-body">
@@ -38,25 +36,20 @@
                             <thead>
                             <tr>
                                 <th>Satker</th>
-                                <th>Biro</th>
                                 <th>Bagian</th>
                                 <th>Periode</th>
-                                <th>Rencana 51</th>
-                                <th>Rencana 52</th>
-                                <th>Rencana 53</th>
-                                <th>Penyerapan 51</th>
-                                <th>Penyerapan 52</th>
-                                <th>Penyerapan 53</th>
-                                <th>Deviasi 51</th>
-                                <th>Deviasi 52</th>
-                                <th>Deviasi 53</th>
-                                <th>% Deviasi 51</th>
-                                <th>% Deviasi 52</th>
-                                <th>% Deviasi 53</th>
-                                <th>% Devisasi Seluruh Belanja</th>
-                                <th>Jenis Belanja Dikelola</th>
-                                <th>Rerata Deviasi Jenis Belanja</th>
-                                <th>Rerata Deviasi Kumulatif</th>
+                                <th>Pagu 51</th>
+                                <th>Pagu 52</th>
+                                <th>Pagu 53</th>
+                                <th>Target 51</th>
+                                <th>Target 52</th>
+                                <th>Target 53</th>
+                                <th>Total Pagu</th>
+                                <th>Total Target</th>
+                                <th>Target % Periode Ini</th>
+                                <th>Penyerapan sd Periode Ini</th>
+                                <th>% sd Periode Ini</th>
+                                <th>Nilai Kinerja Penyerapan TW</th>
                                 <th>Nilai IKPA</th>
                             </tr>
                             </thead>
@@ -65,25 +58,20 @@
                             <tfoot>
                             <tr>
                                 <th>Satker</th>
-                                <th>Biro</th>
                                 <th>Bagian</th>
                                 <th>Periode</th>
-                                <th>Rencana 51</th>
-                                <th>Rencana 52</th>
-                                <th>Rencana 53</th>
-                                <th>Penyerapan 51</th>
-                                <th>Penyerapan 52</th>
-                                <th>Penyerapan 53</th>
-                                <th>Deviasi 51</th>
-                                <th>Deviasi 52</th>
-                                <th>Deviasi 53</th>
-                                <th>% Deviasi 51</th>
-                                <th>% Deviasi 52</th>
-                                <th>% Deviasi 53</th>
-                                <th>% Devisasi Seluruh Belanja</th>
-                                <th>Jenis Belanja Dikelola</th>
-                                <th>Rerata Deviasi Jenis Belanja</th>
-                                <th>Rerata Deviasi Kumulatif</th>
+                                <th>Pagu 51</th>
+                                <th>Pagu 52</th>
+                                <th>Pagu 53</th>
+                                <th>Target 51</th>
+                                <th>Target 52</th>
+                                <th>Target 53</th>
+                                <th>Total Pagu</th>
+                                <th>Total Target</th>
+                                <th>Target % Periode Ini</th>
+                                <th>Penyerapan sd Periode Ini</th>
+                                <th>% sd Periode Ini</th>
+                                <th>Nilai Kinerja Penyerapan TW</th>
                                 <th>Nilai IKPA</th>
                             </tr>
                             </tfoot>
@@ -102,14 +90,12 @@
 
             })
 
-
-            // Setup - add a text input to each footer cell
-            $('#tabelrealisasibagianperpengenal tfoot th').each( function (i) {
+            // Setup - add a text input to each header cell
+            $('#tabelrealisasibagianperpengenal thead th').each( function (i) {
                 var title = $('#tabelrealisasibagianperpengenal thead th').eq( $(this).index() ).text();
-                $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
-                    {"width":"5%"},
-                );
+                $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' );
             });
+
             var table = $('.tabelrealisasibagianperpengenal').DataTable({
                 fixedColumn:true,
                 scrollX:"100%",
@@ -118,31 +104,30 @@
                 serverSide: true,
                 dom: 'lf<"floatright"B>rtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('getdatadeviasibagian')}}",
+                ajax:"{{route('getdatakinerjapenyerapanbagian')}}",
                 columns: [
                     {data: 'kdsatker', name: 'kdsatker'},
-                    {data: 'biro', name: 'birorelation.uraianbiro'},
                     {data: 'bagian', name: 'bagianrelation.uraianbagian'},
                     {data: 'periode', name: 'periode'},
-                    {data: 'rencana51', name: 'rencana51'},
-                    {data: 'rencana52', name: 'rencana52'},
-                    {data: 'rencana53', name: 'rencana53'},
-                    {data: 'penyerapan51', name: 'penyerapan51'},
-                    {data: 'penyerapan52', name: 'penyerapan52'},
-                    {data: 'penyerapan53', name: 'penyerapan53'},
-                    {data: 'deviasi51', name: 'deviasi51'},
-                    {data: 'deviasi52', name: 'deviasi52'},
-                    {data: 'deviasi53', name: 'deviasi53'},
-                    {data: 'prosentasedeviasi51', name: 'prosentasedeviasi51'},
-                    {data: 'prosentasedeviasi52', name: 'prosentasedeviasi52'},
-                    {data: 'prosentasedeviasi53', name: 'prosentasedeviasi53'},
-                    {data: 'prosentasedeviasiseluruhjenis', name: 'prosentasedeviasiseluruhjenis'},
-                    {data: 'jenisbelanjadikelola', name: 'jenisbelanjadikelola'},
-                    {data: 'reratadeviasijenisbelanja', name: 'reratadeviasijenisbelanja'},
-                    {data: 'reratadeviasikumulatif', name: 'reratadeviasikumulatif'},
-                    {data: 'nilaiikpa', name: 'nilaiikpa'},
+                    {data: 'pagu51', name: 'pagu51'},
+                    {data: 'pagu52', name: 'pagu52'},
+                    {data: 'pagu53', name: 'pagu53'},
+                    {data: 'nominaltarget51', name: 'nominaltarget51'},
+                    {data: 'nominaltarget52', name: 'nominaltarget52'},
+                    {data: 'nominaltarget53', name: 'nominaltarget53'},
+                    {data: 'totalpagu', name: 'totalpagu'},
+                    {data: 'totalnominaltarget', name: 'totalnominaltarget'},
+                    {data: 'targetpersenperiodeini', name: 'targetpersenperiodeini'},
+                    {data: 'penyerapansdperiodeini', name: 'penyerapansdperiodeini'},
+                    {data: 'prosentasesdperiodeini', name: 'prosentasesdperiodeini'},
+                    {data: 'nilaikinerjapenyerapantw', name: 'nilaikinerjapenyerapantw'},
+                    {data: 'nilaiikpapenyerapan', name: 'nilaiikpapenyerapan'},
                 ],
                 columnDefs: [
+                    {
+                        targets: 3,
+                        render: $.fn.dataTable.render.number('.', ',', 0, '')
+                    },
                     {
                         targets: 4,
                         render: $.fn.dataTable.render.number('.', ',', 0, '')
@@ -183,13 +168,14 @@
             });
             table.buttons().container()
                 .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
+
             // Filter event handler
-            $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
+            $( table.table().container() ).on( 'keyup', 'thead input', function () {
                 table
                     .column( $(this).data('index') )
                     .search( this.value )
                     .draw();
-            } );
+            });
         });
 
     </script>

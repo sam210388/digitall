@@ -29,8 +29,6 @@
             <div class="container">
                 <div class="card">
                     <div class="card-header">
-                        <div class="btn-group float-sm-right">
-                        </div>
                         <h3 class="card-title">{{$judul}}</h3>
                     </div>
                     <div class="card-body">
@@ -38,8 +36,6 @@
                             <thead>
                             <tr>
                                 <th>Satker</th>
-                                <th>Biro</th>
-                                <th>Bagian</th>
                                 <th>Periode</th>
                                 <th>Pagu 51</th>
                                 <th>Pagu 52</th>
@@ -61,8 +57,6 @@
                             <tfoot>
                             <tr>
                                 <th>Satker</th>
-                                <th>Biro</th>
-                                <th>Bagian</th>
                                 <th>Periode</th>
                                 <th>Pagu 51</th>
                                 <th>Pagu 52</th>
@@ -88,20 +82,12 @@
     <!-- /.content -->
     <script type="text/javascript">
         $(function () {
-            $('.idbagian').select2({
-                width: '100%',
-                theme: 'bootstrap4',
-
-            })
-
-
-            // Setup - add a text input to each footer cell
-            $('#tabelrealisasibagianperpengenal tfoot th').each( function (i) {
+            // Setup - add a text input to each header cell
+            $('#tabelrealisasibagianperpengenal thead th').each( function (i) {
                 var title = $('#tabelrealisasibagianperpengenal thead th').eq( $(this).index() ).text();
-                $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
-                    {"width":"5%"},
-                );
+                $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' );
             });
+
             var table = $('.tabelrealisasibagianperpengenal').DataTable({
                 fixedColumn:true,
                 scrollX:"100%",
@@ -110,19 +96,17 @@
                 serverSide: true,
                 dom: 'lf<"floatright"B>rtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('getdatakinerjapenyerapanbagian')}}",
+                ajax:"{{route('getdatakinerjapenyerapanaksesbiro')}}",
                 columns: [
                     {data: 'kdsatker', name: 'kdsatker'},
-                    {data: 'biro', name: 'birorelation.uraianbiro'},
-                    {data: 'bagian', name: 'bagianrelation.uraianbagian'},
                     {data: 'periode', name: 'periode'},
                     {data: 'pagu51', name: 'pagu51'},
                     {data: 'pagu52', name: 'pagu52'},
                     {data: 'pagu53', name: 'pagu53'},
-                    {data: 'nominaltarget51', name: 'target51'},
+                    {data: 'nominaltarget51', name: 'nominaltarget51'},
                     {data: 'nominaltarget52', name: 'nominaltarget52'},
                     {data: 'nominaltarget53', name: 'nominaltarget53'},
-                    {data: 'totalpagu', name: 'target53'},
+                    {data: 'totalpagu', name: 'totalpagu'},
                     {data: 'totalnominaltarget', name: 'totalnominaltarget'},
                     {data: 'targetpersenperiodeini', name: 'targetpersenperiodeini'},
                     {data: 'penyerapansdperiodeini', name: 'penyerapansdperiodeini'},
@@ -131,6 +115,14 @@
                     {data: 'nilaiikpapenyerapan', name: 'nilaiikpapenyerapan'},
                 ],
                 columnDefs: [
+                    {
+                        targets: 2,
+                        render: $.fn.dataTable.render.number('.', ',', 0, '')
+                    },
+                    {
+                        targets: 3,
+                        render: $.fn.dataTable.render.number('.', ',', 0, '')
+                    },
                     {
                         targets: 4,
                         render: $.fn.dataTable.render.number('.', ',', 0, '')
@@ -157,27 +149,28 @@
                     },
                     {
                         targets: 10,
-                        render: $.fn.dataTable.render.number('.', ',', 0, '')
+                        render: $.fn.dataTable.render.number('.', ',', 2, '')
                     },
                     {
                         targets: 11,
-                        render: $.fn.dataTable.render.number('.', ',', 0, '')
+                        render: $.fn.dataTable.render.number('.', ',', 2, '')
                     },
                     {
-                        targets: 13,
-                        render: $.fn.dataTable.render.number('.', ',', 0, '')
+                        targets: 12,
+                        render: $.fn.dataTable.render.number('.', ',', 2, '')
                     },
                 ],
             });
             table.buttons().container()
                 .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
+
             // Filter event handler
-            $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
+            $( table.table().container() ).on( 'keyup', 'thead input', function () {
                 table
                     .column( $(this).data('index') )
                     .search( this.value )
                     .draw();
-            } );
+            });
         });
 
     </script>

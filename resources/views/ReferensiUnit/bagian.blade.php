@@ -217,6 +217,7 @@
                     $('#saveBtn').val("edit");
                     $('#ajaxModel').modal('show');
                     $('#idbagianawal').val(data.id);
+                    $('#idbagian').val(data.id);
                     $('#iddeputi').val(data.iddeputi).trigger('change');
                     $('#idbiroawal').val(data.idbiro);
                     $('#uraianbagian').val(data.uraianbagian);

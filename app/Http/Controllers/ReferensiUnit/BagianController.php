@@ -43,7 +43,7 @@ class BagianController extends Controller
         $hasil = json_decode($response);
 
         //hapus dlu tabel nya
-        DB::table('apisiapunit')->truncate();
+        //DB::table('apisiapunit')->truncate();
 
         foreach ($hasil as $item){
             $generated_path = $item->generated_path;
@@ -76,7 +76,7 @@ class BagianController extends Controller
     function rekapunitkerja(){
         //DEPUTI
         //HAPUS DLU TABEL DEPUTI
-        DB::table('deputi')->truncate();
+        //DB::table('deputi')->truncate();
 
         //dapatkan data deputi
         $datadeputi = DB::table('apisiapunit')->where('eselon','=',1)->get();
@@ -91,12 +91,13 @@ class BagianController extends Controller
                 'status' => "on"
             );
 
-            DB::table('deputi')->insert($data);
+            //CEK APAKAH SUDAH ADA DEPUTI
+            DB::table('deputi')->updateOrInsert([
+                'id' => $id
+            ],$data);
         }
 
-        //BIRO
-        //HAPUS DLU TABEL BIRO
-        DB::table('biro')->truncate();
+
 
         //dapatkan data biro
         $databiro = DB::table('apisiapunit')->where('eselon','=',2)->get();
@@ -114,12 +115,13 @@ class BagianController extends Controller
                 'status' => "on"
             );
 
-            DB::table('biro')->insert($data);
+            DB::table('biro')->updateOrInsert([
+                'id' => $id
+            ],$data);
         }
 
         //BAGIAN
-        //HAPUS DLU TABEL BAGIAN
-        DB::table('bagian')->truncate();
+
 
         //dapatkan data bagian
         $databagian = DB::table('apisiapunit')->where('eselon','=',3)->get();
@@ -140,7 +142,9 @@ class BagianController extends Controller
                 'uraianbagian' => $uraianbagian,
                 'status' => "on"
             );
-            DB::table('bagian')->insert($data);
+            DB::table('bagian')->updateOrInsert([
+                'id' => $id
+            ],$data);
         }
 
     }
@@ -229,7 +233,7 @@ class BagianController extends Controller
             [
                 'iddeputi' => $request->get('iddeputi'),
                 'idbiro' => $request->get('idbiro'),
-                'id' => $request->get('id'),
+                'id' => $request->get('idbagian'),
                 'uraianbagian' => $request->get('uraianbagian'),
                 'status' => $status
             ]);
@@ -261,7 +265,7 @@ class BagianController extends Controller
         $validated = $request->validate([
             'iddeputi' => 'required',
             'idbiro' => 'required',
-            'id' => 'required',
+            'idbagian' => 'required',
             'uraianbagian' => 'required',
 
         ]);

@@ -201,6 +201,14 @@
                     window.location="{{URL::to('rekondataang')}}"+"/"+idrefstatus;
                 }
             });
+
+            $('body').on('click', '.exportanggaran', function () {
+                var idrefstatus = $(this).data('id');
+                if( confirm("Apakah Anda Yakin Mau Export Data Anggaran ini?")){
+                    $(this).html('Rekon..');
+                    window.location="{{URL::to('exportanggaran')}}"+"/"+idrefstatus;
+                }
+            });
         });
 
     </script>

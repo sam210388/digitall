@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\AdminAnggaran;
 
+use App\Exports\ExportAnggaran;
 use App\Jobs\ImportRefStatus;
 use App\Jobs\UpdateStatusAktifAnggaran;
 use App\Libraries\BearerKey;
@@ -9,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Libraries\TarikDataMonsakti;
 use App\Models\AdminAnggaran\RefStatusModel;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\DataTables;
 
 class RefstatusController extends Controller
@@ -76,7 +78,13 @@ class RefstatusController extends Controller
             new UpdateStatusImportRefStatus($tahunanggaran)
         ])->dispatch($tahunanggaran);
         */
-        //return redirect()->to('refstatus')->with('status','Import Ref Status dari SAKTI Berhasil');
+        return redirect()->to('refstatus')->with('status','Import Ref Status dari SAKTI Berhasil');
+    }
+
+    function exportanggaran($refstatus){
+        $tahunanggaran = session('tahunanggaran');
+        //Excel::download(new UsersExport, 'users.xlsx');
+        return Excel::download(new ExportAnggaran($refstatus),'EksportAnggaran.xlsx');
     }
 
     function aksiimportrefstatus($tahunanggaran){

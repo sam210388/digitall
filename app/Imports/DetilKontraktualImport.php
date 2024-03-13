@@ -2,14 +2,10 @@
 
 namespace App\Imports;
 
-use App\Models\IKPA\Admin\DetilPenyelesaianTagihanModel;
-use Carbon\Carbon;
-use Carbon\Traits\Date;
+use DateTime;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class DetilKontraktualImport implements ToCollection
 {
@@ -22,23 +18,23 @@ class DetilKontraktualImport implements ToCollection
 
     public function collection(Collection $rows)
     {
+        //delete angka lama
+        $tahunanggaran = session('tahunanggaran');
+        DB::table('ikpadetilkontraktual')->where('tahunanggaran','=',$tahunanggaran)->delete();
         foreach ($rows as $row) {
             if ($row[0] == 'No.') {
                 continue; // Skip header row
             }
-            // Set the Carbon locale to English
-            //Carbon::setLocale('en');
-
-            $tahunanggaran = session('tahunanggaran');
             $kdsatker = trim($row[1],"'");
             //echo $kdsatker;
             $nama_satker = $row[2];
             $kode_kppn = $row[3];
-            $no_kontrak = $row[4];
+            $no_kontrak = trim($row[4],"'");
             $jenis_belanja = $row[5];
             $nilai_kontraktual = $row[6];
             $tanggal_kontrak = \DateTime::createFromFormat('d-M-y', trim($row[7],"'"));
             $tanggal_kontrak = $tanggal_kontrak ->format('Y-m-d');
+
             $periode = \DateTime::createFromFormat('d-M-y', trim($row[7],"'"))->format('n');
             $tahunkontrak = \DateTime::createFromFormat('d-M-y', trim($row[7],"'"))->format('Y');
             //untuk kontrak pradipa, dimana tanggal mulai kontrak dilakukan sejak bulan desember tahun anggaran sebelumnya, dihtiung sebagai
@@ -49,10 +45,12 @@ class DetilKontraktualImport implements ToCollection
 
             $tanggal_masuk = \DateTime::createFromFormat('d-M-y', trim($row[8],"'"));
             $tanggal_masuk = $tanggal_masuk ->format('Y-m-d');
-
-            $tanggal_penyelesaian = \DateTime::createFromFormat('d-M-y', trim($row[9],"'"));
-            $tanggal_penyelesaian = $tanggal_penyelesaian ->format('Y-m-d');
-
+            if ($row[9] != ""){
+                $tanggal_penyelesaian = \DateTime::createFromFormat('d-M-y', trim($row[9],"'"));
+                $tanggal_penyelesaian = $tanggal_penyelesaian ->format('Y-m-d');
+            }else{
+                $tanggal_penyelesaian = null;
+            }
             $jumlah_hari = $row[10];
             $status = $row[11];
 
@@ -65,18 +63,19 @@ class DetilKontraktualImport implements ToCollection
             $akum_nilai_akselerasi_53 = $row[17];
 
             //dapatkan id bagian dari kontrak coa, dengan terlebih dahulu melookup kontrak coa
-            $datakontrak = DB::table('kontrakheader as a')
-            ->select(['b.idbagian as idbagian','b.idbiro as idbiro'])
-            ->leftJoin('kontrakcoa as b','a.NO_KONTRAK','=','b.NO_KONTRAK')
-            ->where('a.NO_KONTRAK','=',$no_kontrak)
-            ->get();
+            $ID_KONTRAK = DB::table('kontrakheader as a')
+                ->select(['ID_KONTRAK'])
+                ->where('NO_KONTRAK','=',$no_kontrak)
+                ->value('ID_KONTRAK');
+            $datakontrak = DB::table('kontrakcoa')
+                ->where('ID_KONTRAK','=',$ID_KONTRAK)
+                ->get();
+            $idbiro = 0;
+            $idbagian = 0;
             foreach($datakontrak as $item){
                 $idbagian = $item->idbagian;
                 $idbiro = $item->idbiro;
             }
-
-            //delete angka lama
-            DB::table('ikpadetilkontraktual')->where('tahunanggaran','=',$tahunanggaran)->delete();
 
            $datainsert = array(
                 'tahunanggaran' => $tahunanggaran,

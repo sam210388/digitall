@@ -29,9 +29,6 @@
             <div class="container">
                 <div class="card">
                     <div class="card-header">
-                        <div class="btn-group float-sm-right">
-                            <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="exportrealisasi">Export</a>
-                        </div>
                         <h3 class="card-title">{{$judul}}</h3>
                     </div>
                     <div class="card-body">
@@ -39,13 +36,12 @@
                             <thead>
                             <tr>
                                 <th>Satker</th>
-                                <th>Biro</th>
                                 <th>Bagian</th>
                                 <th>Periode</th>
                                 <th>Tepat Waktu Kumulatif</th>
                                 <th>Terlambat Kumulatif</th>
                                 <th>Total Kumulatif</th>
-                                <th>Nilai IKPA</th>
+                                <th>Persen</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -53,13 +49,12 @@
                             <tfoot>
                             <tr>
                                 <th>Satker</th>
-                                <th>Biro</th>
                                 <th>Bagian</th>
                                 <th>Periode</th>
                                 <th>Tepat Waktu Kumulatif</th>
                                 <th>Terlambat Kumulatif</th>
                                 <th>Total Kumulatif</th>
-                                <th>Nilai IKPA</th>
+                                <th>Persen</th>
                             </tr>
                             </tfoot>
                         </table>
@@ -71,13 +66,19 @@
     <!-- /.content -->
     <script type="text/javascript">
         $(function () {
-            // Setup - add a text input to each footer cell
-            $('#tabelrealisasibagianperpengenal tfoot th').each( function (i) {
+            $('.idbagian').select2({
+                width: '100%',
+                theme: 'bootstrap4',
+
+            })
+
+
+            // Setup - add a text input to each header cell
+            $('#tabelrealisasibagianperpengenal thead th').each( function (i) {
                 var title = $('#tabelrealisasibagianperpengenal thead th').eq( $(this).index() ).text();
-                $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
-                    {"width":"5%"},
-                );
+                $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' );
             });
+
             var table = $('.tabelrealisasibagianperpengenal').DataTable({
                 fixedColumn:true,
                 scrollX:"100%",
@@ -89,7 +90,6 @@
                 ajax:"{{route('getdataikpapenyelesaianbagian')}}",
                 columns: [
                     {data: 'kdsatker', name: 'kdsatker'},
-                    {data: 'biro', name: 'birorelation.uraianbiro'},
                     {data: 'bagian', name: 'bagianrelation.uraianbagian'},
                     {data: 'periode', name: 'periode'},
                     {data: 'tepatwaktuakumulatif', name: 'tepatwaktuakumulatif'},
@@ -97,16 +97,23 @@
                     {data: 'totalakumulatif', name: 'totalakumulatif'},
                     {data: 'persen', name: 'persen'},
                 ],
+                columnDefs: [
+                    {
+                        targets: 6,
+                        render: $.fn.dataTable.render.number('.', ',', 2, '')
+                    },
+                ],
             });
             table.buttons().container()
                 .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
+
             // Filter event handler
-            $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
+            $( table.table().container() ).on( 'keyup', 'thead input', function () {
                 table
                     .column( $(this).data('index') )
                     .search( this.value )
                     .draw();
-            } );
+            });
         });
 
     </script>

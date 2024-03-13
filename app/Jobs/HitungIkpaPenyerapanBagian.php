@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Http\Controllers\IKPA\Admin\IKPAPenyerapanController;
+use App\Http\Controllers\IKPA\Admin\IKPAPenyerapanBagianController;
 use App\Http\Controllers\IKPA\Bagian\IKPAPenyerapanBagianController;
 use App\Http\Controllers\Realisasi\Admin\RealisasiSaktiController;
 use App\Http\Controllers\Realisasi\Admin\SppHeaderController;
@@ -37,7 +37,7 @@ class HitungIkpaPenyerapanBagian implements ShouldQueue
     public function handle()
     {
         $tahunanggaran = $this->tahunanggaran;
-        $sppheader = new IKPAPenyerapanController();
+        $sppheader = new IKPAPenyerapanBagianController();
         $sppheader = $sppheader->aksiperhitunganikpapenyerapanbagian($tahunanggaran);
     }
 }

@@ -6,6 +6,7 @@ use App\Jobs\CetakDBRFinal;
 use App\Jobs\DeleteDataAset;
 use App\Jobs\HapusAnggaranInaktif;
 use App\Jobs\HitungIkpaDeviasiBagian;
+use App\Jobs\HitungIkpaKontraktualBagian;
 use App\Jobs\HitungIkpaPenyelesaianBagian;
 use App\Jobs\HitungIkpaPenyerapanBagian;
 use App\Jobs\ImportAset;
@@ -49,7 +50,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
         //$TA = date('Y');
         $TA='2024';
         //rekap anggaran
@@ -62,17 +62,19 @@ class Kernel extends ConsoleKernel
 
         $schedule->job(new UpdateIndetitasKinerja($TA))->dailyAt('02:07');
 
-        $schedule->job(new HitungIkpaPenyerapanBagian($TA))->dailyAt('08:03');
+        $schedule->job(new HitungIkpaPenyerapanBagian($TA))->dailyAt('13:23');
 
-        $schedule->job(new ImportKontrakHeader(2023,'001012'))->dailyAt('18:08');
+        $schedule->job(new HitungIkpaKontraktualBagian($TA))->dailyAt('15:10');
 
-        $schedule->job(new ImportKontrakCOA('001012',2023))->dailyAt('23:41');
+        $schedule->job(new ImportKontrakHeader($TA))->dailyAt('18:08');
 
-        $schedule->job(new HitungIkpaPenyelesaianBagian(2023))->dailyAt('19:09');
+        $schedule->job(new ImportKontrakCOA($TA))->dailyAt('21:59');
+
+        $schedule->job(new HitungIkpaPenyelesaianBagian($TA))->dailyAt('19:09');
 
         $schedule->job(new HitungIkpaDeviasiBagian($TA))->dailyAt('08:04');
 
-        $schedule->job(new CetakDBRFinal())->dailyAt('16:01');
+        //$schedule->job(new CetakDBRFinal())->dailyAt('16:01');
 
         $schedule->job(new ImportRealisasiSemar($TA))->everyFourHours();
 
@@ -107,7 +109,7 @@ class Kernel extends ConsoleKernel
                 new HapusAnggaranInaktif($TA),
                 new RekonDataAngSeluruh($TA)
             ])->dispatch($TA);
-        })->dailyAt('10:50');
+        })->dailyAt('05:17');
 
 
         $schedule->call(function () use ($TA){

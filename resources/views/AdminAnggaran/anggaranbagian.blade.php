@@ -222,7 +222,7 @@
                         $('#formanggaranbagian').trigger("reset");
                         $('#ajaxModel').modal('hide');
                         $('#saveBtn').html('Simpan Data');
-                        table.draw();
+                        table.ajax.reload(null, false);
                     },
                     error: function (xhr, textStatus, errorThrown) {
                         if(xhr.responseJSON.errors){
@@ -252,7 +252,6 @@
 
         $('#iddeputi').on('change', function () {
             var iddeputi = this.value;
-
             $.ajax({
                 url: "{{url('ambildatabiro')}}",
                 type: "POST",
@@ -311,12 +310,10 @@
         Render DataTable
         --------------------------------------------
         --------------------------------------------*/
-        // Setup - add a text input to each footer cell
-        $('#tabelanggaranbagian tfoot th').each( function (i) {
+        // Setup - add a text input to each header cell
+        $('#tabelanggaranbagian thead th').each( function (i) {
             var title = $('#tabelanggaranbagian thead th').eq( $(this).index() ).text();
-            $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
-                {"width":"5%"},
-            );
+            $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' );
         });
 
         let status = document.getElementById('idstatus').value;
@@ -345,19 +342,22 @@
                 },
             ],
         });
+
         table.buttons().container()
             .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
+
         // Filter event handler
-        $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
+        $( table.table().container() ).on( 'keyup', 'thead input', function () {
             table
                 .column( $(this).data('index') )
                 .search( this.value )
                 .draw();
         });
 
+
         $('#idstatus').on('change',function (){
             let status = document.getElementById('idstatus').value;
-            var table = $('#tabelanggaranbagian').DataTable({
+            var table = $('.tabelanggaranbagian').DataTable({
                 destroy: true,
                 fixedColumn:true,
                 scrollX:"100%",
@@ -382,10 +382,12 @@
                     },
                 ],
             });
+
             table.buttons().container()
                 .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
+
             // Filter event handler
-            $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
+            $( table.table().container() ).on( 'keyup', 'thead input', function () {
                 table
                     .column( $(this).data('index') )
                     .search( this.value )

@@ -84,14 +84,29 @@ class AnggaranBagianController extends Controller
         $anggaransetjenkosong = DB::table('anggaranbagian')
             ->where('kdsatker','=','001012')
             ->where('tahunanggaran','=',$tahunanggaran)
-            ->whereNull('idbagian')
-            ->orWhere('idbagian','=',0)
+            ->where(function($query) {
+                $query->where(function($q) {
+                    $q->whereNull('idbagian')
+                        ->whereNotIn('idbiro',[703,705,707,709,711,717,719,729]);
+                })
+                    ->orWhere(function($q) {
+                        $q->whereNull('idbiro');
+                    });
+            })
             ->count();
+
         $anggarandewankosong = DB::table('anggaranbagian')
             ->where('kdsatker','=','001030')
             ->where('tahunanggaran','=',$tahunanggaran)
-            ->whereNull('idbagian')
-            ->orWhere('idbagian','=',0)
+            ->where(function($query) {
+                $query->where(function($q) {
+                    $q->whereNull('idbagian')
+                        ->whereNotIn('idbiro',[703,705,707,709,711,717,719,729]);
+                })
+                    ->orWhere(function($q) {
+                        $q->whereNull('idbiro');
+                    });
+            })
             ->count();
         return view('AdminAnggaran.anggaranbagian',[
             "judul"=>$judul,
@@ -108,11 +123,27 @@ class AnggaranBagianController extends Controller
         if ($request->ajax()) {
             $data = AnggaranBagianModel::where('tahunanggaran','=',$tahunanggaran);
             if ($status == 2) {
-                $data->where('kdsatker','=','001012')
-                    ->whereNull('idbagian');
+                $data->where('kdsatker','=','001012');
+                $data->where(function($query) {
+                    $query->where(function($q) {
+                        $q->whereNull('idbagian')
+                            ->whereNotIn('idbiro',[703,705,707,709,711,717,719,729]);
+                    })
+                        ->orWhere(function($q) {
+                            $q->whereNull('idbiro');
+                        });
+                });
             }else if($status == 3){
-                $data->where('kdsatker','=','001030')
-                    ->whereNull('idbagian');
+                $data->where('kdsatker','=','001030');
+                $data->where(function($query) {
+                    $query->where(function($q) {
+                        $q->whereNull('idbagian')
+                            ->whereNotIn('idbiro',[703,705,707,709,711,717,719,729]);
+                    })
+                        ->orWhere(function($q) {
+                            $q->whereNull('idbiro');
+                        });
+                });
             }
             return Datatables::of($data)
                 ->addIndexColumn()

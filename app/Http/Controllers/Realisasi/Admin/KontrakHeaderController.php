@@ -41,7 +41,15 @@ class KontrakHeaderController extends Controller
         return redirect()->to('kontrakheader')->with('status','Import Kontrak Header dari SAKTI Berhasil');
     }
 
-    function aksiimportkontrakheader($tahunanggaran, $kdsatker){
+    function aksiimportkontrakheader($TA){
+        $datasatker = ['001012','001030'];
+        foreach ($datasatker as $data){
+           $this->aksiimportkontrakheaderpersatker($TA, $data);
+        }
+    }
+
+
+    function aksiimportkontrakheaderpersatker($tahunanggaran, $kdsatker){
         $kodemodul = 'KOM';
         $tipedata = 'kontrakHeader';
         $variabel = [$kdsatker];

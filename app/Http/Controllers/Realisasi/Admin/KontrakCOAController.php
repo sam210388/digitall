@@ -40,7 +40,14 @@ class KontrakCOAController extends Controller
         return redirect()->to('kontrakcoa')->with('status','Import Kontrak COA dari SAKTI Berhasil');
     }
 
-    function aksiimportkontrakcoa($kodesatker, $tahunanggaran){
+    function aksiimportkontrakcoa($TA){
+        $kodesatker = ['001012','001030'];
+        foreach ($kodesatker as $kode){
+            $this->aksiimportkontrakcoapersatker($kode, $TA);
+        }
+    }
+
+    function aksiimportkontrakcoapersatker($kodesatker, $tahunanggaran){
         $kodemodul = 'KOM';
         $tipedata = 'kontrakCOA';
         $variabel = [$kodesatker];
@@ -66,7 +73,10 @@ class KontrakCOAController extends Controller
                     $token->simpantokenbaru($tahunanggaran, $kodemodul, $tokenresponse);
                 }else{
                     //delete dlu data coa tahun anggaran terkait
-                    DB::table('kontrakCOA')->where('THNANG','=',$tahunanggaran)->delete();
+                    DB::table('kontrakCOA')
+                        ->where('THNANG','=',$tahunanggaran)
+                        ->where('KDSATKER','=',$kodesatker)
+                        ->delete();
                     foreach ($value as $DATA) {
                         $KODE_KEMENTERIAN = $DATA->KODE_KEMENTERIAN;
                         $KDSATKER = $DATA->KDSATKER;
@@ -80,6 +90,7 @@ class KontrakCOAController extends Controller
                         $KODE_SUBOUTPUT = $DATA->KODE_SUBOUTPUT;
                         $KODE_KOMPONEN = $DATA->KODE_KOMPONEN;
                         $KODE_SUBKOMPONEN = $DATA->KODE_SUBKOMPONEN;
+                        $KODE_SUBKOMPONEN = substr($KODE_SUBKOMPONEN,1,1);
                         $KODE_ITEM = $DATA->KODE_ITEM;
                         $KODE_COA = $DATA->KODE_COA;
                         $VOL_SUBOUTPUT = $DATA->VOL_SUBOUTPUT;

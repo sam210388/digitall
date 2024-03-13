@@ -31,6 +31,7 @@
                     <div class="card-header">
                         <div class="btn-group float-sm-right">
                             <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="tambahdata">Tambah Data</a>
+                            <a class="btn btn-primary float-sm-right" href="javascript:void(0)" id="importdatakontraktual">Import Kontrak Header</a>
                         </div>
                         <h3 class="card-title">{{$judul}}</h3>
                     </div>
@@ -43,19 +44,19 @@
                                 <th>Bagian</th>
                                 <th>Periode</th>
                                 <th>No Kontrak</th>
-                                <th>Tgl SP2D</th>
-                                <th>No SPM</th>
-                                <th>Tgl SPM</th>
-                                <th>Uraian</th>
-                                <th>Nilai SP2D</th>
-                                <th>Tanggal BAST</th>
-                                <th>Tanggal BAP</th>
-                                <th>Tanggal Mulai Perhitungan</th>
-                                <th>Tanggal Konversi ADK</th>
-                                <th>Selisih Hari</th>
-                                <th>Jumlah Hari Libur</th>
-                                <th>Jumlah Hari Final</th>
+                                <th>Jenis Belanja</th>
+                                <th>Nilai Kontrak</th>
+                                <th>Tanggal Kontrak</th>
+                                <th>Tanggal Masuk</th>
+                                <th>Tanggal Penyelesaian</th>
+                                <th>Jumlah Hari</th>
                                 <th>Status</th>
+                                <th>Nilai Ketepatan Waktu</th>
+                                <th>Nilai Kontrak Dini</th>
+                                <th>Nilai Akselerasi 51</th>
+                                <th>Akum Nilai Ketepatan Waktu</th>
+                                <th>Akum Nilai Kontrak Dini</th>
+                                <th>Akum Nilai Akselerasi 53</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -66,20 +67,20 @@
                                 <th>Biro</th>
                                 <th>Bagian</th>
                                 <th>Periode</th>
-                                <th>No SP2D</th>
-                                <th>Tgl SP2D</th>
-                                <th>No SPM</th>
-                                <th>Tgl SPM</th>
-                                <th>Uraian</th>
-                                <th>Nilai SP2D</th>
-                                <th>Tanggal BAST</th>
-                                <th>Tanggal BAP</th>
-                                <th>Tanggal Mulai Perhitungan</th>
-                                <th>Tanggal Konversi ADK</th>
-                                <th>Selisih Hari</th>
-                                <th>Jumlah Hari Libur</th>
-                                <th>Jumlah Hari Final</th>
+                                <th>No Kontrak</th>
+                                <th>Jenis Belanja</th>
+                                <th>Nilai Kontrak</th>
+                                <th>Tanggal Kontrak</th>
+                                <th>Tanggal Masuk</th>
+                                <th>Tanggal Penyelesaian</th>
+                                <th>Jumlah Hari</th>
                                 <th>Status</th>
+                                <th>Nilai Ketepatan Waktu</th>
+                                <th>Nilai Kontrak Dini</th>
+                                <th>Nilai Akselerasi 53</th>
+                                <th>Akum Nilai Ketepatan Waktu</th>
+                                <th>Akum Nilai Kontrak Dini</th>
+                                <th>Akum Nilai Akselerasi 53</th>
                             </tr>
                             </tfoot>
                         </table>
@@ -90,7 +91,7 @@
                                         <h4 class="modal-title" id="modelHeading"></h4>
                                     </div>
                                     <div class="modal-body">
-                                        <form action="{{route('importdetilpenyelesaian')}}" method="POST" id="formuploaddetilpenyelesaiantagihan" name="formuploaddetilpenyelesaiantagihan" class="form-horizontal" enctype="multipart/form-data">
+                                        <form action="{{route('importdetilkontraktual')}}" method="POST" id="formuploaddetilpenyelesaiantagihan" name="formuploaddetilpenyelesaiantagihan" class="form-horizontal" enctype="multipart/form-data">
                                             @csrf
                                             <div class="input-group">
                                                 <label for="file" class="col-sm-6 control-label">Upload File Detail</label>
@@ -122,14 +123,12 @@
     <script type="text/javascript">
         $(function () {
             bsCustomFileInput.init();
-            // Setup - add a text input to each footer cell
-            $('#tabeldetildata tfoot th').each( function (i) {
-                var title = $('#tabeldetildata thead th').eq( $(this).index() ).text();
-                $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
-                    {"width":"5%"},
-                );
-            });
 
+            // Setup - add a text input to each header cell
+            $('#tabeldetildata thead th').each( function (i) {
+                var title = $('#tabeldetildata thead th').eq( $(this).index() ).text();
+                $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' );
+            });
             var table = $('.tabeldetildata').DataTable({
                 fixedColumn:true,
                 scrollX:"100%",
@@ -138,43 +137,44 @@
                 serverSide: true,
                 dom: 'lf<"floatright"B>rtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('getdetilpenyelesaian')}}",
+                ajax:"{{route('getdetilkontraktual')}}",
                 columns: [
-                    {data: 'kdsatker', name: 'kdsatker'},
+                    {data: 'kodesatker', name: 'kodesatker'},
                     {data: 'biro', name: 'birorelation.uraianbiro'},
                     {data: 'bagian', name: 'bagianrelation.uraianbagian'},
                     {data: 'periode', name: 'periode'},
-                    {data: 'no_sp2d', name: 'no_sp2d'},
-                    {data: 'tgl_sp2d', name: 'tgl_sp2d'},
-                    {data: 'no_spm', name: 'no_spm'},
-                    {data: 'tgl_spm', name: 'tgl_spm'},
-                    {data: 'uraian', name: 'uraian'},
-                    {data: 'nilai_sp2d', name: 'nilai_sp2d'},
-                    {data: 'tgl_bast', name: 'tgl_bast'},
-                    {data: 'tgl_bap', name: 'tgl_bap'},
-                    {data: 'tgl_perhitungan', name: 'tgl_perhitungan'},
-                    {data: 'tgl_konversi_adk', name: 'tgl_konversi_adk'},
-                    {data: 'selisih_hari', name: 'selisih_hari'},
-                    {data: 'jumlah_hari_libur', name: 'jumlah_hari_libur'},
-                    {data: 'jumlah_hari_final', name: 'jumlah_hari_final'},
+                    {data: 'no_kontrak', name: 'no_kontrak'},
+                    {data: 'jenisbelanja', name: 'jenisbelanja'},
+                    {data: 'nilai_kontrak', name: 'nilai_kontrak'},
+                    {data: 'tanggal_kontrak', name: 'tanggal_kontrak'},
+                    {data: 'tanggal_masuk', name: 'tanggal_masuk'},
+                    {data: 'tanggal_penyelesaian', name: 'tanggal_penyelesaian'},
+                    {data: 'jumlah_hari', name: 'jumlah_hari'},
                     {data: 'status', name: 'status'},
+                    {data: 'nilai_ketepatan_waktu', name: 'nilai_ketepatan_waktu'},
+                    {data: 'nilai_kontrak_dini', name: 'nilai_kontrak_dini'},
+                    {data: 'nilai_akselerasi_53', name: 'nilai_akselerasi_53'},
+                    {data: 'akum_nilai_ketepatan_waktu', name: 'akum_nilai_ketepatan_waktu'},
+                    {data: 'akum_nilai_kontrak_dini', name: 'akum_nilai_kontrak_dini'},
+                    {data: 'akum_nilai_akselerasi_53', name: 'akum_nilai_akselerasi_53'},
                 ],
                 columnDefs: [
                     {
-                        targets: 9,
+                        targets: 6,
                         render: $.fn.dataTable.render.number('.', ',', 0, '')
                     },
                 ],
             });
             table.buttons().container()
                 .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
+
             // Filter event handler
-            $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
+            $( table.table().container() ).on( 'keyup', 'thead input', function () {
                 table
                     .column( $(this).data('index') )
                     .search( this.value )
                     .draw();
-            } );
+            });
 
             $('#tambahdata').click(function () {
                 $('#saveBtn').val("tambah");
@@ -183,63 +183,14 @@
                 $('#ajaxModel').modal('show');
             });
 
-            /*
-            $('#saveBtn').click(function (e) {
-                e.preventDefault();
-                $(this).html('Sending..');
-                let form = document.getElementById('formuploaddetilpenyelesaiantagihan');
-                let fd = new FormData(form);
-                $.ajax({
-                    data: fd,
-                    url: "{{route('importdetilpenyelesaian')}}",
-                    type: "POST",
-                    dataType: 'json',
-                    contentType: false,
-                    processData: false,
-                    success: function (data) {
-                        if (data.status == "berhasil"){
-                            Swal.fire({
-                                title: 'Sukses',
-                                text: 'Simpan Data Berhasil',
-                                icon: 'success'
-                            })
-                        }else{
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'Simpan Data Gagal',
-                                icon: 'error'
-                            })
-                        }
-                        $('#formgedung').trigger("reset");
-                        $('#ajaxModel').modal('hide');
-                        $('#saveBtn').html('Simpan Data');
-                        table.draw();
-                    },
-                    error: function (xhr, textStatus, errorThrown) {
-                        if(xhr.responseJSON.errors){
-                            var errorsArr = [];
-                            $.each(xhr.responseJSON.errors, function(key,value) {
-                                errorsArr.push(value);
-                            });
-                            Swal.fire({
-                                title: 'Error!',
-                                text: errorsArr,
-                                icon: 'error'
-                            })
-                        }else{
-                            var jsonValue = jQuery.parseJSON(xhr.responseText);
-                            Swal.fire({
-                                title: 'Error!',
-                                text: jsonValue.message,
-                                icon: 'error'
-                            })
-                        }
-
-                        $('#saveBtn').html('Simpan Data');
-                    },
-                });
+            $('#importdatakontraktual').click(function (e) {
+                if( confirm("Apakah Anda Yakin Mau Import Kontrak Header ?")){
+                    e.preventDefault();
+                    $(this).html('Importing..');
+                    window.location="{{URL::to('importkontrakheaderjob')}}";
+                }
             });
-            */
+
         });
 
     </script>
