@@ -109,6 +109,8 @@ class IndikatorRoController extends Controller
         $tahunanggaran = session('tahunanggaran');
 
         $datatahunanggaran = DB::table('tahunanggaran')->get();
+        $datadeputi = DB::table('deputi')->get();
+
         $datakegiatan = DB::table('kegiatan')->where('tahunanggaran','=',$tahunanggaran)->get();
         $dataoutput = DB::table('output')->where('tahunanggaran','=',$tahunanggaran)->get();
         $datasuboutput = DB::table('suboutput')->where('tahunanggaran','=',$tahunanggaran)->get();
@@ -141,6 +143,7 @@ class IndikatorRoController extends Controller
 
         return view('Caput.Admin.indikatorro',[
             "judul"=>$judul,
+            "datadeputi" => $datadeputi,
             "datatahunanggaran" => $datatahunanggaran,
             "datakegiatan" => $datakegiatan,
             "dataoutput" => $dataoutput,
@@ -181,8 +184,12 @@ class IndikatorRoController extends Controller
         $kodesuboutput = $request->get('suboutput');
         $kodekomponen = $request->get('komponen');
         $indeks = $tahunanggaran.$kodesatker.$kodekegiatan.$kodeoutput.$kodesuboutput.$kodekomponen;
-
-        IndikatorRoModel::create(
+        $iddeputi = $request->get('iddeputi');
+        $idbiro = $request->get('idbiro');
+        $idbagian = $request->get('idbagian');
+        IndikatorRoModel::pdateOrCreate([
+            'indeks' => $indeks
+        ],
             [
                 'tahunanggaran' => $tahunanggaran,
                 'kodesatker' => $kodesatker,
@@ -191,7 +198,22 @@ class IndikatorRoController extends Controller
                 'kodesuboutput' => $kodesuboutput,
                 'kodekomponen' => $kodekomponen,
                 'uraianindikatorro' => $request->get('uraianindikatorro'),
+                'iddeputi' => $iddeputi,
+                'idbiro' => $idbiro,
+                'idbagian' => $idbagian,
                 'target' => $request->get('target'),
+                'target1' => $request->get('januari'),
+                'target2' => $request->get('februari'),
+                'target3' => $request->get('maret'),
+                'target4' => $request->get('april'),
+                'target5' => $request->get('mei'),
+                'target6' => $request->get('juni'),
+                'target7' => $request->get('juli'),
+                'target8' => $request->get('agustus'),
+                'target9' => $request->get('september'),
+                'target10' => $request->get('oktober'),
+                'target11' => $request->get('november'),
+                'target12' => $request->get('desember'),
                 'satuan' => $request->get('satuan'),
                 'indeks' => $indeks,
                 'jenisindikator' => $request->get('jenisindikator'),
@@ -254,6 +276,9 @@ class IndikatorRoController extends Controller
         $kodesuboutput = $request->get('suboutput');
         $kodekomponen = $request->get('komponen');
         $indeks = $tahunanggaran.$kodesatker.$kodekegiatan.$kodeoutput.$kodesuboutput.$kodekomponen;
+        $iddeputi = $request->get('iddeputi');
+        $idbiro = $request->get('idbiro');
+        $idbagian = $request->get('idbagian');
         $statusawal = $request->get('statusawal');
 
         if ($statusawal == ""){
@@ -271,7 +296,22 @@ class IndikatorRoController extends Controller
                 'kodesuboutput' => $kodesuboutput,
                 'kodekomponen' => $kodekomponen,
                 'uraianindikatorro' => $request->get('uraianindikatorro'),
+                'iddeputi' => $iddeputi,
+                'idbiro' => $idbiro,
+                'idbagian' => $idbagian,
                 'target' => $request->get('target'),
+                'target1' => $request->get('januari'),
+                'target2' => $request->get('februari'),
+                'target3' => $request->get('maret'),
+                'target4' => $request->get('april'),
+                'target5' => $request->get('mei'),
+                'target6' => $request->get('juni'),
+                'target7' => $request->get('juli'),
+                'target8' => $request->get('agustus'),
+                'target9' => $request->get('september'),
+                'target10' => $request->get('oktober'),
+                'target11' => $request->get('november'),
+                'target12' => $request->get('desember'),
                 'satuan' => $request->get('satuan'),
                 'indeks' => $indeks,
                 'jenisindikator' => $request->get('jenisindikator'),

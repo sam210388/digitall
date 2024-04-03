@@ -26,56 +26,46 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="btn-group float-sm-right" role="group">
-                            <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="tambahtransaksi"> Tambah Data</a>
+                            <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="tambahdetil"> Tambah Data</a>
                             <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="kembali"> Kembali</a>
                         </div>
                         <h3 class="card-title">{{$judul}}</h3>
                     </div>
                     <div class="card-body">
-                        <table id="tabelkasbon" class="table table-bordered table-striped tabelkasbon">
+                        <table id="tabeldetilrencana" class="table table-bordered table-striped tabeldetilrencana">
                             <thead>
                             <tr>
                                 <th>ID</th>
                                 <th>Rencana Kegiatan</th>
+                                <th>Bulan Pencairan</th>
                                 <th>Pengenal</th>
-                                <th>Rupiah</th>
-                                <th>Pagu</th>
-                                <th>Total Rencana</th>
-                                <th>Realisasi</th>
+                                <th>Nilai Rencana</th>
                                 <th>Action</th>
                             </tr>
                             </thead>
                             <tbody>
                             </tbody>
-                            <tfoot>
-                            <tr>
-                                <th>ID</th>
-                                <th>Rencana Kegiatan</th>
-                                <th>Pengenal</th>
-                                <th>Rupiah</th>
-                                <th>Pagu</th>
-                                <th>Total Rencana</th>
-                                <th>Realisasi</th>
-                                <th>Action</th>
-                            </tr>
-                            </tfoot>
                         </table>
-                        <div class="modal fade" id="ajaxModel" aria-hidden="true" data-focus="false">
+                        <div class="modal fade" id="ajaxModelDetilRencana" aria-hidden="true" data-focus="false">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h4 class="modal-title" id="modelHeading"></h4>
                                     </div>
                                     <div class="modal-body">
-                                        <form id="formkasbon" name="formkasbon" class="form-horizontal">
-                                            <input type="hidden" name="id" id="id">
+                                        <form id="formdetilrencana" name="formdetilrencana" class="form-horizontal">
+                                            <input type="hidden" name="iddetilrencana" id="iddetilrencana">
+                                            <input type="hidden" name="bulanpencairandetil" id="bulanpencairandetil" value="{{$bulanpencairan}}">
                                             <input type="hidden" name="idrencanakegiatan" id="idrencanakegiatan" value="{{$idrencanakegiatan}}">
+                                            <input type="hidden" name="kdsatker" id="kdsatker" value="{{$kdsatker}}">
                                             <input type="hidden" name="pengenalawal" id="pengenalawal">
+
+
                                             <div class="form-group">
-                                                <label for="Area" class="col-sm-6 control-label">Pengenal</label>
+                                                <label for="kdsatkerdetil" class="col-sm-6 control-label">Deputi</label>
                                                 <div class="col-sm-12">
-                                                    <select class="form-control pengenal" name="pengenal" id="pengenal" style="width: 100%;">
-                                                        <option>Pilih Pengenal</option>
+                                                    <select class="form-control pengenal" name="pengenal" id="pengenal" style="width: 100%;" required>
+                                                        <option value="">Pilih Pengenal</option>
                                                         @foreach($datapengenal as $data)
                                                             <option value="{{ $data->pengenal }}">{{ $data->pengenal }}</option>
                                                         @endforeach
@@ -83,32 +73,43 @@
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label for="pagu" class="col-sm-6 control-label">Pagu</label>
+                                                <label for="peruntukan" class="col-sm-6 control-label">Pagu Pengenal</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control pagupengenal" id="pagupengenal" name="pagupengenal" placeholder="Pagu" value="" maxlength="21" readonly>
+                                                    <input type="text" class="form-control inputFormat" id="pagupengenal" name="pagupengenal" placeholder="Pagu Pengenal" value="" readonly>
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label for="sisapagu" class="col-sm-6 control-label">Realisasi Saat Ini</label>
+                                                <label for="peruntukan" class="col-sm-6 control-label">Realisasi Berjalan</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control realisasipengenal" id="realisasipengenal" name="realisasipengenal" placeholder="Realisasi Saat Ini" value="" maxlength="21" readonly>
+                                                    <input type="text" class="form-control inputFormat" id="realisasiberjalan" name="realisasiberjalan" placeholder="Realisasi Berjalan" value="" readonly>
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label for="nilaipengajuan" class="col-sm-6 control-label">Total Direncanakan</label>
+                                                <label for="peruntukan" class="col-sm-6 control-label">Total Rencana Sebelumnya</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control totalrencanapengenal" id="totalrencanapengenal" name="totalrencanapengenal" placeholder="Total Direncanakan" value="" maxlength="21" readonly>
+                                                    <input type="text" class="form-control inputFormat" id="totalrencanasebelumnya" name="totalrencanasebelumnya" placeholder="Rencana Pengenal" value="" readonly>
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label for="nilaipengajuan" class="col-sm-6 control-label">Kebutuhan Anggaran</label>
+                                                <label for="peruntukan" class="col-sm-6 control-label">Nilai Rencana</label>
                                                 <div class="col-sm-12">
-                                                <input type="text" class="form-control rupiah" id="rupiah" name="rupiah" placeholder="Rupiah" value="" maxlength="21">
+                                                    <input type="text" class="form-control inputFormat" id="nilairencana" name="nilairencana" placeholder="Nilai Rencana" value="">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="peruntukan" class="col-sm-6 control-label">Total Rencana Pengenal</label>
+                                                <div class="col-sm-12">
+                                                    <input type="text" class="form-control inputFormat" id="totalrencanapengenal" name="totalrencanapengenal" placeholder="Rencana Pengenal" value="" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="peruntukan" class="col-sm-6 control-label">Sisa Pagu Pengenal</label>
+                                                <div class="col-sm-12">
+                                                    <input type="text" class="form-control inputFormat" id="sisapagupengenal" name="sisapagupengenal" placeholder="Sisa Nilai Pengenal" value="" readonly>
                                                 </div>
                                             </div>
                                             <div class="col-sm-offset-2 col-sm-10">
-                                                <button type="submit" class="btn btn-primary" id="saveBtn" value="create">Simpan Data
-                                                </button>
+                                                <button type="submit" class="btn btn-primary saveBtnDetil" id="saveBtnDetil" value="create">Simpan</button>
                                             </div>
                                         </form>
                                     </div>
@@ -126,199 +127,120 @@
     <script type="text/javascript">
         $(function () {
             bsCustomFileInput.init();
+
             $('.pengenal').select2({
                 width: '100%',
                 theme: 'bootstrap4',
             })
 
-            /*------------------------------------------
-            --------------------------------------------
-            Render DataTable
-            --------------------------------------------
-            --------------------------------------------*/
-            // Setup - add a text input to each footer cell
-            $('#tabelkasbon tfoot th').each( function (i) {
-                var title = $('#tabelkasbon thead th').eq( $(this).index() ).text();
-                $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' ).css(
-                    {"width":"5%"},
-                );
+            $('.bulanpencairan').select2({
+                width: '100%',
+                theme: 'bootstrap4',
+            })
+
+            $('#tabeldetilrencana thead th').each( function (i) {
+                var title = $(this).text();
+                $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' );
             });
-            let idrencanakegiatan = document.getElementById('idrencanakegiatan').value;
-            var table = $('.tabelkasbon').DataTable({
+            var idrencanakegiatan = document.getElementById('idrencanakegiatan').value;
+            var table2 = $('.tabeldetilrencana').DataTable({
+                destroy:true,
                 fixedColumn:true,
                 scrollX:"100%",
                 autoWidth:true,
                 processing: true,
                 serverSide: true,
-                ajax:"{{route('getrencanakegiatanbagiandetil','')}}"+"/"+idrencanakegiatan,
+                ajax: {
+                    url: "{{ route('getdetilrencanakegiatanindukbagian') }}",
+                    type: "GET",
+                    data: function(d) {
+                        // Tambahkan data yang ingin Anda kirim ke server di sini
+                        var data = {
+                            idrencanakegiatan: idrencanakegiatan,
+                        };
+                        return $.extend({}, d, data);
+                    }
+                },
                 columns: [
                     {data:'id',name:'id'},
-                    {data:'rencanakegiatan',name:'rencanakegiatan.uraiankegiatan'},
+                    {data: 'uraianrencanakegiatan', name:'rencanakegiatanrelation.uraiankegiatan'},
+                    {data: 'bulanpencairan', name: 'bulanpencairan'},
                     {data: 'pengenal', name: 'pengenal'},
                     {data: 'rupiah', name: 'rupiah'},
-                    {data: 'pagupengenal', name: 'pagupengenal'},
-                    {data: 'totalrencanapengenal', name: 'totalrencanapengenal'},
-                    {data: 'realisasipengenal', name: 'realisasipengenal'},
                     {
                         data: 'action',
                         name: 'action',
                         orderable: true,
                         searchable: true
-                    }
+                    },
                 ],
                 columnDefs: [
-                    {
-                        targets: 3,
-                        render: $.fn.dataTable.render.number('.', ',', 0, '')
-                    },
                     {
                         targets: 4,
                         render: $.fn.dataTable.render.number('.', ',', 0, '')
                     },
-                    {
-                        targets: 5,
-                        render: $.fn.dataTable.render.number('.', ',', 0, '')
-                    },
-                    {
-                        targets: 6,
-                        render: $.fn.dataTable.render.number('.', ',', 0, '')
-                    },
                 ],
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print' // Menambahkan tombol untuk ekspor ke format yang diinginkan
+                ]
             });
-            table.buttons().container()
-                .appendTo( $('.col-sm-6:eq(0)', table.table().container() ) );
+            table2.buttons().container()
+                .appendTo( $('.col-sm-6:eq(0)', table2.table().container() ) );
+
             // Filter event handler
-            $( table.table().container() ).on( 'keyup', 'tfoot input', function () {
-                table
+            $( table2.table().container() ).on( 'keyup', 'thead input', function () {
+                table2
                     .column( $(this).data('index') )
                     .search( this.value )
                     .draw();
-            } );
+            });
 
-            /*------------------------------------------
-            --------------------------------------------
-            Click to Button
-            --------------------------------------------
-            --------------------------------------------*/
-            $('#tambahtransaksi').click(function () {
-                $('#saveBtn').val("tambah");
-                $('#id').val('');
+            $('#tambahdetil').click(function () {
+                // Tampilkan modal tambah data detil
+                $('#ajaxModelDetilRencana').modal('show');
+                $('#saveBtnDetil').val("tambah");
                 $('#pengenalawal').val('');
-                $('#modelHeading').html("Tambah Pengenal");
-                $('#ajaxModel').modal('show');
+                $('#kdsatker').val('').trigger('change');
+                $('#pengenal').val('').trigger('change');
+                $('#pagupengenal').val('');
+                $('#totalrencanapengenal').val('');
+                $('#totalrencanasebelumnya').val('');
+                $('#sisapagupengenal').val('');
+                $('#nilairencana').val('');
+
             });
 
             $('#kembali').click(function () {
                 window.location="{{URL::to('rencanakegiatanbagian')}}"
             });
 
-            /*------------------------------------------
-            --------------------------------------------
-            Click to Edit Button
-            --------------------------------------------
-            --------------------------------------------*/
-            $('body').on('click', '.edittransaksi', function () {
+            // Event handler untuk menangani klik pada tombol edit data
+            $('body').on('click', '.editdetil', function () {
+                // Tampilkan modal edit data detil
                 var id = $(this).data('id');
-                $.get("{{ route('editrencanakegiatanbagiandetil','') }}" +'/' + id, function (data) {
-                    $('#modelHeading').html("Edit Transaksi");
-                    $('#saveBtn').val("edit");
-                    $('#ajaxModel').modal('show');
-                    $('#id').val(data.id);
-                    $('#idrencanakegiatan').val(data.idrencanakegiatan);
-                    $('#pengenalawal').val(data.pengenal);
-                    $('#pengenal').val(data.pengenal).trigger('change');
-                    $('#rupiah').val(data.rupiah);
-                    $('#pagupengenal').val(data.pagupengenal);
-                    $('#totalrencanapengenal').val(data.totalrencanapengenal);
-                    $('#realisasipengenal').val(data.realisasipengenal);
+                $.get("{{ route('editdetilrencana','') }}" +'/' + id, function (data) {
+                    $('#modelHeading').html("Edit Detil");
+                    $('#saveBtnDetil').val("edit");
+                    $('#ajaxModelDetilRencana').modal('show');
+                    $('#iddetilrencana').val(data[0]['id']);
+                    console.log(document.getElementById('iddetilrencana').value);
+                    $('#pengenalawal').val(data[0]['pengenal']);
+                    $('#pengenal').val(data[0]['pengenal']).trigger('change');
+                    $('#bulanpencairandetil').val(data[0]['bulanpencairan']);
+                    $('#nilairencana').val(addThousandSeparator(data[0]['rupiah']));
+
                 })
             });
 
-            /*------------------------------------------
-            --------------------------------------------
-            Create Product Code
-            --------------------------------------------
-            --------------------------------------------*/
-            $('#saveBtn').click(function (e) {
-                e.preventDefault();
-                $(this).html('Sending..');
-                let form = document.getElementById('formkasbon');
-                let fd = new FormData(form);
-                let saveBtn = document.getElementById('saveBtn').value;
-                var id = document.getElementById('id').value;
-                var idrencanakegiatan = document.getElementById('idrencanakegiatan').value;
-                fd.append('saveBtn',saveBtn)
-                fd.append('idrencanakegiatan',idrencanakegiatan)
-                if(saveBtn == "edit"){
-                    fd.append('_method','PUT')
-                }
-                for (var pair of fd.entries()) {
-                    console.log(pair[0]+ ', ' + pair[1]);
-                }
-                $.ajax({
-                    data: fd,
-                    url: saveBtn === "tambah" ? "{{route('rencanakegiatanbagiandetil.store')}}":"{{route('rencanakegiatanbagiandetil.update','')}}"+'/'+id,
-                    type: "POST",
-                    dataType: 'json',
-                    contentType: false,
-                    processData: false,
-                    success: function (data) {
-                        if (data.status == "berhasil"){
-                            Swal.fire({
-                                title: 'Sukses',
-                                text: 'Simpan Data Berhasil',
-                                icon: 'success'
-                            })
-                        }else{
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'Simpan Data Gagal',
-                                icon: 'error'
-                            })
-                        }
-                        $('#formkasbon').trigger("reset");
-                        $('#ajaxModel').modal('hide');
-                        $('#saveBtn').html('Simpan Data');
-                        table.draw();
-                    },
-                    error: function (xhr, textStatus, errorThrown) {
-                        if(xhr.responseJSON.errors){
-                            var errorsArr = [];
-                            $.each(xhr.responseJSON.errors, function(key,value) {
-                                errorsArr.push(value);
-                            });
-                            Swal.fire({
-                                title: 'Error!',
-                                text: errorsArr,
-                                icon: 'error'
-                            })
-                        }else{
-                            var jsonValue = jQuery.parseJSON(xhr.responseText);
-                            Swal.fire({
-                                title: 'Error!',
-                                text: jsonValue.message,
-                                icon: 'error'
-                            })
-                        }
-
-                        $('#saveBtn').html('Simpan Data');
-                    },
-                });
-            });
-
-            /*------------------------------------------
-            --------------------------------------------
-            Delete Product Code
-            --------------------------------------------
-            --------------------------------------------*/
-            $('body').on('click', '.deletetransaksi', function () {
+            // Event handler untuk menangani klik pada tombol hapus data
+            $('body').on('click', '.deletedetil', function () {
                 var id = $(this).data("id");
                 if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
                     $.ajax({
                         type: "DELETE",
-                        url: "{{ route('rencanakegiatanbagiandetil.destroy','') }}"+'/'+id,
+                        url: "{{ route('deletedetilrencana','') }}"+'/'+id,
                         success: function (data) {
-                            if (data.status == "berhasil"){
+                            if (data.status === "berhasil"){
                                 Swal.fire({
                                     title: 'Sukses',
                                     text: 'Data Berhasil Dihapus',
@@ -331,7 +253,7 @@
                                     icon: 'error'
                                 })
                             }
-                            table.draw();
+                            table2.draw();
                         },
                         error: function (xhr, textStatus, errorThrown) {
                             if(xhr.responseJSON.errors){
@@ -353,39 +275,163 @@
                                 })
                             }
 
-                            $('#saveBtn').html('Simpan Data');
+                            $('#saveBtnDetil').html('Simpan Data');
                         },
                     });
                 }
             });
 
-            $('#pengenal').on('change', function () {
-                var pengenal = this.value;
+            $('#saveBtnDetil').click(function (e) {
+                e.preventDefault();
+                $(this).html('Sending..');
+                let form = document.getElementById('formdetilrencana');
+                let fd = new FormData(form);
+                let saveBtnDetil = document.getElementById('saveBtnDetil').value;
+                fd.append('saveBtnDetil',saveBtnDetil)
+                if(saveBtnDetil === "edit"){
+                    fd.append('_method','PUT')
+                }
+                for (var pair of fd.entries()) {
+                    console.log(pair[0]+ ', ' + pair[1]);
+                }
+
                 $.ajax({
-                    url: "{{url('ambildatapengenal')}}",
+                    data: fd,
+                    url: saveBtnDetil === "tambah" ? "{{route('simpandetilrencana')}}":"{{route('updatedetilrencana')}}",
                     type: "POST",
-                    data: {
-                        pengenal: pengenal,
-                        _token: '{{csrf_token()}}'
-                    },
                     dataType: 'json',
-                    success: function (result) {
-                        let pagu = result['pagu'][0].paguanggaran;
-                        let realisasisaatini = result['pagu'][0].rsd12;
-                        let totalrencana = result['pagu'][0].totalrencana;
-                        let sisapagu = pagu-realisasisaatini;
-                        $('#pagupengenal').val(pagu);
-                        new AutoNumeric('.pagupengenal', {currencySymbol :'Rp'});
-                        $('#realisasipengenal').val(realisasisaatini);
-                        new AutoNumeric('.realisasipengenal', {currencySymbol :'Rp'});
-                        $('#totalrencanapengenal').val(totalrencana);
-                        new AutoNumeric('.totalrencanapengenal', {currencySymbol :'Rp'});
-                        //$('#sisapagu').val(sisapagu);
-                        new AutoNumeric('.rupiah', {currencySymbol :'Rp',unformatOnSubmit : true});
-                    }
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        if (data.status === "berhasil"){
+                            Swal.fire({
+                                title: 'Sukses',
+                                text: 'Simpan Data Berhasil',
+                                icon: 'success'
+                            })
+                        }else{
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Simpan Data Gagal',
+                                icon: 'error'
+                            })
+                        }
+                        $('#formdetilrencana').trigger("reset");
+                        $('#ajaxModelDetilRencana').modal('hide');
+                        $('#saveBtnDetil').html('Simpan Data');
+                        table2.draw();
+
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        if(xhr.responseJSON.errors){
+                            var errorsArr = [];
+                            $.each(xhr.responseJSON.errors, function(key,value) {
+                                errorsArr.push(value);
+                            });
+                            Swal.fire({
+                                title: 'Error!',
+                                text: errorsArr,
+                                icon: 'error'
+                            })
+                        }else{
+                            var jsonValue = jQuery.parseJSON(xhr.responseText);
+                            Swal.fire({
+                                title: 'Error!',
+                                text: jsonValue.message,
+                                icon: 'error'
+                            })
+                        }
+                        //$('#saveBtnDetil').html('Simpan Data');
+                    },
+
                 });
             });
+
+            $('#nilairencana').on('input', function() {
+                var nilaiRencana = $(this).val();
+
+                // Hapus koma ribuan sebelum melakukan perhitungan
+                nilaiRencana = removeThousandSeparator(nilaiRencana);
+
+
+                // Tambahkan koma ribuan setelah perhitungan
+                $(this).val(addThousandSeparator(nilaiRencana));
+                checkAndSetSisaPagu();
+            });
+
+            $('#pengenal').on('change', function () {
+                var pengenal = this.value;
+                var iddetilrencana = document.getElementById('iddetilrencana').value;
+                if(pengenal !== ""){
+                    $.ajax({
+                        url: "{{ url('ambildatapengenal') }}",
+                        type: "POST",
+                        data: {
+                            pengenal: pengenal,
+                            iddetilrencana: iddetilrencana,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        dataType: 'json',
+                        success: function (result) {
+                            var paguanggaran = result.data[0].paguanggaran;
+                            var totalrencanasebelumnya = result.data[1][0].totalrencanasebelumnya;
+                            var realisasiberjalan = result.data[0].rsd12;
+                            console.log(totalrencanasebelumnya);
+
+                            // Pastikan totalrencana tidak null sebelum menempatkannya
+                            if (totalrencanasebelumnya !== null) {
+                                $('#totalrencanasebelumnya').val(addThousandSeparator(totalrencanasebelumnya));
+
+                            } else {
+                                $('#totalrencanasebelumnya').val(0);
+                            }
+
+                            if (realisasiberjalan !== null) {
+                                $('#realisasiberjalan').val(addThousandSeparator(realisasiberjalan));
+
+                            } else {
+                                $('#realisasiberjalan').val(0);
+                            }
+
+                            // Tempatkan nilai paguanggaran ke dalam field
+                            $('#pagupengenal').val(addThousandSeparator(paguanggaran));
+                            checkAndSetSisaPagu();
+                        }
+                    });
+                }
+            });
+
         });
+
+        // Fungsi untuk menambahkan separator ribuan dengan koma
+        function addThousandSeparator(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // Fungsi untuk menghapus separator ribuan
+        function removeThousandSeparator(number) {
+            return number.replace(/,/g, '');
+        }
+
+        // Fungsi untuk memeriksa dan mengupdate nilai sisapagupengenal
+        function checkAndSetSisaPagu() {
+            var pagu = parseFloat(removeThousandSeparator($('#pagupengenal').val()));
+            var totalRencanaSebelumnya = parseFloat(removeThousandSeparator($('#totalrencanasebelumnya').val()));
+            var realisasiBerjalan = parseFloat(removeThousandSeparator($('#realisasiberjalan').val()));
+            var nilaiRencana = parseFloat(removeThousandSeparator($('#nilairencana').val()));
+
+            var sisapagupengenal = pagu - (realisasiBerjalan+totalRencanaSebelumnya + nilaiRencana);
+            var totalrencana = totalRencanaSebelumnya+nilaiRencana;
+            $('#sisapagupengenal').val(addThousandSeparator(sisapagupengenal));
+            $('#totalrencanapengenal').val(addThousandSeparator(totalrencana));
+
+            // Jika nilai sisapagupengenal kurang dari 0, disable tombol simpan
+            if (sisapagupengenal < 0) {
+                $('#saveBtnDetil').prop('disabled', true);
+            } else {
+                $('#saveBtnDetil').prop('disabled', false);
+            }
+        }
 
     </script>
 @endsection

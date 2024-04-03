@@ -2,8 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Http\Controllers\IKPA\Admin\IKPADeviasiBagianController;
-use App\Http\Controllers\IKPA\Admin\IKPAPenyelesaianTagihanBagianController;
+use App\Http\Controllers\IKPA\Admin\IKPAPenyelesaianTagihanController;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -34,7 +33,7 @@ class HitungIkpaPenyelesaianBagian implements ShouldQueue
     public function handle()
     {
         $tahunanggaran = $this->tahunanggaran;
-        $sppheader = new IKPAPenyelesaianTagihanBagianController();
+        $sppheader = new IKPAPenyelesaianTagihanController();
         $sppheader = $sppheader->aksiperhitunganpenyelesaianbagian($tahunanggaran);
     }
 }

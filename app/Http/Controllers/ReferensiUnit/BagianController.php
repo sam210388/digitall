@@ -152,6 +152,7 @@ class BagianController extends Controller
     public function dapatkandatabiro(Request $request){
         $data['biro'] = DB::table('biro')
             ->where('iddeputi','=',$request->iddeputi)
+            ->where('status','=','on')
             ->get(['id','uraianbiro']);
 
         return response()->json($data);
@@ -160,6 +161,7 @@ class BagianController extends Controller
     public function dapatkandatabagian(Request $request){
         $data['bagian'] = DB::table('bagian')
             ->where('idbiro','=',$request->idbiro)
+            ->where('status','=','on')
             ->get(['id','uraianbagian']);
         return response()->json($data);
     }

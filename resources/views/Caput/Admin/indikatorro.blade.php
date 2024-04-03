@@ -90,6 +90,8 @@
                                             <input type="hidden" name="kegiatanawal" id="kegiatanawal">
                                             <input type="hidden" name="outputawal" id="outputawal">
                                             <input type="hidden" name="suboutputawal" id="suboutputawal">
+                                            <input type="hidden" name="idbiroawal" id="idbiroawal">
+                                            <input type="hidden" name="idbagianawal" id="idbagianawal">
                                             <input type="hidden" name="komponenawal" id="komponenawal">
                                             <input type="hidden" name="statusawal" id="statusawal">
                                             <input type="hidden" name="idkroawal" id="idkroawal">
@@ -173,15 +175,124 @@
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label for="uraianindikatorro" class="col-sm-6 control-label">Uraian RO</label>
+                                                <label for="uraianindikatorro" class="col-sm-6 control-label">Uraian Indikator RO</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control" id="uraianindikatorro" name="uraianindikatorro" placeholder="Uraian Indikator RO" value="">
+                                                    <input type="text" class="form-control uraianindikatorro" id="uraianindikatorro" name="uraianindikatorro" placeholder="Uraian Indikator RO" value="">
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="target" class="col-sm-6 control-label">Target</label>
                                                 <div class="col-sm-12">
-                                                    <input type="text" class="form-control" id="target" name="target" placeholder="Target" value="">
+                                                    <input type="text" class="form-control target" id="target" name="target" placeholder="Target" value="">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="deputi" class="col-sm-6 control-label">Deputi</label>
+                                                <div class="col-sm-12">
+                                                    <select class="form-control iddeputi" name="iddeputi" id="iddeputi" style="width: 100%;" required>
+                                                        <option value="">Pilih Deputi</option>
+                                                        @foreach($datadeputi as $data)
+                                                            <option value="{{ $data->id }}">{{ $data->uraiandeputi }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="Biro" class="col-sm-6 control-label">Biro</label>
+                                                <div class="col-sm-12">
+                                                    <select class="form-control idbiro" name="idbiro" id="idbiro" style="width: 100%;" required>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="Bagian" class="col-sm-6 control-label">Bagian</label>
+                                                <div class="col-sm-12">
+                                                    <select class="form-control idbagian" name="idbagian" id="idbagian" style="width: 100%;" required>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="peruntukan" class="col-sm-6 control-label">Total Rencana</label>
+                                                <div class="col-sm-12">
+                                                    <input type="text" class="form-control inputFormat" id="totalrencana" name="totalrencana" placeholder="Total Rencana" value="" maxlength="500" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="peruntukan" class="col-sm-6 control-label">Selisih Harus Dialokasikan</label>
+                                                <div class="col-sm-12">
+                                                    <input type="text" class="form-control inputFormat" id="totalselisih" name="totalselisih" placeholder="Total Selisih" value="" maxlength="500" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="peruntukan" class="col-sm-6 control-label">Target Januari</label>
+                                                <div class="col-sm-12">
+                                                    <input type="text" class="form-control inputFormat" id="januari" name="januari" placeholder="Total Rencana januari" value="" maxlength="500">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="peruntukan" class="col-sm-6 control-label">Target Februari</label>
+                                                <div class="col-sm-12">
+                                                    <input type="text" class="form-control inputFormat" id="februari" name="februari" placeholder="Total Rencana februari" value="" maxlength="500">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="peruntukan" class="col-sm-6 control-label">Target Maret</label>
+                                                <div class="col-sm-12">
+                                                    <input type="text" class="form-control inputFormat" id="maret" name="maret" placeholder="Total Rencana maret" value="" maxlength="500">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="peruntukan" class="col-sm-6 control-label">Target April</label>
+                                                <div class="col-sm-12">
+                                                    <input type="text" class="form-control inputFormat" id="april" name="april" placeholder="Total Rencana April" value="" maxlength="500">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="peruntukan" class="col-sm-6 control-label">Target Mei</label>
+                                                <div class="col-sm-12">
+                                                    <input type="text" class="form-control inputFormat" id="mei" name="mei" placeholder="Total Rencana mei" value="" maxlength="500">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="peruntukan" class="col-sm-6 control-label">Target Juni</label>
+                                                <div class="col-sm-12">
+                                                    <input type="text" class="form-control inputFormat" id="juni" name="juni" placeholder="Total Rencana Juni" value="" maxlength="500">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="peruntukan" class="col-sm-6 control-label">Target Juli</label>
+                                                <div class="col-sm-12">
+                                                    <input type="text" class="form-control inputFormat" id="juli" name="juli" placeholder="Total Rencana Juli" value="" maxlength="500">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="peruntukan" class="col-sm-6 control-label">Target Agustus</label>
+                                                <div class="col-sm-12">
+                                                    <input type="text" class="form-control inputFormat" id="agustus" name="agustus" placeholder="Total Rencana Agustus" value="" maxlength="500">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="peruntukan" class="col-sm-6 control-label">Target September</label>
+                                                <div class="col-sm-12">
+                                                    <input type="text" class="form-control inputFormat" id="september" name="september" placeholder="Total Rencana September" value="" maxlength="500">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="peruntukan" class="col-sm-6 control-label">Target Oktober</label>
+                                                <div class="col-sm-12">
+                                                    <input type="text" class="form-control inputFormat" id="oktober" name="oktober" placeholder="Total Rencana Oktober" value="" maxlength="500">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="peruntukan" class="col-sm-6 control-label">Target November</label>
+                                                <div class="col-sm-12">
+                                                    <input type="text" class="form-control inputFormat" id="november" name="november" placeholder="Total Rencana November" value="" maxlength="500">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="peruntukan" class="col-sm-6 control-label">Target Desember</label>
+                                                <div class="col-sm-12">
+                                                    <input type="text" class="form-control inputFormat" id="desember" name="desember" placeholder="Total Rencana Desember" value="" maxlength="500">
                                                 </div>
                                             </div>
                                             <div class="form-group">
@@ -216,6 +327,117 @@
     </div>
     <!-- /.content -->
     <script type="text/javascript">
+        function formatNumber(inputValue) {
+            // Pengecekan apakah inputValue adalah string
+            if (typeof inputValue !== 'string') {
+                return '';
+            }
+            // Menghilangkan karakter selain angka
+            var numericValue = inputValue.replace(/\D/g, '');
+
+            // Memformat angka dengan separator ribuan
+            var formattedNumber = numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+            return formattedNumber;
+        }
+
+
+        // Fungsi untuk memformat input dengan separator ribuan
+        function formatInputWithThousandSeparator(inputElement) {
+            inputElement.value = formatNumber(inputElement.value);
+        }
+
+        function cektotalrencana() {
+            let target = parseInt(document.getElementById('target').value.replace(/\D/g, '')); // Parse value ke integer dan hapus non-digit
+            let totalrencana = 0;
+            let inputs = document.querySelectorAll('.inputFormat');
+
+            // Objek untuk menyimpan nilai input bulan per bulan
+            let bulanInputs = {
+                januari: parseInt(document.getElementById('januari').value.replace(/\D/g, '')),
+                februari: parseInt(document.getElementById('februari').value.replace(/\D/g, '')),
+                maret: parseInt(document.getElementById('maret').value.replace(/\D/g, '')),
+                april: parseInt(document.getElementById('april').value.replace(/\D/g, '')),
+                mei: parseInt(document.getElementById('mei').value.replace(/\D/g, '')),
+                juni: parseInt(document.getElementById('juni').value.replace(/\D/g, '')),
+                juli: parseInt(document.getElementById('juli').value.replace(/\D/g, '')),
+                agustus: parseInt(document.getElementById('agustus').value.replace(/\D/g, '')),
+                september: parseInt(document.getElementById('september').value.replace(/\D/g, '')),
+                oktober: parseInt(document.getElementById('oktober').value.replace(/\D/g, '')),
+                november: parseInt(document.getElementById('november').value.replace(/\D/g, '')),
+                desember: parseInt(document.getElementById('desember').value.replace(/\D/g, ''))
+            };
+
+            // Menghitung total rencana
+            for (let bulan in bulanInputs) {
+                totalrencana += bulanInputs[bulan];
+            }
+
+            // Memeriksa apakah total rencana melebihi pagu anggaran
+            if (totalrencana > target) {
+                // Jika melebihi, kurangi nilai input pada bulan Desember terlebih dahulu
+                let sisa = totalrencana - target;
+                bulanInputs.desember -= sisa;
+
+                // Jika nilai input pada bulan Desember sudah mencapai 0, kurangi bulan-bulan sebelumnya
+                if (bulanInputs.desember < 0) {
+                    let kurangiBulan = Math.abs(bulanInputs.desember);
+                    bulanInputs.desember = 0;
+
+                    // Kurangi nilai bulan-bulan sebelumnya
+                    for (let bulan of ['november', 'oktober', 'september', 'agustus', 'juli', 'juni', 'mei', 'april', 'maret', 'februari']) {
+                        if (kurangiBulan <= 0) break;
+                        let kurangi = Math.min(kurangiBulan, bulanInputs[bulan]);
+                        bulanInputs[bulan] -= kurangi;
+                        kurangiBulan -= kurangi;
+                    }
+                }
+            }else{
+                let harusdialokasikan = target - totalrencana;
+                console.log(harusdialokasikan);
+                //harusdialokasikan = harusdialokasikan.toString();
+                //harusdialokasikan = formatInputWithThousandSeparator(harusdialokasikan);
+                document.getElementById('totalselisih').value = harusdialokasikan;
+            }
+
+            // Menghitung total rencana kembali setelah koreksi
+            totalrencana = 0;
+            for (let bulan in bulanInputs) {
+                totalrencana += bulanInputs[bulan];
+            }
+
+            // Menetapkan kembali nilai input yang sudah dimodifikasi
+            for (let bulan in bulanInputs) {
+                document.getElementById(bulan).value = formatNumber(bulanInputs[bulan].toString());
+            }
+
+            // Memperbarui total rencana pada elemen totalrencana
+            document.getElementById('totalrencana').value = formatNumber(totalrencana.toString());
+
+            // Menghitung selisih antara total rencana dan pagu anggaran
+            let selisih = target - totalrencana;
+
+            // Menampilkan nilai selisih di input field selisih
+            document.getElementById('totalselisih').value = formatNumber(selisih.toString());
+
+            // Menonaktifkan tombol simpan jika total rencana tidak sama dengan pagu anggaran
+            let tombolSimpan = document.getElementById('saveBtn');
+            if (totalrencana !== target) {
+                tombolSimpan.disabled = true;
+            } else {
+                tombolSimpan.disabled = false;
+            }
+        }
+
+
+        // Menambahkan event listener untuk setiap input bulan
+        document.querySelectorAll('.inputFormat').forEach(input => {
+            input.addEventListener('input', function() {
+                formatInputWithThousandSeparator(input); // Memformat input dengan separator ribuan saat input berubah
+                cektotalrencana(); // Memeriksa total rencana setiap kali input berubah
+            });
+        });
+
         $(function () {
             $('.tahunanggaran').select2({
                 theme: 'bootstrap4',
@@ -344,17 +566,35 @@
                     $('#kodesatker').val(data.kodesatker).trigger('change');
                     $('#kro').val(data.idkro).trigger('change');
                     $('#ro').val(data.idro).trigger('change');
+                    $('#iddeputi').val(data.iddeputi).trigger('change');
+                    $('#idbiroawal').val(data.idbiro);
+                    $('#idbiro').val(data.idbiro).trigger('change');
+                    $('#idbagianawal').val(data.idbagian);
+                    $('#idbagian').val(data.idbagian).trigger('change');
                     $('#kegiatan').val(data.kodekegiatan).trigger('change');
                     $('#kegiatanawal').val(data.kodekegiatan);
                     $('#outputawal').val(data.kodeoutput);
                     $('#suboutputawal').val(data.kodesuboutput);
                     $('#komponenawal').val(data.kodekomponen);
                     $('#statusawal').val(data.status);
-                    $('#target').val(data.target);
-                    $('#satuan').val(data.satuan);
                     $('#uraianindikatorro').val(data.uraianindikatorro);
                     $('#jenisindikator').val(data.jenisindikator).trigger('change');
                     $('#status').val(data.status);
+                    $('#target').val(formatNumber(data.target.toString()));
+                    $('#januari').val(formatNumber(data.target1.toString()));
+                    $('#februari').val(formatNumber(data.target2.toString()));
+                    $('#maret').val(formatNumber(data.target3.toString()));
+                    $('#april').val(formatNumber(data.target4.toString()));
+                    $('#mei').val(formatNumber(data.target5.toString()));
+                    $('#juni').val(formatNumber(data.target6.toString()));
+                    $('#juli').val(formatNumber(data.target7.toString()));
+                    $('#agustus').val(formatNumber(data.target8.toString()));
+                    $('#september').val(formatNumber(data.target9.toString()));
+                    $('#oktober').val(formatNumber(data.target10.toString()));
+                    $('#november').val(formatNumber(data.target11.toString()));
+                    $('#desember').val(formatNumber(data.target12.toString()));
+                    $('#satuan').val(data.satuan);
+
 
                 })
             });
@@ -562,6 +802,58 @@
                             $('select[name="komponen"]').append('<option value="'+value.kodekomponen+'" selected>'+value.kodekomponen+" | "+value.deskripsi+'</option>').trigger('change')
                         }else{
                             $("#komponen").append('<option value="' + value.kodekomponen + '">' +value.kodekomponen+" | "+value.deskripsi+ '</option>');
+                        }
+
+                    });
+                }
+
+            });
+        });
+
+        $('#iddeputi').on('change', function () {
+            var iddeputi = this.value;
+            $.ajax({
+                url: "{{url('ambildatabiro')}}",
+                type: "POST",
+                data: {
+                    iddeputi: iddeputi,
+                    _token: '{{csrf_token()}}'
+                },
+                dataType: 'json',
+                success: function (result) {
+                    var idbiro = document.getElementById('idbiroawal').value;
+                    $('#idbiro').html('<option value="">Pilih Biro</option>');
+                    $.each(result.biro, function (key, value) {
+                        if (idbiro == value.id) {
+                            $('select[name="idbiro"]').append('<option value="'+value.id+'" selected>'+value.uraianbiro+'</option>').trigger('change')
+                        }else{
+                            $("#idbiro").append('<option value="' + value.id + '">' + value.uraianbiro + '</option>');
+                        }
+
+                    });
+                }
+
+            });
+        });
+
+        $('#idbiro').on('change', function () {
+            var idbiro = this.value;
+            $.ajax({
+                url: "{{url('ambildatabagian')}}",
+                type: "POST",
+                data: {
+                    idbiro: idbiro,
+                    _token: '{{csrf_token()}}'
+                },
+                dataType: 'json',
+                success: function (result) {
+                    var idbagian = document.getElementById('idbagianawal').value;
+                    $('#idbagian').html('<option value="">Pilih Bagian</option>');
+                    $.each(result.bagian, function (key, value) {
+                        if (idbagian == value.id) {
+                            $('select[name="idbagian"]').append('<option value="'+value.id+'" selected>'+value.uraianbagian+'</option>').trigger('change')
+                        }else{
+                            $("#idbagian").append('<option value="' + value.id + '">' + value.uraianbagian + '</option>');
                         }
 
                     });

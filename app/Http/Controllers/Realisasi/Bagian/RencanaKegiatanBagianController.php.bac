@@ -25,7 +25,7 @@ class RencanaKegiatanBagianController extends Controller
         $judul = 'Data Rencana Kegiatan';
         $idbagian = Auth::user()->idbagian;
         $datapengenal = DB::table('laporanrealisasianggaranbac')->where('idbagian','=',$idbagian)->get();
-        return view('Realisasi.Bagian.rencanakegiataninduk',[
+        return view('Realisasi.Bagian.rencanakegiatanbagian',[
             "judul"=>$judul,
             "datapengenal" => $datapengenal
         ]);
@@ -50,8 +50,6 @@ class RencanaKegiatanBagianController extends Controller
         }
     }
 
-
-
     public function getdatarencanakegiatanbagian()
     {
         $tahunanggaran = session('tahunanggaran');
@@ -59,7 +57,7 @@ class RencanaKegiatanBagianController extends Controller
         $model = RencanaKegiatanModel::with('bagianpengajuanrelation')
             ->where('tahunanggaran','=',$tahunanggaran)
             ->where('idbagian','=',$idbagian)
-            ->select('rencanakegiataninduk.*');
+            ->select('rencanakegiatan.*');
         return Datatables::eloquent($model)
             ->addColumn('bagian', function (RencanaKegiatanModel $id) {
                 return $id->idbagian ? $id->bagianpengajuanrelation->uraianbagian:"";
@@ -67,9 +65,8 @@ class RencanaKegiatanBagianController extends Controller
             ->addColumn('action', function($row){
                 if ($row->statusubah == "Open" && $row->statusrencana == "Draft"){
                     $btn = '<div class="btn-group" role="group">
-                            <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-info btn-sm editrencana">Edit</a>';
+                            <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-info btn-sm edittransaksi">Edit</a>';
                     //$btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-success btn-sm ajukankeppk">Kirim PPK</a>';
-                    $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deleterencana">Kirim PPK</a>';
                 }else{
                     $btn="";
                 }
@@ -87,7 +84,7 @@ class RencanaKegiatanBagianController extends Controller
     }
 
 
-    public function store(Request $request, $id)
+    public function update(Request $request, $id)
     {
         $tahunanggaran = session('tahunanggaran');
         $validated = $request->validate([

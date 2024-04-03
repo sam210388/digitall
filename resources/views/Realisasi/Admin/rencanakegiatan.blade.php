@@ -33,217 +33,212 @@
                         <h3 class="card-title">{{$judul}}</h3>
                         {!! $button !!}
                     </div>
-                    </div>
+                </div>
 
-                    <div class="card-header">
-                        <div class="form-group">
-                            <div class="col-sm-12">
-                                <select class="form-control idbagian" name="idbagian" id="idbagian" style="width: 100%;">
-                                    <option value="">Pilih Bagian</option>
-                                    @foreach($databagian as $data)
-                                        <option value="{{ $data->id }}">{{ $data->uraianbagian }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                <div class="card-header">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <select class="form-control idbagian" name="idbagian" id="idbagian" style="width: 100%;">
+                                <option value="">Pilih Bagian</option>
+                                @foreach($databagian as $data)
+                                    <option value="{{ $data->id }}">{{ $data->uraianbagian }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
-                    <div class="card-body">
-                        <table id="tabelkasbon" class="table table-bordered table-striped tabelkasbon">
-                            <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Tahun Anggaran</th>
-                                <th>Satker</th>
-                                <th>Bagian</th>
-                                <th>Pengenal</th>
-                                <th>Uraian Kegiatan POK</th>
-                                <th>Uraian Kegiatan Bagian</th>
-                                <th>Pagu Anggaran</th>
-                                <th>Total Rencana</th>
-                                <th>Status Rencana</th>
-                                <th>Januari</th>
-                                <th>Februari</th>
-                                <th>Maret</th>
-                                <th>April</th>
-                                <th>Mei</th>
-                                <th>Juni</th>
-                                <th>Juli</th>
-                                <th>Agustus</th>
-                                <th>September</th>
-                                <th>Oktober</th>
-                                <th>November</th>
-                                <th>Desember</th>
-                                <th>Action</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                            <tfoot>
-                            <tr>
-                                <th>ID</th>
-                                <th>Tahun Anggaran</th>
-                                <th>Satker</th>
-                                <th>Bagian</th>
-                                <th>Pengenal</th>
-                                <th>Uraian Kegiatan POK</th>
-                                <th>Uraian Kegiatan Bagian</th>
-                                <th>Pagu Anggaran</th>
-                                <th>Total Rencana</th>
-                                <th>Status Rencana</th>
-                                <th>Januari</th>
-                                <th>Februari</th>
-                                <th>Maret</th>
-                                <th>April</th>
-                                <th>Mei</th>
-                                <th>Juni</th>
-                                <th>Juli</th>
-                                <th>Agustus</th>
-                                <th>September</th>
-                                <th>Oktober</th>
-                                <th>November</th>
-                                <th>Desember</th>
-                                <th>Action</th>
-                            </tr>
-                            </tfoot>
-                        </table>
-                        <div class="modal fade" id="ajaxModel" aria-hidden="true" data-focus="false">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h4 class="modal-title" id="modelHeading"></h4>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form id="formrencanakegiatanbagian" name="formkasbon" class="form-horizontal">
-                                            <input type="hidden" name="id" id="id">
-                                            <input type="hidden" name="idbagianawal" id="idbagianawal">
-                                            <input type="hidden" name="pengenalawal" id="pengenalawal">
-                                            <div class="form-group">
-                                                <label for="" class="col-sm-6 control-label">Satker</label>
-                                                <div class="col-sm-12">
-                                                    <select class="form-control kdsatker" name="kdsatker" id="kdsatker" style="width: 100%;" disabled>
-                                                        <option value="">Pilih Satker</option>
-                                                        <option value="001012">Setjen</option>
-                                                        <option value="001030">Dewan</option>
-                                                    </select>
+                </div>
+                <div class="card-body">
+                    <table id="tabelkasbon" class="table table-bordered table-striped tabelkasbon">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tahun Anggaran</th>
+                            <th>Satker</th>
+                            <th>Bagian</th>
+                            <th>Pengenal</th>
+                            <th>Pagu Anggaran</th>
+                            <th>Total Rencana</th>
+                            <th>Status Rencana</th>
+                            <th>Januari</th>
+                            <th>Februari</th>
+                            <th>Maret</th>
+                            <th>April</th>
+                            <th>Mei</th>
+                            <th>Juni</th>
+                            <th>Juli</th>
+                            <th>Agustus</th>
+                            <th>September</th>
+                            <th>Oktober</th>
+                            <th>November</th>
+                            <th>Desember</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tahun Anggaran</th>
+                            <th>Satker</th>
+                            <th>Bagian</th>
+                            <th>Pengenal</th>
+                            <th>Pagu Anggaran</th>
+                            <th>Total Rencana</th>
+                            <th>Status Rencana</th>
+                            <th>Januari</th>
+                            <th>Februari</th>
+                            <th>Maret</th>
+                            <th>April</th>
+                            <th>Mei</th>
+                            <th>Juni</th>
+                            <th>Juli</th>
+                            <th>Agustus</th>
+                            <th>September</th>
+                            <th>Oktober</th>
+                            <th>November</th>
+                            <th>Desember</th>
+                            <th>Action</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                    <div class="modal fade" id="ajaxModel" aria-hidden="true" data-focus="false">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title" id="modelHeading"></h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="formrencanakegiatanbagian" name="formkasbon" class="form-horizontal">
+                                        <input type="hidden" name="id" id="id">
+                                        <input type="hidden" name="idbagianawal" id="idbagianawal">
+                                        <input type="hidden" name="pengenalawal" id="pengenalawal">
+                                        <div class="form-group">
+                                            <label for="" class="col-sm-6 control-label">Satker</label>
+                                            <div class="col-sm-12">
+                                                <select class="form-control kdsatker" name="kdsatker" id="kdsatker" style="width: 100%;" disabled>
+                                                    <option value="">Pilih Satker</option>
+                                                    <option value="001012">Setjen</option>
+                                                    <option value="001030">Dewan</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="Area" class="col-sm-6 control-label">Pengenal</label>
+                                            <div class="col-sm-12">
+                                                <select class="form-control pengenal" name="pengenal" id="pengenal" style="width: 100%;" disabled>
+                                                    <option>Pilih Pengenal</option>
+                                                    @foreach($datapengenal as $data)
+                                                        <option value="{{ $data->pengenal }}">{{ $data->pengenal }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="uraiankegiatan" class="col-sm-6 control-label">Uraian Kegiatan POK</label>
+                                            <div class="col-sm-12">
+                                                <div class="input-group mb-3">
+                                                    <textarea class="form-control uraiankegiatanpok" id="uraiankegiatanpok" name="uraiankegiatanpok" placeholder="Uraian Kegiatan" readonly></textarea>
                                                 </div>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="Area" class="col-sm-6 control-label">Pengenal</label>
-                                                <div class="col-sm-12">
-                                                    <select class="form-control pengenal" name="pengenal" id="pengenal" style="width: 100%;" disabled>
-                                                        <option>Pilih Pengenal</option>
-                                                        @foreach($datapengenal as $data)
-                                                            <option value="{{ $data->pengenal }}">{{ $data->pengenal }}</option>
-                                                        @endforeach
-                                                    </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="uraiankegiatan" class="col-sm-6 control-label">Uraian Kegiatan Rinci</label>
+                                            <div class="col-sm-12">
+                                                <div class="input-group mb-3">
+                                                    <textarea class="form-control" id="uraiankegiatanrinci" name="uraiankegiatanrinci" placeholder="Uraian Kegiatan Rinci" required="" readonly></textarea>
                                                 </div>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="uraiankegiatan" class="col-sm-6 control-label">Uraian Kegiatan POK</label>
-                                                <div class="col-sm-12">
-                                                    <div class="input-group mb-3">
-                                                        <textarea class="form-control uraiankegiatanpok" id="uraiankegiatanpok" name="uraiankegiatanpok" placeholder="Uraian Kegiatan" readonly></textarea>
-                                                    </div>
-                                                </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="peruntukan" class="col-sm-6 control-label">Pagu Anggaran</label>
+                                            <div class="col-sm-12">
+                                                <input type="text" class="form-control paguanggaran" id="paguanggaran" name="paguanggaran" placeholder="Pagu Anggaran" value="" maxlength="500" readonly>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="uraiankegiatan" class="col-sm-6 control-label">Uraian Kegiatan Rinci</label>
-                                                <div class="col-sm-12">
-                                                    <div class="input-group mb-3">
-                                                        <textarea class="form-control" id="uraiankegiatanrinci" name="uraiankegiatanrinci" placeholder="Uraian Kegiatan Rinci" required="" readonly></textarea>
-                                                    </div>
-                                                </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="peruntukan" class="col-sm-6 control-label">Total Rencana</label>
+                                            <div class="col-sm-12">
+                                                <input type="text" class="form-control totalrencana" id="totalrencana" name="totalrencana" placeholder="Total Rencana" value="" maxlength="500" readonly>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="peruntukan" class="col-sm-6 control-label">Pagu Anggaran</label>
-                                                <div class="col-sm-12">
-                                                    <input type="text" class="form-control paguanggaran" id="paguanggaran" name="paguanggaran" placeholder="Pagu Anggaran" value="" maxlength="500" readonly>
-                                                </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="peruntukan" class="col-sm-6 control-label">Januari</label>
+                                            <div class="col-sm-12">
+                                                <input type="text" class="form-control januari" id="januari" name="januari" placeholder="Total Rencana januari" value="" maxlength="500" readonly>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="peruntukan" class="col-sm-6 control-label">Total Rencana</label>
-                                                <div class="col-sm-12">
-                                                    <input type="text" class="form-control totalrencana" id="totalrencana" name="totalrencana" placeholder="Total Rencana" value="" maxlength="500" readonly>
-                                                </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="peruntukan" class="col-sm-6 control-label">Februari</label>
+                                            <div class="col-sm-12">
+                                                <input type="text" class="form-control februari" id="februari" name="februari" placeholder="Total Rencana februari" value="" maxlength="500" readonly>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="peruntukan" class="col-sm-6 control-label">Januari</label>
-                                                <div class="col-sm-12">
-                                                    <input type="text" class="form-control januari" id="januari" name="januari" placeholder="Total Rencana januari" value="" maxlength="500" readonly>
-                                                </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="peruntukan" class="col-sm-6 control-label">Maret</label>
+                                            <div class="col-sm-12">
+                                                <input type="text" class="form-control maret" id="maret" name="maret" placeholder="Total Rencana maret" value="" maxlength="500" readonly>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="peruntukan" class="col-sm-6 control-label">Februari</label>
-                                                <div class="col-sm-12">
-                                                    <input type="text" class="form-control februari" id="februari" name="februari" placeholder="Total Rencana februari" value="" maxlength="500" readonly>
-                                                </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="peruntukan" class="col-sm-6 control-label">April</label>
+                                            <div class="col-sm-12">
+                                                <input type="text" class="form-control april" id="april" name="april" placeholder="Total Rencana April" value="" maxlength="500" readonly>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="peruntukan" class="col-sm-6 control-label">Maret</label>
-                                                <div class="col-sm-12">
-                                                    <input type="text" class="form-control maret" id="maret" name="maret" placeholder="Total Rencana maret" value="" maxlength="500" readonly>
-                                                </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="peruntukan" class="col-sm-6 control-label">Mei</label>
+                                            <div class="col-sm-12">
+                                                <input type="text" class="form-control mei" id="mei" name="mei" placeholder="Total Rencana mei" value="" maxlength="500" readonly>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="peruntukan" class="col-sm-6 control-label">April</label>
-                                                <div class="col-sm-12">
-                                                    <input type="text" class="form-control april" id="april" name="april" placeholder="Total Rencana April" value="" maxlength="500" readonly>
-                                                </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="peruntukan" class="col-sm-6 control-label">Juni</label>
+                                            <div class="col-sm-12">
+                                                <input type="text" class="form-control juni" id="juni" name="juni" placeholder="Total Rencana Juni" value="" maxlength="500" readonly>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="peruntukan" class="col-sm-6 control-label">Mei</label>
-                                                <div class="col-sm-12">
-                                                    <input type="text" class="form-control mei" id="mei" name="mei" placeholder="Total Rencana mei" value="" maxlength="500" readonly>
-                                                </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="peruntukan" class="col-sm-6 control-label">Juli</label>
+                                            <div class="col-sm-12">
+                                                <input type="text" class="form-control juli" id="juli" name="juli" placeholder="Total Rencana Juli" value="" maxlength="500" readonly>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="peruntukan" class="col-sm-6 control-label">Juni</label>
-                                                <div class="col-sm-12">
-                                                    <input type="text" class="form-control juni" id="juni" name="juni" placeholder="Total Rencana Juni" value="" maxlength="500" readonly>
-                                                </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="peruntukan" class="col-sm-6 control-label">Agustus</label>
+                                            <div class="col-sm-12">
+                                                <input type="text" class="form-control agustus" id="agustus" name="agustus" placeholder="Total Rencana Agustus" value="" maxlength="500" readonly>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="peruntukan" class="col-sm-6 control-label">Juli</label>
-                                                <div class="col-sm-12">
-                                                    <input type="text" class="form-control juli" id="juli" name="juli" placeholder="Total Rencana Juli" value="" maxlength="500" readonly>
-                                                </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="peruntukan" class="col-sm-6 control-label">September</label>
+                                            <div class="col-sm-12">
+                                                <input type="text" class="form-control september" id="september" name="september" placeholder="Total Rencana September" value="" maxlength="500" readonly>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="peruntukan" class="col-sm-6 control-label">Agustus</label>
-                                                <div class="col-sm-12">
-                                                    <input type="text" class="form-control agustus" id="agustus" name="agustus" placeholder="Total Rencana Agustus" value="" maxlength="500" readonly>
-                                                </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="peruntukan" class="col-sm-6 control-label">Oktober</label>
+                                            <div class="col-sm-12">
+                                                <input type="text" class="form-control oktober" id="oktober" name="oktober" placeholder="Total Rencana Oktober" value="" maxlength="500" readonly>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="peruntukan" class="col-sm-6 control-label">September</label>
-                                                <div class="col-sm-12">
-                                                    <input type="text" class="form-control september" id="september" name="september" placeholder="Total Rencana September" value="" maxlength="500" readonly>
-                                                </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="peruntukan" class="col-sm-6 control-label">November</label>
+                                            <div class="col-sm-12">
+                                                <input type="text" class="form-control november" id="november" name="november" placeholder="Total Rencana November" value="" maxlength="500" readonly>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="peruntukan" class="col-sm-6 control-label">Oktober</label>
-                                                <div class="col-sm-12">
-                                                    <input type="text" class="form-control oktober" id="oktober" name="oktober" placeholder="Total Rencana Oktober" value="" maxlength="500" readonly>
-                                                </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="peruntukan" class="col-sm-6 control-label">Desember</label>
+                                            <div class="col-sm-12">
+                                                <input type="text" class="form-control desember" id="desember" name="desember" placeholder="Total Rencana Desember" value="" maxlength="500" readonly>
                                             </div>
-                                            <div class="form-group">
-                                                <label for="peruntukan" class="col-sm-6 control-label">November</label>
-                                                <div class="col-sm-12">
-                                                    <input type="text" class="form-control november" id="november" name="november" placeholder="Total Rencana November" value="" maxlength="500" readonly>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="peruntukan" class="col-sm-6 control-label">Desember</label>
-                                                <div class="col-sm-12">
-                                                    <input type="text" class="form-control desember" id="desember" name="desember" placeholder="Total Rencana Desember" value="" maxlength="500" readonly>
-                                                </div>
-                                            </div>
+                                        </div>
 
-                                            <div class="col-sm-offset-2 col-sm-10">
-                                                <button class="btn btn-primary" id="saveBtn" value="create">Tutup</button>
-                                            </div>
-                                        </form>
-                                    </div>
+                                        <div class="col-sm-offset-2 col-sm-10">
+                                            <button class="btn btn-primary" id="saveBtn" value="create">Tutup</button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -251,6 +246,7 @@
                 </div>
             </div>
         </div>
+    </div>
     </div>
     <!-- /.content -->
 

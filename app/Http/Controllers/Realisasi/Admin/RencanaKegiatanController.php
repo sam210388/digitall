@@ -20,7 +20,7 @@ class RencanaKegiatanController extends Controller
 
     public function index(){
         $tahunanggaran = session('tahunanggaran');
-        $judul = 'Data Rencana Kegiatan';
+        $judul = 'Data Rencana Penarikan';
         $statusrencana = DB::table('rencanakegiatan')
             ->where('tahunanggaran','=',$tahunanggaran)
             ->limit(1)

@@ -7,6 +7,11 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
+                        @if(session('status'))
+                            <div class="alert alert-success">
+                                {{session('status')}}
+                            </div>
+                        @endif
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -64,9 +69,11 @@
                 </div>
                 <div class="card">
                     <div class="card-header">
-                        <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="exportrealisasibagianperpengenal"> Export</a>
-                        <h3 class="card-title">{{$judul}} | {{{$uraianbagian}}}</h3>
-                        <input type="hidden" name="idbagian" id="idbagian" value="{{$idbagian}}">
+                        <div class="btn-group float-sm-right" role="group">
+                            <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="exportrealisasibagianperpengenal"> Export</a>
+                            <h3 class="card-title">{{$judul}} | {{{$uraianbagian}}}</h3>
+                            <input type="hidden" name="idbagian" id="idbagian" value="{{$idbagian}}">
+                        </div>
                     </div>
                     <div class="card-body">
                         <table id="tabelrealisasibagianperpengenal" class="table table-bordered table-striped tabelrealisasibagianperpengenal">

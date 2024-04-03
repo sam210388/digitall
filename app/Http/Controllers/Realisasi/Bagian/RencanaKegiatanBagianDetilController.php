@@ -23,6 +23,7 @@ class RencanaKegiatanBagianDetilController extends Controller
         $this->middleware(['auth']);
     }
 
+    /*
     public function show($idrencanakegiatan){
         $tahunanggaran = session('tahunanggaran');
         $idbagian = Auth::user()->idbagian;
@@ -39,17 +40,8 @@ class RencanaKegiatanBagianDetilController extends Controller
             "idrencanakegiatan" => $idrencanakegiatan
         ]);
     }
+    */
 
-    public function ambildatapengenal(Request $request){
-        $pengenal = $request->get('pengenal');
-        $data['pagu'] = DB::table('laporanrealisasianggaranbac as a')
-            ->select('a.paguanggaran as paguanggaran','a.rsd12 as rsd12',DB::raw('sum(b.rupiah) as totalrencana'))
-            ->leftJoin('rencanakegiatandetail as b','a.pengenal','=','b.pengenal')
-            ->where('a.pengenal','=',$pengenal)
-            ->groupBy('a.pengenal')
-            ->get(['paguanggaran','rsd12','totalrencana']);
-        return response()->json($data);
-    }
 
 
     public function getrencanakegiatanbagiandetil($idrencana)

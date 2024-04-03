@@ -28,7 +28,10 @@ class MenuController extends Controller
             ->get();
         foreach ($datamenu as $menu) {
             $idmenu = $menu->idmenu;
-            $datasubmenu = DB::table('submenu')->where('idmenu','=',$idmenu)->get();
+            $datasubmenu = DB::table('submenu')
+                ->where('idmenu','=',$idmenu)
+                ->where('status','=','on')
+                ->get();
             $jumlahsubmenu = $datasubmenu->count();
             if ($jumlahsubmenu > 0) {
                 echo "<li class='nav-item'>".

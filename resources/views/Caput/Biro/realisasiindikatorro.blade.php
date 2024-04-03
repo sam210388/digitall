@@ -134,7 +134,7 @@
                 serverSide: true,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('getdatarealisasiindikatorro','')}}"+"/"+idbulan,
+                ajax:"{{route('getdatarealisasiindikatorrobagian','')}}"+"/"+idbulan,
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'ro', name: 'ro'},
@@ -183,7 +183,7 @@
                     serverSide: true,
                     dom: 'Bfrtip',
                     buttons: ['copy','excel','pdf','csv','print'],
-                    ajax:"{{route('getdatarealisasiindikatorro','')}}"+"/"+idbulan,
+                    ajax:"{{route('getdatarealisasiindikatorrobagian','')}}"+"/"+idbulan,
                     columns: [
                         {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                         {data: 'uraianro', name: 'uraianro'},
@@ -225,7 +225,7 @@
 
                 $.ajax({
                     type: "GET",
-                    url: "{{ route('cekjadwallaporindikatorro',['',''])}}"+"/"+idindikatorro+"/"+nilaibulan,
+                    url: "{{ route('cekjadwallaporindikatorrobagian',['',''])}}"+"/"+idindikatorro+"/"+nilaibulan,
                     success: function (data) {
                         if (data.status == "Buka"){
                             $.ajax({

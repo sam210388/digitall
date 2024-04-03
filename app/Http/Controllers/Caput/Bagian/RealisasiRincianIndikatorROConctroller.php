@@ -192,7 +192,8 @@ class RealisasiRincianIndikatorROConctroller extends Controller
             'keterangan' => $keterangan,
             'status' => 1,
             'idindikatorro' => $idindikatorro,
-            'idrincianindikatorro' => $idrincianindikatorro
+            'idrincianindikatorro' => $idrincianindikatorro,
+            'file' => $file
 
         ]);
 
@@ -302,7 +303,8 @@ class RealisasiRincianIndikatorROConctroller extends Controller
             'keterangan' => $keterangan,
             'status' => 1,
             'idindikatorro' => $idindikatorro,
-            'idrincianindikatorro' => $idrincianindikatorro
+            'idrincianindikatorro' => $idrincianindikatorro,
+            'file' => $file
         ]);
 
         if ($prosentasesdperiodeini == 100){

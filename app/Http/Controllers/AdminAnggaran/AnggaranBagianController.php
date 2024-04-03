@@ -79,8 +79,8 @@ class AnggaranBagianController extends Controller
         $tahunanggaran = session('tahunanggaran');
         $judul = 'Anggaran Bagian';
         $datadeputi = DB::table('deputi')->get();
-        $databiro = DB::table('biro')->get();
-        $databagian = DB::table('bagian')->get();
+        $databiro = DB::table('biro')->where('status','=','on')->get();
+        $databagian = DB::table('bagian')->where('status','=','on')->get();
         $anggaransetjenkosong = DB::table('anggaranbagian')
             ->where('kdsatker','=','001012')
             ->where('tahunanggaran','=',$tahunanggaran)

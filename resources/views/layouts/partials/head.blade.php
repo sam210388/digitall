@@ -29,6 +29,8 @@
   <link rel="stylesheet" href="{{env('APP_URL')."/".asset('AdminLTE/plugins/select2/css/select2.min.css')}}">
   <link rel="stylesheet" href="{{env('APP_URL')."/".asset('AdminLTE/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css')}}">
   <link rel="stylesheet" href="{{env('APP_URL')."/".asset('AdminLTE/plugins/daterangepicker/daterangepicker.css')}}">
+  <link rel="stylesheet" href="{{env('APP_URL')."/".asset('AdminLTE/plugins/dataTables-fixedColumns/css/fixedColumns.bootstrap4.css') }}" >
+  <link rel="stylesheet" href="{{env('APP_URL')."/".asset('AdminLTE/plugins/dataTables-fixedHeader/css/fixedHeader.bootstrap4.css') }}" >
 
   <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/jquery-numeric/jquery.numeric.js')}}"></script>
   <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/jquery-numeric/jquery.numeric.min.js')}}"></script>
@@ -38,6 +40,10 @@
   <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/datatables-responsive/js/responsive.bootstrap4.min.js')}}"></script>
   <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/datatables-buttons/js/dataTables.buttons.min.js')}}"></script>
   <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/datatables-buttons/js/buttons.bootstrap4.min.js')}}"></script>
+  <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/datatables-fixedcolumns/js/dataTables.fixedColumns.js')}}"></script>
+  <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/datatables-fixedheader/js/dataTables.fixedHeader.js')}}"></script>
+
+
   <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/pdfmake/pdfmake.min.js')}}"></script>
   <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/pdfmake/vfs_fonts.js')}}"></script>
   <script src="{{env('APP_URL')."/".asset('AdminLTE/plugins/datatables-buttons/js/buttons.html5.min.js')}}"></script>

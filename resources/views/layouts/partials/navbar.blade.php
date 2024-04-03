@@ -12,48 +12,58 @@
 
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
-
         <li class="nav-item">
             <a class="nav-link" data-widget="fullscreen" href="#" role="button">
                 <i class="fas fa-expand-arrows-alt"></i>
             </a>
         </li>
-
-        <!-- Right Side Of Navbar -->
-        <ul class="navbar-nav ml-auto">
-            <!-- Authentication Links -->
-            @guest
-                @if (Route::has('login'))
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                    </li>
-                @endif
-
-                @if (Route::has('register'))
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                    </li>
-                @endif
-            @else
-                <li class="nav-item dropdown">
-                    <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                        {{ Auth::user()->name }}
-                    </a>
-
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="{{ route('logout') }}"
-                           onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                            {{ __('Logout') }}
-                        </a>
-
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                            @csrf
-                        </form>
-                    </div>
+        @guest
+            @if (Route::has('login'))
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
                 </li>
-            @endguest
-        </ul>
+            @endif
+
+            @if (Route::has('register'))
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
+                </li>
+            @endif
+        @else
+            <li class="nav-item dropdown user user-menu">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                    <i class="fas fa-user"></i>
+                    <span class="hidden-xs">{{ Auth::user()->name ?? "" }}</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-right">
+                    <li class="user-header">
+                        <img src="{{ Auth::user()->gambaruser ? asset('storage/'.Auth::user()->gambaruser) : asset('storage/gambaruser/default.png') }}" class="user-image" alt="User Image">
+                        <p>{{ Auth::user()->name ?? "" }}</p>
+                    </li>
+                    <li class="user-body">
+                        <div class="row">
+                            <div class="col text-center">
+                                <p>{{$uraianbagian ?? "Unit Belum Didefinisikan"}}</p>
+                            </div>
+                            <div class="col text-center">
+                                <p>{{$datarole ?? "Role Belum Didefinisikan"}}</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="user-footer">
+                        <div class="pull-right">
+                            <a href="{{ route('logout') }}" class="btn btn-default btn-flat"
+                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                Sign out
+                            </a>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                @csrf
+                            </form>
+                        </div>
+                    </li>
+                </ul>
+            </li>
+        @endguest
     </ul>
 </nav>
 <!-- /.navbar -->

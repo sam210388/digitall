@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Realisasi\Bagian;
+namespace App\Models\Realisasi\Admin;
 
 use App\Models\Pemanfaatan\ObjekSewaModel;
 use App\Models\Pemanfaatan\PenanggungjawabSewaModel;
@@ -10,28 +10,21 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class RencanaKegiatanModel extends Model
+class MonitoringRencanaKegiataAdminModel extends Model
 {
     use HasFactory;
 
-    protected $table = 'rencanakegiataninduk';
-
-    public $timestamps = true;
+    protected $table = 'rencanakegiatan';
 
     protected $guarded = [];
 
-    public function created_by(){
-        return $this->hasOne(User::class,'created_by','id');
-    }
 
-    public function updated_by(){
-        return $this->hasOne(User::class,'updated_by','id');
-    }
-
-
-    public function bagianpengajuanrelation(){
+    public function bagianrelation(){
         return $this->hasOne(BagianModel::class,'id','idbagian');
     }
 
+    public function biropengajuanrelation(){
+        return $this->hasOne(User::class,'iduserpengajuan','id');
+    }
 
 }

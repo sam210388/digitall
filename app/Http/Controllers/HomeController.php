@@ -28,6 +28,8 @@ class HomeController extends Controller
      */
     public function index()
     {
+
+
         $tahunanggaran = session('tahunanggaran');
         //card BPK
         $cardtemuanrekomendasi = new CardTemuanRekomendasi();

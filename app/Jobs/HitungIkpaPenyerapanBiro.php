@@ -2,10 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Http\Controllers\IKPA\Admin\IKPAPenyerapanBagianController;
-use App\Http\Controllers\IKPA\Bagian\IKPAPenyerapanBagianController;
-use App\Http\Controllers\Realisasi\Admin\RealisasiSaktiController;
-use App\Http\Controllers\Realisasi\Admin\SppHeaderController;
+use App\Http\Controllers\IKPA\Admin\IKPAPenyerapanController;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -37,7 +34,7 @@ class HitungIkpaPenyerapanBiro implements ShouldQueue
     public function handle()
     {
         $tahunanggaran = $this->tahunanggaran;
-        $sppheader = new IKPAPenyerapanBagianController();
+        $sppheader = new IKPAPenyerapanController();
         $sppheader = $sppheader->aksiperhitunganikpapenyerapanbiro($tahunanggaran);
     }
 }
