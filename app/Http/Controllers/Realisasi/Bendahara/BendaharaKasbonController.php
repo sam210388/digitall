@@ -3,17 +3,10 @@
 namespace App\Http\Controllers\Realisasi\Bendahara;
 
 use App\Http\Controllers\Controller;
-use App\Models\Pemanfaatan\PenanggungjawabSewaModel;
-use App\Models\Pemanfaatan\Penyewa\TransaksiPemanfaatanModel;
-use App\Models\Realisasi\Bagian\KasbonModel;
 use App\Models\Realisasi\Bendahara\BendaharaKasbonModel;
-use App\Models\Realisasi\PPK\PPKKasbonModel;
-use App\Models\Realisasi\PPSPM\PPSPMKasbonModel;
-use App\Models\ReferensiUnit\BagianModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\DataTables;
 
 class BendaharaKasbonController extends Controller
@@ -33,8 +26,14 @@ class BendaharaKasbonController extends Controller
     public function getdatakasbonbendahara()
     {
         $tahunanggaran = session('tahunanggaran');
+        $iduser = Auth::user()->id;
+        $kewenanganbendahara = DB::table('penetapanbendahara')
+            ->where('iduser','=',$iduser)
+            ->where('tahunanggaran','=',$tahunanggaran)
+            ->value('kodesatker');
         $model = BendaharaKasbonModel::with('bagianpengajuanrelation')
             ->where('tahunanggaran','=',$tahunanggaran)
+            ->where('kdsatker','=',$kewenanganbendahara)
             ->select('kasbon.*');
         return Datatables::eloquent($model)
             ->addColumn('bagian', function (BendaharaKasbonModel $id) {

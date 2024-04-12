@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Administrasi;
 
 use App\Http\Controllers\Controller;
-use App\Models\Administrasi\PenetapanPPKModel;
-use App\Models\Administrasi\PPKSatkerModel;
+use App\Models\Administrasi\PenetapanKasirModel;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 
-class PenetapanPPKController extends Controller
+class PenetapanKasirController extends Controller
 {
     public function __construct()
     {
@@ -18,13 +17,11 @@ class PenetapanPPKController extends Controller
 
     public function index(Request $request)
     {
-        $judul = 'Data User PPK dan Kewenangannya';
-        $datappk = PPKSatkerModel::all();
+        $judul = 'Data User Kasir dan Kewenangannya';
         $datauser = User::all();
         $tahunanggaran = session('tahunanggaran');
         if ($request->ajax()) {
-            $data = PenetapanPPKModel::with('ppkrelation')
-                ->with('userrelation')
+            $data = PenetapanKasirModel::with('userrelation')
                 ->where('tahunanggaran','=',$tahunanggaran)->get();
             return Datatables::of($data)
                 ->addIndexColumn()
@@ -34,19 +31,15 @@ class PenetapanPPKController extends Controller
                     $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm delete">Delete</a>';
                     return $btn;
                 })
-                ->addColumn('ppk',function(PenetapanPPKModel $row){
-                    return $row->idppk?$row->ppkrelation->uraianppk:"";
-                })
-                ->addColumn('user',function(PenetapanPPKModel $row){
-                    return $row->idppk?$row->userrelation->name:"";
+                ->addColumn('user',function(PenetapanKasirModel $row){
+                    return $row->iduser?$row->userrelation->name:"";
                 })
                 ->rawColumns(['action'])
                 ->make(true);
         }
 
-        return view('Administrasi.penetapanppk',[
+        return view('Administrasi.penetapankasir',[
             "judul"=>$judul,
-            "datappk" => $datappk,
             "datauser" => $datauser
         ]);
     }
@@ -60,7 +53,7 @@ class PenetapanPPKController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'idppk' => 'required',
+            'kodesatker' => 'required',
             'iduser' => 'required',
         ]);
         if ($request->get('status') == null){
@@ -69,11 +62,10 @@ class PenetapanPPKController extends Controller
             $active = "on";
         }
         $tahunanggaran = session('tahunanggaran');
-        PenetapanPPKModel::create(
+        PenetapanKasirModel::create(
             [
                 'tahunanggaran' =>$tahunanggaran,
                 'kodesatker' => $request->get('kodesatker'),
-                'idppk' => $request->get('idppk'),
                 'iduser' => $request->get('iduser'),
                 'status' => $active
             ]);
@@ -81,40 +73,18 @@ class PenetapanPPKController extends Controller
         return response()->json(['status'=>'berhasil']);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
-        $menu = PenetapanPPKModel::find($id);
+        $menu = PenetapanKasirModel::find($id);
         return response()->json($menu);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'idppk' => 'required',
+            'kodesatker' => 'required',
             'iduser' => 'required',
         ]);
         if ($request->get('status') == null){
@@ -123,11 +93,10 @@ class PenetapanPPKController extends Controller
             $active = "on";
         }
         $tahunanggaran = session('tahunanggaran');
-        PenetapanPPKModel::where('id','=',$id)->update(
+        PenetapanKasirModel::where('id','=',$id)->update(
             [
                 'tahunanggaran' =>$tahunanggaran,
                 'kodesatker' => $request->get('kodesatker'),
-                'idppk' => $request->get('idppk'),
                 'iduser' => $request->get('iduser'),
                 'status' => $active
             ]);
@@ -135,15 +104,10 @@ class PenetapanPPKController extends Controller
         return response()->json(['status'=>'berhasil']);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+
     public function destroy($id)
     {
-        PenetapanPPKModel::find($id)->delete();
+        PenetapanKasirModel::find($id)->delete();
         return response()->json(['status'=>'berhasil']);
     }
 }

@@ -34,6 +34,7 @@
                             <tr>
                                 <th>No</th>
                                 <th>Tahun</th>
+                                <th>Jenis Temuan</th>
                                 <th>Temuan</th>
                                 <th>Nilai</th>
                                 <th>Bukti</th>
@@ -49,6 +50,7 @@
                             <tr>
                                 <th>Tahun</th>
                                 <th>Tahun</th>
+                                <th>Jenis Temuan</th>
                                 <th>Temuan</th>
                                 <th>Nilai</th>
                                 <th>Bukti</th>
@@ -80,6 +82,17 @@
                                                         <option value="{{ $data->kode }}">{{ $data->tahunanggaran }}</option>
                                                     @endforeach
                                                 </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="tahunanggaran" class="col-sm-6 control-label">Jenis Temuan</label>
+                                                <div class="col-sm-12">
+                                                    <select class="form-control jenistemuan" name="jenistemuan" id="jenistemuan" style="width: 100%;">
+                                                        <option value="">Jenis Temuan</option>
+                                                        <option value="Laporan Keuangan">Laporan Keuangan</option>
+                                                        <option value="SPI">SPI</option>
+                                                        <option value="Kepatuhan">Kepatuhan</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                             <div class="form-group">
@@ -224,6 +237,7 @@
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'tahunanggaran', name: 'tahunanggaran'},
+                    {data: 'jenistemuan', name: 'jenistemuan'},
                     {data: 'temuan', name: 'temuan'},
                     {data: 'nilai', name: 'nilai'},
                     {data: 'bukti', name: 'bukti'},

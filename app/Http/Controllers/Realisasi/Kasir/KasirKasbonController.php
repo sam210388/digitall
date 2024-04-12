@@ -34,8 +34,14 @@ class KasirKasbonController extends Controller
     public function getdatakasbonkasir()
     {
         $tahunanggaran = session('tahunanggaran');
+        $iduser = Auth::user()->id;
+        $kewenanganbendahara = DB::table('penetapanbendahara')
+            ->where('iduser','=',$iduser)
+            ->where('tahunanggaran','=',$tahunanggaran)
+            ->value('kodesatker');
         $model = KasirKasbonModel::with('bagianpengajuanrelation')
             ->where('tahunanggaran','=',$tahunanggaran)
+            ->where('kdsatker','=',$kewenanganbendahara)
             ->select('kasbon.*');
         return Datatables::eloquent($model)
             ->addColumn('bagian', function (PPKKasbonModel $id) {

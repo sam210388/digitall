@@ -38,31 +38,59 @@ class RealisasiIndikatorROBagianConctroller extends Controller
         $tahunanggaran = session('tahunanggaran');
         $bulan = $idbulan;
         $idbagian = Auth::user()->idbagian;
+        $idbiro = Auth::user()->idbiro;
+
         if ($request->ajax()) {
-            $data = DB::table('indikatorro as a')
-                ->select([DB::raw('concat(a.tahunanggaran,".",a.kodesatker,".",a.kodekegiatan,".",
+            if ($idbagian == 0) {
+                $data = DB::table('indikatorro as a')
+                    ->select([DB::raw('concat(a.tahunanggaran,".",a.kodesatker,".",a.kodekegiatan,".",
                     a.kodeoutput,".",a.kodesuboutput,".",a.kodekomponen," | ",
                     a.uraianindikatorro) as indikatorro'), 'a.target as target','a.status as status','a.idkro as idkro','a.idro as idro','e.uraianro as uraianro',
-                    'a.jenisindikator as jenisindikator','a.idbiro as idbiro','a.iddeputi as iddeputi','b.id as idrealisasi', 'b.jumlah as jumlah',
-                    'b.jumlahsdperiodeini as jumlahsdperiodeini', 'b.prosentase as prosentase', 'b.prosentasesdperiodeini as prosentasesdperiodeini',
-                    'c.uraianstatus as statuspelaksanaan', 'd.uraiankategori as kategoripermasalahan',
-                    'b.uraianoutputdihasilkan as uraianoutputdihasilkan', 'b.keterangan as keterangan',
-                    'f.uraianstatus as statusrealisasi', 'e.uraianro as ro',
-                    'a.id as idindikatorro'
-                ])
-                //->leftJoin('realisasirincianindikatorro as b','a.id','=','b.idrincianindikatorro')
-                ->leftJoin('realisasiindikatorro as b', function ($join) use ($bulan) {
-                    $join->on('a.id', '=', 'b.idindikatorro');
-                    $join->on('b.periode', '=', DB::raw($bulan));
-                })
-                ->leftJoin('statuspelaksanaan as c', 'b.statuspelaksanaan', '=', 'c.id')
-                ->leftJoin('kategoripermasalahan as d', 'b.kategoripermasalahan', '=', 'd.id')
-                ->leftJoin('ro as e', 'a.idro', '=', 'e.id')
-                ->leftJoin('statusrealisasi as f','b.status','=','f.id')
-                ->where('a.idbagian', '=', $idbagian)
-                ->where('a.tahunanggaran', '=', $tahunanggaran)
-                ->groupBy('a.id')
-                ->get();
+                        'a.jenisindikator as jenisindikator','a.idbiro as idbiro','a.iddeputi as iddeputi','b.id as idrealisasi', 'b.jumlah as jumlah',
+                        'b.jumlahsdperiodeini as jumlahsdperiodeini', 'b.prosentase as prosentase', 'b.prosentasesdperiodeini as prosentasesdperiodeini',
+                        'c.uraianstatus as statuspelaksanaan', 'd.uraiankategori as kategoripermasalahan',
+                        'b.uraianoutputdihasilkan as uraianoutputdihasilkan', 'b.keterangan as keterangan',
+                        'f.uraianstatus as statusrealisasi', 'e.uraianro as ro',
+                        'a.id as idindikatorro'
+                    ])
+                    ->leftJoin('realisasiindikatorro as b', function ($join) use ($bulan) {
+                        $join->on('a.id', '=', 'b.idindikatorro');
+                        $join->on('b.periode', '=', DB::raw($bulan));
+                    })
+                    ->leftJoin('statuspelaksanaan as c', 'b.statuspelaksanaan', '=', 'c.id')
+                    ->leftJoin('kategoripermasalahan as d', 'b.kategoripermasalahan', '=', 'd.id')
+                    ->leftJoin('ro as e', 'a.idro', '=', 'e.id')
+                    ->leftJoin('statusrealisasi as f','b.status','=','f.id')
+                    ->where('a.idbiro', '=', $idbiro)
+                    ->where('a.tahunanggaran', '=', $tahunanggaran)
+                    ->groupBy('a.id')
+                    ->get();
+            } else {
+                $data = DB::table('indikatorro as a')
+                    ->select([DB::raw('concat(a.tahunanggaran,".",a.kodesatker,".",a.kodekegiatan,".",
+                    a.kodeoutput,".",a.kodesuboutput,".",a.kodekomponen," | ",
+                    a.uraianindikatorro) as indikatorro'), 'a.target as target','a.status as status','a.idkro as idkro','a.idro as idro','e.uraianro as uraianro',
+                        'a.jenisindikator as jenisindikator','a.idbiro as idbiro','a.iddeputi as iddeputi','b.id as idrealisasi', 'b.jumlah as jumlah',
+                        'b.jumlahsdperiodeini as jumlahsdperiodeini', 'b.prosentase as prosentase', 'b.prosentasesdperiodeini as prosentasesdperiodeini',
+                        'c.uraianstatus as statuspelaksanaan', 'd.uraiankategori as kategoripermasalahan',
+                        'b.uraianoutputdihasilkan as uraianoutputdihasilkan', 'b.keterangan as keterangan',
+                        'f.uraianstatus as statusrealisasi', 'e.uraianro as ro',
+                        'a.id as idindikatorro'
+                    ])
+                    ->leftJoin('realisasiindikatorro as b', function ($join) use ($bulan) {
+                        $join->on('a.id', '=', 'b.idindikatorro');
+                        $join->on('b.periode', '=', DB::raw($bulan));
+                    })
+                    ->leftJoin('statuspelaksanaan as c', 'b.statuspelaksanaan', '=', 'c.id')
+                    ->leftJoin('kategoripermasalahan as d', 'b.kategoripermasalahan', '=', 'd.id')
+                    ->leftJoin('ro as e', 'a.idro', '=', 'e.id')
+                    ->leftJoin('statusrealisasi as f','b.status','=','f.id')
+                    ->where('a.idbagian', '=', $idbagian)
+                    ->where('a.tahunanggaran', '=', $tahunanggaran)
+                    ->groupBy('a.id')
+                    ->get();
+            }
+
 
             return Datatables::of($data)
                 ->addIndexColumn()

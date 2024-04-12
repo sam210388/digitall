@@ -2,10 +2,8 @@
 
 namespace App\Models\Realisasi\Admin;
 
-use App\Models\Pemanfaatan\ObjekSewaModel;
-use App\Models\Pemanfaatan\PenanggungjawabSewaModel;
-use App\Models\Pemanfaatan\PenyewaModel;
 use App\Models\ReferensiUnit\BagianModel;
+use App\Models\ReferensiUnit\BiroModel;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -23,8 +21,8 @@ class MonitoringRencanaKegiataAdminModel extends Model
         return $this->hasOne(BagianModel::class,'id','idbagian');
     }
 
-    public function biropengajuanrelation(){
-        return $this->hasOne(User::class,'iduserpengajuan','id');
+    public function birorelation(){
+        return $this->hasOne(BiroModel::class,'id','idbiro');
     }
 
 }

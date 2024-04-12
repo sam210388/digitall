@@ -5,7 +5,6 @@ namespace App\Http\Controllers\BPK\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\BPK\Admin\TemuanModel;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\DataTables;
@@ -30,7 +29,6 @@ class TemuanController extends Controller
 
         if ($request->ajax()) {
             $data = TemuanModel::all();
-
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
@@ -127,6 +125,7 @@ class TemuanController extends Controller
 
         $validated = $request->validate([
             'tahunanggaran' => 'required',
+            'jenistemuan' => 'required',
             'temuan' => 'required',
             'kondisi' => 'required',
             'kriteria' => 'required',
@@ -140,6 +139,7 @@ class TemuanController extends Controller
         TemuanModel::create(
             [
                 'tahunanggaran' => $request->get('tahunanggaran'),
+                'jenistemuan' => $request->get('jenistemuan'),
                 'temuan' => $request->get('temuan'),
                 'kondisi' => $request->get('kondisi'),
                 'kriteria' => $request->get('kriteria'),
@@ -213,6 +213,7 @@ class TemuanController extends Controller
 
         $validated = $request->validate([
             'tahunanggaran' => 'required',
+            'jenistemuan' => 'required',
             'temuan' => 'required',
             'kondisi' => 'required',
             'kriteria' => 'required',
@@ -225,6 +226,7 @@ class TemuanController extends Controller
         TemuanModel::where('id',$id)->update(
             [
                 'tahunanggaran' => $request->get('tahunanggaran'),
+                'jenistemuan' => $request->get('jenistemuan'),
                 'temuan' => $request->get('temuan'),
                 'kondisi' => $request->get('kondisi'),
                 'kriteria' => $request->get('kriteria'),

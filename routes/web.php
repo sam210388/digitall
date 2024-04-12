@@ -20,6 +20,9 @@ use App\Http\Controllers\Administrasi\KewenanganController;
 use App\Http\Controllers\Administrasi\PegawaiController;
 use App\Http\Controllers\Administrasi\PPKSatkerController;
 use App\Http\Controllers\Administrasi\KewenanganPPKController;
+use App\Http\Controllers\Administrasi\PenetapanPPKController;
+use App\Http\Controllers\Administrasi\PenetapanBendaharaController;
+use App\Http\Controllers\Administrasi\PenetapanKasirController;
 
 use App\Http\Controllers\ReferensiUnit\DeputiController;
 use App\Http\Controllers\ReferensiUnit\BiroController;
@@ -112,15 +115,11 @@ use App\Http\Controllers\Realisasi\PPSPM\PPSPMKasbonController;
 use App\Http\Controllers\Realisasi\Bendahara\BendaharaKasbonController;
 use App\Http\Controllers\Realisasi\Kasir\KasirKasbonController;
 use App\Http\Controllers\Realisasi\Admin\RealisasiSaktiController;
-use App\Http\Controllers\Realisasi\Bagian\RencanaKegiatanBagianController;
 use App\Http\Controllers\Realisasi\Bagian\RencanaKegiatanIndukBagianController;
 
-use App\Http\Controllers\Realisasi\Bagian\RencanaKegiatanBagianDetilController;
-use App\Http\Controllers\Realisasi\Bagian\Monitoringrencanakegiatan;
 use App\Http\Controllers\Realisasi\Admin\RencanaKegiatanController;
 use App\Http\Controllers\Realisasi\Biro\RencanaKegiatanBiroController;
 use App\Http\Controllers\Realisasi\Admin\KontrakHeaderController;
-use App\Http\Controllers\Realisasi\Admin\KontrakCOAController;
 
 use App\Http\Controllers\IKPA\Admin\DetilPenyelesaianController;
 use App\Http\Controllers\IKPA\Admin\DetilIKPAKontraktualController;
@@ -764,7 +763,6 @@ Route::get('getdatarekapikpabiroaksesbiro',[RekapIKPABiroAksesBiroController::cl
 //MODUL RENCANA KAS ADMIN
 Route::get('rencanakegiatan',[RencanaKegiatanController::class,'index'])->name('rencanakegiatan')->middleware('cekadmin');
 Route::get('getdatarencanakegiatan/{idbagian?}',[RencanaKegiatanController::class,'getdatarencana'])->name('getdatarencanakegiatan')->middleware('cekadmin');
-Route::get('lihatrencanakegiatan/{idrencana}',[RencanaKegiatanController::class,'edit'])->name('lihatrencanakegiatan')->middleware('cekadmin');
 Route::get('exportrencanapenarikan',[RencanaKegiatanController::class,'exportrencanapenarikan'])->name('exportrencanapenarikan')->middleware('cekadmin');
 Route::get('tutupperioderencana',[RencanaKegiatanController::class,'tutupperioderencana'])->name('tutupperioderencana')->middleware('cekadmin');
 Route::get('bukaperioderencana',[RencanaKegiatanController::class,'bukaperioderencana'])->name('bukaperioderencana')->middleware('cekadmin');
@@ -807,4 +805,7 @@ Route::get('getdatarencanakegiatanbiro/{idbagian?}',[RencanaKegiatanBiroControll
 //admin realisasi untuk referensi PPK
 Route::resource('ppksatker',PPKSatkerController::class)->middleware('cekadmin');
 Route::resource('kewenanganppk',KewenanganPPKController::class)->middleware('cekadmin');
+Route::resource('penetapanppk',PenetapanPPKController::class)->middleware('cekadmin');
+Route::resource('penetapanbendahara',PenetapanBendaharaController::class)->middleware('cekadmin');
+Route::resource('penetapankasir',PenetapanKasirController::class)->middleware('cekadmin');
 Route::post('ambillistppk',[KewenanganPPKController::class,'ambillistppk'])->name('ambillistppk')->middleware('cekadmin');

@@ -56,11 +56,16 @@ class RencanaKegiatanIndukBagianController extends Controller
     }
 
     public function updatetabelmonitoring($pengenal, $bulanpencairan){
+        $tahunanggaran = session('tahunanggaran');
+        $idbagian = Auth::user()->idbagian;
+
         $nilairencanabulan = DB::table('rencanakegiatandetail')
             ->select([DB::raw('sum(rupiah) as nilairencana')])
             ->where('pengenal','=',$pengenal)
             ->where('bulanpencairan','=',$bulanpencairan)
             ->value('nilairencana');
+
+
 
         //update total rencana
         $totalrencana = DB::table('rencanakegiatan')
@@ -100,6 +105,21 @@ class RencanaKegiatanIndukBagianController extends Controller
         ]);
     }
 
+    public function updatetotalrencana($pengenal){
+        //update total rencana
+        $totalrencana = DB::table('rencanakegiatan')
+            ->select([DB::raw('sum(pok1+pok2+pok3+pok4+pok5+pok6+pok7+pok8+pok9+pok10+pok11+pok12) as totalrencana')])
+            ->where('pengenal','=',$pengenal)
+            ->value('totalrencana');
+
+        //update atau cetak datanya
+        DB::table('rencanakegiatan')->updateOrInsert([
+            'pengenal' => $pengenal
+        ],[
+            'totalrencana' => $totalrencana
+        ]);
+    }
+
     function exportrencanapenarikanbagian(){
         $tahunanggaran = session('tahunanggaran');
         $idbagian = Auth::user()->idbagian;
@@ -119,6 +139,7 @@ class RencanaKegiatanIndukBagianController extends Controller
                 ->where('idbagian','=',$idbagian)
                 ->get();
             $namafield = 'r';
+
             foreach ($datalaporanrealisasibac as $data){
                 $pengenal = $data->pengenal;
                 $kodesatker = $data->kodesatker;
@@ -127,10 +148,15 @@ class RencanaKegiatanIndukBagianController extends Controller
                 $tahunanggaran = $data->tahunanggaran;
                 $paguanggaran = $data->paguanggaran;
                 $realisasibulani = $data->{"r$i"};
-                $totalrencana = DB::table('rencanakegiatan')
-                    ->select([DB::raw('sum(pok1+pok2+pok3+pok4+pok5+pok6+pok7+pok8+pok9+pok10+pok11+pok12) as totalrencana')])
-                    ->where('pengenal','=',$pengenal)
-                    ->value('totalrencana');
+                if ($i==$bulan){
+                    $nilairencanabulan = DB::table('rencanakegiatandetail')
+                        ->select([DB::raw('sum(rupiah) as nilairencana')])
+                        ->where('pengenal','=',$pengenal)
+                        ->where('bulanpencairan','=',$i)
+                        ->where('statusrencana','=','Terjadwal')
+                        ->value('nilairencana');
+                    $realisasibulani = $realisasibulani+$nilairencanabulan;
+                }
 
                 //update atau cetak datanya
                 DB::table('rencanakegiatan')->updateOrInsert([
@@ -142,9 +168,11 @@ class RencanaKegiatanIndukBagianController extends Controller
                     'kdsatker' => $kodesatker,
                     'idbagian' => $idbagian,
                     'idbiro' => $idbiro,
-                    'pok'.$i => $realisasibulani,
-                    'totalrencana' => $totalrencana
+                    'pok'.$i => $realisasibulani
                 ]);
+
+                //update total rencana
+                $this->updatetotalrencana($pengenal);
 
             }
         }
@@ -371,8 +399,11 @@ class RencanaKegiatanIndukBagianController extends Controller
     public function destroy($id)
     {
         //delete jg detilnya
+        DB::table('rencanakegiatandetail')->where('idrencanakegiatan','=',$id)->delete();
 
+        //hapus rencananya
         RencanaKegiatanModel::find($id)->delete();
+
         return response()->json(['status'=>'berhasil']);
     }
 

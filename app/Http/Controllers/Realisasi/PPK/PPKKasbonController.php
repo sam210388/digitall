@@ -31,8 +31,23 @@ class PPKKasbonController extends Controller
     public function getdatakasbonppk()
     {
         $tahunanggaran = session('tahunanggaran');
+        $iduser = Auth::user()->id;
+        $idppk = DB::table('penetapanppk')
+            ->where('tahunanggaran','=',$tahunanggaran)
+            ->where('iduser','=',$iduser)
+            ->pluck('idppk')
+            ->toArray();
+        $kewenanganppk = [];
+        foreach ($idppk as $id){
+            $idbiro = DB::table('kewenanganppk')
+                ->where('tahunanggaran','=',$tahunanggaran)
+                ->where('idppk','=',$id)
+                ->value('idbiro');
+            $kewenanganppk = array_push($kewenanganppk, $idbiro);
+        }
         $model = PPKKasbonModel::with('bagianpengajuanrelation')
             ->where('tahunanggaran','=',$tahunanggaran)
+            ->whereIn('idbiropengajuan',$kewenanganppk)
             ->select('kasbon.*');
         return Datatables::eloquent($model)
             ->addColumn('bagian', function (PPKKasbonModel $id) {

@@ -33,8 +33,10 @@
                             <thead>
                             <tr>
                                 <th>No</th>
-                                <th>User</th>
-                                <th>PPK</th>
+                                <th>Tahun Anggaran</th>
+                                <th>Satker</th>
+                                <th>Bendahara</th>
+                                <th>Status</th>
                                 <th>Action</th>
                             </tr>
                             </thead>
@@ -43,8 +45,10 @@
                             <tfoot>
                             <tr>
                                 <th>No</th>
-                                <th>User</th>
-                                <th>PPK</th>
+                                <th>Tahun Anggaran</th>
+                                <th>Satker</th>
+                                <th>Bendahara</th>
+                                <th>Status</th>
                                 <th>Action</th>
                             </tr>
                             </tfoot>
@@ -58,7 +62,6 @@
                                     <div class="modal-body">
                                         <form id="formsubmenu" name="formsubmenu" class="form-horizontal">
                                             <input type="hidden" name="id" id="id">
-                                            <input type="hidden" name="idppkawal" id="idppkawal">
                                             <div class="form-group">
                                                 <label for="Menu" class="col-sm-6 control-label">Satker</label>
                                                 <div class="col-sm-12">
@@ -66,13 +69,6 @@
                                                         <option value="">Pilih Satker</option>
                                                         <option value="001012">Setjen</option>
                                                         <option value="001030">Dewan</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="PPK" class="col-sm-6 control-label">PPK</label>
-                                                <div class="col-sm-12">
-                                                    <select class="form-control idppk" name="idppk" id="idppk" style="width: 100%;">
                                                     </select>
                                                 </div>
                                             </div>
@@ -116,12 +112,6 @@
                 dropdownParent: $('#ajaxModel')
 
             })
-            $('.idppk').select2({
-                width: '100%',
-                theme: 'bootstrap4',
-                dropdownParent: $('#ajaxModel')
-
-            })
             $('.iduser').select2({
                 width: '100%',
                 theme: 'bootstrap4',
@@ -152,11 +142,13 @@
                 serverSide: true,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('penetapanppk.index')}}",
+                ajax:"{{route('penetapanbendahara.index')}}",
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                    {data: 'ppk', name: 'ppkrelation.uraianppk'},
+                    {data: 'tahunanggaran', name: 'tahunanggaran'},
+                    {data: 'kodesatker', name: 'kodesatker'},
                     {data: 'user', name: 'userrelation.name'},
+                    {data: 'status', name: 'status'},
                     {
                         data: 'action',
                         name: 'action',
@@ -183,8 +175,6 @@
             $('#tambahsubmenu').click(function () {
                 $('#saveBtn').val("tambah");
                 $('#kodesatker').val('').trigger('change');
-                $('#idppk').val('').trigger('change');
-                $('#idppkawal').val('');
                 $('#iduser').val('').trigger('change');
                 $('#formsubmenu').trigger("reset");
                 $('#modelHeading').html("Tambah Data");
@@ -198,14 +188,12 @@
             --------------------------------------------*/
             $('body').on('click', '.edit', function () {
                 var idsubmenu = $(this).data('id');
-                $.get("{{ route('penetapanppk.index') }}" +'/' + idsubmenu +'/edit', function (data) {
+                $.get("{{ route('penetapanbendahara.index') }}" +'/' + idsubmenu +'/edit', function (data) {
                     $('#modelHeading').html("Edit Data");
                     $('#saveBtn').val("edit");
                     $('#ajaxModel').modal('show');
                     $('#id').val(data.id);
                     $('#kodesatker').val(data.kodesatker).trigger('change');
-                    $('#idppkawal').val(data.idppk);
-                    $('#idppk').val(data.idppk).trigger('change');
                     $('#iduser').val(data.iduser).trigger('change');
                     if (data.status == "on"){
                         $('#status').prop('checked',true).change();
@@ -237,7 +225,7 @@
 
                 $.ajax({
                     data: fd,
-                    url: saveBtn === "tambah" ? "{{route('penetapanppk.store')}}":"{{route('penetapanppk.update','')}}"+'/'+id,
+                    url: saveBtn === "tambah" ? "{{route('penetapanbendahara.store')}}":"{{route('penetapanbendahara.update','')}}"+'/'+id,
                     type: "POST",
                     dataType: 'json',
                     contentType: false,
@@ -297,7 +285,7 @@
                 if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
                     $.ajax({
                         type: "DELETE",
-                        url: "{{ route('penetapanppk.destroy','') }}"+'/'+idsubmenu,
+                        url: "{{ route('penetapanbendahara.destroy','') }}"+'/'+idsubmenu,
                         success: function (data) {
                             if (data.status == "berhasil"){
                                 Swal.fire({
