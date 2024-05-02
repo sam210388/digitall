@@ -18,11 +18,11 @@ class CekPemilikRekomendasi
      */
     public function handle(Request $request, Closure $next)
     {
-        if ($request->get('idrekomendasi')){
+        if ($request->get('idindikatorrekomendasi')){
             $idbagian = Auth::user()->idbagian;
-            $idrekomendasi = $request->get('idrekomendasi');
-            $bagian = DB::table('rekomendasi')
-                ->where('id','=',$idrekomendasi)
+            $idindikatorrekomendasi = $request->get('idindikatorrekomendasi');
+            $bagian = DB::table('indikatorrekomendasi')
+                ->where('id','=',$idindikatorrekomendasi)
                 ->value('idbagian');
 
             if ($idbagian == $bagian){
@@ -32,10 +32,10 @@ class CekPemilikRekomendasi
             }
         }else if ($request->route('kelolatindaklanjut')){
             $idtindaklanjut = $request->route('kelolatindaklanjut');
-            $idrekomendasi = DB::table('tindaklanjutbpk')->where('id','=',$idtindaklanjut)->value('idrekomendasi');
+            $idindikatorrekomendasi = DB::table('tindaklanjutbpk')->where('id','=',$idtindaklanjut)->value('idindikatorrekomendasi');
             $idbagian = Auth::user()->idbagian;
-            $bagian = DB::table('rekomendasi')
-                ->where('id','=',$idrekomendasi)
+            $bagian = DB::table('indikatorrekomendasi')
+                ->where('id','=',$idindikatorrekomendasi)
                 ->value('idbagian');
 
             if ($idbagian == $bagian){
@@ -43,11 +43,11 @@ class CekPemilikRekomendasi
             }else{
                 abort(403,'Rekomendasi Ini Bukan Milik Bagian Anda');
             }
-        }else if ($request->route('idrekomendasi')){
-            $idrekomendasi = $request->route('idrekomendasi');
+        }else if ($request->route('idindikatorrekomendasi')){
+            $idindikatorrekomendasi = $request->route('idindikatorrekomendasi');
             $idbagian = Auth::user()->idbagian;
-            $bagian = DB::table('rekomendasi')
-                ->where('id','=',$idrekomendasi)
+            $bagian = DB::table('indikatorrekomendasi')
+                ->where('id','=',$idindikatorrekomendasi)
                 ->value('idbagian');
 
             if ($idbagian == $bagian){
@@ -57,12 +57,12 @@ class CekPemilikRekomendasi
             }
         }else if ($request->route('idtindaklanjut')){
             $idtindaklanjut = $request->route('idtindaklanjut');
-            $idrekomendasi =  DB::table('tindaklanjutbpk')
+            $idindikatorrekomendasi =  DB::table('tindaklanjutbpk')
                 ->where('id','=',$idtindaklanjut)
                 ->value('idrekomendasi');
             $idbagian = Auth::user()->idbagian;
-            $bagian = DB::table('rekomendasi')
-                ->where('id','=',$idrekomendasi)
+            $bagian = DB::table('indikatorrekomendasi')
+                ->where('id','=',$idindikatorrekomendasi)
                 ->value('idbagian');
 
             if ($idbagian == $bagian){
@@ -72,12 +72,12 @@ class CekPemilikRekomendasi
             }
         }else if ($request->get('idtindaklanjut')){
             $idtindaklanjut = $request->get('idtindaklanjut');
-            $idrekomendasi =  DB::table('tindaklanjutbpk')
+            $idindikatorrekomendasi =  DB::table('tindaklanjutbpk')
                 ->where('id','=',$idtindaklanjut)
-                ->value('idrekomendasi');
+                ->value('idindikatorrekomendasi');
             $idbagian = Auth::user()->idbagian;
-            $bagian = DB::table('rekomendasi')
-                ->where('id','=',$idrekomendasi)
+            $bagian = DB::table('indikatorrekomendasi')
+                ->where('id','=',$idindikatorrekomendasi)
                 ->value('idbagian');
 
             if ($idbagian == $bagian){

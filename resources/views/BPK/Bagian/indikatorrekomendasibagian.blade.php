@@ -34,6 +34,7 @@
                                 <th>No</th>
                                 <th>Temuan</th>
                                 <th>Rekomendasi</th>
+                                <th>Indikator Rekomendasi</th>
                                 <th>Nilai</th>
                                 <th>Bukti</th>
                                 <th>Status</th>
@@ -48,6 +49,7 @@
                                 <th>No</th>
                                 <th>Temuan</th>
                                 <th>Rekomendasi</th>
+                                <th>Indikator Rekomendasi</th>
                                 <th>Nilai</th>
                                 <th>Bukti</th>
                                 <th>Status</th>
@@ -65,6 +67,7 @@
                                     <div class="modal-body">
                                         <form id="formrekomendasi" name="formrekomendasi" class="form-horizontal" enctype="multipart/form-data">
                                             <input type="hidden" name="idrekomendasi" id="idrekomendasi">
+                                            <input type="hidden" name="idindikatorrekomendasi" id="idindikatorrekomendasi">
                                             <div class="form-group">
                                                 <label for="tahunanggaran" class="col-sm-6 control-label">Tahun Anggaran</label>
                                                 <div class="col-sm-12">
@@ -145,11 +148,12 @@
                 serverSide: true,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('rekomendasibpkbagian.index')}}",
+                ajax:"{{route('indikatorrekomendasibpkbagian.index')}}",
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'temuan', name: 'temuan'},
                     {data: 'rekomendasi', name: 'rekomendasi'},
+                    {data: 'indikatorrekomendasi', name: 'indikatorrekomendasi'},
                     {data: 'nilai', name: 'nilai'},
                     {data: 'bukti', name: 'bukti'},
                     {data: 'status', name: 'status'},
@@ -181,8 +185,8 @@
             });
 
             $('body').on('click', '.detiltemuan', function () {
-                var idrekomendasi = $(this).data('id');
-                $.get("{{ route('getdetiltemuan','') }}" +'/' + idrekomendasi, function (data) {
+                var idindikatorrekomendasi = $(this).data('id');
+                $.get("{{ route('getdetiltemuan','') }}" +'/' + idindikatorrekomendasi, function (data) {
                     $('#modelHeading').html("Detil Temuan");
                     $('#ajaxModel').modal('show');
                     $('#idtemuan').val(data.id);

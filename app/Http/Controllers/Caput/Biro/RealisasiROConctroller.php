@@ -158,6 +158,8 @@ class RealisasiROConctroller extends Controller
         $targetro = "";
         $jenisindikator = "";
         $idkro = "";
+        $target = 0;
+        $targetbulan = 0;
         $dataro = DB::table('ro')
             ->where('id','=',$idro)
             ->get();
@@ -165,6 +167,8 @@ class RealisasiROConctroller extends Controller
             $targetro = $dir->target;
             $jenisindikator = $dir->jenisindikator;
             $idkro = $dir->idkro;
+            $targetbulan = $dir->{'target'.$idbulan};
+            $target = $dir->target;
         }
 
         //dapatkan data periode sebelumnya
@@ -222,6 +226,8 @@ class RealisasiROConctroller extends Controller
         $keterangan = $this->dapatkanketerangan($idro, $tahunanggaran, $idbulan);
 
         $data = array(
+            'target' => $target,
+            'targetbulan' => $targetbulan,
             'idro' => $idro,
             'idkro' => $idkro,
             'tahunanggaran' => $tahunanggaran,

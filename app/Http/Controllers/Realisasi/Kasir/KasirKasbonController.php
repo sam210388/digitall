@@ -35,16 +35,16 @@ class KasirKasbonController extends Controller
     {
         $tahunanggaran = session('tahunanggaran');
         $iduser = Auth::user()->id;
-        $kewenanganbendahara = DB::table('penetapanbendahara')
+        $kewenanganbendahara = DB::table('penetapankasir')
             ->where('iduser','=',$iduser)
             ->where('tahunanggaran','=',$tahunanggaran)
             ->value('kodesatker');
         $model = KasirKasbonModel::with('bagianpengajuanrelation')
             ->where('tahunanggaran','=',$tahunanggaran)
-            ->where('kdsatker','=',$kewenanganbendahara)
+            ->where('kdsatker','=','001030')
             ->select('kasbon.*');
         return Datatables::eloquent($model)
-            ->addColumn('bagian', function (PPKKasbonModel $id) {
+            ->addColumn('bagian', function (KasirKasbonModel $id) {
                 return $id->bagianpengajuanrelation->uraianbagian;
             })
             ->addColumn('action', function($row){
@@ -53,7 +53,7 @@ class KasirKasbonController extends Controller
                             <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-info btn-sm prosestransaksi">Proses</a>';
                 }else if($row->statuskasbon == "Pengajuan Pertanggungjawaban"){
                     $btn = '<div class="btn-group" role="group">
-                            <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-info btn-sm prosespertanggungjawaban">Proses</a>';
+                            <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Pertanggungjawaban" class="edit btn btn-info btn-sm prosespertanggungjawaban">Proses</a>';
                 }else{
                     $btn = "";
                 }
@@ -85,7 +85,7 @@ class KasirKasbonController extends Controller
             $keterangan = $request->get('keterangankasir');
             $nilaipencairankasir = $request->get('nilaipencairankasir');
             if ($setujutolak == "setuju"){
-               $statuskasbon = "Pencairan di Kasir ";
+               $statuskasbon = "Dicairkan Kasir ";
             }else{
                 $statuskasbon = "Draft";
             }
@@ -101,6 +101,7 @@ class KasirKasbonController extends Controller
             return response()->json(['status'=>'gagal']);
         }
     }
+
 
     public function prosespertanggungjawaban(Request $request){
         $validated = $request->validate([

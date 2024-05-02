@@ -8,9 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
-use App\Models\BPK\Bagian\RekomendasiBagianModel;
+use App\Models\BPK\Bagian\IndikatorRekomendasiBagianModel;
 
-class RekomendasiBagianController extends Controller
+class IndikatorRekomendasiBagianController extends Controller
 {
     public function __construct()
     {
@@ -24,7 +24,7 @@ class RekomendasiBagianController extends Controller
         $judul = 'List temuan';
 
         if ($request->ajax()) {
-            $data = RekomendasiBagianModel::where(
+            $data = IndikatorRekomendasiBagianModel::where(
                 [
                     ['idbagian','=',$idbagian],
                     ['status','<>',1]
@@ -49,28 +49,33 @@ class RekomendasiBagianController extends Controller
 
                     return $btn;
                 })
-                ->addColumn('status',function ($row){
-                    $idstatus = $row->status;
-                    $uraianstatus = DB::table('statustemuan')->where('id','=',$idstatus)->value('uraianstatus');
-                    return $uraianstatus;
+                ->addColumn('status',function(IndikatorRekomendasiBagianModel $row){
+                    return $row->status?$row->statusrelation->uraianstatus:"";
+                })
+                ->addColumn('rekomendasi',function(IndikatorRekomendasiBagianModel $row){
+                    return $row->idrekomendasi?$row->rekomendasirelation->rekomendasi:"";
+                })
+                ->addColumn('bukti',function ($row){
+                    $linkbukti = '<a href="'.env('APP_URL')."/".asset('storage')."/".$row->bukti.'" >Download</a>';
+                    return $linkbukti;
                 })
                 ->addColumn('created_by',function ($row){
                     $iduser = $row->created_by;
                     $namauser = DB::table('users')->where('id','=',$iduser)->value('name');
                     return $namauser;
                 })
-                ->rawColumns(['action','temuan'])
+                ->rawColumns(['action','temuan','bukti'])
                 ->make(true);
         }
 
-        return view('BPK.Bagian.rekomendasibagian',[
+        return view('BPK.Bagian.indikatorrekomendasibagian',[
             "judul"=>$judul
         ]);
     }
 
     public function getdetiltemuan($id)
     {
-        $idtemuan = DB::table('rekomendasi')->where('id','=',$id)->value('idtemuan');
+        $idtemuan = DB::table('indikatorrekomendasi')->where('id','=',$id)->value('idtemuan');
         $datatemuan = TemuanModel::find($idtemuan);
         if ($datatemuan){
             return response()->json($datatemuan);

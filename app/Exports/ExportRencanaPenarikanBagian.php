@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
@@ -26,7 +27,18 @@ class ExportRencanaPenarikanBagian implements FromQuery, WithHeadings
     {
         $tahunanggaran = $this->tahunanggaran;
         $idbagian = $this->idbagian;
-
+        $idbiro = Auth::user()->idbiro;
+        if($idbagian == 0){
+            $datawhere = array(
+                'idbiro' => $idbiro,
+                'tahunanggaran' => $tahunanggaran
+            );
+        }else{
+            $datawhere = array(
+                'idbagian' => $idbagian,
+                'tahunanggaran' => $tahunanggaran
+            );
+        }
 
         $data = DB::table('rencanakegiatan as a')
             ->select(['a.tahunanggaran','a.kdsatker','c.uraianbiro','b.uraianbagian','a.pengenal','a.paguanggaran','a.totalrencana','a.pok1','a.pok2','a.pok3','a.pok4','a.pok5',
@@ -38,8 +50,7 @@ class ExportRencanaPenarikanBagian implements FromQuery, WithHeadings
                 $join->on('a.idbagian','=','b.id');
                 $join->on('a.idbiro','=','b.idbiro');
             })
-            ->where('tahunanggaran','=',$tahunanggaran)
-            ->where('idbagian','=',$idbagian)
+           ->where($datawhere)
             ->orderBy('pengenal');
        //echo json_encode($data);
         return $data;

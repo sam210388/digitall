@@ -32,8 +32,8 @@ class HomeController extends Controller
 
         $tahunanggaran = session('tahunanggaran');
         //card BPK
-        $cardtemuanrekomendasi = new CardTemuanRekomendasi();
-        $cardtemuanrekomendasi = $cardtemuanrekomendasi->dapatkancard();
+        //$cardtemuanrekomendasi = new CardTemuanRekomendasi();
+        //$cardtemuanrekomendasi = $cardtemuanrekomendasi->dapatkancard();
 
         //card LRA
         $cardlra = new CardAnggaranRealisasii();
@@ -43,7 +43,7 @@ class HomeController extends Controller
         $cardsirangga = new CardSirangga();
         $cardsirangga = $cardsirangga->dapatkancard();
 
-        $card = array_merge($cardlra, $cardtemuanrekomendasi, $cardsirangga);
+        $card = array_merge($cardlra, $cardsirangga);
 
         return view('home',[
             'data' => $card

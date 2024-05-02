@@ -3,15 +3,12 @@
 namespace App\Http\Controllers\Realisasi\PPK;
 
 use App\Http\Controllers\Controller;
-use App\Models\Pemanfaatan\PenanggungjawabSewaModel;
-use App\Models\Pemanfaatan\Penyewa\TransaksiPemanfaatanModel;
-use App\Models\Realisasi\Bagian\KasbonModel;
+
 use App\Models\Realisasi\PPK\PPKKasbonModel;
-use App\Models\ReferensiUnit\BagianModel;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\DataTables;
 
 class PPKKasbonController extends Controller
@@ -47,7 +44,7 @@ class PPKKasbonController extends Controller
         }
         $model = PPKKasbonModel::with('bagianpengajuanrelation')
             ->where('tahunanggaran','=',$tahunanggaran)
-            ->whereIn('idbiropengajuan',$kewenanganppk)
+            ->where('idbiropengajuan',664)
             ->select('kasbon.*');
         return Datatables::eloquent($model)
             ->addColumn('bagian', function (PPKKasbonModel $id) {

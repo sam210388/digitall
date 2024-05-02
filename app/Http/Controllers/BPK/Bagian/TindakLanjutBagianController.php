@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\BPK\Bagian;
 
 use App\Http\Controllers\Controller;
-use App\Models\BPK\Bagian\RekomendasiBagianModel;
+use App\Models\BPK\Bagian\IndikatorRekomendasiBagianModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -18,26 +18,28 @@ class TindakLanjutBagianController extends Controller
         $this->middleware(['auth']);
 
     }
-    public function tampiltindaklanjut($idrekomendasi){
+    public function tampiltindaklanjut($idindikatorrekomendasi){
         $judul = 'Data Tindak Lanjut';
-        $rekomendasi = DB::table('rekomendasi')->where('id','=',$idrekomendasi)->get();
-        foreach ($rekomendasi as $r){
-            $uraianrekomendasi = $r->rekomendasi;
+        $indikatorrekomendasi = DB::table('indikatorrekomendasi')->where('id','=',$idindikatorrekomendasi)->get();
+        foreach ($indikatorrekomendasi as $r){
+            $uraianindikatorrekomendasi = $r->indikatorrekomendasi;
             $nilai = $r->nilai;
+            $idrekomendasi = $r->idrekomendasi;
         }
         return view('BPK.Bagian.tindaklanjutbagian',[
             "judul"=>$judul,
-            "rekomendasi" => $uraianrekomendasi,
+            "indikatorrekomendasi" => $uraianindikatorrekomendasi,
             "nilai" => $nilai,
-            "idrekomendasi" => $idrekomendasi
+            "idrekomendasi" => $idrekomendasi,
+            "idindikatorrekomendasi" => $idindikatorrekomendasi
         ]);
     }
 
     public function getdatatindaklanjut(Request $request)
     {
         if ($request->ajax()) {
-            $idrekomendasi = $request->get('idrekomendasi');
-            $data = TindakLanjutBagianModel::where('idrekomendasi',$idrekomendasi)->get();
+            $idindikatorrekomendasi = $request->get('idindikatorrekomendasi');
+            $data = TindakLanjutBagianModel::where('idindikatorrekomendasi',$idindikatorrekomendasi)->get();
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
@@ -111,6 +113,7 @@ class TindakLanjutBagianController extends Controller
         $keterangan = $request->get('keterangan');
         $objektemuan = $request->get('objektemuan');
         $idrekomendasi = $request->get('idrekomendasi');
+        $idindikatorrekomendasi = $request->get('idindikatorrekomendasi');
 
 
         $created_by = Auth::id();
@@ -123,6 +126,7 @@ class TindakLanjutBagianController extends Controller
 
         TindakLanjutBagianModel::create([
             'idrekomendasi' => $idrekomendasi,
+            'idindikatorrekomendasi' => $idindikatorrekomendasi,
             'tanggaldokumen' => $tanggaldokumen,
             'nomordokumen' => $nomordokumen,
             'nilaibukti' => $nilaibukti,
@@ -157,6 +161,7 @@ class TindakLanjutBagianController extends Controller
         $keterangan = $request->get('keterangan');
         $objektemuan = $request->get('objektemuan');
         $idrekomendasi = $request->get('idrekomendasi');
+        $idindikatorrekomendasi = $request->get('idindikatorrekomendasi');
         $filelama = $request->get('filelama');
         $updated_by = Auth::id();
 
@@ -173,6 +178,7 @@ class TindakLanjutBagianController extends Controller
 
         TindakLanjutBagianModel::where('id',$id)->update([
             'idrekomendasi' => $idrekomendasi,
+            'idindikatorrekomendasi' => $idindikatorrekomendasi,
             'tanggaldokumen' => $tanggaldokumen,
             'nomordokumen' => $nomordokumen,
             'nilaibukti' => $nilaibukti,

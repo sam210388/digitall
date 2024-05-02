@@ -40,6 +40,12 @@
                     <div class="card-header">
                         <p>Nilai Rekomendasi: {{isset($nilai)}}</p>
                     </div>
+                    <div class="card-header">
+                        <p>Indikator Rekomendasi: {{$indikatorrekomendasi}}</p>
+                    </div>
+                    <div class="card-header">
+                        <p>Nilai Indikator Rekomendasi: {{isset($nilai)}}</p>
+                    </div>
                     <div class="card-body">
                         <table id="tabeltindaklanjut" class="table table-bordered table-striped tabeltindaklanjut">
                             <thead>
@@ -89,6 +95,7 @@
                                         <form id="formpenjelasan" name="formpenjelasan" class="form-horizontal" enctype="multipart/form-data">
                                             <input type="hidden" name="idtindaklanjut" id="idtindaklanjut">
                                             <input type="hidden" name="idrekomendasi" id="idrekomendasi" value="{{$idrekomendasi}}">
+                                            <input type="hidden" name="idindikatorrekomendasi" id="idindikatorrekomendasi" value="{{$idindikatorrekomendasi}}">
                                             <input type="hidden" name="idtemuan" id="idtemuan" value="{{$idtemuan}}">
                                             <div class="form-group">
                                                 <label for="penjelasan" class="col-sm-6 control-label">Penjelasan</label>
@@ -125,6 +132,8 @@
                                         <form id="formtindaklanjut" name="formtindaklanjut" class="form-horizontal" enctype="multipart/form-data">
                                             <input type="hidden" name="id" id="id">
                                             <input type="hidden" name="idrekomendasi" id="idrekomendasi" value="{{$idrekomendasi}}">
+                                            <input type="hidden" name="idindikatorrekomendasi" id="idindikatorrekomendasi" value="{{$idindikatorrekomendasi}}">
+                                            <input type="hidden" name="idtemuan" id="idtemuan" value="{{$idtemuan}}">
                                             <input type="hidden" name="filelama" id="filelama">
                                             <div class="form-group">
                                                 <div class="col-sm-12">
@@ -219,6 +228,7 @@
                 );
             });
             var idrekomendasi = document.getElementById('idrekomendasi').value;
+            var idindikatorrekomendasi = document.getElementById('idindikatorrekomendasi').value;
             var table = $('.tabeltindaklanjut').DataTable({
                 fixedColumn:true,
                 scrollX:"100%",
@@ -233,6 +243,7 @@
                     "data": function (d){
                         d._token = "{{ csrf_token() }}";
                         d.idrekomendasi = idrekomendasi;
+                        d.idindikatorrekomendasi = idindikatorrekomendasi;
                     }
                 },
                 columns: [
@@ -269,8 +280,8 @@
 
 
         $('#kembali').click(function () {
-            $idtemuan = document.getElementById('idtemuan').value;
-            window.location="{{URL::to('tampilrekomendasi'.'/'.$idtemuan)}}"
+            let idrekomendasi = document.getElementById('idrekomendasi').value;
+            window.location="{{URL::to('tampilindikatorrekomendasi'.'/'.$idrekomendasi)}}"
         });
 
 

@@ -31,8 +31,9 @@ use App\Http\Controllers\ReferensiUnit\BagianController;
 use App\Http\Controllers\BPK\Admin\RekomendasiController;
 use App\Http\Controllers\BPK\Admin\TindakLanjutAdminController;
 use App\Http\Controllers\BPK\Admin\TemuanController;
+use App\Http\Controllers\BPK\Admin\IndikatorRekomendasiController;
 
-use App\Http\Controllers\BPK\Bagian\RekomendasiBagianController;
+use App\Http\Controllers\BPK\Bagian\IndikatorRekomendasiBagianController;
 use App\Http\Controllers\BPK\Bagian\TindakLanjutBagianController;
 
 use App\Http\Controllers\ReferensiAnggaran\ProgramController;
@@ -124,6 +125,9 @@ use App\Http\Controllers\Realisasi\Admin\KontrakHeaderController;
 use App\Http\Controllers\IKPA\Admin\DetilPenyelesaianController;
 use App\Http\Controllers\IKPA\Admin\DetilIKPAKontraktualController;
 use App\Http\Controllers\IKPA\Admin\IKPAKontraktualController;
+use App\Http\Controllers\IKPA\Admin\IKPACaputController;
+use App\Http\Controllers\IKPA\Admin\IKPACaputBiroController;
+use App\Http\Controllers\IKPA\Admin\DetilIKPARevisiController;
 use App\Http\Controllers\IKPA\Admin\RekapIKPABagianController;
 
 
@@ -200,37 +204,51 @@ Route::resource('bagian',BagianController::class);
 Route::resource('updateunitkerja',UserBiroBagianController::class);
 Route::get('importunit',[BagianController::class,'importunit'])->middleware('cekadmin');
 
-//ADMIN BPK
+//ADMIN BPK -- TEMUAN
 Route::resource('temuan',TemuanController::class)->middleware(['auth','cekadminbpk']);
+Route::get('getdetailtemuan/{idtemuan}',[TemuanController::class,'getdetailtemuan'])->name('getdetailtemuan')->middleware(['auth','cekadminbpk']);
+
+
+
+//ADMIN BPK REKOMENDASI
+Route::resource('rekomendasi',RekomendasiController::class)->middleware('cekadminbpk');
 Route::get('tampilrekomendasi/{idtemuan}',[RekomendasiController::class,'tampilrekomendasi'])->name('tampilrekomendasi')->middleware(['auth','cekadminbpk']);
 Route::post('getdatarekomendasi}',[RekomendasiController::class,'getDataRekomendasi'])->name('getdatarekomendasi')->middleware(['auth','cekadminbpk']);
-Route::get('/kirimrekomendasikeunit/{id}',[RekomendasiController::class,'kirimrekomendasikeunit'])->name('kirimrekomendasikeunit')->middleware(['auth','cekadminbpk']);
-Route::resource('rekomendasi',RekomendasiController::class)->middleware(['auth','cekadminbpk']);
-Route::get('/statusrekomendasiselesai/{id}',[RekomendasiController::class,'statusrekomendasiselesai'])->name('statusrekomendasiselesai')->middleware(['auth','cekadminbpk']);
-Route::get('/statusrekomendasitddl/{id}',[RekomendasiController::class,'statustemuantddl'])->name('statustemuantddl')->middleware(['auth','cekadminbpk']);
-Route::get('lihattindaklanjutbagian/{idrekomendasi}',[TindakLanjutAdminController::class,'tampiltindaklanjut'])->name('lihattindaklanjutbagian')->middleware(['cekadminbpk']);
+
+//ADMIN BPK INDIKATOR REKOMENDASI
+Route::get('tampilindikatorrekomendasi/{idrekomendasi}',[IndikatorRekomendasiController::class,'tampilindikatorrekomendasi'])->name('tampilindikatorrekomendasi')->middleware('cekadminbpk');
+Route::resource('indikatorrekomendasi',IndikatorRekomendasiController::class)->middleware('cekadminbpk');
+Route::post('getdataindikatorrekomendasi}',[IndikatorRekomendasiController::class,'getdataindikatorrekomendasi'])->name('getdataindikatorrekomendasi')->middleware('cekadminbpk');
+
+Route::get('/kirimindikatorrekomendasikeunit/{id}',[IndikatorRekomendasiController::class,'kirimindikatorrekomendasikeunit'])->name('kirimindikatorrekomendasikeunit')->middleware('cekadminbpk');
+Route::get('/statusindikatorrekomendasiselesai/{id}',[IndikatorRekomendasiController::class,'statusrekomendasiselesai'])->name('statusrekomendasiselesai')->middleware(['auth','cekadminbpk']);
+Route::get('/statusindikatorrekomendasitddl/{id}',[IndikatorRekomendasiController::class,'statustemuantddl'])->name('statustemuantddl')->middleware(['auth','cekadminbpk']);
+
+//ADMIN BPK TINDAK LANJUT INDIKATOR REKOMENDASI
+Route::get('lihattindaklanjutbagian/{idindikatorrekomendasi}',[TindakLanjutAdminController::class,'tampiltindaklanjut'])->name('lihattindaklanjutbagian')->middleware(['cekadminbpk']);
 Route::get('/ajukankebpk/{idtindaklanjut}',[TindakLanjutAdminController::class,'ajukankebpk'])->name('ajukankebpk')->middleware(['cekadminbpk']);
 Route::get('/tindaklanjutselesai/{idtindaklanjut}',[TindakLanjutAdminController::class,'tindaklanjutselesai'])->name('tindaklanjutselesai')->middleware(['cekadminbpk']);
 Route::post('getdatatindaklanjutbagian', [TindakLanjutAdminController::class,'getdatatindaklanjutbagian'])->name('getdatatindaklanjutbagian');
 Route::post('simpanpenjelasan', [TindakLanjutAdminController::class,'simpanpenjelasan'])->name('simpanpenjelasan')->middleware('cekadminbpk');
 Route::get('/tindaklanjuttddl/{idtindaklanjut}',[TindakLanjutAdminController::class,'tindaklanjuttddl'])->name('tindaklanjuttddl')->middleware(['cekadminbpk']);
 Route::get('/lihattanggapan/{idtindaklanjut}',[TindakLanjutAdminController::class,'lihattanggapan'])->name('lihattanggapan')->middleware(['cekadminbpk']);
-Route::get('getdetailtemuan/{idtemuan}',[TemuanController::class,'getdetailtemuan'])->name('getdetailtemuan')->middleware(['auth','cekadminbpk']);
+
 //menyiapkan metode untuk menyimpan history tindaklanjut yang sudah dibuat sebelumnya
 Route::post('simpantinjuthistory',[TindakLanjutAdminController::class,'simpantinjuthistory'])->name('simpantinjuthistory')->middleware(['cekadminbpk']);
 Route::put('updatetinjuthistory/{idtindaklanjut}',[TindakLanjutAdminController::class,'updatetinjuthistory'])->name('updatetinjuthistory')->middleware(['cekadminbpk']);
 Route::get('edittinjuthistory/{idtindaklanjut}',[TindakLanjutAdminController::class,'edittinjuthistory'])->name('edittinjuthistory')->middleware(['cekadminbpk']);
 Route::delete('destroytinjuthistory/{idtindaklanjut}',[TindakLanjutAdminController::class,'destroytinjuthistory'])->name('destroytinjuthistory')->middleware(['cekadminbpk']);
 
+
 //BAGIAN
 //BPK
-Route::resource('rekomendasibpkbagian',RekomendasiBagianController::class)->middleware('cekoperatorbagian');
-Route::get('tindaklanjutbagian/{idrekomendasi}',[TindakLanjutBagianController::class,'tampiltindaklanjut'])->name('tindaklanjutbagian')->middleware(['cekpemilikrekomendasi']);
-Route::post('getdatatindaklanjut', [TindakLanjutBagianController::class,'getdatatindaklanjut'])->name('getdatatindaklanjut')->middleware(['cekpemilikrekomendasi']);
-Route::resource('kelolatindaklanjut',TindakLanjutBagianController::class)->middleware(['cekoperatorbagian','cekpemilikrekomendasi']);
-Route::get('/ajukankeirtama/{idtindaklanjut}',[TindakLanjutBagianController::class,'ajukankeirtama'])->name('ajukankeirtama')->middleware(['cekpemilikrekomendasi']);
+Route::resource('indikatorrekomendasibpkbagian',IndikatorRekomendasiBagianController::class)->middleware('cekoperatorbagian');
+Route::get('tindaklanjutbagian/{idindikatorrekomendasi}',[TindakLanjutBagianController::class,'tampiltindaklanjut'])->name('tindaklanjutbagian')->middleware('cekpemilikrekomendasi');
+Route::post('getdatatindaklanjut', [TindakLanjutBagianController::class,'getdatatindaklanjut'])->name('getdatatindaklanjut')->middleware('cekpemilikrekomendasi');
+Route::resource('kelolatindaklanjut',TindakLanjutBagianController::class)->middleware('cekpemilikrekomendasi');
+Route::get('/ajukankeirtama/{idtindaklanjut}',[TindakLanjutBagianController::class,'ajukankeirtama'])->name('ajukankeirtama')->middleware('cekpemilikrekomendasi');
 Route::post('simpantanggapan', [TindakLanjutBagianController::class,'simpantanggapan'])->name('simpanpenjelasan')->middleware('cekpemilikrekomendasi');
-Route::get('getdetiltemuan/{idrekomendasi}',[RekomendasiBagianController::class,'getdetiltemuan'])->name('getdetiltemuan')->middleware(['cekpemilikrekomendasi']);
+Route::get('getdetiltemuan/{idindikatorrekomendasi}',[IndikatorRekomendasiBagianController::class,'getdetiltemuan'])->name('getdetiltemuan');
 
 //referensi anggaran
 //program
@@ -305,7 +323,8 @@ Route::get('realisasiindikatorroadmin',[RealisasiIndikatorROConctrollerAdmin::cl
 Route::get('getdatarealisasiindikatorroadmin/{idbulan}/{idbiro?}',[RealisasiIndikatorROConctrollerAdmin::class,'getdatarealisasiindikatorro'])->name('getdatarealisasiindikatorroadmin')->middleware('cekadmincaput');
 Route::get('exportrealisasiindikatorro',[RealisasiIndikatorROConctrollerAdmin::class,'exportrealisasiindikatorro'])->name('exportrealisasiindikatorro')->middleware('cekadmincaput');
 Route::get('exportrealisasianggaranindikatorro',[RealisasiIndikatorROConctrollerAdmin::class,'exportrealisasianggaranindikatorro'])->name('exportrealisasianggaranindikatorro')->middleware('cekadmincaput');
-Route::get('exportrealisasirincianindikatorro',[MonitoringRincianIndikatorROAdminConctroller::class,'exportrealisasiindikatorro'])->name('exportrealisasirincianindikatorro')->middleware('cekadmincaput');
+Route::get('exportrealisasiindikatorro',[RealisasiIndikatorROConctrollerAdmin::class,'exportrealisasiindikatorro'])->name('exportrealisasiindikatorro')->middleware('cekadmincaput');
+Route::get('normalisasidataindikatoroutput/{idbulan}',[RealisasiIndikatorROConctrollerAdmin::class, 'normalisasidataindikatoroutput'])->name('normalisasidatarincian')->middleware('cekadmincaput');
 
 
 //monitoring rincian indikator ro
@@ -637,6 +656,7 @@ Route::get('kasirkasbon',[KasirKasbonController::class,'index'])->name('kasirkas
 Route::get('getdatakasbonkasir',[KasirKasbonController::class,'getdatakasbonkasir'])->name('getdatakasbonkasir')->middleware('cekkasir');
 Route::post('prosespengajuankasbonkasir',[KasirKasbonController::class,'prosestransaksi'])->name('prosespengajuankasbonkasir')->middleware('cekkasir');
 Route::get('editkasbonkasir/{idkasbon}',[KasirKasbonController::class,'edit'])->name('editkasbonkasir')->middleware('cekkasir');
+Route::get('prosespertanggungjawabankasir/{idkasbon}',[KasirKasbonController::class,'prosespertanggungjawaban'])->name('prosespertanggungjawabankasir')->middleware('cekkasir');
 
 
 //MODUL IKPA
@@ -694,6 +714,26 @@ Route::get('ikpakontraktualbiro',[IKPAKontraktualController::class,'indexbiro'])
 Route::get('getdataikpakontraktualbiro/{idbiro?}',[IKPAKontraktualController::class,'getdataikpakontraktualbiro'])->name('getdataikpakontraktualbiro')->middleware('cekadminikpa');
 Route::get('hitungikpakontraktualbiro',[IKPAKontraktualController::class,'hitungikpakontraktualbiro'])->name('hitungikpakontraktualbiro')->middleware('cekadminikpa');
 Route::get('exportikpakontraktualbiro',[IKPAKontraktualController::class,'exportikpakontraktualbiro'])->name('exportikpakontraktualbiro')->middleware('cekadminikpa');
+
+
+//IKPA CAPUT BAGIAN
+Route::get('monitoringikpacaputbagian',[IKPACaputController::class,'index'])->name('monitoringikpacaputbagian')->middleware('cekadminikpa');
+Route::get('getdatamonitoringikpacaput/{idbagian?}',[IKPACaputController::class,'getdataikpacaput'])->name('getdatamonitoringikpacaput')->middleware('cekadminikpa');
+Route::get('hitungikpacaputbagian',[IKPACaputController::class,'hitungikpacaputbagian'])->name('hitungikpacaputbagian')->middleware('cekadminikpa');
+Route::get('exportikpacaputbagian',[IKPACaputController::class,'exportikpacaputbagian'])->name('exportikpacaputbagian')->middleware('cekadminikpa');
+
+//IKPA CAPUT BIRO
+Route::get('monitoringikpacaputbiro',[IKPACaputBiroController::class,'index'])->name('monitoringikpacaputbiro')->middleware('cekadminikpa');
+Route::get('getdatamonitoringikpacaputbiro/{idbiro?}',[IKPACaputBiroController::class,'getdataikpacaput'])->name('getdatamonitoringikpacaputbiro')->middleware('cekadminikpa');
+Route::get('hitungikpacaputbiro',[IKPACaputBiroController::class,'hitungikpacaputbiro'])->name('hitungikpacaputbiro')->middleware('cekadminikpa');
+Route::get('exportikpacaputbiro',[IKPACaputBiroController::class,'exportikpacaputbiro'])->name('exportikpacaputbiro')->middleware('cekadminikpa');
+
+//IKPA REVISI
+Route::get('detilikparevisi',[DetilIKPARevisiController::class,'index'])->name('detilikparevisi')->middleware('cekadminikpa');
+Route::get('getdetilrevisi',[DetilIKPARevisiController::class,'getdetilrevisi'])->name('getdetilrevisi')->middleware('cekadminikpa');
+Route::post('importdetilrevisi',[DetilIKPARevisiController::class,'importdata'])->name('importdetilrevisi')->middleware('cekadminikpa');
+
+
 
 //IKPA REKAP
 Route::get('rekapikpabagian',[RekapIKPABagianController::class,'index'])->name('rekapikpabagian')->middleware('cekadminikpa');
@@ -766,6 +806,8 @@ Route::get('getdatarencanakegiatan/{idbagian?}',[RencanaKegiatanController::clas
 Route::get('exportrencanapenarikan',[RencanaKegiatanController::class,'exportrencanapenarikan'])->name('exportrencanapenarikan')->middleware('cekadmin');
 Route::get('tutupperioderencana',[RencanaKegiatanController::class,'tutupperioderencana'])->name('tutupperioderencana')->middleware('cekadmin');
 Route::get('bukaperioderencana',[RencanaKegiatanController::class,'bukaperioderencana'])->name('bukaperioderencana')->middleware('cekadmin');
+Route::get('rekaprealisasirencana',[RencanaKegiatanController::class,'rekaprealisasiseluruh'])->name('rekaprealisasirencana')->middleware('cekadmin');
+
 
 //MODUL RENCANA KAS BAGIAN
 //Route::resource('rencanakegiatanbagian',RencanaKegiatanBagianController::class)->middleware('cekoperatorbagian');

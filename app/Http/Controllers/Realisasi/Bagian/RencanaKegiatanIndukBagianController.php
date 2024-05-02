@@ -36,9 +36,20 @@ class RencanaKegiatanIndukBagianController extends Controller
     {
         $tahunanggaran = session('tahunanggaran');
         $idbagian = Auth::user()->idbagian;
-        $model = MonitoringRencanaKegiatanBagianModel::with('bagianrelation')
-            ->where('idbagian','=',$idbagian)
-            ->where('tahunanggaran','=',$tahunanggaran)
+        $idbiro = Auth::user()->idbiro;
+        if($idbagian == 0){
+            $datawhere = array(
+                'idbiro' => $idbiro,
+                'tahunanggaran' => $tahunanggaran
+            );
+        }else{
+            $datawhere = array(
+                'idbagian' => $idbagian,
+                'tahunanggaran' => $tahunanggaran
+            );
+        }
+
+        $model = MonitoringRencanaKegiatanBagianModel::with('bagianrelation')->where($datawhere)
             ->select(['rencanakegiatan.*']);
         return Datatables::eloquent($model)
             ->addColumn('bagian', function (MonitoringRencanaKegiatanBagianModel $id) {
@@ -64,8 +75,6 @@ class RencanaKegiatanIndukBagianController extends Controller
             ->where('pengenal','=',$pengenal)
             ->where('bulanpencairan','=',$bulanpencairan)
             ->value('nilairencana');
-
-
 
         //update total rencana
         $totalrencana = DB::table('rencanakegiatan')
@@ -134,9 +143,20 @@ class RencanaKegiatanIndukBagianController extends Controller
         //Excel::download(new UsersExport, 'users.xlsx');
         //return Excel::download(new ExportRencanaPenarikanBagian($tahunanggaran, $idbagian),'MonitoringRencanaPenarikanBagian.xlsx');
         for($i=1; $i<=$bulan;$i++){
+            $idbiro = Auth::user()->idbiro;
+            if($idbagian == 0){
+                $datawhere = array(
+                    'idbiro' => $idbiro,
+                    'tahunanggaran' => $tahunanggaran
+                );
+            }else{
+                $datawhere = array(
+                    'idbagian' => $idbagian,
+                    'tahunanggaran' => $tahunanggaran
+                );
+            }
             $datalaporanrealisasibac = DB::table('laporanrealisasianggaranbac')
-                ->where('tahunanggaran','=',$tahunanggaran)
-                ->where('idbagian','=',$idbagian)
+                ->where($datawhere)
                 ->get();
             $namafield = 'r';
 
@@ -187,18 +207,28 @@ class RencanaKegiatanIndukBagianController extends Controller
         $judul = 'Data Detil Rencana Kegiatan';
         $tahunanggaran = session('tahunanggaran');
         $idbagian = Auth::user()->idbagian;
+        $idbiro = Auth::user()->idbiro;
         $kdsatker = DB::table('rencanakegiataninduk')
             ->where('id','=',$idrencanakegiatan)
             ->value('kdsatker');
-        $datapengenal = DB::table('laporanrealisasianggaranbac')
-            ->where('idbagian','=',$idbagian)
-            ->where('kodesatker','=',$kdsatker)
-            ->where('tahunanggaran','=',$tahunanggaran)
-            ->get();
         $bulanpencairan = DB::table('rencanakegiataninduk')
             ->where('id','=',$idrencanakegiatan)
             ->value('bulanpencairan');
+        if($idbagian == 0){
+            $datawhere = array(
+                'idbiro' => $idbiro,
+                'kodesatker' => $kdsatker,
+                'tahunanggaran' => $tahunanggaran
+            );
+        }else{
+            $datawhere = array(
+                'idbagian' => $idbagian,
+                'kodesatker' => $kdsatker,
+                'tahunanggaran' => $tahunanggaran
+            );
+        }
 
+        $datapengenal = DB::table('laporanrealisasianggaranbac')->where($datawhere)->get();
         return view('Realisasi.Bagian.rencanakegiatanbagiandetil',[
             "judul"=>$judul,
             "datapengenal" => $datapengenal,
@@ -241,9 +271,19 @@ class RencanaKegiatanIndukBagianController extends Controller
     {
         $tahunanggaran = session('tahunanggaran');
         $idbagian = Auth::user()->idbagian;
-        $model = RencanaKegiatanModel::with('bagianpengajuanrelation')
-            ->where('tahunanggaran','=',$tahunanggaran)
-            ->where('idbagian','=',$idbagian)
+        $idbiro = Auth::user()->idbiro;
+        if($idbagian == 0){
+            $datawhere = array(
+                'idbiro' => $idbiro,
+                'tahunanggaran' => $tahunanggaran
+            );
+        }else{
+            $datawhere = array(
+                'idbagian' => $idbagian,
+                'tahunanggaran' => $tahunanggaran
+            );
+        }
+        $model = RencanaKegiatanModel::with('bagianpengajuanrelation')->where($datawhere)
             ->select('rencanakegiataninduk.*');
         return Datatables::eloquent($model)
             ->addColumn('bagian', function (RencanaKegiatanModel $id) {

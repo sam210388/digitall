@@ -120,6 +120,10 @@
                 window.location="{{URL::to('tutupperioderencana')}}";
             });
 
+            $('#rekaprealisasi').click(function (){
+                window.location="{{URL::to('rekaprealisasirencana')}}";
+            });
+
             $('#bukaperiode').click(function (){
                 window.location="{{URL::to('bukaperioderencana')}}";
             });

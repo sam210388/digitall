@@ -17,13 +17,14 @@ class TindakLanjutAdminController extends Controller
         $this->middleware(['auth']);
 
     }
-    public function tampiltindaklanjut($idrekomendasi){
+    public function tampiltindaklanjut($idindikator){
         $judul = 'Data Tindak Lanjut';
-        $datarekomendasi = DB::table('rekomendasi')->where('id','=',$idrekomendasi)->get();
-        foreach ($datarekomendasi as $dr){
+        $dataindikatorrekomendasi = DB::table('indikatorrekomendasi')->where('id','=',$idindikator)->get();
+        foreach ($dataindikatorrekomendasi as $dr){
             $idtemuan = $dr->idtemuan;
-            $rekomendasi = $dr->rekomendasi;
-            $nilairekomendasi = $dr->nilai;
+            $idrekomendasi = $dr->idrekomendasi;
+            $indikatorrekomendasi = $dr->indikatorrekomendasi;
+            $nilaiindikatorrekomendasi = $dr->nilai;
         }
         $datatemuan = DB::table('temuan')->where('id','=',$idtemuan)->get();
         foreach ($datatemuan as $dt){
@@ -33,15 +34,24 @@ class TindakLanjutAdminController extends Controller
             $kondisi = $dt->kondisi;
         }
 
+        $datarekomendasi = DB::table('rekomendasi')->where('id','=',$idrekomendasi)->get();
+        foreach ($datarekomendasi as $dr){
+            $rekomendasi = $dr->rekomendasi;
+            $nilairekomendasi = $dr->nilai;
+        }
+
         return view('BPK.Admin.tindaklanjutadmin',[
             "judul"=>$judul,
             "temuan" => $temuan,
             "sebab" => $sebab,
             "akibat" => $akibat,
             "kondisi" => $kondisi,
-            "nilai" => $nilairekomendasi,
+            "nilairekomendasi" => $nilairekomendasi,
             "idrekomendasi" => $idrekomendasi,
             "idtemuan" => $idtemuan,
+            "idindikatorrekomendasi" => $idindikator,
+            "indikatorrekomendasi" => $indikatorrekomendasi,
+            "nilaiindikatorrekomendasi" => $nilaiindikatorrekomendasi,
             "rekomendasi" => $rekomendasi
         ]);
     }
@@ -49,8 +59,8 @@ class TindakLanjutAdminController extends Controller
     public function getdatatindaklanjutbagian(Request $request)
     {
         if ($request->ajax()) {
-            $idrekomendasi = $request->get('idrekomendasi');
-            $data = TindakLanjutAdminModel::where('idrekomendasi',$idrekomendasi)->get();
+            $idindikatorrekomendasi = $request->get('idindikatorrekomendasi');
+            $data = TindakLanjutAdminModel::where('idindikatorrekomendasi','=',$idindikatorrekomendasi)->get();
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
@@ -77,15 +87,11 @@ class TindakLanjutAdminController extends Controller
                     }
                     return $btn;
                 })
-                ->addColumn('status',function ($row){
-                    $idstatus = $row->status;
-                    $uraianstatus = DB::table('statustemuan')->where('id','=',$idstatus)->value('uraianstatus');
-                    return $uraianstatus;
+                ->addColumn('status',function(TindakLanjutAdminModel $row){
+                    return $row->status?$row->statusrelation->uraianstatus:"";
                 })
-                ->addColumn('created_by',function ($row){
-                    $iduser = $row->created_by;
-                    $namauser = DB::table('users')->where('id','=',$iduser)->value('name');
-                    return $namauser;
+                ->addColumn('created_by',function(TindakLanjutAdminModel $row){
+                    return $row->created_by?$row->userrelation->name:"";
                 })
                 ->addColumn('created_at',function ($row){
                     $tanggalcatat = $row->created_at;
@@ -93,10 +99,8 @@ class TindakLanjutAdminController extends Controller
                     $tanggalcatat = date_format($tanggalcatat,'Y-m-d');
                     return $tanggalcatat;
                 })
-                ->addColumn('updated_by',function ($row){
-                    $iduser = $row->created_by;
-                    $namauser = DB::table('users')->where('id','=',$iduser)->value('name');
-                    return $namauser;
+                ->addColumn('updated_by',function(TindakLanjutAdminModel $row){
+                    return $row->updated_by?$row->userrelation->name:"";
                 })
                 ->addColumn('updated_at',function ($row){
                     $tanggalupdate = $row->updated_at;
@@ -201,6 +205,7 @@ class TindakLanjutAdminController extends Controller
         $keterangan = $request->get('keterangan');
         $objektemuan = $request->get('objektemuan');
         $idrekomendasi = $request->get('idrekomendasi');
+        $idindikatorrekomendasi = $request->get('idindikatorrekomendasi');
         $created_by = Auth::id();
 
 
@@ -211,6 +216,7 @@ class TindakLanjutAdminController extends Controller
 
         TindakLanjutAdminModel::create([
             'idrekomendasi' => $idrekomendasi,
+            'idindikatorrekomendasi' => $idindikatorrekomendasi,
             'tanggaldokumen' => $tanggaldokumen,
             'nomordokumen' => $nomordokumen,
             'nilaibukti' => $nilaibukti,
@@ -246,6 +252,7 @@ class TindakLanjutAdminController extends Controller
         $keterangan = $request->get('keterangan');
         $objektemuan = $request->get('objektemuan');
         $idrekomendasi = $request->get('idrekomendasi');
+        $idindikatorrekomendasi = $request->get('idindikatorrekomendasi');
         $filelama = $request->get('filelama');
         $updated_by = Auth::id();
 
@@ -262,6 +269,7 @@ class TindakLanjutAdminController extends Controller
 
         TindakLanjutAdminModel::where('id',$id)->update([
             'idrekomendasi' => $idrekomendasi,
+            'idindikatorrekomendasi' => $idindikatorrekomendasi,
             'tanggaldokumen' => $tanggaldokumen,
             'nomordokumen' => $nomordokumen,
             'nilaibukti' => $nilaibukti,

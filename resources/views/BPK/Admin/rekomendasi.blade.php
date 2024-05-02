@@ -347,105 +347,11 @@
                     });
                 };
             });
-
-            $('body').on('click', '.kirimkeunit', function () {
-                var idrekomendasi = $(this).data("id");
-                if(confirm("Apakah Anda Yakin AKan Mengirim Data Ini Ke Unit Kerja?")){
-                    $.ajax({
-                        url: "{{ url('/kirimrekomendasikeunit') }}"+'/'+idrekomendasi,
-                        success: function (data) {
-                            if (data.status == "berhasil"){
-                                Swal.fire({
-                                    title: 'Sukses',
-                                    text: 'Data Berhasil Dikirim Ke Unit Kerja',
-                                    icon: 'success'
-                                })
-                            }else{
-                                Swal.fire({
-                                    title: 'Error!',
-                                    text: 'Pengiriman Data Gagal',
-                                    icon: 'error'
-                                })
-                            }
-                            table.draw();
-                        },
-                        error: function (xhr) {
-                            var errorsArr = [];
-                            $.each(xhr.responseJSON.errors, function(key,value) {
-                                errorsArr.push(value);
-                            });
-                            Swal.fire({
-                                title: 'Error!',
-                                text: errorsArr,
-                                icon: 'error'
-                            })
-                            $('#saveBtn').html('Simpan Data');
-                        },
-                    });
-                }
-            });
-
-            $('body').on('click', '.selesai', function () {
-                var idrekomendasi = $(this).data("id");
-                if(confirm("Apakah Anda Yakin AKan Merubah Status Rekomendasi Menjadi Selesai?")){
-                    $.ajax({
-                        url: "{{ url('/statusrekomendasiselesai') }}"+'/'+idrekomendasi,
-                        success: function (data) {
-                            if (data.status == "berhasil"){
-                                Swal.fire({
-                                    title: 'Sukses',
-                                    text: 'Data Berhasil Dirubah Status Menjadi Selesai',
-                                    icon: 'success'
-                                })
-                            }else{
-                                Swal.fire({
-                                    title: 'Error!',
-                                    text: 'Perubahan Status Data Gagal, Data Tidak Ditemukan',
-                                    icon: 'error'
-                                })
-                            }
-                            table.draw();
-                        },
-                        error: function (data) {
-                            console.log('Error:', data);
-                        }
-                    });
-                }
-            });
-
-            $('body').on('click', '.tddl', function () {
-                var idrekomendasi = $(this).data("id");
-                if(confirm("Apakah Anda Yakin AKan Merubah Status Rekomendasi Menjadi Tidak Dapat Ditindaklanjuti?")){
-                    $.ajax({
-                        url: "{{ url('/statusrekomendasitddl') }}"+'/'+idrekomendasi,
-                        success: function (data) {
-                            if (data.status == "berhasil"){
-                                Swal.fire({
-                                    title: 'Sukses',
-                                    text: 'Data Berhasil Dirubah Status Menjadi TDDL',
-                                    icon: 'success'
-                                })
-                            }else{
-                                Swal.fire({
-                                    title: 'Error!',
-                                    text: 'Perubahan Status Data Gagal, Data Tidak Ditemukan',
-                                    icon: 'error'
-                                })
-                            }
-                            table.draw();
-                        },
-                        error: function (data) {
-                            console.log('Error:', data);
-                        }
-                    });
-                }
-            });
-
         });
 
-        $('body').on('click', '.lihattindaklanjut', function () {
+        $('body').on('click', '.indikatorrekomendasi', function () {
             var idrekomendasi = $(this).data("id");
-            window.location="{{URL::to('lihattindaklanjutbagian')}}"+"/"+idrekomendasi;
+            window.location="{{URL::to('tampilindikatorrekomendasi')}}"+"/"+idrekomendasi;
         });
 
 

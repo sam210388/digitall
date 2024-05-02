@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\BPK\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\BPK\Admin\IndikatorRekomendasiModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -11,40 +10,38 @@ use Yajra\DataTables\DataTables;
 use App\Models\ReferensiUnit\DeputiModel;
 use App\Models\BPK\Admin\RekomendasiModel;
 
-class IndikatorRekomendasiController extends Controller
+class RekomendasiController extends Controller
 {
-    public function tampilindikatorrekomendasi($idrekomendasi){
-        $judul = 'List Indikator Rekomendasi';
-        $idtemuan = DB::table('rekomendasi')->where('id','=',$idrekomendasi)->value('idtemuan');
+    public function tampilrekomendasi($idtemuan){
+        $judul = 'List Rekomendasi';
         $datadeputi = DeputiModel::all();
-        $rekomendasi = DB::table('rekomendasi')->where('id','=',$idrekomendasi)->value('rekomendasi');
-        $nilai = DB::table('rekomendasi')->where('id','=',$idrekomendasi)->value('nilai');
-        return view('BPK.Admin.indikatorrekomendasi',[
+        $temuan = DB::table('temuan')->where('id','=',$idtemuan)->value('temuan');
+        $nilai = DB::table('temuan')->where('id','=',$idtemuan)->value('nilai');
+        return view('BPK.Admin.rekomendasi',[
             "judul"=>$judul,
-            "rekomendasi" => $rekomendasi,
+            "temuan" => $temuan,
             "nilai" => $nilai,
-            "idrekomendasi" => $idrekomendasi,
             "idtemuan" => $idtemuan,
             "datadeputi" => $datadeputi
         ]);
     }
-    public function getdataindikatorrekomendasi(Request $request)
+    public function getDataRekomendasi(Request $request)
     {
-        $idrekomendasi = $request->get('idrekomendasi');
+        $idtemuan = $request->get('idtemuan');
         if ($request->ajax()) {
-            $data = IndikatorRekomendasiModel::where('idrekomendasi','=',$idrekomendasi)->get();
+            $data = DB::table('rekomendasi')->where('idtemuan','=',$idtemuan)->get();
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
-                    $idindikatorrekomendasi = $row->id;
+                    $idrekomendasi = $row->id;
                     $jumlahtindaklanjutproses = DB::table('tindaklanjutbpk')
-                        ->where('idindikatorrekomendasi','=',$idindikatorrekomendasi)
+                        ->where('idrekomendasi','=',$idrekomendasi)
                         ->where('status','=',4)
                         ->count();
                     if ($row->status == 1){
                         $btn = '<div class="btn-group" role="group">
-                            <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editindikatorrekomendasi">Edit</a>';
-                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deleteindikatorrekomendasi">Delete</a>';
+                            <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editrekomendasi">Edit</a>';
+                        $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Delete" class="btn btn-danger btn-sm deleterekomendasi">Delete</a>';
                         $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Kirim" class="btn btn-success btn-sm kirimkeunit">Kirim</a>';
                         $btn = $btn.'<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="lihattindaklanjut" class="btn btn-primary btn-sm lihattindaklanjut">
                                 Lihat TL   <span class="badge badge-danger navbar-badge">'.$jumlahtindaklanjutproses.'</span></a>';
@@ -62,24 +59,19 @@ class IndikatorRekomendasiController extends Controller
                     }
                     return $btn;
                 })
-                ->addColumn('status',function(IndikatorRekomendasiModel $row){
-                    return $row->status?$row->statusrelation->uraianstatus:"";
-                })
-                ->addColumn('iddeputi',function(IndikatorRekomendasiModel $row){
-                    return $row->iddeputi?$row->deputirelation->uraiandeputi:"";
-                })
-                ->addColumn('idbiro',function(IndikatorRekomendasiModel $row){
-                    return $row->idbiro?$row->birorelation->uraianbiro:"";
-                })
-                ->addColumn('idbagian',function(IndikatorRekomendasiModel $row){
-                    return $row->idbagian?$row->bagianrelation->uraianbagian:"";
+                ->addColumn('status',function ($row){
+                    $idstatus = $row->status;
+                    $uraianstatus = DB::table('statustemuan')->where('id','=',$idstatus)->value('uraianstatus');
+                    return $uraianstatus;
                 })
                 ->addColumn('bukti',function ($row){
                     $linkbukti = '<a href="'.env('APP_URL')."/".asset('storage')."/".$row->bukti.'" >Download</a>';
                     return $linkbukti;
                 })
-                ->addColumn('created_by',function(IndikatorRekomendasiModel $row){
-                    return $row->created_by?$row->userrelation->name:"";
+                ->addColumn('created_by',function ($row){
+                    $iduser = $row->created_by;
+                    $namauser = DB::table('users')->where('id','=',$iduser)->value('name');
+                    return $namauser;
                 })
                 ->rawColumns(['action','bukti'])
                 ->make(true);
@@ -106,8 +98,7 @@ class IndikatorRekomendasiController extends Controller
     {
         $userid = auth()->id();
         $saveBtn = $request->get('saveBtn');
-        $idrekomendasi = $request->get('idrekomendasi');
-        $idtemuan = DB::table('rekomendasi')->where('id','=',$idrekomendasi)->value('idtemuan');
+        $idtemuan = $request->get('idtemuan');
         if ($saveBtn == "tambah"){
             $status = 1;
         }else{
@@ -125,20 +116,16 @@ class IndikatorRekomendasiController extends Controller
             'idbiro' => 'required',
             'idbagian' => 'required',
             'nilai' => 'required',
-            'indikatorrekomendasi' => 'required',
+            'rekomendasi' => 'required',
             'bukti' => 'required',
 
         ]);
 
-        IndikatorRekomendasiModel::create(
+        RekomendasiModel::create(
             [
                 'idtemuan' => $idtemuan,
-                'idrekomendasi' => $idrekomendasi,
-                'iddeputi' => $request->get('iddeputi'),
-                'idbiro' => $request->get('idbiro'),
-                'idbagian' => $request->get('idbagian'),
                 'nilai' => $request->get('nilai'),
-                'indikatorrekomendasi' => $request->get('indikatorrekomendasi'),
+                'rekomendasi' => $request->get('rekomendasi'),
                 'bukti' => $bukti,
                 'status' => $status,
                 'created_by' => $userid
@@ -147,12 +134,36 @@ class IndikatorRekomendasiController extends Controller
         return response()->json(['status'=>'berhasil']);
     }
 
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function edit($id)
     {
-        $menu = IndikatorRekomendasiModel::find($id);
+        $menu = RekomendasiModel::find($id);
         return response()->json($menu);
     }
 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function update(Request $request, $id)
     {
         $userid = auth()->id();
@@ -175,21 +186,15 @@ class IndikatorRekomendasiController extends Controller
             'idbiro' => 'required',
             'idbagian' => 'required',
             'nilai' => 'required',
-            'indikatorrekomendasi' => 'required',
+            'rekomendasi' => 'required',
 
         ]);
-        $idrekomendasi = $request->get('idrekomendasi');
-        $idtemuan = DB::table('rekomendasi')->where('id','=',$idrekomendasi)->value('idtemuan');
 
-        IndikatorRekomendasiModel::where('id',$id)->update(
+        RekomendasiModel::where('id',$id)->update(
             [
-                'idrekomendasi' => $idrekomendasi,
-                'idtemuan' => $idtemuan,
-                'iddeputi' => $request->get('iddeputi'),
-                'idbiro' => $request->get('idbiro'),
-                'idbagian' => $request->get('idbagian'),
+                'idtemuan' => $request->get('idtemuan'),
                 'nilai' => $request->get('nilai'),
-                'indikatorrekomendasi' => $request->get('indikatorrekomendasi'),
+                'rekomendasi' => $request->get('rekomendasi'),
                 'bukti' => $bukti,
                 'status' => $status,
                 'created_by' => $userid
@@ -198,31 +203,31 @@ class IndikatorRekomendasiController extends Controller
         return response()->json(['status'=>'berhasil']);
     }
 
-
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function destroy($id)
     {
-        $status = DB::table('indikatorrekomendasi')->where('id','=',$id)->value('status');
+        $status = DB::table('rekomendasi')->where('id','=',$id)->value('status');
         if ($status == 1){
-            IndikatorRekomendasiModel::find($id)->delete();
+            RekomendasiModel::find($id)->delete();
             return response()->json(['status'=>'berhasil']);
         }else{
             return response()->json(['status'=>'gagal']);
         }
     }
 
-    public function kirimindikatorrekomendasikeunit($id){
-        $rekomendasi = IndikatorRekomendasiModel::find($id);
+    public function kirimrekomendasikeunit($id){
+        $rekomendasi = RekomendasiModel::find($id);
         if ($rekomendasi){
-            DB::table('indikatorrekomendasi')->where('id','=',$id)->update(['status' => 2]);
+            DB::table('rekomendasi')->where('id','=',$id)->update(['status' => 2]);
 
-            //update temuan menjadi diproses unit
-            $idtemuan = DB::table('indikatorrekomendasi')->where('id','=',$id)->value('idtemuan');
+            //update temuan menjadi dalam proses
+            $idtemuan = DB::table('rekomendasi')->where('id','=',$id)->value('idtemuan');
             DB::table('temuan')->where('id','=',$idtemuan)->update(['status' => 2]);
-
-            //update rekomendasi menjadi diproses unit
-            $idrekomendasi = DB::table('indikatorrekomendasi')->where('id','=',$id)->value('idrekomendasi');
-            DB::table('rekomendasi')->where('id','=',$idrekomendasi)->update(['status' => 2]);
-
             return response()->json(['status'=>'berhasil']);
         }else{
             return response()->json(['status'=>'gagal']);
@@ -231,22 +236,22 @@ class IndikatorRekomendasiController extends Controller
     }
 
     public function statusrekomendasiselesai($id){
-        $rekomendasi = IndikatorRekomendasiModel::find($id);
+        $rekomendasi = RekomendasiModel::find($id);
         if ($rekomendasi){
-            DB::table('indikatorrekomendasi')->where('id','=',$id)->update([
+            DB::table('rekomendasi')->where('id','=',$id)->update([
                 'status' => 6,
                 'updated_by' => Auth::user()->id,
                 'updated_at' => now()
             ]);
 
-            //cek apakah seluruh indikator rekomendasi pada rekomendasi ini selesai
-            $idrekomendasi = DB::table('indikatorrekomendasi')->where('id','='.$id)->value('idrekomendasi');
-            $rekomendasibelumselesai = DB::table('indikatorrekomendasi')
-                ->where('idrekomendasi','=',$idrekomendasi)
+            //cek apakah seluruh rekomendasi pada temuan ini selesai
+            $idtemuan = DB::table('rekomendasi')->where('id','='.$id)->value('idtemuan');
+            $rekomendasibelumselesai = DB::table('rekomendasi')
+                ->where('idtemuan','=',$idtemuan)
                 ->whereNotIn('status',[6,7])
                 ->count();
             if ($rekomendasibelumselesai == 0){
-                DB::table('rekomendasi')->where('id','=',$idrekomendasi)
+                DB::table('temuan')->where('id','=',$idtemuan)
                     ->update(['status' => 6]);
             }
             return response()->json(['status'=>'berhasil']);
@@ -257,22 +262,22 @@ class IndikatorRekomendasiController extends Controller
     }
 
     public function statustemuantddl($id){
-        $rekomendasi = IndikatorRekomendasiModel::find($id);
+        $rekomendasi = RekomendasiModel::find($id);
         if ($rekomendasi){
-            DB::table('indikatorrekomendasi')->where('id','=',$id)->update([
+            DB::table('rekomendasi')->where('id','=',$id)->update([
                 'status' => 7,
                 'updated_by' => Auth::user()->id,
                 'updated_at' => now()
             ]);
 
-            //cek apakah seluruh indikator rekomendasi pada rekomendasi ini selesai
-            $idrekomendasi = DB::table('indikatorrekomendasi')->where('id','='.$id)->value('idrekomendasi');
-            $rekomendasibelumselesai = DB::table('indikatorrekomendasi')
-                ->where('idrekomendasi','=',$idrekomendasi)
+            //cek apakah seluruh rekomendasi pada temuan ini selesai
+            $idtemuan = DB::table('rekomendasi')->where('id','='.$id)->value('idtemuan');
+            $rekomendasibelumselesai = DB::table('rekomendasi')
+                ->where('idtemuan','=',$idtemuan)
                 ->whereNotIn('status',[6,7])
                 ->count();
             if ($rekomendasibelumselesai == 0){
-                DB::table('rekomendasi')->where('id','=',$idrekomendasi)
+                DB::table('temuan')->where('id','=',$idtemuan)
                     ->update(['status' => 6]);
             }
 

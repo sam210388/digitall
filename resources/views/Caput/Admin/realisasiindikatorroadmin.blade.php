@@ -7,6 +7,11 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
+                        @if(session('status'))
+                            <div class="alert alert-success">
+                                {{session('status')}}
+                            </div>
+                        @endif
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -28,6 +33,7 @@
                         <div class="btn-group float-sm-right" role="group">
                             <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="exportrealisasiindikatorro">Export Realisasi Output</a>
                             <a class="btn btn-primary float-sm-right" href="javascript:void(0)" id="exportrealisasianggaran">Export Realisasi Anggaran</a>
+                            <a class="btn btn-primary float-sm-right" href="javascript:void(0)" id="normalisasidata">Normalisasi Data</a>
                         </div>
                     </div>
                     <div class="card-header">
@@ -268,6 +274,15 @@
                 e.preventDefault();
                 $(this).html('Export Data..');
                 window.location="{{URL::to('exportrealisasianggaranindikatorro','')}}";
+            }
+        });
+
+        $('#normalisasidata').click(function (e) {
+            let idbulan = dapatkanidbulan();
+            if( confirm("Apakah Anda Yakin Mau Melakukan Normalisasi Data Untuk Bulan "+idbulan+"?")){
+                e.preventDefault();
+                $(this).html('Normalisasi Data..');
+                window.location="{{URL::to('normalisasidataindikatoroutput','')}}"+"/"+idbulan;
             }
         });
     </script>

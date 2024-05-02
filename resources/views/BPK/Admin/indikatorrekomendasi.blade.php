@@ -27,15 +27,15 @@
                     <div class="card-header">
                         <h3 class="card-title">{{$judul}}</h3>
                         <div class="btn-group float-sm-right" role="group">
-                            <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="tambahrekomendasi"> Tambah Data</a>
+                            <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="tambahindikatorrekomendasi"> Tambah Data</a>
                             <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="kembali"> Kembali</a>
                         </div>
                     </div>
                     <div class="card-header">
-                        <h3 class="card-title">Temuan: {{$temuan}}</h3>
+                        <h3 class="card-title">Rekomendasi: {{$rekomendasi}}</h3>
                     </div>
                     <div class="card-header">
-                        <h3 class="card-title">Nilai Temuan: {{$nilai}}</h3>
+                        <h3 class="card-title">Nilai Rekomendasi: {{$nilai}}</h3>
                     </div>
                     <div class="card-body">
                         <table id="tabelrekomendasi" class="table table-bordered table-striped tabelrekomendasi">
@@ -45,7 +45,7 @@
                                 <th>Deputi</th>
                                 <th>Biro</th>
                                 <th>Bagian</th>
-                                <th>Rekomendasi</th>
+                                <th>Indikator</th>
                                 <th>Nilai</th>
                                 <th>Bukti</th>
                                 <th>Status</th>
@@ -61,7 +61,7 @@
                                 <th>Deputi</th>
                                 <th>Biro</th>
                                 <th>Bagian</th>
-                                <th>Rekomendasi</th>
+                                <th>Indikator</th>
                                 <th>Nilai</th>
                                 <th>Bukti</th>
                                 <th>Status</th>
@@ -78,8 +78,9 @@
                                     </div>
                                     <div class="modal-body">
                                         <form id="formrekomendasi" name="formrekomendasi" class="form-horizontal" enctype="multipart/form-data">
+                                            <input type="hidden" name="idrekomendasi" id="idrekomendasi" value="{{$idrekomendasi ? $idrekomendasi:""}}">
                                             <input type="hidden" name="idtemuan" id="idtemuan" value="{{$idtemuan ? $idtemuan:""}}">
-                                            <input type="hidden" name="idrekomendasi" id="idrekomendasi">
+                                            <input type="hidden" name="idindikatorrekomendasi" id="idindikatorrekomendasi">
                                             <input type="hidden" name="idbiroawal" id="idbiroawal">
                                             <input type="hidden" name="idbagianawal" id="idbagianawal">
                                             <input type="hidden" name="statusawal" id="statusawal">
@@ -111,9 +112,9 @@
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label for="rekomendasi" class="col-sm-6 control-label">Rekomendasi</label>
+                                                <label for="rekomendasi" class="col-sm-6 control-label">Indikator Rekomendasi</label>
                                                 <div class="col-sm-12">
-                                                    <textarea type="text" class="form-control" id="rekomendasi" name="rekomendasi" placeholder="Rekomendasi"></textarea>
+                                                    <textarea type="text" class="form-control" id="indikatorrekomendasi" name="indikatorrekomendasi" placeholder="Indikator Rekomendasi"></textarea>
                                                 </div>
                                             </div>
                                             <div class="form-group">
@@ -201,7 +202,7 @@
                     {"width":"5%"},
                 );
             });
-            var idtemuan = document.getElementById('idtemuan').value;
+            var idrekomendasi = document.getElementById('idrekomendasi').value;
             var table = $('.tabelrekomendasi').DataTable({
                 fixedColumn:true,
                 scrollX:"100%",
@@ -211,19 +212,19 @@
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','pdf','csv','print'],
                 "ajax": {
-                    "url": "{{route('getdatarekomendasi')}}",
+                    "url": "{{route('getdataindikatorrekomendasi')}}",
                     "type": "POST",
                     "data": function (d){
                         d._token = "{{ csrf_token() }}";
-                        d.idtemuan = idtemuan;
+                        d.idrekomendasi = idrekomendasi;
                     }
                 },
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-                    {data: 'iddeputi', name: 'iddeputi'},
-                    {data: 'idbiro', name: 'idbiro'},
-                    {data: 'idbagian', name: 'idbagian'},
-                    {data: 'rekomendasi', name: 'rekomendasi'},
+                    {data: 'iddeputi', name: 'deputirelation.uraiandeputi'},
+                    {data: 'idbiro', name: 'birorelation.uraianbiro'},
+                    {data: 'idbagian', name: 'bagianrelation.uraianbagian'},
+                    {data: 'indikatorrekomendasi', name: 'indikatorrekomendasi'},
                     {data: 'nilai', name: 'nilai'},
                     {data: 'bukti', name: 'bukti'},
                     {data: 'status', name: 'status'},
@@ -252,17 +253,18 @@
             Click to Button
             --------------------------------------------
             --------------------------------------------*/
-            $('#tambahrekomendasi').click(function () {
+            $('#tambahindikatorrekomendasi').click(function () {
                 $('#saveBtn').val("tambah");
                 $('#formrekomendasi').trigger("reset");
-                $('#modelHeading').html("Tambah Rekomendasi");
+                $('#modelHeading').html("Tambah Indikator Rekomendasi");
                 document.getElementById('aktuallinkbukti').href = "#"
                 $('#linkbukti').hide();
                 $('#ajaxModel').modal('show');
             });
 
             $('#kembali').click(function () {
-                window.location="{{URL::to('temuan')}}"
+                let idtemuan = document.getElementById('idtemuan').value;
+                window.location="{{URL::to('tampilrekomendasi','')}}"+"/"+idtemuan;
             });
 
             /*------------------------------------------
@@ -270,20 +272,21 @@
             Click to Edit Button
             --------------------------------------------
             --------------------------------------------*/
-            $('body').on('click', '.editrekomendasi', function () {
+            $('body').on('click', '.editindikatorrekomendasi', function () {
                 var idrekomendasi = $(this).data('id');
-                $.get("{{ route('rekomendasi.index') }}" +'/' + idrekomendasi +'/edit', function (data) {
+                $.get("{{ route('indikatorrekomendasi.index') }}" +'/' + idrekomendasi +'/edit', function (data) {
                     $('#modelHeading').html("Edit Rekomendasi");
                     $('#saveBtn').val("edit");
                     $('#ajaxModel').modal('show');
-                    $('#idrekomendasi').val(data.id);
+                    $('#idrekomendasi').val(data.idrekomendasi);
+                    $('#idindikatorrekomendasi').val(data.id);
                     $('#idtemuan').val(data.idtemuan);
                     $('#iddeputi').val(data.iddeputi).trigger('change');
                     $('#idbiroawal').val(data.idbiro);
                     $('#idbagianawal').val(data.idbagian);
                     $('#buktiawal').val(data.bukti);
                     $('#nilai').val(data.nilai);
-                    $('#rekomendasi').val(data.rekomendasi);
+                    $('#indikatorrekomendasi').val(data.indikatorrekomendasi);
                     $('#statusawal').val(data.status);
                     $('#created_by_awal').val(data.created_by);
                     document.getElementById('aktuallinkbukti').href = "{{env('APP_URL')."/".asset('storage')}}"+"/"+data.bukti
@@ -303,7 +306,7 @@
                 let fd = new FormData(form);
                 let bukti = $('#bukti')[0].files;
                 let saveBtn = document.getElementById('saveBtn').value;
-                var id = document.getElementById('idrekomendasi').value;
+                var id = document.getElementById('idindikatorrekomendasi').value;
                 fd.append('bukti',bukti[0])
                 fd.append('saveBtn',saveBtn)
                 if(saveBtn == "edit"){
@@ -314,7 +317,7 @@
                 }
                 $.ajax({
                     data: fd,
-                    url: saveBtn === "tambah" ? "{{route('rekomendasi.store')}}":"{{route('rekomendasi.update','')}}"+'/'+id,
+                    url: saveBtn === "tambah" ? "{{route('indikatorrekomendasi.store')}}":"{{route('indikatorrekomendasi.update','')}}"+'/'+id,
                     type: "POST",
                     enctype: 'multipart/form-data',
                     contentType: false,
@@ -371,13 +374,13 @@
             Delete Product Code
             --------------------------------------------
             --------------------------------------------*/
-            $('body').on('click', '.deleterekomendasi', function () {
+            $('body').on('click', '.deleteindikatorrekomendasi', function () {
 
                 var idrekomendasi = $(this).data("id");
                 if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
                     $.ajax({
                         type: "DELETE",
-                        url: "{{ route('rekomendasi.destroy','') }}"+'/'+idrekomendasi,
+                        url: "{{ route('indikatorrekomendasi.destroy','') }}"+'/'+idrekomendasi,
                         success: function (data) {
                             if (data.status == "berhasil"){
                                 Swal.fire({
@@ -414,7 +417,7 @@
                 var idrekomendasi = $(this).data("id");
                 if(confirm("Apakah Anda Yakin AKan Mengirim Data Ini Ke Unit Kerja?")){
                     $.ajax({
-                        url: "{{ url('/kirimrekomendasikeunit') }}"+'/'+idrekomendasi,
+                        url: "{{ url('/kirimindikatorrekomendasikeunit') }}"+'/'+idrekomendasi,
                         success: function (data) {
                             if (data.status == "berhasil"){
                                 Swal.fire({
@@ -449,9 +452,9 @@
 
             $('body').on('click', '.selesai', function () {
                 var idrekomendasi = $(this).data("id");
-                if(confirm("Apakah Anda Yakin AKan Merubah Status Rekomendasi Menjadi Selesai?")){
+                if(confirm("Apakah Anda Yakin AKan Merubah Status Indikator Rekomendasi Menjadi Selesai?")){
                     $.ajax({
-                        url: "{{ url('/statusrekomendasiselesai') }}"+'/'+idrekomendasi,
+                        url: "{{ url('/statusindikatorrekomendasiselesai') }}"+'/'+idrekomendasi,
                         success: function (data) {
                             if (data.status == "berhasil"){
                                 Swal.fire({
@@ -479,7 +482,7 @@
                 var idrekomendasi = $(this).data("id");
                 if(confirm("Apakah Anda Yakin AKan Merubah Status Rekomendasi Menjadi Tidak Dapat Ditindaklanjuti?")){
                     $.ajax({
-                        url: "{{ url('/statusrekomendasitddl') }}"+'/'+idrekomendasi,
+                        url: "{{ url('/statusindikatorrekomendasitddl') }}"+'/'+idrekomendasi,
                         success: function (data) {
                             if (data.status == "berhasil"){
                                 Swal.fire({

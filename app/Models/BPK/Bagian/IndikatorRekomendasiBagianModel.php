@@ -1,21 +1,23 @@
 <?php
 
-namespace App\Models\BPK\Admin;
+namespace App\Models\BPK\Bagian;
 
-use App\Models\User;
+use App\Models\BPK\Admin\RekomendasiModel;
+use App\Models\BPK\Admin\StatusTemuanModel;
+use App\Models\BPK\Admin\TemuanModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class RekomendasiModel extends Model
+class IndikatorRekomendasiBagianModel extends Model
 {
     use HasFactory;
 
-    protected $table = 'rekomendasi';
+    protected $table = 'indikatorrekomendasi';
 
     protected $guarded = [];
 
-    public function userrelation(){
-        return $this->hasOne(User::class,'id','created_by');
+    public function rekomendasirelation(){
+        return $this->hasOne(RekomendasiModel::class,'id','idrekomendasi');
     }
 
     public function temuanrelation(){

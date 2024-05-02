@@ -4,10 +4,7 @@ namespace App\Http\Controllers\Realisasi\Admin;
 
 use App\Exports\ExportRencanaPenarikan;
 use App\Http\Controllers\Controller;
-use App\Jobs\RekapKegiatanMingguan;
 use App\Models\Realisasi\Admin\MonitoringRencanaKegiataAdminModel;
-use App\Models\Realisasi\Bagian\RencanaKegiatanModel;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\DataTables;
@@ -29,10 +26,12 @@ class RencanaKegiatanController extends Controller
         if ($statusrencana == "Open"){
             $btn = '<div class="btn-group float-sm-right" role="group">
              <a class="btn btn-danger float-sm-right" href="javascript:void(0)" id="tutupperiode">Tutup</a>';
+            $btn = $btn.'<a class="btn btn-primary float-sm-right" href="javascript:void(0)" id="rekaprealisasi"> Rekap Realisasi</a>';
             $btn = $btn.'<a class="btn btn-success float-sm-right" href="javascript:void(0)" id="exportrencana"> Export</a>';
         }else{
             $btn = '<div class="btn-group float-sm-right" role="group">
              <a class="btn btn-info float-sm-right" href="javascript:void(0)" id="bukaperiode">Buka</a>';
+            $btn = $btn.'<a class="btn btn-primary float-sm-right" href="javascript:void(0)" id="rekaprealisasi"> Rekap Realisasi</a>';
             $btn = $btn.'<a class="btn btn-success float-sm-right" href="javascript:void(0)" id="exportrencana"> Export</a>';
         }
         $databagian = DB::table('bagian')->where('status','=','on')->get();
@@ -145,6 +144,7 @@ class RencanaKegiatanController extends Controller
         $bulan = date('n');
         //Excel::download(new UsersExport, 'users.xlsx');
         //return Excel::download(new ExportRencanaPenarikanBagian($tahunanggaran, $idbagian),'MonitoringRencanaPenarikanBagian.xlsx');
+
         for($i=1; $i<=$bulan;$i++){
             $datalaporanrealisasibac = DB::table('laporanrealisasianggaranbac')
                 ->where('tahunanggaran','=',$tahunanggaran)
@@ -183,6 +183,146 @@ class RencanaKegiatanController extends Controller
                 ]);
             }
         }
+    }
+
+    function rekaprealisasiseluruh(){
+        $tahunanggaran = session('tahunanggaran');
+        $datalaporanrealisasibac = DB::table('laporanrealisasianggaranbac')
+            ->where('tahunanggaran','=',$tahunanggaran)
+            ->get();
+
+        foreach ($datalaporanrealisasibac as $data){
+            $pengenal = $data->pengenal;
+            $kodesatker = $data->kodesatker;
+            $idbagian = $data->idbagian;
+            $idbiro = $data->idbiro;
+            $tahunanggaran = $data->tahunanggaran;
+            $paguanggaran = $data->paguanggaran;
+            $bulan = date('n');
+            $r1 = $data->r1;
+            $r2 = $data->r2;
+            $r3 = $data->r3;
+            $r4 = $data->r4;
+            $r5 = $data->r5;
+            $r6 = $data->r6;
+            $r7 = $data->r7;
+            $r8 = $data->r8;
+            $r9 = $data->r9;
+            $r10 = $data->r10;
+            $r11 = $data->r11;
+            $r12 = $data->r12;
+            $nilairencanabulan1 = DB::table('rencanakegiatandetail')
+                ->select([DB::raw('sum(rupiah) as nilairencana')])
+                ->where('pengenal','=',$pengenal)
+                ->where('bulanpencairan','=',DB::raw(1))
+                ->where('statusrencana','=','Terjadwal')
+                ->value('nilairencana');
+            $nilairencanabulan2 = DB::table('rencanakegiatandetail')
+                ->select([DB::raw('sum(rupiah) as nilairencana')])
+                ->where('pengenal','=',$pengenal)
+                ->where('bulanpencairan','=',DB::raw(2))
+                ->where('statusrencana','=','Terjadwal')
+                ->value('nilairencana');
+            $nilairencanabulan3 = DB::table('rencanakegiatandetail')
+                ->select([DB::raw('sum(rupiah) as nilairencana')])
+                ->where('pengenal','=',$pengenal)
+                ->where('bulanpencairan','=',DB::raw(3))
+                ->where('statusrencana','=','Terjadwal')
+                ->value('nilairencana');
+            $nilairencanabulan4 = DB::table('rencanakegiatandetail')
+                ->select([DB::raw('sum(rupiah) as nilairencana')])
+                ->where('pengenal','=',$pengenal)
+                ->where('bulanpencairan','=',DB::raw(4))
+                ->where('statusrencana','=','Terjadwal')
+                ->value('nilairencana');
+            $nilairencanabulan5 = DB::table('rencanakegiatandetail')
+                ->select([DB::raw('sum(rupiah) as nilairencana')])
+                ->where('pengenal','=',$pengenal)
+                ->where('bulanpencairan','=',DB::raw(5))
+                ->where('statusrencana','=','Terjadwal')
+                ->value('nilairencana');
+            $nilairencanabulan6 = DB::table('rencanakegiatandetail')
+                ->select([DB::raw('sum(rupiah) as nilairencana')])
+                ->where('pengenal','=',$pengenal)
+                ->where('bulanpencairan','=',DB::raw(6))
+                ->where('statusrencana','=','Terjadwal')
+                ->value('nilairencana');
+            $nilairencanabulan7 = DB::table('rencanakegiatandetail')
+                ->select([DB::raw('sum(rupiah) as nilairencana')])
+                ->where('pengenal','=',$pengenal)
+                ->where('bulanpencairan','=',DB::raw(7))
+                ->where('statusrencana','=','Terjadwal')
+                ->value('nilairencana');
+            $nilairencanabulan8 = DB::table('rencanakegiatandetail')
+                ->select([DB::raw('sum(rupiah) as nilairencana')])
+                ->where('pengenal','=',$pengenal)
+                ->where('bulanpencairan','=',DB::raw(8))
+                ->where('statusrencana','=','Terjadwal')
+                ->value('nilairencana');
+            $nilairencanabulan9 = DB::table('rencanakegiatandetail')
+                ->select([DB::raw('sum(rupiah) as nilairencana')])
+                ->where('pengenal','=',$pengenal)
+                ->where('bulanpencairan','=',DB::raw(9))
+                ->where('statusrencana','=','Terjadwal')
+                ->value('nilairencana');
+            $nilairencanabulan10 = DB::table('rencanakegiatandetail')
+                ->select([DB::raw('sum(rupiah) as nilairencana')])
+                ->where('pengenal','=',$pengenal)
+                ->where('bulanpencairan','=',DB::raw(10))
+                ->where('statusrencana','=','Terjadwal')
+                ->value('nilairencana');
+            $nilairencanabulan11 = DB::table('rencanakegiatandetail')
+                ->select([DB::raw('sum(rupiah) as nilairencana')])
+                ->where('pengenal','=',$pengenal)
+                ->where('bulanpencairan','=',DB::raw(11))
+                ->where('statusrencana','=','Terjadwal')
+                ->value('nilairencana');
+            $nilairencanabulan12 = DB::table('rencanakegiatandetail')
+                ->select([DB::raw('sum(rupiah) as nilairencana')])
+                ->where('pengenal','=',$pengenal)
+                ->where('bulanpencairan','=',DB::raw(12))
+                ->where('statusrencana','=','Terjadwal')
+                ->value('nilairencana');
+            $totalr1 = $r1+$nilairencanabulan1;
+            $totalr2 = $r2+$nilairencanabulan2;
+            $totalr3 = $r3+$nilairencanabulan3;
+            $totalr4 = $r4+$nilairencanabulan4;
+            $totalr5 = $r4+$nilairencanabulan5;
+            $totalr6 = $r6+$nilairencanabulan6;
+            $totalr7 = $r7+$nilairencanabulan7;
+            $totalr8 = $r8+$nilairencanabulan8;
+            $totalr9 = $r9+$nilairencanabulan9;
+            $totalr10 = $r10+$nilairencanabulan10;
+            $totalr11 = $r11+$nilairencanabulan11;
+            $totalr12 = $r12+$nilairencanabulan12;
+
+            //update atau cetak datanya
+            DB::table('rencanakegiatan')->updateOrInsert([
+                'pengenal' => $pengenal
+            ],[
+
+                'tahunanggaran' => $tahunanggaran,
+                'paguanggaran' => $paguanggaran,
+                'kdsatker' => $kodesatker,
+                'idbagian' => $idbagian,
+                'idbiro' => $idbiro,
+                'pok1' => $totalr1,
+                'pok2' => $totalr2,
+                'pok3' => $totalr3,
+                'pok4' => $totalr4,
+                'pok5' => $totalr5,
+                'pok6' => $totalr6,
+                'pok7' => $totalr7,
+                'pok8' => $totalr8,
+                'pok9' => $totalr9,
+                'pok10' => $totalr10,
+                'pok11' => $totalr11,
+                'pok12' => $totalr12
+            ]);
+
+            $this->updatetotalrencana($pengenal);
+        }
+        return redirect()->to('rencanakegiatan')->with('status','Rekap Realisasi Berhasil');
     }
 
     public function updatetabelmonitoring($pengenal){

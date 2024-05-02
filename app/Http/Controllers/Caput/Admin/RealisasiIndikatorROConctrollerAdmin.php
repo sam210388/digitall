@@ -6,6 +6,7 @@ use App\Exports\IndikatorROExport;
 use App\Exports\IndikatorROExportRealisasi;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 use Maatwebsite\Excel\Facades\Excel;
@@ -86,6 +87,77 @@ class RealisasiIndikatorROConctrollerAdmin extends Controller
         $tahunanggaran = session('tahunanggaran');
         //Excel::download(new UsersExport, 'users.xlsx');
         return Excel::download(new IndikatorROExportRealisasi($tahunanggaran),'RealisasiAnggaranIndikatorRO.xlsx');
+    }
+
+    public function normalisasidataindikatoroutput($idbulan){
+        $tahunanggaran = session('tahunanggaran');
+        $tanggallapor = date('Y-m-d');
+        $jumlahsdperiodesebelumnya = 0;
+        $prosentasesdperiodesebelumnya = 0;
+        //dapatkan data rincian indikator
+        $dataindikatorro = DB::table('indikatorro')
+            ->where('tahunanggaran','=',$tahunanggaran)
+            ->where('status','=','Dalam Proses')
+            ->get();
+        foreach ($dataindikatorro as $dri){
+            $idindikatorro = $dri->id;
+            $idro = $dri->idro;
+            $idkro = $dri->idkro;
+            $target = $dri->target;
+            $targetbulan = $dri->{'target'.$idbulan};
+            //cek apakah ada realisasinya
+            $adarealisasi = DB::table('realisasiindikatorro')
+                ->where('tahunanggaran','=',$tahunanggaran)
+                ->where('periode','=',$idbulan)
+                ->where('idindikatorro','=',$idindikatorro)
+                ->count();
+            if ($adarealisasi <1){
+                //ambil data realisasi dan prosentase sd periode sebelumnya
+                if ($idbulan == 1){
+                    $jumlahsdperiodesebelumnya = 0;
+                    $prosentasesdperiodesebelumnya = 0;
+                }else{
+                    $dataperiodesebelumnya = DB::table('realisasiindikatorro')
+                        ->where('tahunanggaran','=',$tahunanggaran)
+                        ->where('periode','=',$idbulan-1)
+                        ->where('idindikatorro','=',$idindikatorro)
+                        ->get();
+                    foreach ($dataperiodesebelumnya as $dps){
+                        $jumlahsdperiodesebelumnya = $dps->jumlahsdperiodeini;
+                        $prosentasesdperiodesebelumnya = $dps->prosentasesdperiodeini;
+                    }
+                }
+                //tambahkan data normalisasi di tabel realisasi
+                $data = array(
+                    'target' => $target,
+                    'targetbulan' => $targetbulan,
+                    'idindikatorro' => $idindikatorro,
+                    'idkro' => $idkro,
+                    'idro' => $idro,
+                    'tahunanggaran' => $tahunanggaran,
+                    'periode' => $idbulan,
+                    'tanggallapor' => $tanggallapor,
+                    'jumlah' => 0,
+                    'jumlahsdperiodeini' => $jumlahsdperiodesebelumnya,
+                    'prosentase' => 0,
+                    'prosentasesdperiodeini' => $prosentasesdperiodesebelumnya,
+                    'statuspelaksanaan' => 3,
+                    'kategoripermasalahan' => 3,
+                    'keterangan' => 'Normalisasi',
+                    'uraianoutputdihasilkan' => 'Normalisasi',
+                    'status' => 1,
+                    'file' => null
+                );
+
+                //insertkan ke DB realisasi
+                DB::table('realisasiindikatorro')->updateOrInsert([
+                    'tahunanggaran' => $tahunanggaran,
+                    'periode' => $idbulan,
+                    'idindikatorro' => $idindikatorro
+                ],$data);
+            }
+        }
+        return redirect()->to('realisasiindikatorroadmin')->with('status','Normalisasi Data Untuk Bulan '.$idbulan.' Berhasil');
     }
 
 }
