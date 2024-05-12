@@ -75,6 +75,13 @@ class RekomendasiController extends Controller
         }
     }
 
+    public function formatulang($nilai){
+        $nilai = str_replace("Rp","",$nilai);
+        $nilai = str_replace(".00","",$nilai);
+        $nilai = str_replace(",","",$nilai);
+        return $nilai;
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -107,7 +114,7 @@ class RekomendasiController extends Controller
         RekomendasiModel::create(
             [
                 'idtemuan' => $request->get('idtemuan'),
-                'nilai' => $request->get('nilai'),
+                'nilai' => $this->formatulang($request->get('nilai')),
                 'rekomendasi' => $request->get('rekomendasi'),
                 'bukti' => $bukti,
                 'status' => $status,
@@ -185,7 +192,7 @@ class RekomendasiController extends Controller
         RekomendasiModel::where('id',$id)->update(
             [
                 'idtemuan' => $request->get('idtemuan'),
-                'nilai' => $request->get('nilai'),
+                'nilai' => $this->formatulang($request->get('nilai')),
                 'rekomendasi' => $request->get('rekomendasi'),
                 'bukti' => $bukti,
                 'status' => $status,

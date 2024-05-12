@@ -17,6 +17,14 @@ class TindakLanjutAdminController extends Controller
         $this->middleware(['auth']);
 
     }
+
+    public function formatulang($nilai){
+        $nilai = str_replace("Rp","",$nilai);
+        $nilai = str_replace(".00","",$nilai);
+        $nilai = str_replace(",","",$nilai);
+        return $nilai;
+    }
+
     public function tampiltindaklanjut($idindikator){
         $judul = 'Data Tindak Lanjut';
         $dataindikatorrekomendasi = DB::table('indikatorrekomendasi')->where('id','=',$idindikator)->get();
@@ -201,7 +209,7 @@ class TindakLanjutAdminController extends Controller
         $tanggaldokumen = date_create($request->get('tanggaldokumen'));
         $tanggaldokumen = date_format($tanggaldokumen,'Y-m-d');
         $nomordokumen = $request->get('nomordokumen');
-        $nilaibukti = $request->get('nilaibukti');
+        $nilaibukti = $this->formatulang($request->get('nilaibukti'));
         $keterangan = $request->get('keterangan');
         $objektemuan = $request->get('objektemuan');
         $idrekomendasi = $request->get('idrekomendasi');
@@ -248,7 +256,7 @@ class TindakLanjutAdminController extends Controller
         $tanggaldokumen = date_create($request->get('tanggaldokumen'));
         $tanggaldokumen = date_format($tanggaldokumen,'Y-m-d');
         $nomordokumen = $request->get('nomordokumen');
-        $nilaibukti = $request->get('nilaibukti');
+        $nilaibukti = $this->formatulang($request->get('nilaibukti'));
         $keterangan = $request->get('keterangan');
         $objektemuan = $request->get('objektemuan');
         $idrekomendasi = $request->get('idrekomendasi');

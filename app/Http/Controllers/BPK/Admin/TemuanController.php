@@ -101,6 +101,13 @@ class TemuanController extends Controller
         ]);
     }
 
+    public function formatulang($nilai){
+        $nilai = str_replace("Rp","",$nilai);
+        $nilai = str_replace(".00","",$nilai);
+        $nilai = str_replace(",","",$nilai);
+        return $nilai;
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -145,7 +152,7 @@ class TemuanController extends Controller
                 'kriteria' => $request->get('kriteria'),
                 'sebab' => $request->get('sebab'),
                 'akibat' => $request->get('akibat'),
-                'nilai' => $request->get('nilai'),
+                'nilai' => $this->formatulang($request->get('nilai')),
                 'bukti' => $bukti,
                 'status' => $status,
                 'created_by' => $userid
@@ -232,7 +239,7 @@ class TemuanController extends Controller
                 'kriteria' => $request->get('kriteria'),
                 'sebab' => $request->get('sebab'),
                 'akibat' => $request->get('akibat'),
-                'nilai' => $request->get('nilai'),
+                'nilai' => $this->formatulang($request->get('nilai')),
                 'bukti' => $bukti,
                 'status' => $status,
                 'created_by' => $userid

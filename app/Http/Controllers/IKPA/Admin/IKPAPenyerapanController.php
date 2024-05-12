@@ -293,7 +293,7 @@ class IKPAPenyerapanController extends Controller
                     ->where('tahunanggaran','=',$tahunanggaran)
                     ->where('kodesatker','=',$kodesatker)
                     ->value('totalpagu');
-                if ($totalpagu != null){
+                if ($totalpagu !== null && $totalpagu !== '0' && (int)$totalpagu != 0){
                     $pagu51 = DB::table('laporanrealisasianggaranbac')
                         ->select([DB::raw('sum(paguanggaran) as totalpagu')])
                         ->where('idbiro','=',$idbiro)

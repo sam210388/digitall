@@ -20,7 +20,6 @@
         "maatwebsite/excel": "^3.1",
         "novay/laravel-word-template": "^1.1",
         "simplesoftwareio/simple-qrcode": "^4.2",
-        "syamsoul/laravel-datatable-two-ssp": "^2.0",
         "twilio/sdk": "^7.7",
         "yajra/laravel-datatables-oracle": "^9.21"
     },

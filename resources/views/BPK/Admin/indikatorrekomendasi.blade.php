@@ -513,6 +513,28 @@
             window.location="{{URL::to('lihattindaklanjutbagian')}}"+"/"+idrekomendasi;
         });
 
+        $('#nilai').on('input', function() {
+            var nilaitemuan = $(this).val();
+
+            // Hapus koma ribuan sebelum melakukan perhitungan
+            nilaitemuan = removeThousandSeparator(nilaitemuan);
+
+
+            // Tambahkan koma ribuan setelah perhitungan
+            $(this).val(addThousandSeparator(nilaitemuan));
+
+        });
+
+        // Fungsi untuk menambahkan separator ribuan dengan koma
+        function addThousandSeparator(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // Fungsi untuk menghapus separator ribuan
+        function removeThousandSeparator(number) {
+            return number.replace(/,/g, '');
+        }
+
         $('#iddeputi').on('change', function () {
             var iddeputi = this.value;
 

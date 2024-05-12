@@ -31,7 +31,7 @@
                     <div class="card-header">
                         <div class="btn-group float-sm-right">
                             <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="exportikpa">Export</a>
-                            <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="hitungikpa">Rekap IKPA</a>
+                            <a class="btn btn-success float-sm-right" href="javascript:void(0)" id="hitungikpa">Hitung IKPA Revisi</a>
                         </div>
                         <h3 class="card-title">{{$judul}}</h3>
                     </div>
@@ -39,10 +39,10 @@
                         <div class="form-group">
                             <label for="bulan" class="col-sm-6 control-label">Bulan</label>
                             <div class="col-sm-12">
-                                <select class="form-control idbiro" name="idbiro" id="idbiro" style="width: 100%;">
-                                    <option value="">Pilih Biro</option>
-                                    @foreach($databiro as $data)
-                                        <option value="{{ $data->id }}">{{ $data->uraianbiro }}</option>
+                                <select class="form-control idbagian" name="idbagian" id="idbagian" style="width: 100%;">
+                                    <option value="">Pilih Bagian</option>
+                                    @foreach($databagian as $data)
+                                        <option value="{{ $data->id }}">{{ $data->uraianbagian }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -54,13 +54,13 @@
                             <tr>
                                 <th>Satker</th>
                                 <th>Biro</th>
+                                <th>Bagian</th>
                                 <th>Periode</th>
-                                <th>IKPA Penyerapan</th>
-                                <th>IKPA Deviasi</th>
-                                <th>IKPA Penyelesaian</th>
-                                <th>IKPA Kontraktual</th>
-                                <th>IKPA Revisi</th>
-                                <th>IKPA Capaian Output</th>
+                                <th>Jumlah Revisi POK</th>
+                                <th>Jumlah Revisi Kemenkeu</th>
+                                <th>Nilai IKPA POK</th>
+                                <th>Nilai IKPA Kemenkeu</th>
+                                <th>Nilai IKPA Bulanan</th>
                                 <th>Nilai IKPA</th>
                             </tr>
                             </thead>
@@ -70,13 +70,13 @@
                             <tr>
                                 <th>Satker</th>
                                 <th>Biro</th>
+                                <th>Bagian</th>
                                 <th>Periode</th>
-                                <th>IKPA Penyerapan</th>
-                                <th>IKPA Deviasi</th>
-                                <th>IKPA Penyelesaian</th>
-                                <th>IKPA Kontraktual</th>
-                                <th>IKPA Revisi</th>
-                                <th>IKPA Capaian Output</th>
+                                <th>Jumlah Revisi POK</th>
+                                <th>Jumlah Revisi Kemenkeu</th>
+                                <th>Nilai IKPA POK</th>
+                                <th>Nilai IKPA Kemenkeu</th>
+                                <th>Nilai IKPA Bulanan</th>
                                 <th>Nilai IKPA</th>
                             </tr>
                             </tfoot>
@@ -89,7 +89,7 @@
     <!-- /.content -->
     <script type="text/javascript">
         $(function () {
-            $('.idbiro').select2({
+            $('.idbagian').select2({
                 width: '100%',
                 theme: 'bootstrap4',
 
@@ -102,7 +102,7 @@
                 $(this).html( '<input type="text" placeholder="'+title+'" data-index="'+i+'" />' );
             });
 
-            let idbiro = document.getElementById('idbiro').value;
+            let idbagian = document.getElementById('idbagian').value;
             var table = $('.tabelrealisasibagianperpengenal').DataTable({
                 fixedColumn:true,
                 scrollX:"100%",
@@ -111,32 +111,20 @@
                 serverSide: true,
                 dom: 'lf<"floatright"B>rtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('getdatarekapikpabiro','')}}"+"/"+idbiro,
+                ajax:"{{route('getdataikparevisibagian','')}}"+"/"+idbagian,
                 columns: [
                     {data: 'kodesatker', name: 'kodesatker'},
                     {data: 'biro', name: 'birorelation.uraianbiro'},
+                    {data: 'bagian', name: 'bagianrelation.uraianbagian'},
                     {data: 'periode', name: 'periode'},
-                    {data: 'ikpapenyerapan', name: 'ikpapenyerapan'},
-                    {data: 'ikpadeviasi', name: 'ikpadeviasi'},
-                    {data: 'ikpapenyelesaian', name: 'ikpapenyelesaian'},
-                    {data: 'ikpakontraktual', name: 'ikpakontraktual'},
-                    {data: 'ikparevisi', name: 'ikparevisi'},
-                    {data: 'ikpacaput', name: 'ikpacaput'},
-                    {data: 'ikpatotal', name: 'ikpatotal'},
+                    {data: 'jumlahrevisipok', name: 'jumlahrevisipok'},
+                    {data: 'jumlahrevisikemenkeu', name: 'jumlahrevisikemenkeu'},
+                    {data: 'nilaiikpapok', name: 'nilaiikpapok'},
+                    {data: 'nilaiikpakemenkeu', name: 'nilaiikpakemenkeu'},
+                    {data: 'nilaiikpabulanan', name: 'nilaiikpabulanan'},
+                    {data: 'nilaiikpa', name: 'nilaiikpa'},
                 ],
                 columnDefs: [
-                    {
-                        targets: 3,
-                        render: $.fn.dataTable.render.number('.', ',', 2, '')
-                    },
-                    {
-                        targets: 4,
-                        render: $.fn.dataTable.render.number('.', ',', 2, '')
-                    },
-                    {
-                        targets: 5,
-                        render: $.fn.dataTable.render.number('.', ',', 2, '')
-                    },
                     {
                         targets: 6,
                         render: $.fn.dataTable.render.number('.', ',', 2, '')
@@ -167,8 +155,8 @@
             });
 
 
-            $('#idbiro').on('change',function (){
-                let idbiro = document.getElementById('idbiro').value;
+            $('#idbagian').on('change',function (){
+                let idbagian = document.getElementById('idbagian').value;
                 var table = $('#tabelrealisasibagianperpengenal').DataTable({
                     destroy: true,
                     fixedColumn:true,
@@ -178,32 +166,20 @@
                     serverSide: true,
                     dom: 'lf<"floatright"B>rtip',
                     buttons: ['copy','excel','pdf','csv','print'],
-                    ajax:"{{route('getdatarekapikpabiro','')}}"+"/"+idbiro,
+                    ajax:"{{route('getdataikparevisibagian','')}}"+"/"+idbagian,
                     columns: [
                         {data: 'kodesatker', name: 'kodesatker'},
                         {data: 'biro', name: 'birorelation.uraianbiro'},
+                        {data: 'bagian', name: 'bagianrelation.uraianbagian'},
                         {data: 'periode', name: 'periode'},
-                        {data: 'ikpapenyerapan', name: 'ikpapenyerapan'},
-                        {data: 'ikpadeviasi', name: 'ikpadeviasi'},
-                        {data: 'ikpapenyelesaian', name: 'ikpapenyelesaian'},
-                        {data: 'ikpakontraktual', name: 'ikpakontraktual'},
-                        {data: 'ikparevisi', name: 'ikparevisi'},
-                        {data: 'ikpacaput', name: 'ikpacaput'},
-                        {data: 'ikpatotal', name: 'ikpatotal'},
+                        {data: 'jumlahrevisipok', name: 'jumlahrevisipok'},
+                        {data: 'jumlahrevisikemenkeu', name: 'jumlahrevisikemenkeu'},
+                        {data: 'nilaiikpapok', name: 'nilaiikpapok'},
+                        {data: 'nilaiikpakemenkeu', name: 'nilaiikpakemenkeu'},
+                        {data: 'nilaiikpabulanan', name: 'nilaiikpabulanan'},
+                        {data: 'nilaiikpa', name: 'nilaiikpa'},
                     ],
                     columnDefs: [
-                        {
-                            targets: 3,
-                            render: $.fn.dataTable.render.number('.', ',', 2, '')
-                        },
-                        {
-                            targets: 4,
-                            render: $.fn.dataTable.render.number('.', ',', 2, '')
-                        },
-                        {
-                            targets: 5,
-                            render: $.fn.dataTable.render.number('.', ',', 2, '')
-                        },
                         {
                             targets: 6,
                             render: $.fn.dataTable.render.number('.', ',', 2, '')
@@ -235,18 +211,18 @@
             })
 
             $('#hitungikpa').click(function (e) {
-                if( confirm("Apakah Anda Yakin Mau Menghitung IKPA Kontraktual Sekarang ? Pastikan Anda telah Melakukan Import Kontrak Header Terbaru dari Menu Detil Kontraktual")){
+                if( confirm("Apakah Anda Yakin Mau Menghitung IKPA Revisi Sekarang ?")){
                     e.preventDefault();
                     $(this).html('Processing..');
-                    window.location="{{URL::to('hitungrekapikpabiro')}}";
+                    window.location="{{URL::to('hitungikparevisibagian')}}";
                 }
             });
 
             $('#exportikpa').click(function (e) {
-                if( confirm("Apakah Anda Yakin Mau Eksport Data Rekap IKPA Biro ?")){
+                if( confirm("Apakah Anda Yakin Mau Eksport Data IKPA Revisi ?")){
                     e.preventDefault();
                     $(this).html('Exporting..');
-                    window.location="{{URL::to('exportrekapikpabiro')}}";
+                    window.location="{{URL::to('exportikparevisibagian')}}";
                     $(this).html('Export');
                 }
             });

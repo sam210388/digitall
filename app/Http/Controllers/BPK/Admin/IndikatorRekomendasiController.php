@@ -96,6 +96,13 @@ class IndikatorRekomendasiController extends Controller
         //
     }
 
+    public function formatulang($nilai){
+        $nilai = str_replace("Rp","",$nilai);
+        $nilai = str_replace(".00","",$nilai);
+        $nilai = str_replace(",","",$nilai);
+        return $nilai;
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -137,7 +144,7 @@ class IndikatorRekomendasiController extends Controller
                 'iddeputi' => $request->get('iddeputi'),
                 'idbiro' => $request->get('idbiro'),
                 'idbagian' => $request->get('idbagian'),
-                'nilai' => $request->get('nilai'),
+                'nilai' => $this->formatulang($request->get('nilai')),
                 'indikatorrekomendasi' => $request->get('indikatorrekomendasi'),
                 'bukti' => $bukti,
                 'status' => $status,
@@ -188,7 +195,7 @@ class IndikatorRekomendasiController extends Controller
                 'iddeputi' => $request->get('iddeputi'),
                 'idbiro' => $request->get('idbiro'),
                 'idbagian' => $request->get('idbagian'),
-                'nilai' => $request->get('nilai'),
+                'nilai' => $this->formatulang($request->get('nilai')),
                 'indikatorrekomendasi' => $request->get('indikatorrekomendasi'),
                 'bukti' => $bukti,
                 'status' => $status,

@@ -2,18 +2,11 @@
 
 namespace App\Http\Controllers\IKPA\Admin;
 
-use App\Exports\ExportIkpaKontraktualBagian;
-use App\Exports\ExportIkpaPenyelesaianBagian;
 use App\Exports\ExportRekapIKPABagian;
 use App\Exports\ExportRekapIKPABiro;
 use App\Http\Controllers\Controller;
-use App\Jobs\HitungIkpaKontraktualBagian;
-use App\Jobs\HitungIkpaPenyelesaianBagian;
 use App\Jobs\HitungRekapIKPABagian;
 use App\Jobs\HitungRekapIKPABiro;
-use App\Models\IKPA\Admin\IKPADeviasiModel;
-use App\Models\IKPA\Admin\IKPAKontraktualModel;
-use App\Models\IKPA\Admin\IkpaPenyelesaianTagihan;
 use App\Models\IKPA\Admin\RekapIKPABagianlModel;
 use App\Models\IKPA\Admin\RekapIKPABiroModel;
 use Illuminate\Http\Request;
@@ -121,6 +114,21 @@ class RekapIKPABagianController extends Controller
     }
 
     public function aksirekapikpabagian($tahunanggaran){
+        //BOBOT SETJEN
+        $SETJEN_PENYERAPAN = 0.25;
+        $SETJEN_DEVIASI = 0.1;
+        $SETJEN_PENYELESAIAN = 0.15;
+        $SETJEN_KONTRAKTUAL = 0.1;
+        $SETJEN_REVISI = 0.1;
+        $SETJEN_CAPUT = 0.3;
+
+        //BOBOT DEWAN
+        $DEWAN_PENYERAPAN = 0.05;
+        $DEWAN_DEVIASI = 0.05;
+        $DEWAN_PENYELESAIAN = 0.35;
+        $DEWAN_KONTRAKTUAL = 0.35;
+        $DEWAN_REVISI = 0.1;
+        $DEWAN_CAPUT = 0.1;
         //ambil data satker
         $datasatker = ['001012','001030'];
         foreach ($datasatker as $item){
@@ -201,6 +209,21 @@ class RekapIKPABagianController extends Controller
     }
 
     public function aksirekapikpabiro($tahunanggaran){
+        //BOBOT SETJEN
+        $SETJEN_PENYERAPAN = 0.25;
+        $SETJEN_DEVIASI = 0.1;
+        $SETJEN_PENYELESAIAN = 0.15;
+        $SETJEN_KONTRAKTUAL = 0.1;
+        $SETJEN_REVISI = 0.1;
+        $SETJEN_CAPUT = 0.3;
+
+        //BOBOT DEWAN
+        $DEWAN_PENYERAPAN = 0.05;
+        $DEWAN_DEVIASI = 0.05;
+        $DEWAN_PENYELESAIAN = 0.35;
+        $DEWAN_KONTRAKTUAL = 0.35;
+        $DEWAN_REVISI = 0.1;
+        $DEWAN_CAPUT = 0.1;
         //ambil data satker
         $datasatker = ['001012','001030'];
         foreach ($datasatker as $item){

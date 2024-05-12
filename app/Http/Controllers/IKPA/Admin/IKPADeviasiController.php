@@ -125,7 +125,7 @@ class IKPADeviasiController extends Controller
                     ->where('kodesatker','=',$kodesatker)
                     ->value('totalpagu');
                 $jenisbelanjadikelola = 0;
-                if ($totalpagu != null){
+                if ($totalpagu !== null && $totalpagu !== '0' && (int)$totalpagu != 0){
                     $totalpagu51 = DB::table('laporanrealisasianggaranbac')
                         ->select([DB::raw('sum(paguanggaran) as totalpagu')])
                         ->where('idbagian','=',$idbagian)
@@ -333,7 +333,7 @@ class IKPADeviasiController extends Controller
                     ->where('kodesatker','=',$kodesatker)
                     ->value('totalpagu');
                 $jenisbelanjadikelola = 0;
-                if ($totalpagu != null){
+                if ($totalpagu !== null && $totalpagu !== '0' && (int)$totalpagu != 0){
                     $totalpagu51 = DB::table('laporanrealisasianggaranbac')
                         ->select([DB::raw('sum(paguanggaran) as totalpagu')])
                         ->where('idbiro','=',$idbiro)

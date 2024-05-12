@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\IKPA\Admin;
 
-use App\Exports\ExportIkpaKontraktualBagian;
+
 use App\Exports\ExportIkpaKontraktualBiro;
+use App\Exports\ExportIKPARevisiBagian;
+use App\Exports\ExportIKPARevisiBiro;
 use App\Http\Controllers\Controller;
-use App\Jobs\HitungIkpaKontraktualBagian;
-use App\Jobs\HitungIkpaKontraktualBiro;
-use App\Models\IKPA\Admin\IKPAKontraktualBiroModel;
-use App\Models\IKPA\Admin\IKPAKontraktualModel;
+use App\Jobs\HitungIkpaRevisi;
+use App\Jobs\HitungIkpaRevisiBiro;
+use App\Models\IKPA\Admin\IKPARevisiBagianModel;
 use App\Models\IKPA\Admin\IKPARevisiBiroModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -27,31 +28,31 @@ class IKPARevisiController extends Controller
         $databagian = DB::table('bagian')
             ->where('status','=','on')
             ->get();
-        return view('IKPA.Admin.ikparevisi',[
+        return view('IKPA.Admin.ikparevisibagian',[
             "judul"=>$judul,
             "databagian" => $databagian
         ]);
     }
 
 
-    public function hitungikpakontraktualbagian(){
+    public function hitungikparevisibagian(){
         $tahunanggaran = session('tahunanggaran');
-        $this->dispatch(new HitungIkpaKontraktualBagian($tahunanggaran));
-        return redirect()->to('ikpakontraktual')->with(['status' => 'Perhitungan IKPA Berhasil Dilakukan Diserver, Harap Tunggu Beberapa Saat']);
+        $this->dispatch(new HitungIkpaRevisi($tahunanggaran));
+        return redirect()->to('ikparevisibagian')->with(['status' => 'Perhitungan IKPA Berhasil Dilakukan Diserver, Harap Tunggu Beberapa Saat']);
     }
 
-    function exportikpakontraktualbagian(){
+    function exportikparevisibagian(){
         $tahunanggaran = session('tahunanggaran');
         //Excel::download(new UsersExport, 'users.xlsx');
-        return Excel::download(new ExportIkpaKontraktualBagian($tahunanggaran),'IKPAKontraktualBagian.xlsx');
+        return Excel::download(new ExportIKPARevisiBagian($tahunanggaran),'IKPARevisiBagian.xlsx');
     }
 
-    public function getdataikpakontraktualbagian(Request $request,$idbagian=null){
+    public function getdataikparevisibagian(Request $request,$idbagian=null){
         $tahunanggaran = session('tahunanggaran');
         if ($request->ajax()) {
-            $data =IKPARevisiBiroModel::with('bagianrelation')
+            $data =IKPARevisiBagianModel::with('bagianrelation')
                 ->with('birorelation')
-                ->select(['ikparevisibiro.*'])
+                ->select(['ikparevisibagian.*'])
                 ->where('tahunanggaran','=',$tahunanggaran)
                 ->orderBy('kodesatker','asc')
                 ->orderBy('idbagian')
@@ -60,10 +61,10 @@ class IKPARevisiController extends Controller
                 $data->where('idbagian', '=', $idbagian);
             }
             return Datatables::of($data)
-                ->addColumn('bagian', function (IKPARevisiBiroModel $id) {
+                ->addColumn('bagian', function (IKPARevisiBagianModel $id) {
                     return $id->idbagian?$id->bagianrelation->uraianbagian:"";
                 })
-                ->addColumn('biro', function (IKPARevisiBiroModel $id) {
+                ->addColumn('biro', function (IKPARevisiBagianModel $id) {
                     return $id->idbiro? $id->birorelation->uraianbiro:"";
                 })
                 ->rawColumns(['bagian','biro'])
@@ -71,7 +72,7 @@ class IKPARevisiController extends Controller
         }
     }
 
-    public function aksiperhitunganikparevisi($tahunanggaran){
+    public function aksiperhitunganikparevisibagian($tahunanggaran){
         //ambil data satker
         $datasatker = ['001012','001030'];
         foreach ($datasatker as $item){
@@ -83,7 +84,6 @@ class IKPARevisiController extends Controller
             foreach ($databagian as $db){
                 $idbagian = $db->id;
                 $idbiro = $db->idbiro;
-                $jumlahtotalrevisikemenkeu = 0;
                 $totalnilaiikpa = 0;
 
                 for($i=1; $i<=12;$i++){
@@ -112,6 +112,9 @@ class IKPARevisiController extends Controller
                         $nilairevisikemenkeu = 100;
                     }
 
+                    $nilaiikpabulanan = (0.4*$nilairevisipok)+(0.6*$nilairevisikemenkeu);
+                    $totalnilaiikpa = $totalnilaiikpa+$nilaiikpabulanan;
+                    $nilaiikpaakhir = $totalnilaiikpa/$i;
 
                     $datainsert = array(
                         'tahunanggaran' => $tahunanggaran,
@@ -119,18 +122,25 @@ class IKPARevisiController extends Controller
                         'periode' => $i,
                         'idbiro' => $idbiro,
                         'idbagian' => $idbagian,
+                        'jumlahrevisipok' => $jumlahrevisipok,
+                        'jumlahrevisikemenkeu' => $jumlahrevisikemenkeu,
+                        'nilaiikpapok' => $nilairevisipok,
+                        'nilaiikpakemenkeu' => $nilairevisikemenkeu,
+                        'nilaiikpabulanan' => $nilaiikpabulanan,
+                        'nilaiikpa' => $nilaiikpaakhir
 
                     );
 
                     //delete angka lama
-                    DB::table('ikpakontraktualbagian')
+                    DB::table('ikparevisibagian')
+                        ->where('idbiro','=',$idbiro)
                         ->where('idbagian','=',$idbagian)
                         ->where('periode','=',$i)
                         ->where('kodesatker','=',$kodesatker)
                         ->where('tahunanggaran','=',$tahunanggaran)
                         ->delete();
 
-                    DB::table('ikpakontraktualbagian')->insert($datainsert);
+                    DB::table('ikparevisibagian')->insert($datainsert);
 
                 }
             }
@@ -140,37 +150,34 @@ class IKPARevisiController extends Controller
 
     //BIRO
     public function indexbiro(){
-        $judul = 'IKPA Kontraktual';
+        $judul = 'IKPA Revisi';
         $databiro = DB::table('biro')
             ->where('status','=','on')
-            ->whereIn('id',[677,688,605,728])
             ->get();
-        return view('IKPA.Admin.ikpakontraktualbiro',[
+        return view('IKPA.Admin.ikparevisibiro',[
             "judul"=>$judul,
             "databiro" => $databiro
         ]);
     }
 
 
-    public function hitungikpakontraktualbiro(){
+    public function hitungikparevisibiro(){
         $tahunanggaran = session('tahunanggaran');
-        $this->dispatch(new HitungIkpaKontraktualBiro($tahunanggaran));
-        return redirect()->to('ikpakontraktualbiro')->with(['status' => 'Perhitungan IKPA Berhasil Dilakukan Diserver, Harap Tunggu Beberapa Saat']);
+        $this->dispatch(new HitungIkpaRevisiBiro($tahunanggaran));
+        return redirect()->to('ikparevisibiro')->with(['status' => 'Perhitungan IKPA Berhasil Dilakukan Diserver, Harap Tunggu Beberapa Saat']);
     }
 
-
-
-    function exportikpakontraktualbiro(){
+    function exportikparevisibiro(){
         $tahunanggaran = session('tahunanggaran');
         //Excel::download(new UsersExport, 'users.xlsx');
-        return Excel::download(new ExportIkpaKontraktualBiro($tahunanggaran),'IKPAKontraktualBiro.xlsx');
+        return Excel::download(new ExportIKPARevisiBiro($tahunanggaran),'IKPARevisiBiro.xlsx');
     }
 
-    public function getdataikpakontraktualbiro(Request $request,$idbiro=null){
+    public function getdataikparevisibiro(Request $request,$idbiro=null){
         $tahunanggaran = session('tahunanggaran');
         if ($request->ajax()) {
-            $data =IKPAKontraktualBiroModel::with('birorelation')
-                ->select(['ikpakontraktualbiro.*'])
+            $data =IKPARevisiBiroModel::with('birorelation')
+                ->select(['ikparevisibiro.*'])
                 ->where('tahunanggaran','=',$tahunanggaran)
                 ->orderBy('kodesatker','asc')
                 ->orderBy('idbiro')
@@ -179,7 +186,7 @@ class IKPARevisiController extends Controller
                 $data->where('idbiro', '=', $idbiro);
             }
             return Datatables::of($data)
-                ->addColumn('biro', function (IKPAKontraktualBiroModel $id) {
+                ->addColumn('biro', function (IKPARevisiBiroModel $id) {
                     return $id->idbiro? $id->birorelation->uraianbiro:"";
                 })
                 ->rawColumns(['biro'])
@@ -187,7 +194,7 @@ class IKPARevisiController extends Controller
         }
     }
 
-    public function aksiperhitunganikpakontraktualbiro($tahunanggaran){
+    public function aksiperhitunganikparevisibiro($tahunanggaran){
         //ambil data satker
         $datasatker = ['001012','001030'];
         foreach ($datasatker as $item){
@@ -195,192 +202,64 @@ class IKPARevisiController extends Controller
             //ambil data bagian
             $databiro = DB::table('biro')
                 ->where('status','=','on')
-                ->whereIn('id',[677,688,605,728])
                 ->get();
             foreach ($databiro as $db){
                 $idbiro = $db->id;
+                $totalnilaiikpa = 0;
+
                 for($i=1; $i<=12;$i++){
-                    $jumlahkontrak = DB::table('ikpadetilkontraktual')
+                    $jumlahrevisipok = DB::table('ikpadetilrevisi')
                         ->where('tahunanggaran','=',$tahunanggaran)
                         ->where('idbiro','=',$idbiro)
-                        ->where('periode','<=',$i)
+                        ->where('bulanpengesahan','=',$i)
+                        ->where('kewenanganrevisi','=',"Revisi POK")
                         ->where('kodesatker','=',$kodesatker)
                         ->count();
-                    if ($jumlahkontrak>0){
-                        $jumlahkontraktepatwaktu = DB::table('ikpadetilkontraktual')
-                            ->where('tahunanggaran','=',$tahunanggaran)
-                            ->where('idbiro','=',$idbiro)
-                            ->where('periode','<=',$i)
-                            ->where('kodesatker','=',$kodesatker)
-                            ->where('status','=','TEPAT WAKTU')
-                            ->count();
-                        $nilaikomponenketepatanwaktu = ($jumlahkontraktepatwaktu/$jumlahkontrak)*100;
-
-                        //jumlah kontrak akselerasi
-                        $jumlahkontraktw1 = DB::table('ikpadetilkontraktual')
-                            ->where('tahunanggaran','=',$tahunanggaran)
-                            ->where('idbiro','=',$idbiro)
-                            ->where('periode','<=',3)
-                            ->where('kodesatker','=',$kodesatker)
-                            ->count();
-                        $jumlahkontrakakselerasi = DB::table('ikpadetilkontraktual')
-                            ->where('tahunanggaran','=',$tahunanggaran)
-                            ->where('idbiro','=',$idbiro)
-                            ->where('kodesatker','=',$kodesatker)
-                            ->whereYear('tanggal_kontrak', '=', $tahunanggaran - 1)
-                            ->whereMonth('tanggal_kontrak', '=', 12)
-                            ->count();
-                        if ($jumlahkontraktw1 >0){
-                            $nilaikomponenakselerasi = (($jumlahkontrakakselerasi*120)+(($jumlahkontraktw1-$jumlahkontrakakselerasi)*100))/$jumlahkontraktw1;
-                        }else{
-                            $nilaikomponenakselerasi = 0;
-                        }
-
-
-                        //jumlah kontrak 53
-                        //jumlah kontrak akselerasi
-                        $jumlahkontrak53 = DB::table('ikpadetilkontraktual')
-                            ->where('tahunanggaran','=',$tahunanggaran)
-                            ->where('idbiro','=',$idbiro)
-                            ->where('jenisbelanja','=',"53")
-                            ->where('periode','<=',$i)
-                            ->where('kodesatker','=',$kodesatker)
-                            ->where(function ($query){
-                                $query->where(function ($q){
-                                    $q->where('nilai_kontrak','>',50000000);
-                                    $q->where('nilai_kontrak','<=',200000000);
-                                });
-                            })
-                            ->whereNotNull('tanggal_penyelesaian')
-                            ->count();
-                        $jumlahkontrakselesaitw1 = DB::table('ikpadetilkontraktual')
-                            ->where('tahunanggaran','=',$tahunanggaran)
-                            ->where('idbiro','=',$idbiro)
-                            ->where('kodesatker','=',$kodesatker)
-                            ->where('jenisbelanja','=',"53")
-                            ->where('periode','<=',$i)
-                            ->where(function ($query){
-                                $query->where(function ($q){
-                                    $q->where('nilai_kontrak','>',50000000);
-                                    $q->where('nilai_kontrak','<=',200000000);
-                                });
-                            })
-                            ->whereMonth('tanggal_penyelesaian', '<=', 3)
-                            ->count();
-                        $nilaikontrakselesaitw1 = $jumlahkontrakselesaitw1*100;
-                        $jumlahkontrakselesaitw2 = DB::table('ikpadetilkontraktual')
-                            ->where('tahunanggaran','=',$tahunanggaran)
-                            ->where('idbiro','=',$idbiro)
-                            ->where('kodesatker','=',$kodesatker)
-                            ->where('periode','<=',3)
-                            ->where('jenisbelanja','=',"53")
-                            ->where('periode','<=',$i)
-                            ->where(function ($query){
-                                $query->where(function ($q){
-                                    $q->where('nilai_kontrak','>',50000000);
-                                    $q->where('nilai_kontrak','<=',200000000);
-                                });
-                            })
-                            ->where(function ($query){
-                                $query->where(function ($q){
-                                    $q->whereMonth('tanggal_penyelesaian', '>', 3);
-                                    $q->whereMonth('tanggal_penyelesaian', '<=', 6);
-                                });
-                            })
-                            ->count();
-                        $nilaikontrakselesaitw2 = $jumlahkontrakselesaitw2*90;
-
-                        $jumlahkontrakselesaitw3 = DB::table('ikpadetilkontraktual')
-                            ->where('tahunanggaran','=',$tahunanggaran)
-                            ->where('idbiro','=',$idbiro)
-                            ->where('kodesatker','=',$kodesatker)
-                            ->where('periode','<=',3)
-                            ->where('jenisbelanja','=',"53")
-                            ->where('periode','<=',$i)
-                            ->where(function ($query){
-                                $query->where(function ($q){
-                                    $q->where('nilai_kontrak','>',50000000);
-                                    $q->where('nilai_kontrak','<=',200000000);
-                                });
-                            })
-                            ->where(function ($query){
-                                $query->where(function ($q){
-                                    $q->whereMonth('tanggal_penyelesaian', '>', 6);
-                                    $q->whereMonth('tanggal_penyelesaian', '<=', 9);
-                                });
-                            })
-                            ->count();
-                        $nilaikontrakselesaitw3 = $jumlahkontrakselesaitw3 * 80;
-
-                        $jumlahkontrakselesaitw4 = DB::table('ikpadetilkontraktual')
-                            ->where('tahunanggaran','=',$tahunanggaran)
-                            ->where('idbiro','=',$idbiro)
-                            ->where('kodesatker','=',$kodesatker)
-                            ->where('periode','<=',3)
-                            ->where('jenisbelanja','=',"53")
-                            ->where('periode','<=',$i)
-                            ->where(function ($query){
-                                $query->where(function ($q){
-                                    $q->where('nilai_kontrak','>',50000000);
-                                    $q->where('nilai_kontrak','<=',200000000);
-                                });
-                            })
-                            ->where(function ($query){
-                                $query->where(function ($q){
-                                    $q->whereMonth('tanggal_penyelesaian', '>', 9);
-                                    $q->whereMonth('tanggal_penyelesaian', '<=', 12);
-                                });
-                            })
-                            ->count();
-                        $nilaikontrakselesaitw4 = $jumlahkontrakselesaitw4 * 70;
-                        if ($jumlahkontrak53 > 0){
-                            $nilaikomponen53 = ($nilaikontrakselesaitw1+$nilaikontrakselesaitw2+$nilaikontrakselesaitw3+$nilaikontrakselesaitw4)/$jumlahkontrak53;
-                        }else{
-                            $nilaikomponen53 = 100;
-                        }
-
-                        //hitung nilai ikpa
-                        $nilai = ($nilaikomponenketepatanwaktu*0.4)+($nilaikomponenakselerasi*0.3)+($nilaikomponen53*0.3);
-                        if($nilai > 100){
-                            $nilai = 100.00;
-                        }
+                    if ($jumlahrevisipok > 0){
+                        $nilairevisipok = (1/$jumlahrevisipok)*100;
                     }else{
-                        $jumlahkontrak = 0;
-                        $nilaikomponenketepatanwaktu = 0;
-                        $jumlahkontraktw1 = 0;
-                        $jumlahkontrakakselerasi = 0;
-                        $nilaikomponenakselerasi = 0;
-                        $jumlahkontrak53 = 0;
-                        $jumlahkontrakselesaitw1 = 0;
-                        $nilaikomponen53 = 0;
-                        $nilai = 100;
-
+                        $nilairevisipok = 100.00;
                     }
+                    $jumlahrevisikemenkeu = DB::table('ikpadetilrevisi')
+                        ->where('tahunanggaran','=',$tahunanggaran)
+                        ->where('idbiro','=',$idbiro)
+                        ->where('bulanpengesahan','=',$i)
+                        ->where('kewenanganrevisi','=',"Revisi Kemenkeu")
+                        ->where('kodesatker','=',$kodesatker)
+                        ->count();
+                    if ($jumlahrevisikemenkeu > 0){
+                        $nilairevisikemenkeu = (1/$jumlahrevisikemenkeu)*100;
+                    }else{
+                        $nilairevisikemenkeu = 100;
+                    }
+
+                    $nilaiikpabulanan = (0.4*$nilairevisipok)+(0.6*$nilairevisikemenkeu);
+                    $totalnilaiikpa = $totalnilaiikpa+$nilaiikpabulanan;
+                    $nilaiikpaakhir = $totalnilaiikpa/$i;
+
                     $datainsert = array(
                         'tahunanggaran' => $tahunanggaran,
                         'kodesatker' => $kodesatker,
                         'periode' => $i,
                         'idbiro' => $idbiro,
-                        'jumlahkontrak' => $jumlahkontrak,
-                        'nilaikomponen' => $nilaikomponenketepatanwaktu,
-                        'jumlahkontraktw1' => $jumlahkontraktw1,
-                        'jumlahkontrakakselerasi' => $jumlahkontrakakselerasi,
-                        'nilaikomponenakselerasi' => $nilaikomponenakselerasi,
-                        'jumlahkontrak53' => $jumlahkontrak53,
-                        'jumlahkontrak53akselerasi' => $jumlahkontrakselesaitw1,
-                        'nilaikomponen53' => $nilaikomponen53,
-                        'nilai' => $nilai
+                        'jumlahrevisipok' => $jumlahrevisipok,
+                        'jumlahrevisikemenkeu' => $jumlahrevisikemenkeu,
+                        'nilaiikpapok' => $nilairevisipok,
+                        'nilaiikpakemenkeu' => $nilairevisikemenkeu,
+                        'nilaiikpabulanan' => $nilaiikpabulanan,
+                        'nilaiikpa' => $nilaiikpaakhir
+
                     );
 
                     //delete angka lama
-                    DB::table('ikpakontraktualbiro')
+                    DB::table('ikparevisibiro')
                         ->where('idbiro','=',$idbiro)
                         ->where('periode','=',$i)
                         ->where('kodesatker','=',$kodesatker)
                         ->where('tahunanggaran','=',$tahunanggaran)
                         ->delete();
 
-                    DB::table('ikpakontraktualbiro')->insert($datainsert);
+                    DB::table('ikparevisibiro')->insert($datainsert);
 
                 }
             }
