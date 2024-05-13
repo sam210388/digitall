@@ -146,6 +146,9 @@ use App\Http\Controllers\IKPA\Bagian\IKPAKontraktualBagianController;
 use App\Http\Controllers\IKPA\Bagian\RekapIKPAAksesBagianController;
 
 
+use App\Http\Controllers\PerencanaanBMN\Admin\ReferensiBMNRKController;
+
+
 
 
 
@@ -862,3 +865,7 @@ Route::resource('penetapanppk',PenetapanPPKController::class)->middleware('cekad
 Route::resource('penetapanbendahara',PenetapanBendaharaController::class)->middleware('cekadmin');
 Route::resource('penetapankasir',PenetapanKasirController::class)->middleware('cekadmin');
 Route::post('ambillistppk',[KewenanganPPKController::class,'ambillistppk'])->name('ambillistppk')->middleware('cekadmin');
+
+
+//MODUL PERENCANAAN BMN
+Route::resource('referensibmnrk',ReferensiBMNRKController::class)->middleware('cekadminsirangga');
