@@ -49,6 +49,7 @@ class ReferensiBMNRKController extends Controller
     public function store(Request $request)
     {
         $kodebarang = $request->get('kodebarang');
+        $kewenangan = $request->get('kewenangan');
         //cek apakah ada
         $adakode = DB::table('referensibmnrk')->where('kdbrg','=',$kodebarang)->count();
         if ($adakode == 0){
@@ -65,6 +66,7 @@ class ReferensiBMNRKController extends Controller
                 'kdskel' => $kdskel,
                 'kdbrg' => $kodebarang,
                 'deskripsi' => $deskripsi,
+                'kewenangan'=> $kewenangan
             ]);
             return response()->json(['status'=>'berhasil']);
         }else{
@@ -81,6 +83,7 @@ class ReferensiBMNRKController extends Controller
     public function update(Request $request, $id)
     {
         $kodebarang = $request->get('kodebarang');
+        $kewenangan = $request->get('kewenangan');
         //cek apakah ada
         $adakode = DB::table('referensibmnrk')->where('kdbrg','=',$kodebarang)->count();
         if ($adakode == 0){
@@ -99,6 +102,7 @@ class ReferensiBMNRKController extends Controller
                 'kdskel' => $kdskel,
                 'kdbrg' => $kodebarang,
                 'deskripsi' => $deskripsi,
+                'kewenangan'=> $kewenangan
             ]);
             return response()->json(['status'=>'berhasil']);
         }else{

@@ -119,13 +119,30 @@ class RealisasiIndikatorROConctrollerAdmin extends Controller
                 }else{
                     $dataperiodesebelumnya = DB::table('realisasiindikatorro')
                         ->where('tahunanggaran','=',$tahunanggaran)
-                        ->where('periode','=',$idbulan-1)
-                        ->where('idindikatorro','=',$idindikatorro)
-                        ->get();
-                    foreach ($dataperiodesebelumnya as $dps){
-                        $jumlahsdperiodesebelumnya = $dps->jumlahsdperiodeini;
-                        $prosentasesdperiodesebelumnya = $dps->prosentasesdperiodeini;
+                        ->where('periode','=',DB::raw($idbulan-1))
+                        ->where('idindikatorro','=',$idindikatorro);
+                    $adadata = $dataperiodesebelumnya->count();
+                    if ($adadata > 0){
+                        $dataperiodesebelumnya->get();
+                        foreach ($dataperiodesebelumnya as $dps){
+                            $jumlahsdperiodesebelumnya = $dps->jumlahsdperiodeini;
+                            $prosentasesdperiodesebelumnya = $dps->prosentasesdperiodeini;
+                        }
+                    }else{
+                        $jumlahsdperiodesebelumnya = DB::table('realisasiindikatorro')
+                            ->select([DB::raw('sum(jumlah) as jumlahsdperiodeini from realisasiindikatorro')])
+                            ->where('periode','<=',DB::raw($idbulan-1))
+                            ->where('tahunanggaran','=',$tahunanggaran)
+                            ->where('idindikatorro','=',$idindikatorro)
+                            ->value('jumlahsdperiodeini');
+                        if ($jumlahsdperiodesebelumnya == 0){
+                            $jumlahsdperiodesebelumnya = 0;
+                            $prosentasesdperiodesebelumnya = 0;
+                        }else{
+                            $prosentasesdperiodesebelumnya = ($jumlahsdperiodesebelumnya/$target)*100;
+                        }
                     }
+
                 }
                 //tambahkan data normalisasi di tabel realisasi
                 $data = array(

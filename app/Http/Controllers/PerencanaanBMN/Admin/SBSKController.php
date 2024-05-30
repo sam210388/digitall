@@ -26,7 +26,7 @@ class SBSKController extends Controller
 
     public function index(Request $request)
     {
-        $judul = 'Data Kode Barang Wajib RK BMN';
+        $judul = 'Data SBSK Per Kode Barang';
         $datakodebarang = ReferensiBMNRKModel::all();
         if ($request->ajax()) {
             $data = DB::table('sbskbmnrk')->get();

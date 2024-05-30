@@ -1,19 +1,17 @@
 <?php
 
-namespace App\Models\PerencanaanBMN\Admin;
+namespace App\Models\PerencanaanBMN\PelaksanaPengadaan;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ReferensiBagianRKModel extends Model
+class PengajuanRKBMNPelaksanaModel extends Model
 {
     use HasFactory;
 
-    protected $table = 'referensibagianrk';
+    protected $table = 'pengajuanrkbmnbagian';
 
     public $timestamps = false;
 
     protected $guarded = [];
-
-
 }

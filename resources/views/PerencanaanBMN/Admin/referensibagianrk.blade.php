@@ -45,7 +45,6 @@
                                 <th>Deputi</th>
                                 <th>Biro</th>
                                 <th>ID Bagian</th>
-                                <th>Uraian Bagian</th>
                                 <th>Uraian Bagian SAKTI</th>
                                 <th>Status</th>
                                 <th>Action</th>
@@ -59,7 +58,6 @@
                                 <th>Deputi</th>
                                 <th>Biro</th>
                                 <th>ID Bagian</th>
-                                <th>Uraian Bagian</th>
                                 <th>Uraian Bagian SAKTI</th>
                                 <th>Status</th>
                                 <th>Action</th>
@@ -76,6 +74,7 @@
                                         <form id="formbagian" name="formbagian" class="form-horizontal">
                                             <input type="hidden" name="idbiroawal" id="idbiroawal">
                                             <input type="hidden" name="idbagianawal" id="idbagianawal">
+                                            <input type="hidden" name="id" id="id">
                                             <div class="form-group">
                                                 <label for="deputi" class="col-sm-6 control-label">Deputi</label>
                                                 <div class="col-sm-12">
@@ -99,12 +98,6 @@
                                                 <div class="col-sm-12">
                                                     <select class="form-control idbagian" name="idbagian" id="idbagian" style="width: 100%;">
                                                     </select>
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="Uraian bagian" class="col-sm-6 control-label">Uraian Bagian</label>
-                                                <div class="col-sm-12">
-                                                    <input type="text" class="form-control" id="uraianbagian" name="uraianbagian" placeholder="Masukan Uraian Bagian" value="" maxlength="100" required="">
                                                 </div>
                                             </div>
                                             <div class="form-group">
@@ -176,12 +169,13 @@
                 serverSide: true,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('bagian.index')}}",
+                ajax:"{{route('referensibagianrk.index')}}",
                 columns: [
                     {data: 'id', name: 'id'},
                     {data: 'iddeputi', name: 'iddeputi'},
                     {data: 'idbiro', name: 'idbiro'},
-                    {data: 'uraianbagian', name: 'uraianbagian'},
+                    {data: 'idbagian', name: 'idbagian'},
+                    {data: 'uraianbagiansakti', name: 'uraianbagiansakti'},
                     {data: 'status', name: 'status'},
                     {
                         data: 'action',
@@ -210,7 +204,7 @@
                 $('#saveBtn').val("tambah");
                 $('#idbagian').val('');
                 $('#formbagian').trigger("reset");
-                $('#modelHeading').html("Tambah bagian");
+                $('#modelHeading').html("Tambah Bagian");
                 $('#ajaxModel').modal('show');
             });
 
@@ -220,16 +214,16 @@
             --------------------------------------------
             --------------------------------------------*/
             $('body').on('click', '.editbagian', function () {
-                var idbagian = $(this).data('id');
-                $.get("{{ route('bagian.index') }}" +'/' + idbagian +'/edit', function (data) {
-                    $('#modelHeading').html("Edit Bagian");
+                var id = $(this).data('id');
+                $.get("{{ route('referensibagianrk.index') }}" +'/' + id +'/edit', function (data) {
+                    $('#modelHeading').html("Edit Referensi Bagian RK");
                     $('#saveBtn').val("edit");
                     $('#ajaxModel').modal('show');
-                    $('#idbagianawal').val(data.id);
-                    $('#idbagian').val(data.id);
+                    $('#id').val(data.id);
+                    $('#idbagianawal').val(data.idbagian);
                     $('#iddeputi').val(data.iddeputi).trigger('change');
-                    $('#idbiroawal').val(data.idbiro);
-                    $('#uraianbagian').val(data.uraianbagian);
+                    $('#idbiroawal').val(data.idbiro).trigger('change');
+                    $('#uraianbagiansakti').val(data.uraianbagiansakti);
                     if (data.status == "on"){
                         $('#status').prop('checked',true).change();
                     }else{
@@ -250,7 +244,7 @@
                 let form = document.getElementById('formbagian');
                 let fd = new FormData(form);
                 let saveBtn = document.getElementById('saveBtn').value;
-                var id = document.getElementById('idbagian').value;
+                var id = document.getElementById('id').value;
                 fd.append('saveBtn',saveBtn)
                 if(saveBtn == "edit"){
                     fd.append('_method','PUT')
@@ -261,7 +255,7 @@
 
                 $.ajax({
                     data: fd,
-                    url: saveBtn === "tambah" ? "{{route('bagian.store')}}":"{{route('bagian.update','')}}"+'/'+id,
+                    url: saveBtn === "tambah" ? "{{route('referensibagianrk.store')}}":"{{route('referensibagianrk.update','')}}"+'/'+id,
                     type: "POST",
                     dataType: 'json',
                     contentType: false,
@@ -283,6 +277,8 @@
                         $('#iddeputi').val('').trigger('change');
                         $('#idbiroawal').val('');
                         $('#idbagianawal').val('');
+                        $('#idbiro').val('').trigger('change');
+                        $('#idbagian').val('').trigger('change');
                         $('#formbagian').trigger("reset");
                         $('#ajaxModel').modal('hide');
                         $('#saveBtn').html('Simpan Data');
@@ -320,11 +316,11 @@
             --------------------------------------------*/
             $('body').on('click', '.deletebagian', function () {
 
-                var idbagian = $(this).data("id");
+                var id = $(this).data("id");
                 if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
                     $.ajax({
                         type: "DELETE",
-                        url: "{{ route('bagian.destroy','') }}"+'/'+idbagian,
+                        url: "{{ route('referensibagianrk.destroy','') }}"+'/'+id,
                         success: function (data) {
                             if (data.status == "berhasil"){
                                 Swal.fire({
@@ -396,14 +392,31 @@
             });
         });
 
+        $('#idbiro').on('change', function () {
+            var idbiro = this.value;
 
+            $.ajax({
+                url: "{{url('ambildatabagian')}}",
+                type: "POST",
+                data: {
+                    idbiro: idbiro,
+                    _token: '{{csrf_token()}}'
+                },
+                dataType: 'json',
+                success: function (result) {
+                    var idbagian = document.getElementById('idbagianawal').value;
+                    $('#idbagian').html('<option value="">Pilih Bagian</option>');
+                    $.each(result.bagian, function (key, value) {
+                        if (idbagian == value.id) {
+                            $('select[name="idbagian"]').append('<option value="'+value.id+'" selected>'+value.uraianbagian+'</option>').trigger('change')
+                        }else{
+                            $("#idbagian").append('<option value="' + value.id + '">' + value.uraianbagian + '</option>');
+                        }
 
-        $('#importunit').click(function (e) {
-            if( confirm("Apakah Anda Yakin Mau Import Unit Kerja dari SIAP?")){
-                e.preventDefault();
-                $(this).html('Importing..');
-                window.location="{{URL::to('importunit')}}";
-            }
+                    });
+                }
+
+            });
         });
 
     </script>

@@ -39,6 +39,7 @@
                                 <th>No</th>
                                 <th>Kode Barang</th>
                                 <th>Deskripsi</th>
+                                <th>Kewenangan</th>
                                 <th>Action</th>
                             </tr>
                             </thead>
@@ -49,6 +50,7 @@
                                 <th>No</th>
                                 <th>Kode Barang</th>
                                 <th>Deskripsi</th>
+                                <th>Kewenangan</th>
                                 <th>Action</th>
                             </tr>
                             </tfoot>
@@ -72,6 +74,16 @@
                                                         <option value="{{ $data->kd_brg }}">{{ $data->kd_brg }} || {{ $data->ur_sskel }}</option>
                                                     @endforeach
                                                 </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="KodeBarang" class="col-sm-6 control-label">Kode Barang</label>
+                                                <div class="col-sm-12">
+                                                    <select class="form-control kewenangan" name="kewenangan" id="kewenangan" style="width: 100%;">
+                                                        <option value="">Pilih Kewenangan</option>
+                                                        <option value="Pengguna Barang">Pengguna Barang</option>
+                                                        <option value="Pengelola Barang">Pengelola Barang</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                             <div class="col-sm-offset-2 col-sm-10">
@@ -126,6 +138,7 @@
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'kdbrg', name: 'kdbrg'},
                     {data: 'deskripsi', name: 'deskripsi'},
+                    {data: 'kewenangan', name: 'kewenangan'},
                     {
                         data: 'action',
                         name: 'action',
@@ -160,7 +173,7 @@
             $('#saveBtn').click(function (e) {
                 e.preventDefault();
                 $(this).html('Sending..');
-                let form = document.getElementById('formkodebarang');
+                let form = document.getElementById('formlistimportaset');
                 let fd = new FormData(form);
                 let saveBtn = document.getElementById('saveBtn').value;
                 var id = document.getElementById('id').value;
@@ -279,6 +292,7 @@
                     $('#ajaxModel').modal('show');
                     $('#id').val(data.id);
                     $('#kodebarang').val(data.kdbrg).trigger('change');
+                    $('#kewenangan').val(data.kewenangan).trigger('change');
 
                 })
             });

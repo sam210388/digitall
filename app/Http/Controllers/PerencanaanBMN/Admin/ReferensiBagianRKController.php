@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\PerencanaanBMN\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\PerencanaanBMN\Admin\ReferensiBagianRKModel;
 use App\Models\ReferensiUnit\BiroModel;
 use App\Models\ReferensiUnit\DeputiModel;
 use App\Models\ReferensiUnit\BagianModel;
@@ -17,30 +18,13 @@ class ReferensiBagianRKController extends Controller
         $this->middleware(['auth']);
     }
 
-    public function dapatkandatabiro(Request $request){
-        $data['biro'] = DB::table('biro')
-            ->where('iddeputi','=',$request->iddeputi)
-            ->where('status','=','on')
-            ->get(['id','uraianbiro']);
-
-        return response()->json($data);
-    }
-
-    public function dapatkandatabagian(Request $request){
-        $data['bagian'] = DB::table('bagian')
-            ->where('idbiro','=',$request->idbiro)
-            ->where('status','=','on')
-            ->get(['id','uraianbagian']);
-        return response()->json($data);
-    }
-
     public function index(Request $request)
     {
-        $judul = 'List Bagian';
+        $judul = 'List Referensi Bagian RK';
         $datadeputi = DeputiModel::all();
         $databiro = BiroModel::all();
         if ($request->ajax()) {
-            $data = BagianModel::all();
+            $data = ReferensiBagianRKModel::all();
             return Datatables::of($data)
                 ->addColumn('action', function($row){
                     $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$row->id.'" data-original-title="Edit" class="edit btn btn-primary btn-sm editbagian">Edit</a>';
@@ -57,11 +41,16 @@ class ReferensiBagianRKController extends Controller
                     $uraianbiro = DB::table('biro')->where('id','=',$idbiro)->value('uraianbiro');
                     return $uraianbiro;
                 })
+                ->addColumn('idbagian',function ($row){
+                    $idbiro = $row->idbagian;
+                    $uraianbiro = DB::table('bagian')->where('id','=',$idbiro)->value('uraianbagian');
+                    return $uraianbiro;
+                })
                 ->rawColumns(['action'])
                 ->make(true);
         }
 
-        return view('ReferensiUnit.bagian',[
+        return view('PerencanaanBMN.Admin.referensibagianrk',[
             "judul"=>$judul,
             "datadeputi" => $datadeputi,
             "databiro" => $databiro
@@ -95,16 +84,15 @@ class ReferensiBagianRKController extends Controller
             'iddeputi' => 'required',
             'idbiro' => 'required',
             'idbagian' => 'required',
-            'uraianbagian' => 'required',
-
+            'uraianbagiansakti' => 'required'
         ]);
 
-        BagianModel::create(
+        ReferensiBagianRKModel::create(
             [
                 'iddeputi' => $request->get('iddeputi'),
                 'idbiro' => $request->get('idbiro'),
-                'id' => $request->get('idbagian'),
-                'uraianbagian' => $request->get('uraianbagian'),
+                'idbagian' => $request->get('idbagian'),
+                'uraianbagiansakti' => $request->get('uraianbagiansakti'),
                 'status' => $status
             ]);
 
@@ -114,7 +102,7 @@ class ReferensiBagianRKController extends Controller
 
     public function edit($id)
     {
-        $menu = BagianModel::find($id);
+        $menu = ReferensiBagianRKModel::find($id);
         return response()->json($menu);
     }
 
@@ -136,16 +124,17 @@ class ReferensiBagianRKController extends Controller
             'iddeputi' => 'required',
             'idbiro' => 'required',
             'idbagian' => 'required',
-            'uraianbagian' => 'required',
-
+            'uraianbagiansakti' => 'required'
         ]);
 
-        BagianModel::where('id',$id)->update(
+        ReferensiBagianRKModel::where([
+            'id' => $id
+        ])->update(
             [
                 'iddeputi' => $request->get('iddeputi'),
                 'idbiro' => $request->get('idbiro'),
-                'id' => $request->get('idbagian'),
-                'uraianbagian' => $request->get('uraianbagian'),
+                'idbagian' => $request->get('idbagian'),
+                'uraianbagiansakti' => $request->get('uraianbagiansakti'),
                 'status' => $status
             ]);
 
@@ -160,9 +149,12 @@ class ReferensiBagianRKController extends Controller
      */
     public function destroy($id)
     {
-        $dipakai = DB::table('temuan')->where('idbagian','=',$id)->count();
-        if ($dipakai == 0){
-            BagianModel::find($id)->delete();
+        //TODO
+        //cek penggunaan referensi bagian pada tabel monitoring
+
+        $adadata = DB::table('referensibagianrk')->where('id','=',$id)->count();
+        if ($adadata != 0){
+            ReferensiBagianRKModel::find($id)->delete();
             return response()->json(['status'=>'berhasil']);
         }else{
             return response()->json(['status'=>'gagal']);

@@ -71,7 +71,7 @@
                                                 <select class="form-control kodebarang" name="kodebarang" id="kodebarang" style="width: 100%;">
                                                     <option>Pilih Kode Barang</option>
                                                     @foreach($datakodebarang as $data)
-                                                        <option value="{{ $data->kd_brg }}">{{ $data->kd_brg }} || {{ $data->ur_sskel }}</option>
+                                                        <option value="{{ $data->kdbrg }}">{{ $data->kdbrg }} || {{ $data->deskripsi }}</option>
                                                     @endforeach
                                                 </select>
                                                 </div>
@@ -129,11 +129,12 @@
                 serverSide: true,
                 dom: 'Bfrtip',
                 buttons: ['copy','excel','pdf','csv','print'],
-                ajax:"{{route('referensibmnrk.index')}}",
+                ajax:"{{route('sbsk.index')}}",
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex'},
                     {data: 'kdbrg', name: 'kdbrg'},
                     {data: 'deskripsi', name: 'deskripsi'},
+                    {data: 'jumlahkebutuhan', name: 'jumlahkebutuhan'},
                     {
                         data: 'action',
                         name: 'action',
@@ -168,7 +169,7 @@
             $('#saveBtn').click(function (e) {
                 e.preventDefault();
                 $(this).html('Sending..');
-                let form = document.getElementById('formkodebarang');
+                let form = document.getElementById('formlistimportaset');
                 let fd = new FormData(form);
                 let saveBtn = document.getElementById('saveBtn').value;
                 var id = document.getElementById('id').value;
@@ -181,7 +182,7 @@
                 }
                 $.ajax({
                     data: fd,
-                    url: saveBtn === "tambah" ? "{{route('referensibmnrk.store')}}":"{{route('referensibmnrk.update','')}}"+'/'+id,
+                    url: saveBtn === "tambah" ? "{{route('sbsk.store')}}":"{{route('sbsk.update','')}}"+'/'+id,
                     type: "POST",
                     dataType: 'json',
                     contentType: false,
@@ -236,7 +237,7 @@
                 if(confirm("Apakah Anda Yakin AKan Hapus Data Ini!")){
                     $.ajax({
                         type: "DELETE",
-                        url: "{{ route('referensibmnrk.destroy','') }}"+'/'+id,
+                        url: "{{ route('sbsk.destroy','') }}"+'/'+id,
                         success: function (data) {
                             if (data.status == "berhasil"){
                                 Swal.fire({
@@ -281,7 +282,7 @@
 
             $('body').on('click', '.editkodebarang', function () {
                 var id = $(this).data('id');
-                $.get("{{ route('referensibmnrk.index') }}" +'/' + id +'/edit', function (data) {
+                $.get("{{ route('sbsk.index') }}" +'/' + id +'/edit', function (data) {
                     $('#modelHeading').html("Edit Kode Barang");
                     $('#saveBtn').val("edit");
                     $('#ajaxModel').modal('show');

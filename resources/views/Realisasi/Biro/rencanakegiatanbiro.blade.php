@@ -677,52 +677,6 @@
                 }
             });
 
-            $('body').on('click', '.ajukankeppk', function () {
-                var id = $(this).data("id");
-                if(confirm("Apakah Anda Yakin AKan Mengajukan Kasbon ini Ke PPK?")){
-                    $.ajax({
-                        type: "GET",
-                        url: "{{ route('ajukanrencanakeppk','') }}"+'/'+id,
-                        success: function (data) {
-                            if (data.status == "berhasil"){
-                                Swal.fire({
-                                    title: 'Sukses',
-                                    text: 'Data Berhasil Diajukan ke PPK',
-                                    icon: 'success'
-                                })
-                            }else{
-                                Swal.fire({
-                                    title: 'Error!',
-                                    text: 'Data Kasbon Gagal Diajukan ke PPK',
-                                    icon: 'error'
-                                })
-                            }
-                            table.draw();
-                        },
-                        error: function (xhr, textStatus, errorThrown) {
-                            if(xhr.responseJSON.errors){
-                                var errorsArr = [];
-                                $.each(xhr.responseJSON.errors, function(key,value) {
-                                    errorsArr.push(value);
-                                });
-                                Swal.fire({
-                                    title: 'Error!',
-                                    text: errorsArr,
-                                    icon: 'error'
-                                })
-                            }else{
-                                var jsonValue = jQuery.parseJSON(xhr.responseText);
-                                Swal.fire({
-                                    title: 'Error!',
-                                    text: jsonValue.message,
-                                    icon: 'error'
-                                })
-                            }
-                            $('#saveBtn').html('Simpan Data');
-                        },
-                    });
-                }
-            });
         });
 
     </script>

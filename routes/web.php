@@ -147,6 +147,13 @@ use App\Http\Controllers\IKPA\Bagian\RekapIKPAAksesBagianController;
 
 
 use App\Http\Controllers\PerencanaanBMN\Admin\ReferensiBMNRKController;
+use App\Http\Controllers\PerencanaanBMN\Admin\SBSKController;
+use App\Http\Controllers\PerencanaanBMN\Admin\ReferensiBagianRKController;
+use App\Http\Controllers\PerencanaanBMN\Admin\PengajuanRKBMNController;
+
+
+use App\Http\Controllers\PerencanaanBMN\Bagian\PengajuanRKBMNBagianController;
+use App\Http\Controllers\PerencanaanBMN\PelaksanaPengadaan\PengajuanRKBMNPelaksanaController;
 
 
 
@@ -869,3 +876,18 @@ Route::post('ambillistppk',[KewenanganPPKController::class,'ambillistppk'])->nam
 
 //MODUL PERENCANAAN BMN
 Route::resource('referensibmnrk',ReferensiBMNRKController::class)->middleware('cekadminsirangga');
+Route::resource('sbsk',SBSKController::class)->middleware('cekadminsirangga');
+Route::resource('referensibagianrk',ReferensiBagianRKController::class)->middleware('cekadminsirangga');
+
+Route::get('persetujuanusulanrkbmn',[PengajuanRKBMNController::class,'index'])->name('persetujuanusulanrkbmn')->middleware('cekadminsirangga');
+Route::put('prosespersetujuanbmn/{id}',[PengajuanRKBMNController::class,'update'])->name('prosespersetujuanbmn')->middleware('cekadminsirangga');
+
+//MODUL PERENCANAAN BMN BAGIAN
+Route::resource('pengajuanrkbmnbagian',PengajuanRKBMNBagianController::class);
+Route::post('ambildatabarangdalamdbr',[PengajuanRKBMNBagianController::class,'ambildatabarangdalamdbr'])->name('ambildatabarangdalamdbr');
+Route::get('kirimkepelaksanapengadaan/{id}',[PengajuanRKBMNBagianController::class,'kirimkepelaksanapengadaan'])->name('kirimkepelaksanapengadaan');
+
+//MODUL PERENCANAAN BMN PELAKSANA PENGADAAN
+Route::get('persetujuanusulanrkpelaksana',[PengajuanRKBMNPelaksanaController::class,'index'])->name('persetujuanusulanrkpelaksana')->middleware('cekpelaksanapengadaan');
+Route::put('prosespersetujuanpelaksana/{id}',[PengajuanRKBMNPelaksanaController::class,'update'])->name('prosespersetujuanpelaksana')->middleware('cekpelaksanapengadaan');
+
