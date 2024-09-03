@@ -110,7 +110,7 @@ class Kernel extends ConsoleKernel
                 new HapusAnggaranInaktif($TA),
                 new RekonDataAngSeluruh($TA)
             ])->dispatch($TA);
-        })->dailyAt('08:00');
+        })->dailyAt('09:00');
 
 
         $schedule->call(function () use ($TA){
@@ -120,7 +120,6 @@ class Kernel extends ConsoleKernel
                 new RekapDataBarangDBR()
             ])->dispatch($TA);
         })->dailyAt('20:23');
-
 
         $schedule->job(new RekapDataBarangDBR())->dailyAt('20:54');
 

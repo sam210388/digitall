@@ -59,156 +59,129 @@ class DataAngController extends Controller
     }
 
     function aksiimportdataang($tahunanggaran, $idrefstatus){
-        //reset api dlu
-        //mulai lakukan penarikan
         $kodemodul = 'ANG';
         $tipedata = 'dataAng';
 
-        //reset api
+        // Reset API
         $resetapi = new BearerKey();
-        $resetapi = $resetapi->resetapi($tahunanggaran, $kodemodul, $tipedata);
+        $resetapi->resetapi($tahunanggaran, $kodemodul, $tipedata);
 
-        //mulai tarik data
-        $kdsatker = DB::table('ref_status')->where('idrefstatus','=',$idrefstatus)->value('kdsatker');
-        $kd_sts_history = DB::table('ref_status')->where('idrefstatus','=',$idrefstatus)->value('kd_sts_history');
+        // Mendapatkan variabel kdsatker dan kd_sts_history dari database
+        $refStatus = DB::table('ref_status')->where('idrefstatus', $idrefstatus)->first();
+        if (!$refStatus) {
+            // Handle jika refStatus tidak ditemukan
+            throw new Exception("RefStatus dengan ID $idrefstatus tidak ditemukan.");
+        }
+
+        $kdsatker = $refStatus->kdsatker;
+        $kd_sts_history = $refStatus->kd_sts_history;
         $variable = [$kdsatker, $kd_sts_history];
-        //echo $kd_sts_history." ".$kdsatker;
 
+        // Tarik data
+        $tarikData = new TarikDataMonsakti();
+        $response = $tarikData->prosedurlengkap($tahunanggaran, $kodemodul, $tipedata, $variable);
 
-        //tarikdata
-        $response = new TarikDataMonsakti();
-        $response = $response->prosedurlengkap($tahunanggaran, $kodemodul, $tipedata, $variable);
-        //echo json_encode($response);
+        if ($response === "Gagal" || $response === "Expired" || empty($response)) {
+            // Handle jika response tidak valid
+            throw new Exception("Gagal menarik data: $response");
+        }
 
+        $hasilasli = json_decode($response);
+        if (!is_array($hasilasli)) {
+            // Handle jika hasil decode bukan array
+            throw new Exception("Format response tidak valid.");
+        }
 
-        if ($response != "Gagal" or $response != "Expired"){
-            $hasilasli = json_decode($response);
-            //echo json_encode($hasilasli);
+        foreach ($hasilasli as $innerArray) {
+            if (!is_array($innerArray)) continue;
 
-            foreach ($hasilasli as $item => $value) {
-                if ($item == "TOKEN") {
-                    foreach ($value as $data) {
-                        $tokenresponse = $data->TOKEN;
-                    }
+            foreach ($innerArray as $item) {
+                if (isset($item->TOKEN)) {
+                    // Simpan TOKEN baru
+                    $tokenresponse = $item->TOKEN;
                     $token = new BearerKey();
                     $token->simpantokenbaru($tahunanggaran, $kodemodul, $tokenresponse);
-                }else{
-                    foreach ($value as $DATA) {
-                        $KDSATKER = $DATA->KDSATKER;
-                        $KODE_PROGRAM = $DATA->KODE_PROGRAM;
-                        $KODE_KEGIATAN = $DATA->KODE_KEGIATAN;
-                        $KODE_OUTPUT = $DATA->KODE_OUTPUT;
-                        $KDIB = $DATA->KDIB;
-                        $VOLUME_OUTPUT = $DATA->VOLUME_OUTPUT;
-                        $KODE_SUBOUTPUT = $DATA->KODE_SUBOUTPUT;
-                        $VOLUME_SUBOUTPUT = $DATA->VOLUME_SUBOUTPUT;
-                        $KODE_KOMPONEN = $DATA->KODE_KOMPONEN;
-                        $KODE_SUBKOMPONEN = $DATA->KODE_SUBKOMPONEN;
-                        $URAIAN_SUBKOMPONEN = $DATA->URAIAN_SUBKOMPONEN;
-                        $KODE_AKUN = $DATA->KODE_AKUN;
-                        $KODE_JENIS_BEBAN = $DATA->KODE_JENIS_BEBAN;
-                        $KODE_CARA_TARIK = $DATA->KODE_CARA_TARIK;
-                        $HEADER1 = $DATA->HEADER1;
-                        $HEADER2 = $DATA->HEADER2;
-                        $KODE_ITEM = $DATA->KODE_ITEM;
-                        $NOMOR_ITEM = $DATA->NOMOR_ITEM;
-                        $URAIAN_ITEM = $DATA->URAIAN_ITEM;
-                        $CONS_ITEM = $DATA->CONS_ITEM;
-                        $SUMBER_DANA = $DATA->SUMBER_DANA;
-                        $VOL_KEG_1 = $DATA->VOL_KEG_1;
-                        $VOL_KEG_1 = (int)$VOL_KEG_1;
-                        $SAT_KEG_1 = $DATA->SAT_KEG_1;
-                        $VOL_KEG_2 = $DATA->VOL_KEG_2;
-                        $VOL_KEG_2 = (int)$VOL_KEG_2;
-                        $SAT_KEG_2 = $DATA->SAT_KEG_2;
-                        $VOL_KEG_3 = $DATA->VOL_KEG_3;
-                        $VOL_KEG_3 = (int)$VOL_KEG_3;
-                        $SAT_KEG_3 = $DATA->SAT_KEG_3;
-                        $VOL_KEG_4 = (int)$DATA->VOL_KEG_4;
-                        $SAT_KEG_4 = $DATA->SAT_KEG_4;
-                        $VOLKEG = (int)$DATA->VOLKEG;
-                        $SATKEG = $DATA->SATKEG;
-                        $HARGASAT = (int)$DATA->HARGASAT;
-                        $TOTAL = (int)$DATA->TOTAL;
-                        $KODE_BLOKIR = $DATA->KODE_BLOKIR;
-                        $NILAI_BLOKIR = (int)$DATA->NILAI_BLOKIR;
-                        $KODE_STS_HISTORY = $DATA->KODE_STS_HISTORY;
-                        $POK_NILAI_1 = (int)$DATA->POK_NILAI_1;
-                        $POK_NILAI_2 = (int)$DATA->POK_NILAI_2;
-                        $POK_NILAI_3 = (int)$DATA->POK_NILAI_3;
-                        $POK_NILAI_4 = (int)$DATA->POK_NILAI_4;
-                        $POK_NILAI_5 = (int)$DATA->POK_NILAI_5;
-                        $POK_NILAI_6 = (int)$DATA->POK_NILAI_6;
-                        $POK_NILAI_7 = (int)$DATA->POK_NILAI_7;
-                        $POK_NILAI_8 = (int)$DATA->POK_NILAI_8;
-                        $POK_NILAI_9 = (int)$DATA->POK_NILAI_9;
-                        $POK_NILAI_10 = (int)$DATA->POK_NILAI_10;
-                        $POK_NILAI_11 = (int)$DATA->POK_NILAI_11;
-                        $POK_NILAI_12 = (int)$DATA->POK_NILAI_12;
+                } else {
+                    // Proses dan simpan data ke database
+                    $data = [
+                        'tahunanggaran' => $tahunanggaran,
+                        'idrefstatus' => $idrefstatus,
+                        'kdsatker' => $item->KDSATKER ?? null,
+                        'kodeprogram' => $item->KODE_PROGRAM ?? null,
+                        'kodekegiatan' => $item->KODE_KEGIATAN ?? null,
+                        'kodeoutput' => $item->KODE_OUTPUT ?? null,
+                        'kdib' => $item->KDIB ?? null,
+                        'volumeoutput' => $item->VOLUME_OUTPUT ?? null,
+                        'kodesuboutput' => $item->KODE_SUBOUTPUT ?? null,
+                        'volumesuboutput' => $item->VOLUME_SUBOUTPUT ?? null,
+                        'kodekomponen' => $item->KODE_KOMPONEN ?? null,
+                        'kodesubkomponen' => $item->KODE_SUBKOMPONEN ?? null,
+                        'uraiansubkomponen' => $item->URAIAN_SUBKOMPONEN ?? null,
+                        'kodeakun' => $item->KODE_AKUN ?? null,
+                        'pengenal' => implode('.', [
+                            $tahunanggaran,
+                            $kdsatker,
+                            $item->KODE_PROGRAM ?? '',
+                            $item->KODE_KEGIATAN ?? '',
+                            $item->KODE_OUTPUT ?? '',
+                            $item->KODE_SUBOUTPUT ?? '',
+                            $item->KODE_KOMPONEN ?? '',
+                            $item->KODE_SUBKOMPONEN ?? '',
+                            $item->KODE_AKUN ?? ''
+                        ]),
+                        'kodejenisbeban' => $item->KODE_JENIS_BEBAN ?? null,
+                        'kodecaratarik' => $item->KODE_CARA_TARIK ?? null,
+                        'header1' => $item->HEADER1 ?? null,
+                        'header2' => $item->HEADER2 ?? null,
+                        'kodeitem' => $item->KODE_ITEM ?? null,
+                        'nomoritem' => $item->NOMOR_ITEM ?? null,
+                        'cons_item' => $item->CONS_ITEM ?? null,
+                        'uraianitem' => $item->URAIAN_ITEM ?? null,
+                        'sumberdana' => $item->SUMBER_DANA ?? null,
+                        'volkeg1' => isset($item->VOL_KEG_1) ? (int)$item->VOL_KEG_1 : 0,
+                        'satkeg1' => $item->SAT_KEG_1 ?? null,
+                        'volkeg2' => isset($item->VOL_KEG_2) ? (int)$item->VOL_KEG_2 : 0,
+                        'satkeg2' => $item->SAT_KEG_2 ?? null,
+                        'volkeg3' => isset($item->VOL_KEG_3) ? (int)$item->VOL_KEG_3 : 0,
+                        'satkeg3' => $item->SAT_KEG_3 ?? null,
+                        'volkeg4' => isset($item->VOL_KEG_4) ? (int)$item->VOL_KEG_4 : 0,
+                        'satkeg4' => $item->SAT_KEG_4 ?? null,
+                        'volkeg' => isset($item->VOLKEG) ? (int)$item->VOLKEG : 0,
+                        'satkeg' => $item->SATKEG ?? null,
+                        'hargasat' => isset($item->HARGASAT) ? (int)$item->HARGASAT : 0,
+                        'total' => isset($item->TOTAL) ? (int)$item->TOTAL : 0,
+                        'kodeblokir' => $item->KODE_BLOKIR ?? null,
+                        'nilaiblokir' => isset($item->NILAI_BLOKIR) ? (int)$item->NILAI_BLOKIR : 0,
+                        'kodestshistory' => $item->KODE_STS_HISTORY ?? null,
+                        'poknilai1' => isset($item->POK_NILAI_1) ? (int)$item->POK_NILAI_1 : 0,
+                        'poknilai2' => isset($item->POK_NILAI_2) ? (int)$item->POK_NILAI_2 : 0,
+                        'poknilai3' => isset($item->POK_NILAI_3) ? (int)$item->POK_NILAI_3 : 0,
+                        'poknilai4' => isset($item->POK_NILAI_4) ? (int)$item->POK_NILAI_4 : 0,
+                        'poknilai5' => isset($item->POK_NILAI_5) ? (int)$item->POK_NILAI_5 : 0,
+                        'poknilai6' => isset($item->POK_NILAI_6) ? (int)$item->POK_NILAI_6 : 0,
+                        'poknilai7' => isset($item->POK_NILAI_7) ? (int)$item->POK_NILAI_7 : 0,
+                        'poknilai8' => isset($item->POK_NILAI_8) ? (int)$item->POK_NILAI_8 : 0,
+                        'poknilai9' => isset($item->POK_NILAI_9) ? (int)$item->POK_NILAI_9 : 0,
+                        'poknilai10' => isset($item->POK_NILAI_10) ? (int)$item->POK_NILAI_10 : 0,
+                        'poknilai11' => isset($item->POK_NILAI_11) ? (int)$item->POK_NILAI_11 : 0,
+                        'poknilai12' => isset($item->POK_NILAI_12) ? (int)$item->POK_NILAI_12 : 0,
+                        'urutan_header1' => $item->URUTAN_HEADER1 ?? null,
+                        'urutan_header2' => $item->URUTAN_HEADER2 ?? null,
+                        'kode_kppn' => $item->KODE_KPPN ?? null,
+                        'kode_kewenangan' => $item->KODE_KEWENANGAN ?? null,
+                        'kode_lokasi' => $item->KODE_LOKASI ?? null,
+                    ];
 
-                        $data = array(
-                            'tahunanggaran' => $tahunanggaran,
-                            'idrefstatus' => $idrefstatus,
-                            'kdsatker' => $KDSATKER,
-                            'kodeprogram' => $KODE_PROGRAM,
-                            'kodekegiatan' => $KODE_KEGIATAN,
-                            'kodeoutput' => $KODE_OUTPUT,
-                            'kdib' => $KDIB,
-                            'volumeoutput' => $VOLUME_OUTPUT,
-                            'kodesuboutput' => $KODE_SUBOUTPUT,
-                            'volumesuboutput' => $VOLUME_SUBOUTPUT,
-                            'kodekomponen' => $KODE_KOMPONEN,
-                            'kodesubkomponen' => $KODE_SUBKOMPONEN,
-                            'uraiansubkomponen' => $URAIAN_SUBKOMPONEN,
-                            'kodeakun' => $KODE_AKUN,
-                            'pengenal' => $tahunanggaran.".".$kdsatker.".".$KODE_PROGRAM.'.'.$KODE_KEGIATAN.'.'.$KODE_OUTPUT.'.'.$KODE_SUBOUTPUT.'.'.$KODE_KOMPONEN.'.'.$KODE_SUBKOMPONEN.'.'.$KODE_AKUN,
-                            'kodejenisbeban' => $KODE_JENIS_BEBAN,
-                            'kodecaratarik' => $KODE_CARA_TARIK,
-                            'header1' => $HEADER1,
-                            'header2' => $HEADER2,
-                            'kodeitem' => $KODE_ITEM,
-                            'nomoritem' => $NOMOR_ITEM,
-                            'cons_item' => $CONS_ITEM,
-                            'uraianitem' => $URAIAN_ITEM,
-                            'sumberdana' => $SUMBER_DANA,
-                            'volkeg1' => $VOL_KEG_1,
-                            'satkeg1' => $SAT_KEG_1,
-                            'volkeg2' => $VOL_KEG_2,
-                            'satkeg2' => $SAT_KEG_2,
-                            'volkeg3' => $VOL_KEG_3,
-                            'satkeg3' => $SAT_KEG_3,
-                            'volkeg4' => $VOL_KEG_4,
-                            'satkeg4' => $SAT_KEG_4,
-                            'volkeg' => $VOLKEG,
-                            'satkeg' => $SATKEG,
-                            'hargasat' => $HARGASAT,
-                            'total' => $TOTAL,
-                            'kodeblokir' => $KODE_BLOKIR,
-                            'nilaiblokir' => $NILAI_BLOKIR,
-                            'kodestshistory' => $KODE_STS_HISTORY,
-                            'poknilai1' => $POK_NILAI_1,
-                            'poknilai2' => $POK_NILAI_2,
-                            'poknilai3' => $POK_NILAI_3,
-                            'poknilai4' => $POK_NILAI_4,
-                            'poknilai5' => $POK_NILAI_5,
-                            'poknilai6' => $POK_NILAI_6,
-                            'poknilai7' => $POK_NILAI_7,
-                            'poknilai8' => $POK_NILAI_8,
-                            'poknilai9' => $POK_NILAI_9,
-                            'poknilai10' => $POK_NILAI_10,
-                            'poknilai11' => $POK_NILAI_11,
-                            'poknilai12' => $POK_NILAI_12
-                        );
-                        DataAngModel::Create($data);
-                    }
+                    // Simpan data ke database
+                    DataAngModel::create($data);
                 }
             }
-
         }
-        //update statusimport
-        DB::table('ref_status')->where('idrefstatus','=',$idrefstatus)
-            ->update(['statusimport' => 2]);
+
+        // Update statusimport di ref_status
+        DB::table('ref_status')->where('idrefstatus', $idrefstatus)->update(['statusimport' => 2]);
     }
+
 
     public function rekondataang($idrefstatus){
         $this->dispatch(new RekonDataAng($idrefstatus));
