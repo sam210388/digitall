@@ -92,46 +92,38 @@ class RefstatusController extends Controller
         $tipedata = 'refSts';
 
         //reset api dlu
-        //reset api
         $resetapi = new BearerKey();
         $resetapi = $resetapi->resetapi($tahunanggaran, $kodemodul, $tipedata);
 
         $response = new TarikDataMonsakti();
         $response = $response->prosedurlengkap($tahunanggaran, $kodemodul, $tipedata);
-        //echo json_encode($response);
 
-        if ($response != "Gagal" or $response != "Expired"){
+        if ($response != "Gagal" && $response != "Expired"){
             $hasilasli = json_decode($response);
-            //echo json_encode($hasilasli);
 
-            foreach ($hasilasli as $item => $value) {
-                if ($item == "TOKEN") {
-                    foreach ($value as $data) {
-                        $tokenresponse = $data->TOKEN;
-                    }
-                    $token = new BearerKey();
-                    $token->simpantokenbaru($tahunanggaran, $kodemodul, $tokenresponse);
-                }else{
-                    foreach ($value as $DATA) {
-                        $ID = $DATA->ID;
-                        $KODE_KEMENTERIAN = $DATA->KODE_KEMENTERIAN;
-                        $KDSATKER = $DATA->KDSATKER;
-                        $KODE_STS_HISTORY = $DATA->KODE_STS_HISTORY;
-                        $JENIS_REVISI = $DATA->JENIS_REVISI;
-                        $REVISIKE = $DATA->REVISI_KE;
-                        $PAGU_BELANJA = $DATA->PAGU_BELANJA;
-                        $NO_DIPA = $DATA->NO_DIPA;
-                        $TGL_DIPA = $DATA->TGL_DIPA;
-                        $TGL_DIPA = new \DateTime($TGL_DIPA);
-                        $TGL_DIPA = $TGL_DIPA->format('Y-m-d');
-                        $TGL_REVISI = new \DateTime($DATA->TGL_REVISI);
-                        $TGL_REVISI = $TGL_REVISI->format('Y-m-d');
-                        $APPROVE = $DATA->APPROVE;
-                        $APPROVE_SPAN = $DATA->APPROVE_SPAN;
-                        $VALIDATED = $DATA->VALIDATED;
-                        $FLAG_UPDATE_COA = $DATA->FLAG_UPDATE_COA;
-                        $OWNER = $DATA->OWNER;
-                        $DIGITAL_STAMP = $DATA->DIGITAL_STAMP;
+            foreach ($hasilasli as $subArray) {
+                foreach ($subArray as $item) {
+                    if (isset($item->TOKEN)) {
+                        $tokenresponse = $item->TOKEN;
+                        $token = new BearerKey();
+                        $token->simpantokenbaru($tahunanggaran, $kodemodul, $tokenresponse);
+                    } else {
+                        $ID = $item->ID;
+                        $KODE_KEMENTERIAN = $item->KODE_KEMENTERIAN;
+                        $KDSATKER = $item->KDSATKER;
+                        $KODE_STS_HISTORY = $item->KODE_STS_HISTORY;
+                        $JENIS_REVISI = $item->JENIS_REVISI;
+                        $REVISIKE = $item->REVISI_KE;
+                        $PAGU_BELANJA = $item->PAGU_BELANJA;
+                        $NO_DIPA = $item->NO_DIPA;
+                        $TGL_DIPA = $item->TGL_DIPA ? (new \DateTime($item->TGL_DIPA))->format('Y-m-d') : null;
+                        $TGL_REVISI = $item->TGL_REVISI ? (new \DateTime($item->TGL_REVISI))->format('Y-m-d') : null;
+                        $APPROVE = $item->APPROVE;
+                        $APPROVE_SPAN = $item->APPROVE_SPAN;
+                        $VALIDATED = $item->VALIDATED;
+                        $FLAG_UPDATE_COA = $item->FLAG_UPDATE_COA;
+                        $OWNER = $item->OWNER;
+                        $DIGITAL_STAMP = $item->DIGITAL_STAMP;
 
                         $data = array(
                             'idrefstatus' => $ID,
@@ -153,7 +145,8 @@ class RefstatusController extends Controller
                             'digital_stamp' => $DIGITAL_STAMP,
                             'statusimport' => 1
                         );
-                        RefStatusModel::updateOrCreate(['idrefstatus' => $ID],$data);
+
+                        RefStatusModel::updateOrCreate(['idrefstatus' => $ID], $data);
                     }
                 }
             }
