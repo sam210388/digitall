@@ -336,15 +336,30 @@ class IKPAKontraktualController extends Controller
                         ->where('periode','<=',$i)
                         ->where('kodesatker','=',$kodesatker)
                         ->count();
+
                     if ($jumlahkontrak>0){
-                        $jumlahkontraktepatwaktu = DB::table('ikpadetilkontraktual')
+                        $jumlahkontraksmt1 = DB::table('ikpadetilkontraktual')
                             ->where('tahunanggaran','=',$tahunanggaran)
                             ->where('idbiro','=',$idbiro)
-                            ->where('periode','<=',$i)
+                            ->where('periode','<=',6)
                             ->where('kodesatker','=',$kodesatker)
-                            ->where('status','=','TEPAT WAKTU')
                             ->count();
-                        $nilaikomponenketepatanwaktu = ($jumlahkontraktepatwaktu/$jumlahkontrak)*100;
+
+                        $jumlahkontraktw1 = DB::table('ikpadetilkontraktual')
+                            ->where('tahunanggaran','=',$tahunanggaran)
+                            ->where('idbiro','=',$idbiro)
+                            ->where('periode','<=',3)
+                            ->where('kodesatker','=',$kodesatker)
+                            ->count();
+                        $jumlahkontrakdini = DB::table('ikpadetilkontraktual')
+                            ->where('tahunanggaran','=',$tahunanggaran)
+                            ->where('idbiro','=',$idbiro)
+                            ->where('periode','=',1)
+                            ->where('nilai_kontrak_dini','=',120)
+                            ->where('kodesatker','=',$kodesatker)
+                            ->count();
+
+                        $nilaikomponendistribusi = ($jumlahkontraksmt1/$jumlahkontrak)*100;
 
                         //jumlah kontrak akselerasi
                         $jumlahkontraktw1 = DB::table('ikpadetilkontraktual')
