@@ -67,7 +67,6 @@ class DetilIKPARevisiController extends Controller
         $validated = $request->validate([
             'kdsatker' => 'required',
             'idbiro' => 'required',
-            'idbagian' => 'required',
             'nosurat' => 'required',
             'tanggalsurat' => 'required',
             'perihal' => 'required',
@@ -77,16 +76,16 @@ class DetilIKPARevisiController extends Controller
             'status' => 'required'
         ]);
         $tahunanggaran = session('tahunanggaran');
-        $kdsatker = $request->get('kdsatker');
-        $idbiro = $request->get('idbiro');
+        $kdsatker = $validated['kdsatker'];
+        $idbiro = $validated['idbiro'];
         $idbagian = $request->get('idbagian');
-        $nosurat = $request->get('nosurat');
-        $tanggalsurat = $request->get('tanggalsurat');
-        $perihal = $request->get('perihal');
-        $norevisi = $request->get('norevisi');
-        $tanggalpengesahan = $request->get('tanggalpengesahan');
+        $nosurat = $validated['nosurat'];
+        $tanggalsurat = $validated['tanggalsurat'];
+        $perihal = $validated['perihal'];
+        $norevisi = $validated['norevisi'];
+        $tanggalpengesahan = $validated['tanggalpengesahan'];
         $periodepengesahan = date('n',strtotime($tanggalpengesahan));
-        $kewenanganrevisi = $request->get('kewenanganrevisi');
+        $kewenanganrevisi = $validated['kewenanganrevisi'];
         $status = $request->get('status');
 
         //cek apakah sudah pernah disimpan

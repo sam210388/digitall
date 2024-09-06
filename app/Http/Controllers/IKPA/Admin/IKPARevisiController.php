@@ -85,6 +85,11 @@ class IKPARevisiController extends Controller
                 $idbagian = $db->id;
                 $idbiro = $db->idbiro;
                 $totalnilaiikpa = 0;
+                $jumlahrevisikemenkeusmt1 = 0;
+                $jumlahrevisikemenkeusmt2 = 0;
+                $jumlahtotalrevisikemenkeu = 0;
+                $nilairevisiikpakemenkeusmt1 = 0;
+                $nilairevisipokawal = 0;
 
                 for($i=1; $i<=12;$i++){
                     $jumlahrevisipok = DB::table('ikpadetilrevisi')
@@ -95,26 +100,64 @@ class IKPARevisiController extends Controller
                         ->where('kodesatker','=',$kodesatker)
                         ->count();
                     if ($jumlahrevisipok > 0){
-                        $nilairevisipok = (1/$jumlahrevisipok)*100;
+                        $nilairevisipokbulanan = (1/$jumlahrevisipok)*100;
                     }else{
-                        $nilairevisipok = 100.00;
+                        $nilairevisipokbulanan = 100.00;
                     }
-                    $jumlahrevisikemenkeu = DB::table('ikpadetilrevisi')
+                    $nilairevisipokawal = $nilairevisipokawal + $nilairevisipokbulanan;
+                    $nilairevisiikpapok = $nilairevisipokawal/$i;
+
+
+                    //menghitung revisi kemenkeu
+                    $jumlahrevisikemenkeubulanan = DB::table('ikpadetilrevisi')
                         ->where('tahunanggaran','=',$tahunanggaran)
                         ->where('idbagian','=',$idbagian)
                         ->where('bulanpengesahan','=',$i)
                         ->where('kewenanganrevisi','=',"Revisi Kemenkeu")
                         ->where('kodesatker','=',$kodesatker)
                         ->count();
-                    if ($jumlahrevisikemenkeu > 0){
-                        $nilairevisikemenkeu = (1/$jumlahrevisikemenkeu)*100;
-                    }else{
-                        $nilairevisikemenkeu = 100;
+                    if ($i<=5){
+                        $jumlahrevisikemenkeusmt1 = $jumlahrevisikemenkeusmt1 + $jumlahrevisikemenkeubulanan;
+                        $jumlahtotalrevisikemenkeu = $jumlahrevisikemenkeusmt1;
+                        if ($jumlahrevisikemenkeusmt1 <2){
+                            $nilairevisikemenkeu = 110;
+                        }else if ($jumlahrevisikemenkeusmt1 == 2){
+                            $nilairevisikemenkeu = 100;
+                        }else{
+                            $nilairevisikemenkeu = 50;
+                        }
+                        $nilairevisiikpakemenkeu = $nilairevisikemenkeu;
+                    }else if ($i == 6){
+                        if ($jumlahrevisikemenkeusmt1 <2){
+                            $nilairevisikemenkeu = 110;
+                        }else if ($jumlahrevisikemenkeusmt1 == 2){
+                            $nilairevisikemenkeu = 100;
+                        }else{
+                            $nilairevisikemenkeu = 50;
+                        }
+                        $nilairevisiikpakemenkeu = $nilairevisikemenkeu;
+                        $nilairevisiikpakemenkeusmt1 = $nilairevisiikpakemenkeu;
+                    }
+                    else{
+                        $jumlahrevisikemenkeusmt2 = $jumlahrevisikemenkeusmt2+$jumlahrevisikemenkeubulanan;
+                        $jumlahtotalrevisikemenkeu = $jumlahrevisikemenkeusmt1+$jumlahrevisikemenkeusmt2;
+                        if ($jumlahrevisikemenkeusmt2 <2){
+                            $nilairevisikemenkeu = 110;
+                        }else if ($jumlahrevisikemenkeusmt2 == 2){
+                            $nilairevisikemenkeu = 100;
+                        }else{
+                            $nilairevisikemenkeu = 50;
+                        }
+                        $nilairevisiikpakemenkeu = ($nilairevisiikpakemenkeusmt1+$nilairevisikemenkeu)/2;
                     }
 
-                    $nilaiikpabulanan = (0.4*$nilairevisipok)+(0.6*$nilairevisikemenkeu);
-                    $totalnilaiikpa = $totalnilaiikpa+$nilaiikpabulanan;
-                    $nilaiikpaakhir = $totalnilaiikpa/$i;
+
+                    $nilaiikpabulanan = (0.4*$nilairevisiikpapok)+(0.6*$nilairevisiikpakemenkeu);
+                    if ($nilaiikpabulanan>100){
+                        $nilaiikpabulanan = 100;
+                    }
+                    $nilaiikpaakhir = $nilaiikpabulanan;
+
 
                     $datainsert = array(
                         'tahunanggaran' => $tahunanggaran,
@@ -123,9 +166,9 @@ class IKPARevisiController extends Controller
                         'idbiro' => $idbiro,
                         'idbagian' => $idbagian,
                         'jumlahrevisipok' => $jumlahrevisipok,
-                        'jumlahrevisikemenkeu' => $jumlahrevisikemenkeu,
-                        'nilaiikpapok' => $nilairevisipok,
-                        'nilaiikpakemenkeu' => $nilairevisikemenkeu,
+                        'jumlahrevisikemenkeu' => $jumlahrevisikemenkeubulanan,
+                        'nilaiikpapok' => $nilairevisiikpapok,
+                        'nilaiikpakemenkeu' => $nilairevisiikpakemenkeu,
                         'nilaiikpabulanan' => $nilaiikpabulanan,
                         'nilaiikpa' => $nilaiikpaakhir
 
@@ -206,6 +249,11 @@ class IKPARevisiController extends Controller
             foreach ($databiro as $db){
                 $idbiro = $db->id;
                 $totalnilaiikpa = 0;
+                $jumlahrevisikemenkeusmt1 = 0;
+                $jumlahrevisikemenkeusmt2 = 0;
+                $jumlahtotalrevisikemenkeu = 0;
+                $nilairevisiikpakemenkeusmt1 = 0;
+                $nilairevisipokawal = 0;
 
                 for($i=1; $i<=12;$i++){
                     $jumlahrevisipok = DB::table('ikpadetilrevisi')
@@ -216,26 +264,64 @@ class IKPARevisiController extends Controller
                         ->where('kodesatker','=',$kodesatker)
                         ->count();
                     if ($jumlahrevisipok > 0){
-                        $nilairevisipok = (1/$jumlahrevisipok)*100;
+                        $nilairevisipokbulanan = (1/$jumlahrevisipok)*100;
                     }else{
-                        $nilairevisipok = 100.00;
+                        $nilairevisipokbulanan = 100.00;
                     }
-                    $jumlahrevisikemenkeu = DB::table('ikpadetilrevisi')
+                    $nilairevisipokawal = $nilairevisipokawal + $nilairevisipokbulanan;
+                    $nilairevisiikpapok = $nilairevisipokawal/$i;
+
+
+                    $jumlahrevisikemenkeubulanan = DB::table('ikpadetilrevisi')
                         ->where('tahunanggaran','=',$tahunanggaran)
                         ->where('idbiro','=',$idbiro)
                         ->where('bulanpengesahan','=',$i)
                         ->where('kewenanganrevisi','=',"Revisi Kemenkeu")
                         ->where('kodesatker','=',$kodesatker)
                         ->count();
-                    if ($jumlahrevisikemenkeu > 0){
-                        $nilairevisikemenkeu = (1/$jumlahrevisikemenkeu)*100;
-                    }else{
-                        $nilairevisikemenkeu = 100;
+
+                    if ($i<=5){
+                        $jumlahrevisikemenkeusmt1 = $jumlahrevisikemenkeusmt1 + $jumlahrevisikemenkeubulanan;
+                        $jumlahtotalrevisikemenkeu = $jumlahrevisikemenkeusmt1;
+                        if ($jumlahrevisikemenkeusmt1 <2){
+                            $nilairevisikemenkeu = 110;
+                        }else if ($jumlahrevisikemenkeusmt1 == 2){
+                            $nilairevisikemenkeu = 100;
+                        }else{
+                            $nilairevisikemenkeu = 50;
+                        }
+                        $nilairevisiikpakemenkeu = $nilairevisikemenkeu;
+                    }else if ($i == 6){
+                        if ($jumlahrevisikemenkeusmt1 <2){
+                            $nilairevisikemenkeu = 110;
+                        }else if ($jumlahrevisikemenkeusmt1 == 2){
+                            $nilairevisikemenkeu = 100;
+                        }else{
+                            $nilairevisikemenkeu = 50;
+                        }
+                        $nilairevisiikpakemenkeu = $nilairevisikemenkeu;
+                        $nilairevisiikpakemenkeusmt1 = $nilairevisiikpakemenkeu;
+                    }
+                    else{
+                        $jumlahrevisikemenkeusmt2 = $jumlahrevisikemenkeusmt2+$jumlahrevisikemenkeubulanan;
+                        $jumlahtotalrevisikemenkeu = $jumlahrevisikemenkeusmt1+$jumlahrevisikemenkeusmt2;
+                        if ($jumlahrevisikemenkeusmt2 <2){
+                            $nilairevisikemenkeu = 110;
+                        }else if ($jumlahrevisikemenkeusmt2 == 2){
+                            $nilairevisikemenkeu = 100;
+                        }else{
+                            $nilairevisikemenkeu = 50;
+                        }
+                        $nilairevisiikpakemenkeu = ($nilairevisiikpakemenkeusmt1+$nilairevisikemenkeu)/2;
                     }
 
-                    $nilaiikpabulanan = (0.4*$nilairevisipok)+(0.6*$nilairevisikemenkeu);
-                    $totalnilaiikpa = $totalnilaiikpa+$nilaiikpabulanan;
-                    $nilaiikpaakhir = $totalnilaiikpa/$i;
+
+                    $nilaiikpabulanan = (0.4*$nilairevisiikpapok)+(0.6*$nilairevisiikpakemenkeu);
+                    if ($nilaiikpabulanan>100){
+                        $nilaiikpabulanan = 100;
+                    }
+                    $nilaiikpaakhir = $nilaiikpabulanan;
+
 
                     $datainsert = array(
                         'tahunanggaran' => $tahunanggaran,
@@ -243,8 +329,8 @@ class IKPARevisiController extends Controller
                         'periode' => $i,
                         'idbiro' => $idbiro,
                         'jumlahrevisipok' => $jumlahrevisipok,
-                        'jumlahrevisikemenkeu' => $jumlahrevisikemenkeu,
-                        'nilaiikpapok' => $nilairevisipok,
+                        'jumlahrevisikemenkeu' => $jumlahrevisikemenkeubulanan,
+                        'nilaiikpapok' => $nilairevisiikpapok,
                         'nilaiikpakemenkeu' => $nilairevisikemenkeu,
                         'nilaiikpabulanan' => $nilaiikpabulanan,
                         'nilaiikpa' => $nilaiikpaakhir

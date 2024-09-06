@@ -135,6 +135,9 @@ class IKPADeviasiController extends Controller
                         ->value('totalpagu');
                     if ($totalpagu51 > 0){
                         $jenisbelanjadikelola = $jenisbelanjadikelola+1;
+                        $porsipagu51 = ($totalpagu51/$totalpagu)*100;
+                    }else{
+                        $porsipagu51 = 0.00;
                     }
                     $totalpagu52 = DB::table('laporanrealisasianggaranbac')
                         ->select([DB::raw('sum(paguanggaran) as totalpagu')])
@@ -145,6 +148,9 @@ class IKPADeviasiController extends Controller
                         ->value('totalpagu');
                     if ($totalpagu52 > 0){
                         $jenisbelanjadikelola = $jenisbelanjadikelola+1;
+                        $porsipagu52 = ($totalpagu52/$totalpagu)*100;
+                    }else{
+                        $porsipagu52 = 0.00;
                     }
                     $totalpagu53 = DB::table('laporanrealisasianggaranbac')
                         ->select([DB::raw('sum(paguanggaran) as totalpagu')])
@@ -155,7 +161,11 @@ class IKPADeviasiController extends Controller
                         ->value('totalpagu');
                     if ($totalpagu53 > 0){
                         $jenisbelanjadikelola = $jenisbelanjadikelola+1;
+                        $porsipagu53 = ($totalpagu53/$totalpagu)*100;
+                    }else{
+                        $porsipagu53 = 0.00;
                     }
+
                     $reratadeviasijenisbelanjaawal= 0;
                     for($i=1; $i<=12;$i++){
                         $pok = "pokikpa".$i;
@@ -226,8 +236,6 @@ class IKPADeviasiController extends Controller
                                 $prosentasedeviasi51 = 0.00;
                             }else if ($prosentasedeviasi51 > 100){
                                 $prosentasedeviasi51 = 100.00;
-                            }else{
-                                $prosentasedeviasi51 = $prosentasedeviasi51;
                             }
                         }
 
@@ -244,8 +252,6 @@ class IKPADeviasiController extends Controller
                                 $prosentasedeviasi52 = 0.00;
                             }else if($prosentasedeviasi52 > 100){
                                 $prosentasedeviasi52 = 100.00;
-                            } else{
-                                $prosentasedeviasi52 = $prosentasedeviasi52;
                             }
                         }
 
@@ -262,15 +268,22 @@ class IKPADeviasiController extends Controller
                                 $prosentasedeviasi53 = 0.00;
                             }else if ($prosentasedeviasi53 > 100.00){
                                 $prosentasedeviasi53 = 100.00;
-                            } else{
-                                $prosentasedeviasi53 = $prosentasedeviasi53;
                             }
                         }
 
+                        //hitung deviasi tertimbang
+                        $deviasitertimbang51 = ($porsipagu51*$prosentasedeviasi51)/100;
+                        $deviasitertimbang52 = ($porsipagu52*$prosentasedeviasi52)/100;
+                        $deviasitertimbang53 = ($porsipagu53*$prosentasedeviasi53)/100;
 
-                        $prosentasedeviasiseluruhjenis = $prosentasedeviasi51+$prosentasedeviasi52+$prosentasedeviasi53;
-                        $reratadeviasijenisbelanja = $prosentasedeviasiseluruhjenis/$jenisbelanjadikelola;
-                        $reratadeviasijenisbelanjaawal = $reratadeviasijenisbelanjaawal+$reratadeviasijenisbelanja;
+                        //hitung total deviasi
+                        $totaldeviasitertimbang = $deviasitertimbang51 + $deviasitertimbang52 + $deviasitertimbang53;
+
+
+
+                        //$prosentasedeviasiseluruhjenis = $prosentasedeviasi51+$prosentasedeviasi52+$prosentasedeviasi53;
+                        //$reratadeviasijenisbelanja = $prosentasedeviasiseluruhjenis/$jenisbelanjadikelola;
+                        $reratadeviasijenisbelanjaawal = $reratadeviasijenisbelanjaawal+$totaldeviasitertimbang;
                         $reratadeviasikumulatif = $reratadeviasijenisbelanjaawal/$i;
                         $nilaiikpa = 100-$reratadeviasikumulatif;
 
@@ -281,6 +294,10 @@ class IKPADeviasiController extends Controller
                             'periode' => $i,
                             'idbagian' => $idbagian,
                             'idbiro' => $idbiro,
+                            'totalpagu' => $totalpagu,
+                            'porsipagu51' => $porsipagu51,
+                            'porsipagu52' => $porsipagu52,
+                            'porsipagu53' => $porsipagu53,
                             'rencana51' => $rencana51,
                             'rencana52' => $rencana52,
                             'rencana53' => $rencana53,
@@ -293,9 +310,9 @@ class IKPADeviasiController extends Controller
                             'prosentasedeviasi51' => $prosentasedeviasi51,
                             'prosentasedeviasi52' => $prosentasedeviasi52,
                             'prosentasedeviasi53' => $prosentasedeviasi53,
-                            'prosentasedeviasiseluruhjenis' => $prosentasedeviasiseluruhjenis,
+                            'prosentasedeviasiseluruhjenis' => $totaldeviasitertimbang,
                             'jenisbelanjadikelola' => $jenisbelanjadikelola,
-                            'reratadeviasijenisbelanja' => $reratadeviasijenisbelanja,
+                            'reratadeviasijenisbelanja' => 0,
                             'reratadeviasikumulatif' => $reratadeviasikumulatif,
                             'nilaiikpa' => $nilaiikpa
                         );
@@ -343,7 +360,11 @@ class IKPADeviasiController extends Controller
                         ->value('totalpagu');
                     if ($totalpagu51 > 0){
                         $jenisbelanjadikelola = $jenisbelanjadikelola+1;
+                        $porsipagu51 = ($totalpagu51/$totalpagu51)*100;
+                    }else{
+                        $porsipagu51 = 0.00;
                     }
+
                     $totalpagu52 = DB::table('laporanrealisasianggaranbac')
                         ->select([DB::raw('sum(paguanggaran) as totalpagu')])
                         ->where('idbiro','=',$idbiro)
@@ -353,6 +374,9 @@ class IKPADeviasiController extends Controller
                         ->value('totalpagu');
                     if ($totalpagu52 > 0){
                         $jenisbelanjadikelola = $jenisbelanjadikelola+1;
+                        $porsipagu52 = ($totalpagu52/$totalpagu)*100;
+                    }else{
+                        $porsipagu52 = 0.00;
                     }
                     $totalpagu53 = DB::table('laporanrealisasianggaranbac')
                         ->select([DB::raw('sum(paguanggaran) as totalpagu')])
@@ -363,7 +387,11 @@ class IKPADeviasiController extends Controller
                         ->value('totalpagu');
                     if ($totalpagu53 > 0){
                         $jenisbelanjadikelola = $jenisbelanjadikelola+1;
+                        $porsipagu53 = ($totalpagu53/$totalpagu)*100;
+                    }else{
+                        $porsipagu53 = 0.00;
                     }
+
                     $reratadeviasijenisbelanjaawal= 0;
                     for($i=1; $i<=12;$i++){
                         $pok = "pokikpa".$i;
@@ -434,8 +462,6 @@ class IKPADeviasiController extends Controller
                                 $prosentasedeviasi51 = 0.00;
                             }else if ($prosentasedeviasi51 > 100){
                                 $prosentasedeviasi51 = 100.00;
-                            }else{
-                                $prosentasedeviasi51 = $prosentasedeviasi51;
                             }
                         }
 
@@ -452,8 +478,6 @@ class IKPADeviasiController extends Controller
                                 $prosentasedeviasi52 = 0.00;
                             }else if($prosentasedeviasi52 > 100){
                                 $prosentasedeviasi52 = 100.00;
-                            } else{
-                                $prosentasedeviasi52 = $prosentasedeviasi52;
                             }
                         }
 
@@ -470,15 +494,21 @@ class IKPADeviasiController extends Controller
                                 $prosentasedeviasi53 = 0.00;
                             }else if ($prosentasedeviasi53 > 100.00){
                                 $prosentasedeviasi53 = 100.00;
-                            } else{
-                                $prosentasedeviasi53 = $prosentasedeviasi53;
                             }
                         }
 
+                        //hitung deviasi tertimbang
+                        $deviasitertimbang51 = ($porsipagu51*$prosentasedeviasi51)/100;
+                        $deviasitertimbang52 = ($porsipagu52*$prosentasedeviasi52)/100;
+                        $deviasitertimbang53 = ($porsipagu53*$prosentasedeviasi53)/100;
 
-                        $prosentasedeviasiseluruhjenis = $prosentasedeviasi51+$prosentasedeviasi52+$prosentasedeviasi53;
-                        $reratadeviasijenisbelanja = $prosentasedeviasiseluruhjenis/$jenisbelanjadikelola;
-                        $reratadeviasijenisbelanjaawal = $reratadeviasijenisbelanjaawal+$reratadeviasijenisbelanja;
+                        //hitung total deviasi
+                        $totaldeviasitertimbang = $deviasitertimbang51 + $deviasitertimbang52 + $deviasitertimbang53;
+
+
+                        //$prosentasedeviasiseluruhjenis = $prosentasedeviasi51+$prosentasedeviasi52+$prosentasedeviasi53;
+                        //$reratadeviasijenisbelanja = $prosentasedeviasiseluruhjenis/$jenisbelanjadikelola;
+                        $reratadeviasijenisbelanjaawal = $reratadeviasijenisbelanjaawal+$totaldeviasitertimbang;
                         $reratadeviasikumulatif = $reratadeviasijenisbelanjaawal/$i;
                         $nilaiikpa = 100-$reratadeviasikumulatif;
 
@@ -488,6 +518,10 @@ class IKPADeviasiController extends Controller
                             'kdsatker' => $kodesatker,
                             'periode' => $i,
                             'idbiro' => $idbiro,
+                            'totalpagu' => $totalpagu,
+                            'porsipagu51' => $porsipagu51,
+                            'porsipagu52' => $porsipagu52,
+                            'porsipagu53' => $porsipagu53,
                             'rencana51' => $rencana51,
                             'rencana52' => $rencana52,
                             'rencana53' => $rencana53,
@@ -500,9 +534,9 @@ class IKPADeviasiController extends Controller
                             'prosentasedeviasi51' => $prosentasedeviasi51,
                             'prosentasedeviasi52' => $prosentasedeviasi52,
                             'prosentasedeviasi53' => $prosentasedeviasi53,
-                            'prosentasedeviasiseluruhjenis' => $prosentasedeviasiseluruhjenis,
+                            'prosentasedeviasiseluruhjenis' => $totaldeviasitertimbang,
                             'jenisbelanjadikelola' => $jenisbelanjadikelola,
-                            'reratadeviasijenisbelanja' => $reratadeviasijenisbelanja,
+                            'reratadeviasijenisbelanja' => 0,
                             'reratadeviasikumulatif' => $reratadeviasikumulatif,
                             'nilaiikpa' => $nilaiikpa
                         );

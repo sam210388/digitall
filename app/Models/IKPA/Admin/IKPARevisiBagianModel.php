@@ -18,4 +18,8 @@ class IKPARevisiBagianModel extends Model
     public function birorelation(){
         return $this->hasOne(BiroModel::class,'id','idbiro');
     }
+
+    public function bagianrelation(){
+        return $this->hasOne(BagianModel::class,'id','idbagian');
+    }
 }

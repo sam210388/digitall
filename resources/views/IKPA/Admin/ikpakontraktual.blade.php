@@ -57,7 +57,7 @@
                                 <th>Bagian</th>
                                 <th>Periode</th>
                                 <th>Jumlah Kontrak</th>
-                                <th>Nilai Tepat Waktu</th>
+                                <th>Nilai Komponen Distribusi</th>
                                 <th>Kontrak TW I</th>
                                 <th>Kontrak TW I Akselerasi</th>
                                 <th>Nilai Komponen Akselreasi</th>
@@ -76,7 +76,7 @@
                                 <th>Bagian</th>
                                 <th>Periode</th>
                                 <th>Jumlah Kontrak</th>
-                                <th>Nilai Tepat Waktu</th>
+                                <th>Nilai Komponen Distribusi</th>
                                 <th>Kontrak TW I</th>
                                 <th>Kontrak TW I Akselerasi</th>
                                 <th>Nilai Komponen Akselreasi</th>

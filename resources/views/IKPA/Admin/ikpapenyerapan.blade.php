@@ -63,10 +63,9 @@
                                 <th>Target 52</th>
                                 <th>Target 53</th>
                                 <th>Total Pagu</th>
-                                <th>Total Target</th>
-                                <th>Target % Periode Ini</th>
-                                <th>Penyerapan sd Periode Ini</th>
-                                <th>% sd Periode Ini</th>
+                                <th>Penyerapan 51</th>
+                                <th>Penyerapan 52</th>
+                                <th>Penyerapan 53</th>
                                 <th>Nilai Kinerja Penyerapan TW</th>
                                 <th>Nilai IKPA</th>
                             </tr>
@@ -86,10 +85,9 @@
                                 <th>Target 52</th>
                                 <th>Target 53</th>
                                 <th>Total Pagu</th>
-                                <th>Total Target</th>
-                                <th>Target % Periode Ini</th>
-                                <th>Penyerapan sd Periode Ini</th>
-                                <th>% sd Periode Ini</th>
+                                <th>Penyerapan 51</th>
+                                <th>Penyerapan 52</th>
+                                <th>Penyerapan 53</th>
                                 <th>Nilai Kinerja Penyerapan TW</th>
                                 <th>Nilai IKPA</th>
                             </tr>
@@ -137,10 +135,9 @@
                     {data: 'nominaltarget52', name: 'nominaltarget52'},
                     {data: 'nominaltarget53', name: 'nominaltarget53'},
                     {data: 'totalpagu', name: 'totalpagu'},
-                    {data: 'totalnominaltarget', name: 'totalnominaltarget'},
-                    {data: 'targetpersenperiodeini', name: 'targetpersenperiodeini'},
-                    {data: 'penyerapansdperiodeini', name: 'penyerapansdperiodeini'},
-                    {data: 'prosentasesdperiodeini', name: 'prosentasesdperiodeini'},
+                    {data: 'penyerapan51', name: 'penyerapan51'},
+                    {data: 'penyerapan52', name: 'penyerapan52'},
+                    {data: 'penyerapan53', name: 'penyerapan53'},
                     {data: 'nilaikinerjapenyerapantw', name: 'nilaikinerjapenyerapantw'},
                     {data: 'nilaiikpapenyerapan', name: 'nilaiikpapenyerapan'},
                 ],
