@@ -156,6 +156,7 @@ use App\Http\Controllers\PerencanaanBMN\Bagian\PengajuanRKBMNBagianController;
 use App\Http\Controllers\PerencanaanBMN\PelaksanaPengadaan\PengajuanRKBMNPelaksanaController;
 use App\Http\Controllers\PerencanaanBMN\PelaksanaPengadaan\BarangPelaksanaController;
 
+use App\Http\Controllers\Dashboard\DashboardBagianController;
 
 
 
@@ -901,3 +902,8 @@ Route::post('uploadfotobarang',[BarangPelaksanaController::class,'aksiuploadfoto
 Route::post('/hapusfotobarang', [BarangPelaksanaController::class, 'hapusfotobarang'])->name('hapusfotobarang')->middleware('cekaksesbarang');
 Route::post('/downloadfotobarang', [BarangPelaksanaController::class, 'downloadfotobarang'])->name('downloadfotobarang')->middleware('cekaksesbarang');
 Route::get('dapatkandatabarang/{id}', [BarangPelaksanaController::class, 'dapatkandatabarang'])->name('dapatkandatabarang')->middleware('cekaksesbarang');
+
+
+
+//MODUL DASHBOARD
+Route::get('dashboardkepalabagian',[DashboardBagianController::class,'index'])->name('dashboardkepalabagian');

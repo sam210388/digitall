@@ -14,6 +14,7 @@
 
   <!-- jQuery -->
   <script src="{{ env('APP_URL')."/".asset('AdminLTE/plugins/jquery/jquery.min.js') }}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.9.2/dist/html2pdf.bundle.min.js"></script>
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Font Awesome -->

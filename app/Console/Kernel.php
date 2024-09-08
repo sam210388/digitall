@@ -69,7 +69,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->job(new ImportKontrakHeader($TA))->dailyAt('18:08');
 
-        $schedule->job(new ImportKontrakCOA($TA))->dailyAt('21:59');
+        $schedule->job(new ImportKontrakCOA($TA))->dailyAt('23:08');
 
         $schedule->job(new HitungIkpaPenyelesaianBagian($TA))->dailyAt('19:09');
 

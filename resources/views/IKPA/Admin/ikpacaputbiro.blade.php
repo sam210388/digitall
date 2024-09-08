@@ -81,7 +81,7 @@
     <!-- /.content -->
     <script type="text/javascript">
         $(function () {
-            $('.idbagian').select2({
+            $('.idbiro').select2({
                 width: '100%',
                 theme: 'bootstrap4',
 
