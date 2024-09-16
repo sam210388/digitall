@@ -121,7 +121,7 @@
                                             <div class="form-group">
                                                 <label for="Bagian" class="col-sm-6 control-label">Bagian</label>
                                                 <div class="col-sm-12">
-                                                    <select class="form-control idbagian" name="idbagian" id="idbagian" style="width: 100%;" required>
+                                                    <select class="form-control idbagian" name="idbagian" id="idbagian" style="width: 100%;">
                                                     </select>
                                                 </div>
                                             </div>

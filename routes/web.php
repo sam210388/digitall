@@ -136,6 +136,8 @@ use App\Http\Controllers\IKPA\Biro\IKPAPenyerapanAksesBiroController;
 use App\Http\Controllers\IKPA\Biro\IKPAKontraktualAksesBiroController;
 use App\Http\Controllers\IKPA\Biro\IKPADeviasiAksesBiroController;
 use App\Http\Controllers\IKPA\Biro\IKPAPenyelesaianTagihanAksesBiroController;
+use App\Http\Controllers\IKPA\Biro\IKPACaputAksesBiroController;
+use App\Http\Controllers\IKPA\Biro\IKPARevisiBiroController;
 use App\Http\Controllers\IKPA\Biro\RekapIKPABagianAksesBiroController;
 use App\Http\Controllers\IKPA\Biro\RekapIKPABiroAksesBiroController;
 
@@ -143,6 +145,8 @@ use App\Http\Controllers\IKPA\Bagian\IKPAPenyerapanBagianController;
 use App\Http\Controllers\IKPA\Bagian\IKPADeviasiBagianController;
 use App\Http\Controllers\IKPA\Bagian\IKPAPenyelesaianTagihanBagianController;
 use App\Http\Controllers\IKPA\Bagian\IKPAKontraktualBagianController;
+use App\Http\Controllers\IKPA\Bagian\IKPACaputBagianController;
+use App\Http\Controllers\IKPA\Bagian\IKPARevisiBagianController;
 use App\Http\Controllers\IKPA\Bagian\RekapIKPAAksesBagianController;
 
 
@@ -376,7 +380,7 @@ Route::post('simpanrealisasirincian',[RealisasiRincianIndikatorROConctroller::cl
 Route::post('updaterealisasirincian/{idrealisasi}',[RealisasiRincianIndikatorROConctroller::class,'updaterealisasirincian'])->name('updaterealisasirincian')->middleware('cekoperatorbagian');
 Route::post('editrealisasirincian',[RealisasiRincianIndikatorROConctroller::class,'editrealisasirincian'])->name('editrealisasirincian')->middleware('cekoperatorbagian');
 Route::delete('deleterealisasirincian/{idrealisasi}',[RealisasiRincianIndikatorROConctroller::class,'deleterealisasi'])->name('deleterealisasirincian')->middleware('cekoperatorbagian');
-Route::get('cekjadwallapor/{idrincianindikatorro}/{idbulan}',[RealisasiRincianIndikatorROConctroller::class,'cekjadwallapor'])->name('cekjadwallapor');
+Route::get('cekjadwallapor/{idindikatorro}/{idbulan}',[RealisasiIndikatorROBagianConctroller::class,'cekjadwallapor'])->name('cekjadwallapor');
 
 
 //REALISASI RINCIAN INDIKATOR RO dipegang biro
@@ -731,7 +735,7 @@ Route::get('hitungikpakontraktualbiro',[IKPAKontraktualController::class,'hitung
 Route::get('exportikpakontraktualbiro',[IKPAKontraktualController::class,'exportikpakontraktualbiro'])->name('exportikpakontraktualbiro')->middleware('cekadminikpa');
 
 
-//IKPA CAPUT BAGIAN
+//IKPA CAPUT Bagian
 Route::get('monitoringikpacaputbagian',[IKPACaputController::class,'index'])->name('monitoringikpacaputbagian')->middleware('cekadminikpa');
 Route::get('getdatamonitoringikpacaput/{idbagian?}',[IKPACaputController::class,'getdataikpacaput'])->name('getdatamonitoringikpacaput')->middleware('cekadminikpa');
 Route::get('hitungikpacaputbagian',[IKPACaputController::class,'hitungikpacaputbagian'])->name('hitungikpacaputbagian')->middleware('cekadminikpa');
@@ -789,6 +793,16 @@ Route::get('getdatadeviasibagian',[IKPADeviasiBagianController::class,'getdataik
 Route::get('ikpakontraktualbagian',[IKPAKontraktualBagianController::class,'index'])->name('ikpadeviasibagian')->middleware('cekoperatorbagian');
 Route::get('getdatakontraktualbagian',[IKPAKontraktualBagianController::class,'getdataikpakontraktualbagian'])->name('getdatakontraktualbagian')->middleware('cekoperatorbagian');
 
+//IKPA CAPUT
+Route::get('ikpacaputbagian',[IKPACaputBagianController::class,'index'])->name('ikpacaputbagian')->middleware('cekoperatorbagian');
+Route::get('getdataikpacaputbagian/{idbagian}',[IKPACaputBagianController::class,'getdataikpacaput'])->name('getdataikpacaputbagian')->middleware('cekoperatorbagian');
+
+
+//IKPA REVISI
+Route::get('ikparevisiaksesbagian',[IKPARevisiBagianController::class,'index'])->name('ikparevisiaksesbagian')->middleware('cekoperatorbagian');
+Route::get('getdataikparevisiaksesbagian/{idbagian}',[IKPARevisiBagianController::class,'getdataikparevisibagian'])->name('getdataikparevisiaksesbagian')->middleware('cekoperatorbagian');
+
+
 //REKAP IKPA BAGIAN
 Route::get('rekapikpaaksesbagian',[RekapIKPAAksesBagianController::class,'index'])->name('rekapikpaaksesbagian')->middleware('cekoperatorbagian');
 Route::get('getdatarekapikpaaksesbagian/{idbagian?}',[RekapIKPAAksesBagianController::class,'getdatarekapikpabagian'])->name('getdatarekapikpaaksesbagian')->middleware('cekoperatorbagian');
@@ -812,6 +826,14 @@ Route::get('getdatadeviasiaksesbiro',[IKPADeviasiAksesBiroController::class,'get
 //KONTRAKTUAL
 Route::get('ikpakontraktualaksesbiro',[IKPAKontraktualAksesBiroController::class,'index'])->name('ikpakontraktualaksesbiro')->middleware('cekoperatorbiro');
 Route::get('getdatakontraktualaksesbiro',[IKPAKontraktualAksesBiroController::class,'getdataikpakontraktualbagian'])->name('getdatakontraktualaksesbiro')->middleware('cekoperatorbiro');
+
+// IKPA CAPUT AKSES BIRO
+Route::get('ikpacaputbiro',[IKPACaputAksesBiroController::class,'index'])->name('ikpacaputbiro')->middleware('cekoperatorbiro');
+Route::get('getdataikpacaputbiro/{idbiro}',[IKPACaputAksesBiroController::class,'getdataikpacaput'])->name('getdataikpacaputbiro')->middleware('cekoperatorbiro');
+
+// IKPA REVISI AKSES BIRO
+Route::get('ikparevisiaksesbiro',[IKPARevisiBiroController::class,'indexbiro'])->name('ikparevisiaksesbiro')->middleware('cekoperatorbiro');
+Route::get('getdataikparevisiaksesbiro/{idbiro}',[IKPARevisiBiroController::class,'getdataikparevisibiro'])->name('getdataikparevisiaksesbiro')->middleware('cekoperatorbiro');
 
 //REKAP IKPA BIRO
 Route::get('rekapikpabagianaksesbiro',[RekapIKPABagianAksesBiroController::class,'index'])->name('rekapikpabagianaksesbiro')->middleware('cekoperatorbiro');
@@ -907,3 +929,4 @@ Route::get('dapatkandatabarang/{id}', [BarangPelaksanaController::class, 'dapatk
 
 //MODUL DASHBOARD
 Route::get('dashboardkepalabagian',[DashboardBagianController::class,'index'])->name('dashboardkepalabagian');
+Route::post('cetakdashboardkabag',[DashboardBagianController::class,'cetakpdf'])->name('cetakdashboardkabag');

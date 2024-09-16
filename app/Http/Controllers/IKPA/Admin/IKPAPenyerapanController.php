@@ -170,21 +170,25 @@ class IKPAPenyerapanController extends Controller
                                 $prosentarget51 = 0.2;
                                 $prosentarget52 = 0.2;
                                 $prosentarget53 = 0.2;
+                                $totaltarget = 0.2;
                                 break;
                             case ($i == 4 || $i==5 || $i==6):
                                 $prosentarget51 = 0.50;
                                 $prosentarget52 = 0.50;
                                 $prosentarget53 = 0.50;
+                                $totaltarget = 0.50;
                                 break;
                             case ($i == 7 || $i==8 || $i==9):
                                 $prosentarget51 = 0.75;
                                 $prosentarget52 = 0.75;
                                 $prosentarget53 = 0.75;
+                                $totaltarget = 0.75;
                                 break;
                             case ($i == 10 || $i==11 || $i==12):
                                 $prosentarget51 = 0.96;
                                 $prosentarget52 = 0.96;
                                 $prosentarget53 = 0.96;
+                                $totaltarget = 0.96;
                         }
 
 
@@ -326,13 +330,13 @@ class IKPAPenyerapanController extends Controller
                             'nominaltarget52' => $target52,
                             'nominaltarget53' => $target53,
                             'totalpagu' => $totalpagu,
-                            'totalnominaltarget' => 0,
-                            'penyerapansdperiodeini' => 0,
+                            'totalnominaltarget' => $target51+$target52+$target53,
+                            'penyerapansdperiodeini' => $penyerapan51+$penyerapan52+$penyerapan53,
                             'penyerapan51' => $penyerapan51,
                             'penyerapan52' => $penyerapan52,
                             'penyerapan53' => $penyerapan53,
-                            'targetpersenperiodeini' => 0,
-                            'prosentasesdperiodeini' => 0,
+                            'targetpersenperiodeini' => $totaltarget,
+                            'prosentasesdperiodeini' => (($penyerapan51+$penyerapan52+$penyerapan53)/($pagu51+$pagu52+$pagu53))*100,
                             'nilaikinerjapenyerapantw' => $nilaikinerjapenyerapantotal,
                             'nilaiikpapenyerapan' => $nilaiikpapenyerapan
                         );

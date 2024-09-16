@@ -25,7 +25,6 @@ class IKPAKontraktualController extends Controller
         $judul = 'IKPA Kontraktual';
         $databagian = DB::table('bagian')
             ->where('status','=','on')
-            ->whereIn('idbiro',[677,688,605,728])
             ->get();
         return view('IKPA.Admin.ikpakontraktual',[
             "judul"=>$judul,
@@ -37,7 +36,6 @@ class IKPAKontraktualController extends Controller
         $judul = 'IKPA Kontraktual';
         $databiro = DB::table('biro')
             ->where('status','=','on')
-            ->whereIn('id',[677,688,605,728])
             ->get();
         return view('IKPA.Admin.ikpakontraktualbiro',[
             "judul"=>$judul,
@@ -123,7 +121,6 @@ class IKPAKontraktualController extends Controller
             //ambil data bagian
             $databagian = DB::table('bagian')
                 ->where('status','=','on')
-                ->whereIn('idbiro',[677,688,605,728])
                 ->get();
             foreach ($databagian as $db){
                 $idbagian = $db->id;
@@ -359,7 +356,6 @@ class IKPAKontraktualController extends Controller
             //ambil data bagian
             $databiro = DB::table('biro')
                 ->where('status','=','on')
-                ->whereIn('id',[677,688,605,728])
                 ->get();
             foreach ($databiro as $db){
                 $idbiro = $db->id;

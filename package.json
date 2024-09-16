@@ -25,6 +25,7 @@
     },
     "dependencies": {
         "chart.js": "^4.4.4",
+        "chartjs-plugin-datalabels": "^2.2.0",
         "html2pdf.js": "^0.10.2",
         "sweetalert2": "^11.4.8"
     }

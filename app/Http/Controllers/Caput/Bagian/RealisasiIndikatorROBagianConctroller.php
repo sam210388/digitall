@@ -165,14 +165,14 @@ class RealisasiIndikatorROBagianConctroller extends Controller
             $adarealisasi = DB::table('realisasiindikatorro')
                 ->where('idindikatorro','=',$idindikatorro)
                 ->where('tahunanggaran','=',$tahunanggaran)
-                ->where('periode','=',$idbulan-1)
-                ->get();
-            if (count($adarealisasi) == 0){
+                ->where('periode','=',DB::raw($idbulan-1))
+                ->count();
+            if ($adarealisasi > 0){
+                $laporsebelumnya = true;
+            }else{
                 $laporsebelumnya = false;
                 $kondisi = "Realisasi Sebelumnya: Belum Diisi";
                 $kondisilapor = $kondisilapor.$kondisi;
-            }else{
-                $laporsebelumnya = true;
             }
         }
 
@@ -207,7 +207,7 @@ class RealisasiIndikatorROBagianConctroller extends Controller
         if ($jadwaltutup != null){
             $tanggalsekarang = strtotime(date('Y-m-d'));
             $jadwaltutup = strtotime($jadwaltutup);
-            if ($tanggalsekarang < $jadwaltutup){
+            if ($tanggalsekarang <= $jadwaltutup){
                 $statustutup = false;
             }else{
                 $statustutup = true;

@@ -127,7 +127,7 @@ use App\Http\Controllers\IKPA\Admin\DetilIKPAKontraktualController;
 use App\Http\Controllers\IKPA\Admin\IKPAKontraktualController;
 use App\Http\Controllers\IKPA\Admin\IKPACaputController;
 use App\Http\Controllers\IKPA\Admin\IKPACaputBiroController;
-use App\Http\Controllers\IKPA\Admin\IKPARevisiController;
+use App\Http\Controllers\IKPA\Admin\IKPARevisiBagianController;
 use App\Http\Controllers\IKPA\Admin\DetilIKPARevisiController;
 use App\Http\Controllers\IKPA\Admin\RekapIKPABagianController;
 
@@ -747,15 +747,15 @@ Route::resource('detilikparevisi',DetilIKPARevisiController::class)->middleware(
 Route::get('getdetilrevisi',[DetilIKPARevisiController::class,'getdetilrevisi'])->name('getdetilrevisi')->middleware('cekadminikpa');
 Route::post('importdetilrevisi',[DetilIKPARevisiController::class,'importdata'])->name('importdetilrevisi')->middleware('cekadminikpa');
 
-Route::get('ikparevisibagian',[IKPARevisiController::class,'index'])->name('ikparevisibagian')->middleware('cekadminikpa');
-Route::get('getdataikparevisibagian/{idbagian?}',[IKPARevisiController::class,'getdataikparevisibagian'])->name('getdataikparevisibagian')->middleware('cekadminikpa');
-Route::get('hitungikparevisibagian',[IKPARevisiController::class,'hitungikparevisibagian'])->name('hitungikparevisibagian')->middleware('cekadminikpa');
-Route::get('exportikparevisibagian',[IKPARevisiController::class,'exportikparevisibagian'])->name('exportikparevisibagian')->middleware('cekadminikpa');
+Route::get('ikparevisibagian',[IKPARevisiBagianController::class,'index'])->name('ikparevisibagian')->middleware('cekadminikpa');
+Route::get('getdataikparevisibagian/{idbagian?}',[IKPARevisiBagianController::class,'getdataikparevisibagian'])->name('getdataikparevisibagian')->middleware('cekadminikpa');
+Route::get('hitungikparevisibagian',[IKPARevisiBagianController::class,'hitungikparevisibagian'])->name('hitungikparevisibagian')->middleware('cekadminikpa');
+Route::get('exportikparevisibagian',[IKPARevisiBagianController::class,'exportikparevisibagian'])->name('exportikparevisibagian')->middleware('cekadminikpa');
 
-Route::get('ikparevisibiro',[IKPARevisiController::class,'indexbiro'])->name('ikparevisibiro')->middleware('cekadminikpa');
-Route::get('getdataikparevisibiro/{idbiro?}',[IKPARevisiController::class,'getdataikparevisibiro'])->name('getdataikparevisibiro')->middleware('cekadminikpa');
-Route::get('hitungikparevisibiro',[IKPARevisiController::class,'hitungikparevisibiro'])->name('hitungikparevisibiro')->middleware('cekadminikpa');
-Route::get('exportikparevisibiro',[IKPARevisiController::class,'exportikparevisibiro'])->name('exportikparevisibiro')->middleware('cekadminikpa');
+Route::get('ikparevisibiro',[IKPARevisiBagianController::class,'indexbiro'])->name('ikparevisibiro')->middleware('cekadminikpa');
+Route::get('getdataikparevisibiro/{idbiro?}',[IKPARevisiBagianController::class,'getdataikparevisibiro'])->name('getdataikparevisibiro')->middleware('cekadminikpa');
+Route::get('hitungikparevisibiro',[IKPARevisiBagianController::class,'hitungikparevisibiro'])->name('hitungikparevisibiro')->middleware('cekadminikpa');
+Route::get('exportikparevisibiro',[IKPARevisiBagianController::class,'exportikparevisibiro'])->name('exportikparevisibiro')->middleware('cekadminikpa');
 
 
 //IKPA REKAP

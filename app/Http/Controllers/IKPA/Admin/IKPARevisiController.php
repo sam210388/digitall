@@ -97,6 +97,7 @@ class IKPARevisiController extends Controller
                         ->where('idbagian','=',$idbagian)
                         ->where('bulanpengesahan','=',$i)
                         ->where('kewenanganrevisi','=',"Revisi POK")
+                        ->where('status','=',"Final")
                         ->where('kodesatker','=',$kodesatker)
                         ->count();
                     if ($jumlahrevisipok > 0){
@@ -114,6 +115,7 @@ class IKPARevisiController extends Controller
                         ->where('idbagian','=',$idbagian)
                         ->where('bulanpengesahan','=',$i)
                         ->where('kewenanganrevisi','=',"Revisi Kemenkeu")
+                        ->where('status','=',"Final")
                         ->where('kodesatker','=',$kodesatker)
                         ->count();
                     if ($i<=5){

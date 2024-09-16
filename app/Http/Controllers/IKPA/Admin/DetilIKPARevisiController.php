@@ -136,7 +136,6 @@ class DetilIKPARevisiController extends Controller
         $validated = $request->validate([
             'kdsatker' => 'required',
             'idbiro' => 'required',
-            'idbagian' => 'required',
             'nosurat' => 'required',
             'tanggalsurat' => 'required',
             'perihal' => 'required',

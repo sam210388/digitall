@@ -114,25 +114,44 @@ class RekapIKPABagianController extends Controller
     }
 
     public function aksirekapikpabagian($tahunanggaran){
-        //BOBOT SETJEN
-        $SETJEN_PENYERAPAN = 0.25;
-        $SETJEN_DEVIASI = 0.1;
-        $SETJEN_PENYELESAIAN = 0.15;
-        $SETJEN_KONTRAKTUAL = 0.1;
         $SETJEN_REVISI = 0.1;
-        $SETJEN_CAPUT = 0.3;
+        $SETJEN_DEVIASI = 0.15;
+        $SETJEN_PENYERAPAN = 0.2;
+        $SETJEN_KONTRAKTUAL = 0.1;
+        $SETJEN_PENYELESAIAN_TAGIHAN = 0.1;
+        $SETJEN_CAPUT = 0.25;
+        $SETJEN_KKP = 0.1;
 
-        //BOBOT DEWAN
-        $DEWAN_PENYERAPAN = 0.05;
-        $DEWAN_DEVIASI = 0.05;
-        $DEWAN_PENYELESAIAN = 0.35;
-        $DEWAN_KONTRAKTUAL = 0.35;
         $DEWAN_REVISI = 0.1;
+        $DEWAN_DEVIASI = 0.05;
+        $DEWAN_PENYERAPAN = 0.05;
+        $DEWAN_KONTRAKTUAL = 0.25;
+        $DEWAN_PENYELESAIAN_TAGIHAN = 0.25;
         $DEWAN_CAPUT = 0.1;
+        $DEWAN_KKP = 0.2;
+
+
         //ambil data satker
         $datasatker = ['001012','001030'];
         foreach ($datasatker as $item){
             $kodesatker = $item;
+            if ($kodesatker == "001012"){
+                $BOBOT_REVISI = $SETJEN_REVISI;
+                $BOBOT_DEVIASI = $SETJEN_DEVIASI;
+                $BOBOT_PENYERAPAN = $SETJEN_PENYERAPAN;
+                $BOBOT_KONTRAKTUAL = $SETJEN_KONTRAKTUAL;
+                $BOBOT_PENYELESAIAN_TAGIHAN = $SETJEN_PENYELESAIAN_TAGIHAN;
+                $BOBOT_CAPUT = $SETJEN_CAPUT;
+                $BOBOT_KKP = $SETJEN_KKP;
+            }else{
+                $BOBOT_REVISI = $DEWAN_REVISI;
+                $BOBOT_DEVIASI = $DEWAN_DEVIASI;
+                $BOBOT_PENYERAPAN = $DEWAN_PENYERAPAN;
+                $BOBOT_KONTRAKTUAL = $DEWAN_KONTRAKTUAL;
+                $BOBOT_PENYELESAIAN_TAGIHAN = $DEWAN_PENYELESAIAN_TAGIHAN;
+                $BOBOT_CAPUT = $DEWAN_CAPUT;
+                $BOBOT_KKP = $DEWAN_KKP;
+            }
             //ambil data bagian
             $databagian = DB::table('bagian')
                 ->where('status','=','on')
@@ -140,23 +159,15 @@ class RekapIKPABagianController extends Controller
             foreach ($databagian as $db){
                 $idbagian = $db->id;
                 $idbiro = $db->idbiro;
-                $BOBOT_PENYERAPAN = 0.25;
-                $BOBOT_PENYELESAIAN_TAGIHAN = 0.15;
                 for($i=1; $i<=12;$i++){
-                    if (in_array($idbiro,[677,688,605,728])){
-                        $BOBOT_DEVIASI = 0.1;
-                        $BOBOT_KONTRAKTUAL = 0.1;
-                        $nilaiikpakontraktual = DB::table('ikpakontraktualbagian')
-                            ->where('tahunanggaran','=',$tahunanggaran)
-                            ->where('idbagian','=',$idbagian)
-                            ->where('kodesatker','=',$kodesatker)
-                            ->where('periode','=',$i)
-                            ->value('nilai');
-                        $nilaikontraktualakhir = $nilaiikpakontraktual*$BOBOT_KONTRAKTUAL;
-                    }else{
-                        $BOBOT_DEVIASI = 0.2;
-                        $nilaikontraktualakhir = 0;
-                    }
+                    $nilaiikpakontraktual = DB::table('ikpakontraktualbagian')
+                        ->where('tahunanggaran','=',$tahunanggaran)
+                        ->where('idbagian','=',$idbagian)
+                        ->where('kodesatker','=',$kodesatker)
+                        ->where('periode','=',$i)
+                        ->value('nilai');
+                    $nilaikontraktualakhir = $nilaiikpakontraktual*$BOBOT_KONTRAKTUAL;
+
                     $nilaiikpadeviasi = DB::table('ikpadeviasibagian')
                         ->where('tahunanggaran','=',$tahunanggaran)
                         ->where('idbagian','=',$idbagian)
@@ -172,6 +183,7 @@ class RekapIKPABagianController extends Controller
                         ->where('periode','=',$i)
                         ->value('nilaiikpapenyerapan');
                     $nilaipenyerapanakhir = $nilaiikpapenyerapan*$BOBOT_PENYERAPAN;
+
                     $nilaiikpapenyelesaian = DB::table('ikpapenyelesaiantagihan')
                         ->where('tahunanggaran','=',$tahunanggaran)
                         ->where('idbagian','=',$idbagian)
@@ -180,9 +192,31 @@ class RekapIKPABagianController extends Controller
                         ->value('persen');
                     $nilaipenyelesaianakhir = $nilaiikpapenyelesaian*$BOBOT_PENYELESAIAN_TAGIHAN;
 
-                    $nilaitotal = $nilaipenyerapanakhir+$nilaideviasiakhir+$nilaipenyelesaianakhir+$nilaikontraktualakhir;
+                    $nilaiikparevisi = DB::table('ikparevisibagian')
+                        ->where('tahunanggaran','=',$tahunanggaran)
+                        ->where('idbagian','=',$idbagian)
+                        ->where('kodesatker','=',$kodesatker)
+                        ->where('periode','=',$i)
+                        ->value('nilaiikpa');
+                    $nilaiikparevisiakhir = $nilaiikparevisi*$BOBOT_REVISI;
 
-                    $nilaitotalsetelahkonversi = $nilaitotal/0.6;
+                    $nilaiikpacaput = DB::table('ikparevisibagian')
+                        ->where('tahunanggaran','=',$tahunanggaran)
+                        ->where('idbagian','=',$idbagian)
+                        ->where('kodesatker','=',$kodesatker)
+                        ->where('periode','=',$i)
+                        ->value('nilaiikpa');
+                    $nilaiikpacaputakhir = $nilaiikpacaput*$BOBOT_CAPUT;
+
+                    $nilaitotal = $nilaipenyerapanakhir+$nilaideviasiakhir+$nilaipenyelesaianakhir+$nilaikontraktualakhir+$nilaiikparevisiakhir+$nilaiikpacaputakhir;
+
+                    if ($kodesatker == '001012'){
+                        $konversibobot = 0.9;
+                    }else{
+                        $konversibobot = 0.8;
+                    }
+
+                    $nilaitotalsetelahkonversi = $nilaitotal/$konversibobot;
 
                     $datainsert = array(
                         'tahunanggaran' => $tahunanggaran,
@@ -194,6 +228,8 @@ class RekapIKPABagianController extends Controller
                         'ikpadeviasi' => $nilaideviasiakhir,
                         'ikpapenyelesaian' => $nilaipenyelesaianakhir,
                         'ikpakontraktual' => $nilaikontraktualakhir,
+                        'ikparevisi' => $nilaiikparevisiakhir,
+                        'ikpacaput' => $nilaiikpacaputakhir,
                         'ikpatotal' => $nilaitotalsetelahkonversi
                     );
 
@@ -213,48 +249,58 @@ class RekapIKPABagianController extends Controller
     }
 
     public function aksirekapikpabiro($tahunanggaran){
-        //BOBOT SETJEN
-        $SETJEN_PENYERAPAN = 0.25;
-        $SETJEN_DEVIASI = 0.1;
-        $SETJEN_PENYELESAIAN = 0.15;
-        $SETJEN_KONTRAKTUAL = 0.1;
         $SETJEN_REVISI = 0.1;
-        $SETJEN_CAPUT = 0.3;
+        $SETJEN_DEVIASI = 0.15;
+        $SETJEN_PENYERAPAN = 0.2;
+        $SETJEN_KONTRAKTUAL = 0.1;
+        $SETJEN_PENYELESAIAN_TAGIHAN = 0.1;
+        $SETJEN_CAPUT = 0.25;
+        $SETJEN_KKP = 0.1;
 
-        //BOBOT DEWAN
-        $DEWAN_PENYERAPAN = 0.05;
-        $DEWAN_DEVIASI = 0.05;
-        $DEWAN_PENYELESAIAN = 0.35;
-        $DEWAN_KONTRAKTUAL = 0.35;
         $DEWAN_REVISI = 0.1;
+        $DEWAN_DEVIASI = 0.05;
+        $DEWAN_PENYERAPAN = 0.05;
+        $DEWAN_KONTRAKTUAL = 0.25;
+        $DEWAN_PENYELESAIAN_TAGIHAN = 0.25;
         $DEWAN_CAPUT = 0.1;
+        $DEWAN_KKP = 0.2;
         //ambil data satker
+
         $datasatker = ['001012','001030'];
         foreach ($datasatker as $item){
             $kodesatker = $item;
+            if ($kodesatker == "001012"){
+                $BOBOT_REVISI = $SETJEN_REVISI;
+                $BOBOT_DEVIASI = $SETJEN_DEVIASI;
+                $BOBOT_PENYERAPAN = $SETJEN_PENYERAPAN;
+                $BOBOT_KONTRAKTUAL = $SETJEN_KONTRAKTUAL;
+                $BOBOT_PENYELESAIAN_TAGIHAN = $SETJEN_PENYELESAIAN_TAGIHAN;
+                $BOBOT_CAPUT = $SETJEN_CAPUT;
+                $BOBOT_KKP = $SETJEN_KKP;
+            }else{
+                $BOBOT_REVISI = $DEWAN_REVISI;
+                $BOBOT_DEVIASI = $DEWAN_DEVIASI;
+                $BOBOT_PENYERAPAN = $DEWAN_PENYERAPAN;
+                $BOBOT_KONTRAKTUAL = $DEWAN_KONTRAKTUAL;
+                $BOBOT_PENYELESAIAN_TAGIHAN = $DEWAN_PENYELESAIAN_TAGIHAN;
+                $BOBOT_CAPUT = $DEWAN_CAPUT;
+                $BOBOT_KKP = $DEWAN_KKP;
+            }
             //ambil data bagian
             $databiro = DB::table('biro')
                 ->where('status','=','on')
                 ->get();
             foreach ($databiro as $db){
                 $idbiro = $db->id;
-                $BOBOT_PENYERAPAN = 0.25;
-                $BOBOT_PENYELESAIAN_TAGIHAN = 0.15;
                 for($i=1; $i<=12;$i++){
-                    if (in_array($idbiro,[677,688,605,728])){
-                        $BOBOT_DEVIASI = 0.1;
-                        $BOBOT_KONTRAKTUAL = 0.1;
-                        $nilaiikpakontraktual = DB::table('ikpakontraktualbiro')
-                            ->where('tahunanggaran','=',$tahunanggaran)
-                            ->where('idbiro','=',$idbiro)
-                            ->where('kodesatker','=',$kodesatker)
-                            ->where('periode','=',$i)
-                            ->value('nilai');
-                        $nilaikontraktualakhir = $nilaiikpakontraktual*$BOBOT_KONTRAKTUAL;
-                    }else{
-                        $BOBOT_DEVIASI = 0.2;
-                        $nilaikontraktualakhir = 0;
-                    }
+                    $nilaiikpakontraktual = DB::table('ikpakontraktualbiro')
+                        ->where('tahunanggaran','=',$tahunanggaran)
+                        ->where('idbiro','=',$idbiro)
+                        ->where('kodesatker','=',$kodesatker)
+                        ->where('periode','=',$i)
+                        ->value('nilai');
+                    $nilaikontraktualakhir = $nilaiikpakontraktual*$BOBOT_KONTRAKTUAL;
+
                     $nilaiikpadeviasi = DB::table('ikpadeviasibiro')
                         ->where('tahunanggaran','=',$tahunanggaran)
                         ->where('idbiro','=',$idbiro)
@@ -270,6 +316,7 @@ class RekapIKPABagianController extends Controller
                         ->where('periode','=',$i)
                         ->value('nilaiikpapenyerapan');
                     $nilaipenyerapanakhir = $nilaiikpapenyerapan*$BOBOT_PENYERAPAN;
+
                     $nilaiikpapenyelesaian = DB::table('ikpapenyelesaiantagihanbiro')
                         ->where('tahunanggaran','=',$tahunanggaran)
                         ->where('idbiro','=',$idbiro)
@@ -278,9 +325,32 @@ class RekapIKPABagianController extends Controller
                         ->value('persen');
                     $nilaipenyelesaianakhir = $nilaiikpapenyelesaian*$BOBOT_PENYELESAIAN_TAGIHAN;
 
-                    $nilaitotal = $nilaipenyerapanakhir+$nilaideviasiakhir+$nilaipenyelesaianakhir+$nilaikontraktualakhir;
 
-                    $nilaitotalsetelahkonversi = $nilaitotal/0.6;
+                    $nilaiikparevisi = DB::table('ikparevisibiro')
+                        ->where('tahunanggaran','=',$tahunanggaran)
+                        ->where('idbiro','=',$idbiro)
+                        ->where('kodesatker','=',$kodesatker)
+                        ->where('periode','=',$i)
+                        ->value('nilaiikpa');
+                    $nilaiikparevisiakhir = $nilaiikparevisi*$BOBOT_REVISI;
+
+                    $nilaiikpacaput = DB::table('ikparevisibiro')
+                        ->where('tahunanggaran','=',$tahunanggaran)
+                        ->where('idbiro','=',$idbiro)
+                        ->where('kodesatker','=',$kodesatker)
+                        ->where('periode','=',$i)
+                        ->value('nilaiikpa');
+                    $nilaiikpacaputakhir = $nilaiikpacaput*$BOBOT_CAPUT;
+
+                    $nilaitotal = $nilaipenyerapanakhir+$nilaideviasiakhir+$nilaipenyelesaianakhir+$nilaikontraktualakhir+$nilaiikparevisiakhir+$nilaiikpacaputakhir;
+
+                    if ($kodesatker == '001012'){
+                        $konversibobot = 0.9;
+                    }else{
+                        $konversibobot = 0.8;
+                    }
+
+                    $nilaitotalsetelahkonversi = $nilaitotal/$konversibobot;
 
                     $datainsert = array(
                         'tahunanggaran' => $tahunanggaran,
