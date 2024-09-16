@@ -115,54 +115,52 @@ class RealisasiSaktiController extends Controller
         if ($response != "Gagal" or $response != "Expired"){
             $hasilasli = json_decode($response);
             //echo json_encode($hasilasli);
-            foreach ($hasilasli as $item => $value) {
-                if ($item == "TOKEN") {
-                    foreach ($value as $data) {
-                        $tokenresponse = $data->TOKEN;
-                    }
-                    $token = new BearerKey();
-                    $token->simpantokenbaru($tahunanggaran, $kodemodul, $tokenresponse);
-                }else{
-                    foreach ($value as $DATA) {
+            foreach ($hasilasli as $subArray) {
+                foreach ($subArray as $item) {
+                    if (isset($item->TOKEN)) {
+                        $tokenresponse = $item->TOKEN;
+                        $token = new BearerKey();
+                        $token->simpantokenbaru($tahunanggaran, $kodemodul, $tokenresponse);
+                    } else {
                         $THNANG = $tahunanggaran;
-                        $KDSATKER = $DATA->KDSATKER;
-                        $KODE_KEMENTERIAN = $DATA->KODE_KEMENTERIAN;
-                        $KD_JNS_SPP = $DATA->KD_JNS_SPP;
-                        $NO_SPP = $DATA->NO_SPP;
-                        $TGL_SPP = new \DateTime($DATA->TGL_SPP);
+                        $KDSATKER = $item->KDSATKER;
+                        $KODE_KEMENTERIAN = $item->KODE_KEMENTERIAN;
+                        $KD_JNS_SPP = $item->KD_JNS_SPP;
+                        $NO_SPP = $item->NO_SPP;
+                        $TGL_SPP = new \DateTime($item->TGL_SPP);
                         $TGL_SPP = $TGL_SPP->format('Y-m-d');
-                        $NO_SPM = $DATA->NO_SPM;
-                        $TGL_SPM = new \DateTime($DATA->TGL_SPM);
+                        $NO_SPM = $item->NO_SPM;
+                        $TGL_SPM = new \DateTime($item->TGL_SPM);
                         $TGL_SPM = $TGL_SPM->format('Y-m-d');
-                        $NO_SP2D = $DATA->NO_SP2D;
-                        $TGL_SP2D = new \DateTime($DATA->TGL_SP2D);
+                        $NO_SP2D = $item->NO_SP2D;
+                        $TGL_SP2D = new \DateTime($item->TGL_SP2D);
                         $TGL_SP2D = $TGL_SP2D->format('Y-m-d');
 
                         $bulan = new \DateTime($TGL_SP2D);
                         $bulan = $bulan->format('n');
 
-                        $NO_SP2B = $DATA->NO_SP2B;
-                        $TGL_SP2B = new \DateTime($DATA->TGL_SP2B);
+                        $NO_SP2B = $item->NO_SP2B;
+                        $TGL_SP2B = new \DateTime($item->TGL_SP2B);
                         $TGL_SP2B = $TGL_SP2B->format('Y-m-d');
-                        $NO_SP3HL_BJS = $DATA->NO_SP3HL_BJS;
-                        $TGL_SP23HL_BJS = new \DateTime($DATA->TGL_SP2B);
+                        $NO_SP3HL_BJS = $item->NO_SP3HL_BJS;
+                        $TGL_SP23HL_BJS = new \DateTime($item->TGL_SP2B);
                         $TGL_SP23HL_BJS = $TGL_SP23HL_BJS->format('Y-m-d');
-                        $URAIAN = $DATA->URAIAN;
-                        $KODE_COA = $DATA->KODE_COA;
-                        $KODE_PROGRAM = $DATA->KODE_PROGRAM;
-                        $KODE_KEGIATAN = $DATA->KODE_KEGIATAN;
-                        $KODE_OUTPUT = $DATA->KODE_OUTPUT;
-                        $KODE_SUBOUTPUT = $DATA->KODE_SUBOUTPUT;
-                        $KODE_KOMPONEN = $DATA->KODE_KOMPONEN;
-                        $KODE_SUBKOMPONEN = substr($DATA->KODE_SUBKOMPONEN, 1,1);
-                        $KODE_AKUN = $DATA->KODE_AKUN;
-                        $KODE_ITEM = $DATA->KODE_ITEM;
+                        $URAIAN = $item->URAIAN;
+                        $KODE_COA = $item->KODE_COA;
+                        $KODE_PROGRAM = $item->KODE_PROGRAM;
+                        $KODE_KEGIATAN = $item->KODE_KEGIATAN;
+                        $KODE_OUTPUT = $item->KODE_OUTPUT;
+                        $KODE_SUBOUTPUT = $item->KODE_SUBOUTPUT;
+                        $KODE_KOMPONEN = $item->KODE_KOMPONEN;
+                        $KODE_SUBKOMPONEN = substr($item->KODE_SUBKOMPONEN, 1,1);
+                        $KODE_AKUN = $item->KODE_AKUN;
+                        $KODE_ITEM = $item->KODE_ITEM;
                         $PENGENAL = $THNANG.".".$KDSATKER.".".$KODE_PROGRAM.'.'.$KODE_KEGIATAN.'.'.$KODE_OUTPUT.'.'.$KODE_SUBOUTPUT.'.'.$KODE_KOMPONEN.'.'.$KODE_SUBKOMPONEN.'.'.$KODE_AKUN;
-                        $MATA_UANG = $DATA->MATA_UANG;
-                        $KURS = $DATA->KURS;
-                        $NILAI_VALAS = $DATA->NILAI_VALAS;
-                        $NILAI_RUPIAH = $DATA->NILAI_RUPIAH;
-                        $STATUS_DATA = $DATA->STATUS_DATA;
+                        $MATA_UANG = $item->MATA_UANG;
+                        $KURS = $item->KURS;
+                        $NILAI_VALAS = $item->NILAI_VALAS;
+                        $NILAI_RUPIAH = $item->NILAI_RUPIAH;
+                        $STATUS_DATA = $item->STATUS_DATA;
                         //cek data idbagian dll
                         if ($KDSATKER == '001012'){
                             $indeks = $THNANG.$KDSATKER.$KODE_PROGRAM.$KODE_KEGIATAN.$KODE_OUTPUT.$KODE_SUBOUTPUT.$KODE_KOMPONEN.$KODE_SUBKOMPONEN;

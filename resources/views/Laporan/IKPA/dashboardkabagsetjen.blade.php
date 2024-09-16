@@ -258,8 +258,7 @@
         Sampai dengan Periode Bulan {{$uraianbulanterakhir}}, Bagian {{$uraianbagian}} meraih nilai IKPA Kontraktual sebesar {{$dataikpakontraktual['nilai']}}.
         Nilai tersebut diperoleh atas sejumlah {{$dataikpakontraktual['jumlahkontrak']}} kontrak. Atas sejumlah kontrak tersebut, Bagian
         {{$uraianbagian}} memperoleh nilai atas Komponen Distribusi {{$dataikpakontraktual['nilaikomponen']}}, nilai atas Komponen Akselerasi sebesar
-        {{$dataikpakontraktual['nilaikomponenakselerasi']}} dan nilai atas Akselerasi Kontrak 53 sebesar {{$dataikpakontraktual['nilaikomponen53']}}. History
-        Capaian Nilai IKPA Kontraktual Bagian {{$uraianbagian}} adalah sebagai berikut:
+        {{$dataikpakontraktual['nilaikomponenakselerasi']}} dan nilai atas Akselerasi Kontrak 53 sebesar {{$dataikpakontraktual['nilaikomponen53']}}.
     </p>
     <p style="text-align: justify">
         Atas capaian tersebut, kami merekomendasikan Unit Kerja untuk memperhatikan tiga komponen di atas untuk dioptimalkan dengan ketentuan:
@@ -277,6 +276,9 @@
             Untuk menjaga Akselerasi Belanja Modal, Unit Kerja diharapkan untuk mempercepat penyelesaian kontrak dengan nilai Rp.50.000.000 - Rp.200.000.000 di Triwulan I.
         </li>
     </ul>
+    <p style="text-align: justify">
+        History Capaian Nilai IKPA Kontraktual Bagian {{$uraianbagian}} adalah sebagai berikut:
+    </p>
 
 
 @if(isset($chartImageIKPAKontraktual))

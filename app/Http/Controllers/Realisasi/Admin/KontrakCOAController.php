@@ -83,7 +83,8 @@ class KontrakCOAController extends Controller
                         foreach ($value as $DATA) {
                             // Lakukan pengecekan jika properti yang dibutuhkan ada dalam JSON
                             if (isset($DATA['KODE_KEMENTERIAN'], $DATA['KDSATKER'], $DATA['ID_KONTRAK'],
-                                $DATA['ID_LINE_KONTRAK'], $DATA['KODE_PROGRAM'], $DATA['KODE_KEGIATAN'],
+                                $DATA['ID_LINE_KONTRAK'], $DATA['ID_JADWAL_PEMBAYARAN'],
+                                $DATA['KODE_PROGRAM'], $DATA['KODE_KEGIATAN'],
                                 $DATA['KODE_OUTPUT'], $DATA['KODE_AKUN'], $DATA['KODE_SUBOUTPUT'],
                                 $DATA['KODE_KOMPONEN'], $DATA['KODE_SUBKOMPONEN'], $DATA['KODE_ITEM'],
                                 $DATA['KODE_COA'], $DATA['VOL_SUBOUTPUT'], $DATA['NILAI_COA_DETAIL'])) {
@@ -92,6 +93,7 @@ class KontrakCOAController extends Controller
                                 $KDSATKER = $DATA['KDSATKER'];
                                 $ID_KONTRAK = $DATA['ID_KONTRAK'];
                                 $ID_LINE_KONTRAK = $DATA['ID_LINE_KONTRAK'];
+                                $ID_JADWAL_PEMBAYARAN = $DATA['ID_JADWAL_PEMBAYARAN'];
                                 $KODE_PROGRAM = $DATA['KODE_PROGRAM'];
                                 $KODE_KEGIATAN = $DATA['KODE_KEGIATAN'];
                                 $KODE_OUTPUT = $DATA['KODE_OUTPUT'];
@@ -115,6 +117,7 @@ class KontrakCOAController extends Controller
                                     'KDSATKER' => $KDSATKER,
                                     'ID_KONTRAK' => $ID_KONTRAK,
                                     'ID_LINE_KONTRAK' => $ID_LINE_KONTRAK,
+                                    'ID_JADWAL_PEMBAYARAN' => $ID_JADWAL_PEMBAYARAN,
                                     'KODE_PROGRAM' => $KODE_PROGRAM,
                                     'KODE_KEGIATAN' => $KODE_KEGIATAN,
                                     'KODE_OUTPUT' => $KODE_OUTPUT,
@@ -131,7 +134,13 @@ class KontrakCOAController extends Controller
                                     'idbiro' => $IDBIRO
                                 );
 
-                                DB::table('kontrakcoa')->insert($data);
+                                DB::table('kontrakcoa')->updateOrInsert([
+                                    'THNANG' => $tahunanggaran,
+                                    'ID_KONTRAK' => $ID_KONTRAK,
+                                    'ID_LINE_KONTRAK' => $ID_LINE_KONTRAK,
+                                    'ID_JADWAL_PEMBAYARAN' => $ID_JADWAL_PEMBAYARAN,
+                                    'KODE_COA' => $KODE_COA
+                                ],$data);
                             }
                         }
                     }

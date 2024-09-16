@@ -40,36 +40,33 @@ class SppPotonganController extends Controller
         if ($response != "Gagal" or $response != "Expired"){
             $hasilasli = json_decode($response);
             //echo json_encode($hasilasli);
-
-            foreach ($hasilasli as $item => $value) {
-                if ($item == "TOKEN") {
-                    foreach ($value as $data) {
-                        $tokenresponse = $data->TOKEN;
-                    }
-                    $token = new BearerKey();
-                    $token->simpantokenbaru($TA, $kodemodul, $tokenresponse);
-                }else{
-                    foreach ($value as $DATA) {
-                        $KODE_KEMENTERIAN = $DATA->KODE_KEMENTERIAN;
-                        $KDSATKER = $DATA->KDSATKER;
-                        $ID_SPP = $DATA->ID_SPP;
-                        $KODE_PROGRAM = $DATA->KODE_PROGRAM;
-                        $KODE_KEGIATAN = $DATA->KODE_KEGIATAN;
-                        $KODE_OUTPUT = $DATA->KODE_OUTPUT;
-                        $KODE_AKUN = $DATA->KODE_AKUN;
-                        $KODE_SUBOUTPUT = $DATA->KODE_SUBOUTPUT;
-                        $KODE_KOMPONEN = $DATA->KODE_KOMPONEN;
-                        $KODE_SUBKOMPONEN = $DATA->KODE_SUBKOMPONEN;
-                        $KODE_ITEM = $DATA->KODE_ITEM;
-                        $KD_CTARIK = $DATA->KD_CTARIK;
-                        $KD_REGISTER = $DATA->KD_REGISTER;
-                        $KODE_COA = $DATA->KODE_COA;
-                        $KODE_VALAS = $DATA->KODE_VALAS;
-                        $NILAI_AKUN_POT = $DATA->NILAI_AKUN_POT;
-                        $NILAI_TUKAR = $DATA->NILAI_TUKAR;
-                        $NILAI_TUKAR_SP2D = $DATA->NILAI_TUKAR_SP2D;
-                        $NILAI_VALAS = $DATA->NILAI_VALAS;
-                        $NILAI_PEMBAYARAN_VALAS_SP2D = $DATA->NILAI_PEMBAYARAN_VALAS_SP2D;
+            foreach ($hasilasli as $subArray) {
+                foreach ($subArray as $item) {
+                    if (isset($item->TOKEN)) {
+                        $tokenresponse = $item->TOKEN;
+                        $token = new BearerKey();
+                        $token->simpantokenbaru($TA, $kodemodul, $tokenresponse);
+                    } else {
+                        $KODE_KEMENTERIAN = $item->KODE_KEMENTERIAN;
+                        $KDSATKER = $item->KDSATKER;
+                        $ID_SPP = $item->ID_SPP;
+                        $KODE_PROGRAM = $item->KODE_PROGRAM;
+                        $KODE_KEGIATAN = $item->KODE_KEGIATAN;
+                        $KODE_OUTPUT = $item->KODE_OUTPUT;
+                        $KODE_AKUN = $item->KODE_AKUN;
+                        $KODE_SUBOUTPUT = $item->KODE_SUBOUTPUT;
+                        $KODE_KOMPONEN = $item->KODE_KOMPONEN;
+                        $KODE_SUBKOMPONEN = $item->KODE_SUBKOMPONEN;
+                        $KODE_ITEM = $item->KODE_ITEM;
+                        $KD_CTARIK = $item->KD_CTARIK;
+                        $KD_REGISTER = $item->KD_REGISTER;
+                        $KODE_COA = $item->KODE_COA;
+                        $KODE_VALAS = $item->KODE_VALAS;
+                        $NILAI_AKUN_POT = $item->NILAI_AKUN_POT;
+                        $NILAI_TUKAR = $item->NILAI_TUKAR;
+                        $NILAI_TUKAR_SP2D = $item->NILAI_TUKAR_SP2D;
+                        $NILAI_VALAS = $item->NILAI_VALAS;
+                        $NILAI_PEMBAYARAN_VALAS_SP2D = $item->NILAI_PEMBAYARAN_VALAS_SP2D;
 
                         $datapengeluaran = DB::table('spppengeluaran')->where('ID_SPP','=',$ID_SPP)->get();
                         $ID_BAGIAN = 0;

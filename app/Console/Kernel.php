@@ -89,7 +89,7 @@ class Kernel extends ConsoleKernel
         //$schedule->job(new RekonDataAngSeluruh($TA))->dailyAt('23:46');
         //$schedule->job(new RekapRealisasiHarian($TA))->dailyAt('04:45');
 
-        $schedule->job(new ImportCOA($TA))->dailyAt('05:00');
+        //$schedule->job(new ImportCOA($TA))->dailyAt('05:00');
 
         $schedule->call(function () use ($TA){
            ImportSppHeader::withChain([
@@ -98,7 +98,7 @@ class Kernel extends ConsoleKernel
                new ImportRealisasiSakti($TA),
                new RekapRealisasiHarian($TA)
            ])->dispatch($TA);
-        })->dailyAt('04:30');
+        })->dailyAt('03:44');
 
 
         $schedule->call(function () use ($TA){
@@ -119,7 +119,7 @@ class Kernel extends ConsoleKernel
                 new RekapDataAset(),
                 new RekapDataBarangDBR()
             ])->dispatch($TA);
-        })->dailyAt('20:23');
+        })->dailyAt('21:42');
 
         $schedule->job(new RekapDataBarangDBR())->dailyAt('20:54');
 

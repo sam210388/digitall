@@ -33,63 +33,61 @@ class ImportSaktiController extends Controller
 
         if ($response !== "Gagal" or $response !== "Expired"){
             $hasilasli = json_decode($response);
-            foreach ($hasilasli as $item => $value) {
-                if ($item == "TOKEN") {
-                    foreach ($value as $data) {
-                        $tokenresponse = $data->TOKEN;
-                    }
-                    $token = new BearerKey();
-                    $token->simpantokenbaru($TA, $kodemodul, $tokenresponse);
-                }else{
-                    foreach ($value as $DATA) {
-                        $kode_kementerian = $DATA->KODE_KEMENTERIAN;
-                        $kdsatker = $DATA->KDSATKER;
-                        $kduakpb = $DATA->KDUAKPB;
-                        $kd_gol = $DATA->KDGOL;
-                        $kd_bid = $DATA->KDBID;
-                        $kd_kel = $DATA->KDKEL;
-                        $kd_skel = $DATA->KDSKEL;
-                        $kd_brg = $DATA->KDBRG;
-                        $nup = $DATA->NUP;
-                        $kondisi = $DATA->KOND;
-                        $kdtrx = $DATA->KDTRX;
-                        $q_ast = $DATA->Q_AST;
-                        $q_prb = $DATA->Q_PRB;
-                        $nilaiaset = $DATA->NA;
-                        $nilaiasetneraca = $DATA->NAN;
-                        $nilaiperubahan = $DATA->NP;
-                        $nilaiperubahanneraca = $DATA->NPN;
-                        $sisamasamanfaat = $DATA->SM;
-                        $masamanfaat = $DATA->MM;
-                        $nosppa = $DATA->NO_SPPA;
-                        $status = $DATA->STS;
-                        $kdsatkerasal = $DATA->KODE_SATKER_ASAL;
-                        $kdregister = $DATA->KODE_REGISTER;
-                        $keterangan = $DATA->KET;
-                        $no_dok = $DATA->NO_DOK;
-                        $jns_aset = $DATA->JNS_AST;
-                        if ($jns_aset == 1){
+            foreach ($hasilasli as $subArray) {
+                foreach ($subArray as $item) {
+                    if (isset($item->TOKEN)) {
+                        $tokenresponse = $item->TOKEN;
+                        $token = new BearerKey();
+                        $token->simpantokenbaru($TA, $kodemodul, $tokenresponse);
+                    } else {
+                        $kode_kementerian = $item->KODE_KEMENTERIAN;
+                        $kdsatker = $item->KDSATKER;
+                        $kduakpb = $item->KDUAKPB;
+                        $kd_gol = $item->KDGOL;
+                        $kd_bid = $item->KDBID;
+                        $kd_kel = $item->KDKEL;
+                        $kd_skel = $item->KDSKEL;
+                        $kd_brg = $item->KDBRG;
+                        $nup = $item->NUP;
+                        $kondisi = $item->KOND;
+                        $kdtrx = $item->KDTRX;
+                        $q_ast = $item->Q_AST;
+                        $q_prb = $item->Q_PRB;
+                        $nilaiaset = $item->NA;
+                        $nilaiasetneraca = $item->NAN;
+                        $nilaiperubahan = $item->NP;
+                        $nilaiperubahanneraca = $item->NPN;
+                        $sisamasamanfaat = $item->SM;
+                        $masamanfaat = $item->MM;
+                        $nosppa = $item->NO_SPPA;
+                        $status = $item->STS;
+                        $kdsatkerasal = $item->KODE_SATKER_ASAL;
+                        $kdregister = $item->KODE_REGISTER;
+                        $keterangan = $item->KET;
+                        $no_dok = $item->NO_DOK;
+                        $jns_aset = $item->JNS_AST;
+                        if ($jns_aset == 1) {
                             $jns_aset = "Y";
-                        }else{
+                        } else {
                             $jns_aset = "T";
                         }
-                        $periode = $DATA->PER;
-                        $merek_tipe = $DATA->MEREK_TIPE;
-                        //$catat = $DATA->CTT;
-                        $jeniscatat = DB::table('t_skel')->where('kd_skelbrg','=',$kd_skel)->value('jnscatat');
+                        $periode = $item->PER;
+                        $merek_tipe = $item->MEREK_TIPE;
+                        //$catat = $item->CTT;
+                        $jeniscatat = DB::table('t_skel')->where('kd_skelbrg', '=', $kd_skel)->value('jnscatat');
                         $catat = $jeniscatat;
-                        $thn_ang = $DATA->THN_ANG;
-                        $created_date = new \DateTime($DATA->CREATED_DATE);
+                        $thn_ang = $item->THN_ANG;
+                        $created_date = new \DateTime($item->CREATED_DATE);
                         $created_date = $created_date->format('Y-m-d');
-                        $created_by = $DATA->CREATED_BY;
-                        $tgl_buku = new \DateTime($DATA->TGL_BUKU);
+                        $created_by = $item->CREATED_BY;
+                        $tgl_buku = new \DateTime($item->TGL_BUKU);
                         $tgl_buku = $tgl_buku->format('Y-m-d');
-                        $tgl_oleh = new \DateTime($DATA->TGL_OLEH);
+                        $tgl_oleh = new \DateTime($item->TGL_OLEH);
                         $tgl_oleh = $tgl_oleh->format('Y-m-d');
-                        $tgl_awal_pakai = new \DateTIme($DATA->TGL_AWAL_PAKAI);
+                        $tgl_awal_pakai = new \DateTIme($item->TGL_AWAL_PAKAI);
                         $tgl_awal_pakai = $tgl_awal_pakai->format('Y-m-d');
 
-                        $data = array(
+                        $item = array(
                             'kode_kementerian' => $kode_kementerian,
                             'kdsatker' => $kdsatker,
                             'kduakpb' => $kduakpb,
@@ -126,26 +124,26 @@ class ImportSaktiController extends Controller
                             'tgl_oleh' => $tgl_oleh,
                             'tgl_awal_pakai' => $tgl_awal_pakai
                         );
-                        DB::table('mastersakti')->insert($data);
+                        DB::table('mastersakti')->insert($item);
 
                         //import
-                        if ($kdtrx == 401){
+                        if ($kdtrx == 401) {
                             //cek apakah dah ada
-                            $jumlah = DB::table('penghentianpenggunaan')->where('kdregister','=',$kdregister)->count();
-                            if ($jumlah == 0){
-                                DB::table('penghentianpenggunaan')->insert($data);
+                            $jumlah = DB::table('penghentianpenggunaan')->where('kdregister', '=', $kdregister)->count();
+                            if ($jumlah == 0) {
+                                DB::table('penghentianpenggunaan')->insert($item);
                             }
-                        }else if ($kdtrx == 301){
+                        } else if ($kdtrx == 301) {
                             //cek apakah dah ada
-                            $jumlah = DB::table('penghapusanbarang')->where('kdregister','=',$kdregister)->count();
-                            if ($jumlah == 0){
-                                DB::table('penghapusanbarang')->insert($data);
+                            $jumlah = DB::table('penghapusanbarang')->where('kdregister', '=', $kdregister)->count();
+                            if ($jumlah == 0) {
+                                DB::table('penghapusanbarang')->insert($item);
                             }
-                        }else if ($kdtrx == 911){
+                        } else if ($kdtrx == 911) {
                             //cek apakah dah ada
-                            $jumlah = DB::table('pengusulanpenghapusan')->where('kdregister','=',$kdregister)->count();
-                            if ($jumlah == 0){
-                                DB::table('pengusulanpenghapusan')->insert($data);
+                            $jumlah = DB::table('pengusulanpenghapusan')->where('kdregister', '=', $kdregister)->count();
+                            if ($jumlah == 0) {
+                                DB::table('pengusulanpenghapusan')->insert($item);
                             }
                         }
                     }
